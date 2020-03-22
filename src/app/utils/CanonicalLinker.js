@@ -1,4 +1,4 @@
-import Apps from 'steemscript/apps.json';
+import Apps from 'hivescript/apps.json';
 
 function read_md_app(metadata) {
     return metadata &&
@@ -20,7 +20,7 @@ function read_md_canonical(metadata) {
 }
 
 function build_scheme(scheme, post) {
-    // https://github.com/bonustrack/steemscript/blob/master/apps.json
+    // https://github.com/bgornicki/hivescript/blob/master/apps.json
     return scheme
         .split('{category}')
         .join(post.category)
@@ -31,8 +31,16 @@ function build_scheme(scheme, post) {
 }
 
 function allowed_app(app) {
-    // apps which follow (reciprocate) canonical URLs (as of 2019-10-15)
-    const whitelist = ['steemit', 'esteem', 'steempeak', 'travelfeed'];
+    // apps which follow (reciprocate) canonical URLs (as of 2020-03-21)
+    const whitelist = [
+        'hive',
+        'hiveblog',
+        'peakd',
+        'steemit',
+        'esteem',
+        'steempeak',
+        'travelfeed',
+    ];
     return whitelist.includes(app);
 }
 
@@ -44,10 +52,12 @@ export function makeCanonicalLink(post, metadata) {
         if (canonUrl) return canonUrl;
 
         const app = read_md_app(metadata);
+
         if (app && allowed_app(app)) {
             scheme = Apps[app] ? Apps[app].url_scheme : null;
         }
     }
-    if (!scheme) scheme = Apps['steemit'].url_scheme;
+
+    if (!scheme) scheme = Apps['hiveblog'].url_scheme;
     return build_scheme(scheme, post);
 }

@@ -4,7 +4,7 @@ export const APP_NAME = 'Hive';
 // ie. "Голос" > "Golos"
 export const APP_NAME_LATIN = 'Hive';
 export const APP_NAME_UPPERCASE = 'HIVE';
-export const APP_ICON = 'steem';
+export const APP_ICON = 'hive';
 // FIXME figure out best way to do this on both client and server from env
 // vars. client should read $STM_Config, server should read config package.
 export const APP_URL = 'https://hive.blog';
@@ -38,9 +38,9 @@ export const ALLOWED_CURRENCIES = ['USD'];
 // meta info
 export const TWITTER_HANDLE = '@';
 export const SHARE_IMAGE =
-    'https://' + APP_DOMAIN + '/images/steemit-share.png';
+    'https://' + APP_DOMAIN + '/images/hive-blog-share.png';
 export const TWITTER_SHARE_IMAGE =
-    'https://' + APP_DOMAIN + '/images/steemit-twshare.png';
+    'https://' + APP_DOMAIN + '/images/hive-blog-twshare.png';
 export const SITE_DESCRIPTION =
     'Hive is a social media platform where everyone gets paid for ' +
     'creating and curating content. It leverages a robust digital points system, called Hive, that ' +
