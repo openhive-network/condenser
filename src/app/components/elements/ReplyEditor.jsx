@@ -25,6 +25,7 @@ import { fromJS, Set, OrderedSet } from 'immutable';
 import Remarkable from 'remarkable';
 import Dropzone from 'react-dropzone';
 import tt from 'counterpart';
+import { loadUserTemplates, saveUserTemplates } from 'app/utils/UserTemplates';
 
 const remarkable = new Remarkable({ html: true, linkify: false, breaks: true });
 
@@ -202,39 +203,37 @@ class ReplyEditor extends React.Component {
                     const { username } = tp;
                     const { body, title, tags } = ns;
                     const { payoutType, beneficiaries } = np;
-                    const lsEntryName = `steemPostTemplates-${username}`;
-
-                    let userTemplates = window.localStorage.getItem(
-                        lsEntryName
+                    const userTemplates = loadUserTemplates(username);
+                    const newTemplateName = nextProps.postTemplateName.replace(
+                        'create_',
+                        ''
                     );
-                    if (!userTemplates) {
-                        userTemplates = [];
-                    } else {
-                        userTemplates = JSON.parse(userTemplates);
-                    }
-
-                    userTemplates.push({
+                    const newTemplate = {
                         name: nextProps.postTemplateName.replace('create_', ''),
                         beneficiaries,
                         payoutType,
                         markdown: body !== undefined ? body.value : '',
                         title: title !== undefined ? title.value : '',
                         tags: tags !== undefined ? tags.value : '',
-                    });
+                    };
 
-                    window.localStorage.setItem(
-                        lsEntryName,
-                        JSON.stringify(userTemplates)
-                    );
+                    let updated = false;
+                    for (let ui = 0; ui < userTemplates.length; ui += 1) {
+                        if (userTemplates[ui].name === newTemplateName) {
+                            userTemplates[ui] = newTemplate;
+                            updated = true;
+                        }
+                    }
+
+                    if (updated === false) {
+                        userTemplates.push(newTemplate);
+                    }
+
+                    saveUserTemplates(username, userTemplates);
 
                     this.props.setPostTemplateName(formId, null);
                 } else {
-                    const lsEntryName = `steemPostTemplates-${
-                        nextProps.username
-                    }`;
-                    const userTemplates = JSON.parse(
-                        window.localStorage.getItem(lsEntryName)
-                    );
+                    const userTemplates = loadUserTemplates(nextProps.username);
 
                     for (let ti = 0; ti < userTemplates.length; ti += 1) {
                         const template = userTemplates[ti];

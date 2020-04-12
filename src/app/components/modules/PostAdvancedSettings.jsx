@@ -8,6 +8,7 @@ import BeneficiarySelector, {
     validateBeneficiaries,
 } from 'app/components/cards/BeneficiarySelector';
 import PostTemplateSelector from 'app/components/cards/PostTemplateSelector';
+import { loadUserTemplates, saveUserTemplates } from 'app/utils/UserTemplates';
 
 import * as userActions from 'app/redux/UserReducer';
 
@@ -50,16 +51,8 @@ class PostAdvancedSettings extends Component {
 
     handleTemplateSelected = postTemplateName => {
         const { username } = this.props;
-
+        const userTemplates = loadUserTemplates(username);
         this.setState({ postTemplateName });
-
-        const lsEntryName = `steemPostTemplates-${username}`;
-        let userTemplates = window.localStorage.getItem(lsEntryName);
-        if (userTemplates) {
-            userTemplates = JSON.parse(userTemplates);
-        } else {
-            userTemplates = [];
-        }
 
         if (postTemplateName !== null) {
             for (let ti = 0; ti < userTemplates.length; ti += 1) {
@@ -85,6 +78,23 @@ class PostAdvancedSettings extends Component {
         }
     };
 
+    handleDeleteTemplate = (event, postTemplateName) => {
+        event.preventDefault();
+        event.stopPropagation();
+
+        const { username } = this.props;
+        const userTemplates = loadUserTemplates(username);
+        let ui = userTemplates.length;
+        while (ui--) {
+            if (userTemplates[ui].name === postTemplateName) {
+                userTemplates.splice(ui, 1);
+            }
+        }
+
+        saveUserTemplates(username, [...userTemplates]);
+        this.setState({ postTemplateName: null });
+    };
+
     render() {
         const {
             formId,
@@ -93,7 +103,10 @@ class PostAdvancedSettings extends Component {
             initialPayoutType,
         } = this.props;
         const { beneficiaries, payoutType, postTemplateName } = this.state;
+        const loadingTemplate =
+            postTemplateName && postTemplateName.indexOf('create_') === -1;
         const { submitting, valid, handleSubmit } = this.state.advancedSettings;
+        const userTemplates = loadUserTemplates(username);
         const disabled =
             submitting ||
             !(
@@ -138,7 +151,6 @@ class PostAdvancedSettings extends Component {
                 <div className="row">
                     <div className="small-12 medium-6 large-12 columns">
                         <select
-                            defaultValue={payoutType}
                             value={payoutType}
                             onChange={this.handlePayoutChange}
                         >
@@ -184,6 +196,7 @@ class PostAdvancedSettings extends Component {
                 <PostTemplateSelector
                     username={username}
                     onChange={this.handleTemplateSelected}
+                    templates={userTemplates}
                 />
                 <div className="error">
                     {(beneficiaries.touched || beneficiaries.value) &&
@@ -198,8 +211,31 @@ class PostAdvancedSettings extends Component {
                                 disabled={disabled}
                                 tabIndex={2}
                             >
-                                {tt('g.save')}
+                                {loadingTemplate &&
+                                    tt(
+                                        'post_advanced_settings_jsx.load_template'
+                                    )}
+                                {!loadingTemplate && tt('g.save')}
                             </button>
+                            {loadingTemplate && (
+                                <button
+                                    className="button"
+                                    tabIndex={2}
+                                    onClick={event => {
+                                        this.handleDeleteTemplate(
+                                            event,
+                                            postTemplateName
+                                        );
+                                    }}
+                                >
+                                    {postTemplateName &&
+                                        postTemplateName.indexOf('create_') ===
+                                            -1 &&
+                                        tt(
+                                            'post_advanced_settings_jsx.delete_template'
+                                        )}
+                                </button>
+                            )}
                         </span>
                     </div>
                 </div>

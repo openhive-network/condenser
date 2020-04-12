@@ -4,26 +4,28 @@ import tt from 'counterpart';
 class PostTemplateSelector extends React.Component {
     static propTypes = {
         username: React.PropTypes.string.isRequired,
+        templates: React.PropTypes.array.isRequired,
         onChange: React.PropTypes.func.isRequired,
     };
 
+    constructor() {
+        super();
+        this.state = {
+            currentTemplateName: '',
+        };
+    }
+
     render() {
-        const { username } = this.props;
+        const { username, onChange, templates } = this.props;
+        const { currentTemplateName } = this.state;
         if (!username || typeof window === 'undefined') {
             return null;
         }
 
-        const lsEntryName = `steemPostTemplates-${username}`;
-        let userTemplates = window.localStorage.getItem(lsEntryName);
-        if (userTemplates) {
-            userTemplates = JSON.parse(userTemplates);
-        } else {
-            userTemplates = null;
-        }
-
         const handleTemplateSelection = (event, create = false) => {
             const selectedTemplateName = event.target.value;
-            this.props.onChange(
+            this.setState({ currentTemplateName: selectedTemplateName });
+            onChange(
                 create ? `create_${selectedTemplateName}` : selectedTemplateName
             );
         };
@@ -42,21 +44,27 @@ class PostTemplateSelector extends React.Component {
                 </div>
                 <div className="row">
                     <div className="small-12 medium-6 large-12 columns">
-                        {userTemplates && (
-                            <select onChange={handleTemplateSelection}>
+                        {templates && (
+                            <select
+                                onChange={handleTemplateSelection}
+                                value={currentTemplateName}
+                            >
                                 <option value="">
                                     {tt(
                                         'post_template_selector_jsx.choose_template'
                                     )}
                                 </option>
-                                {userTemplates.map((template, idx) => (
-                                    <option value={template.name} key={idx}>
+                                {templates.map(template => (
+                                    <option
+                                        value={template.name}
+                                        key={template.name}
+                                    >
                                         {template.name}
                                     </option>
                                 ))}
                             </select>
                         )}
-                        {!userTemplates && (
+                        {!templates && (
                             <span>
                                 {tt(
                                     'post_template_selector_jsx.create_template_first'
