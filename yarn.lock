@@ -11,14 +11,14 @@
     js-tokens "^3.0.0"
 
 "@hivechain/hivescript@^1.1.3":
-  version "1.1.6"
-  resolved "https://registry.yarnpkg.com/@hivechain/hivescript/-/hivescript-1.1.6.tgz#af2cded24dfc685c7374a0daf3b2f2cb6e7a952d"
-  integrity sha512-2gyG/GLSjPh0H5x3o+/4qO/+aOhWuQZU0PLWjM1Q3gefY5AwHTCCqd9TLrinoHw2jsuhN9nnR4LK37QHPA8nIg==
+  version "1.1.7"
+  resolved "https://registry.yarnpkg.com/@hivechain/hivescript/-/hivescript-1.1.7.tgz#24d89ef8b0984c6e496934b626a72a374618338a"
+  integrity sha512-hS/negE2DoPqPYzY14+WLqNrdV+4R9pt3AhKkabW6m8auNXOp6i48+ckTMRWT5/lU4/avhjKgOgdqvTAMbXRAg==
 
-"@hiveio/hive-js@0.0.1":
-  version "0.0.1"
-  resolved "https://registry.yarnpkg.com/@hiveio/hive-js/-/hive-js-0.0.1.tgz#2acdce5550adc3f2cc23cb3aad17539360770549"
-  integrity sha512-aFX58gzLzZvZnPJdEafGRkVYNwQY6Lfqqr5yjr/yFNRXahPd2+m/f/n0e84R894DXB1HcgYASsxR/VwOpNscVg==
+"@hiveio/hive-js@^0.0.2":
+  version "0.0.2"
+  resolved "https://registry.yarnpkg.com/@hiveio/hive-js/-/hive-js-0.0.2.tgz#6f4a6fa133a1528534d410ad5f9bd4fee2b738aa"
+  integrity sha512-eHNAuYynOTXLTNBpftKEu3raWc2Ot6kj5Fti2OkQdSZaFFryl0hwjI8pH8fTmFnOg7YULOFonYs1Zo+4qhOMeQ==
   dependencies:
     "@steemit/rpc-auth" "^1.1.1"
     bigi "^1.4.2"
