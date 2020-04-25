@@ -15,7 +15,8 @@ services:
             SDC_SITE_DOMAIN: hivean.com
             SDC_IMAGE_PROXY_PREFIX: https://images.hive.blog/
             SDC_UPLOAD_IMAGE_URL: https://images.hive.blog
-            SDC_HELMET_CONNECTSRC: "'self' steemit.com https://anyx.io https://hivean.com https://images.hive.blog"
+            SDC_ALT_API_ENDPOINTS: "https://api.hive.blog https://anyx.io https://api.openhive.network https://api.hivekings.com"
+            SDC_HELMET_CONNECTSRC: "'self' hive.blog https://hiveean.com https://images.hive.blog https://api.hive.blog https://anyx.io https://api.openhive.network https://api.hivekings.com"
             WALLET_URL: https://wallet.hivean.com
         networks:
             - proxy_reverse-proxy
