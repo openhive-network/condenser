@@ -7,7 +7,7 @@ services:
         expose:
           - "8080"
         environment:
-            VIRTUAL_HOST: hivean.com
+            VIRTUAL_HOST: hiveblog.local
             VIRTUAL_PORT: 8080
             SDC_CLIENT_STEEMD_URL: https://anyx.io
             SDC_SERVER_STEEMD_URL: https://anyx.io
@@ -16,7 +16,7 @@ services:
             SDC_IMAGE_PROXY_PREFIX: https://images.hive.blog/
             SDC_UPLOAD_IMAGE_URL: https://images.hive.blog
             SDC_ALT_API_ENDPOINTS: "https://api.hive.blog https://anyx.io https://api.openhive.network https://api.hivekings.com"
-            SDC_HELMET_CONNECTSRC: "'self' hive.blog https://hiveean.com https://images.hive.blog https://api.hive.blog https://anyx.io https://api.openhive.network https://api.hivekings.com"
+            SDC_HELMET_CONNECTSRC: "'self' hiveblog.local https://images.hive.blog https://api.hive.blog https://anyx.io https://api.openhive.network https://api.hivekings.com"
             WALLET_URL: https://wallet.hivean.com
         networks:
             - proxy_reverse-proxy
