@@ -75,11 +75,11 @@ function logs {
 function build {
     case "$1" in
         "dev")
-            docker-compose -f docker-compose.dev.yml build
+            docker-compose -f docker-compose.dev.yml build --no-cache
         ;;
 
         "prod")
-            docker-compose -f docker-compose.prod.yml build
+            docker-compose -f docker-compose.prod.yml build --no-cache
         ;;
 
         "stg")
