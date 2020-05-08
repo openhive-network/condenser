@@ -128,6 +128,19 @@ while test $# -gt 0; do
             shift
         ;;
 
+	"restart")
+            shift
+            if test $# -gt 0; then
+                stop $1
+		sleep 1
+		start $1
+            else
+                echo "no environment specified"
+                exit 1
+            fi
+            shift
+        ;;
+
         "logs")
             shift
             if test $# -gt 0; then
