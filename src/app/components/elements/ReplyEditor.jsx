@@ -689,11 +689,12 @@ class ReplyEditor extends React.Component {
                                     loading: true,
                                     postError: undefined,
                                 });
-                            reply({
+                            const replyPayload = {
                                 ...data,
                                 ...replyParams,
                                 startLoadingIndicator,
-                            });
+                            };
+                            reply(replyPayload);
                         })}
                         onChange={() => {
                             this.setState({ postError: null });
@@ -878,7 +879,7 @@ class ReplyEditor extends React.Component {
                                                             this.props
                                                                 .maxAcceptedPayout
                                                         }{' '}
-                                                        SBD
+                                                        HBD
                                                     </div>
                                                 )}
                                             <div>
@@ -1078,7 +1079,7 @@ export default formId =>
         (state, ownProps) => {
             const username = state.user.getIn(['current', 'username']);
             const fields = ['body'];
-            const { type, parent_author } = ownProps;
+            const { author, permlink, type, parent_author } = ownProps;
             const isEdit = type === 'edit';
             const isStory =
                 /submit_story/.test(type) || (isEdit && !parent_author);
@@ -1126,12 +1127,23 @@ export default formId =>
                 formId,
                 'payoutType',
             ]);
-            const maxAcceptedPayout = state.user.getIn([
-                'current',
-                'post',
-                formId,
-                'maxAcceptedPayout',
-            ]);
+            let maxAcceptedPayout;
+            if (isEdit) {
+                maxAcceptedPayout = parseFloat(
+                    state.global.getIn([
+                        'content',
+                        `${author}/${permlink}`,
+                        'max_accepted_payout',
+                    ])
+                );
+            } else {
+                maxAcceptedPayout = state.user.getIn([
+                    'current',
+                    'post',
+                    formId,
+                    'maxAcceptedPayout',
+                ]);
+            }
             if (!payoutType) {
                 payoutType = defaultPayoutType;
             }
@@ -1347,17 +1359,12 @@ export default formId =>
                     switch (payoutType) {
                         case '0%': // decline payout
                             __config.comment_options.max_accepted_payout =
-                                '0.000 SBD';
+                                '0.000 HBD';
                             break;
                         case '100%': // 100% steem power payout
                             __config.comment_options.percent_steem_dollars = 0; // 10000 === 100% (of 50%)
                             break;
                         default: // 50% steem power, 50% sd+steem
-                    }
-                    if (maxAcceptedPayout !== null && maxAcceptedPayout !== 0) {
-                        __config.comment_options.max_accepted_payout = `${maxAcceptedPayout.toFixed(
-                            3
-                        )} SBD`;
                     }
                     if (beneficiaries && beneficiaries.length > 0) {
                         __config.comment_options.extensions = [
@@ -1383,6 +1390,14 @@ export default formId =>
                     }
                 }
 
+                // Used to be in the !isEdit condition above but that causes edited posts to accept unlimited payout
+                // despite being set to a max_accepted_payout originally. The API node will then reject the edit.
+                if (maxAcceptedPayout !== null && maxAcceptedPayout !== 0) {
+                    __config.comment_options.max_accepted_payout = `${maxAcceptedPayout.toFixed(
+                        3
+                    )} HBD`;
+                }
+
                 const operation = {
                     ...linkProps,
                     category: originalPost.category || metaTags.first(),
@@ -1391,6 +1406,7 @@ export default formId =>
                     json_metadata: JSON.stringify(meta),
                     __config,
                 };
+
                 dispatch(
                     transactionActions.broadcastOperation({
                         type: 'comment',

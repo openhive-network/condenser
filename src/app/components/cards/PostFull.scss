@@ -38,6 +38,19 @@
       background-color: themed('backgroundColor');
     }
   }
+
+  .articles__crosspost-icon {
+    margin-right: 5px;
+  }
+
+  .ReplyEditor .column.large-6 {
+      max-width: 100%;
+      flex: 0 0 100%;
+  }
+
+  .ReplyEditor .side-by-side {
+      height: auto;
+  }
 }
 
 .PostFull__time_author_category {
@@ -153,12 +166,12 @@
       border-right: themed('border');
     }
   }
-  .PostFull__cross_post_footer {
+  .PostFull__crosspost-footer {
     padding-top: 15px;
     text-align: center;
   }
 
-  .PostFull__cross_post_footer .button {
+  .PostFull__crosspost-footer .button {
     @extend .e-btn;
     @extend .e-btn--black;
     min-width: 100px;
