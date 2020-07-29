@@ -9,10 +9,18 @@ import _ from 'lodash';
 const regex = {
     main: /(?:https?:\/\/(?:(?:twitter\.com\/(.*?)\/status\/(.*))))/i,
     sanitize: /(?:https?:\/\/(?:(?:twitter\.com\/(.*?)\/status\/(.*))))/i,
-    htmlReplacement: /<blockquote[^>]*?><p[^>]*?>(.*?)<\/p>.*?mdash; (.*)<a href="(https:\/\/twitter.com\/.*?(.*?\/status\/(.*?))\?.*?)">(.*?)<\/a><\/blockquote>/i,
+    htmlReplacement: /<blockquote[^>]*?><p[^>]*?>(.*?)<\/p>.*?mdash; (.*)<a href="(https:\/\/twitter\.com\/.*?(.*?\/status\/(.*?))\?.*?)">(.*?)<\/a><\/blockquote>/i,
 };
-
 export default regex;
+
+/**
+ * Configuration for HTML iframe's `sandbox` attribute
+ * @type {useSandbox: boolean, sandboxAttributes: string[]}
+ */
+export const sandboxConfig = {
+    useSandbox: false,
+    sandboxAttributes: [],
+};
 
 /**
  * Extract the content ID and other metadata from the URL
@@ -130,7 +138,7 @@ function generateTwitterCode(metadata) {
             '</blockquote>';
 
         const twttr = _.get(window, 'twttr');
-        if (twttr) {
+        if (twttr && twttr.widgets) {
             twttr.widgets.load();
         }
     }
