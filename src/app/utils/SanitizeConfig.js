@@ -41,6 +41,7 @@ export default ({
             'allowfullscreen',
             'webkitallowfullscreen',
             'mozallowfullscreen',
+            'sandbox',
         ],
 
         // class attribute is strictly whitelisted (below)
@@ -58,10 +59,14 @@ export default ({
     transformTags: {
         iframe: (tagName, attribs) => {
             const srcAtty = attribs.src;
-            const validUrl = validateEmbbeddedPlayerIframeUrl(srcAtty);
+            const {
+                validUrl,
+                useSandbox,
+                sandboxAttributes,
+            } = validateEmbbeddedPlayerIframeUrl(srcAtty);
 
             if (validUrl !== false) {
-                return {
+                const iframe = {
                     tagName: 'iframe',
                     attribs: {
                         frameborder: '0',
@@ -73,6 +78,14 @@ export default ({
                         height: large ? '360' : '270',
                     },
                 };
+                if (useSandbox) {
+                    if (sandboxAttributes.length > 0) {
+                        iframe.attribs.sandbox = sandboxAttributes.join(' ');
+                    } else {
+                        iframe.attribs.sandbox = true;
+                    }
+                }
+                return iframe;
             }
 
             console.log(
