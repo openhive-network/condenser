@@ -98,6 +98,9 @@ export default {
             //cb(null, [require('app/components/pages/PostsIndex')]);
             cb(null, [PostsIndex]);
             //});
+        } else if (route.page === 'ListManagement') {
+            require('app/components/pages/ListManagement');
+            cb(null, [require('app/components/pages/ListManagement')]);
         } else {
             //require.ensure([], (require) => {
             cb(process.env.BROWSER ? null : Error(404), [
