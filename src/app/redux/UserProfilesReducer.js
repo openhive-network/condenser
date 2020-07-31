@@ -2,9 +2,11 @@ import { fromJS } from 'immutable';
 
 // Action constants
 const ADD_USER_PROFILE = 'user_profile/ADD';
+const ADD_LISTED_ACCOUNTS = 'user_profile/LISTED';
 
 const defaultState = fromJS({
     profiles: {},
+    listed_accounts: {},
 });
 
 export default function reducer(state = defaultState, action) {
@@ -21,6 +23,16 @@ export default function reducer(state = defaultState, action) {
             return state;
         }
 
+        case ADD_LISTED_ACCOUNTS: {
+            if (payload) {
+                return state.setIn(
+                    ['listedAccounts', payload.username],
+                    fromJS(payload.listed_accounts)
+                );
+            }
+            return state;
+        }
+
         default:
             return state;
     }
@@ -29,5 +41,10 @@ export default function reducer(state = defaultState, action) {
 // Action creators
 export const addProfile = payload => ({
     type: ADD_USER_PROFILE,
+    payload,
+});
+
+export const addList = payload => ({
+    type: ADD_LISTED_ACCOUNTS,
     payload,
 });
