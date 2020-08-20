@@ -67,5 +67,5 @@ currency used by the Hive Blockchain. More information
 - [FAQ](https://hive.blog/faq.html) - Answers to commonly asked questions
 - [Hive Bluepaper](https://hive.io/hive-bluepaper.pdf) - Explanation of how the platform works
 - [Hive Whitepaper](https://hive.io/hive-whitepaper.pdf) - Technical details of the Hive blockchain
-- [Apps Built on Hive](https://hiverojects.com/) - Directory of apps, sites and tools built by Hive community
+- [Apps Built on Hive](https://hiveprojects.com/) - Directory of apps, sites and tools built by Hive community
 - [Hive Block Explorer](https://hiveblocks.com/) - Shows the raw Hive blockchain data
