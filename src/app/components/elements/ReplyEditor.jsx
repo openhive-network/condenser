@@ -1469,7 +1469,7 @@ export default formId =>
                 const originalBody = isEdit ? originalPost.body : null;
                 const __config = {
                     originalBody,
-                    comment_options: {},
+                    comment_options: isEdit ? null : {},
                 };
                 // Avoid changing payout option during edits #735
                 if (!isEdit) {
@@ -1505,14 +1505,6 @@ export default formId =>
                             ],
                         ];
                     }
-                }
-
-                // Used to be in the !isEdit condition above but that causes edited posts to accept unlimited payout
-                // despite being set to a max_accepted_payout originally. The API node will then reject the edit.
-                if (maxAcceptedPayout !== null && maxAcceptedPayout !== 0) {
-                    __config.comment_options.max_accepted_payout = `${maxAcceptedPayout.toFixed(
-                        3
-                    )} HBD`;
                 }
 
                 const operation = {
