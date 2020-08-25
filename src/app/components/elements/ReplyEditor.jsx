@@ -1505,6 +1505,11 @@ export default formId =>
                             ],
                         ];
                     }
+                    if (maxAcceptedPayout !== null && maxAcceptedPayout !== 0) {
+                        __config.comment_options.max_accepted_payout = `${maxAcceptedPayout.toFixed(
+                            3
+                        )} HBD`;
+                    }
                 }
 
                 const operation = {
