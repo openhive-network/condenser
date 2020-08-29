@@ -12,6 +12,7 @@ services:
             SDC_IMAGE_PROXY_PREFIX: https://images.hive.blog/
             SDC_UPLOAD_IMAGE_URL: https://images.hive.blog
             SDC_HELMET_CONNECTSRC: "'self' hive.blog https://hive.blog https://api.hive.blog https://anyx.io api.blocktrades.us https://images.hive.blog"
+            SDC_HELMET_STYLESRC: "'self' 'unsafe-inline' fonts.googleapis.com platform.twitter.com"
             WALLET_URL: https://wallet.hive.blog
         networks:
             - reverse-proxy
