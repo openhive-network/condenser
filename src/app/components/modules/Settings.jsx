@@ -898,7 +898,7 @@ class Settings extends React.Component {
                     <div className="large-12 columns">
                         <h4 onClick={this.toggleShowAdvancedSettings}>
                             {tt('settings_jsx.advanced') + ' '}{' '}
-                            {this.state.expand_advanced ? '\u25B2' : '\u25BC'}
+                            {this.state.expand_advanced ? '\u25BC' : '\u25B2'}
                         </h4>
                         {this.state.expand_advanced && (
                             <div>
