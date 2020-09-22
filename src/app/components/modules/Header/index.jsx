@@ -343,7 +343,8 @@ class Header extends React.Component {
                                     <li className={`nav__block-list-item`}>
                                         <Link
                                             to={`${walletUrl}/proposals`}
-                                            target={'_blank'}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
                                         >
                                             Proposals
                                         </Link>
@@ -351,7 +352,8 @@ class Header extends React.Component {
                                     <li className={`nav__block-list-item`}>
                                         <Link
                                             to={`${walletUrl}/~witnesses`}
-                                            target={'_blank'}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
                                         >
                                             Witnesses
                                         </Link>
@@ -359,7 +361,8 @@ class Header extends React.Component {
                                     <li className={`nav__block-list-item`}>
                                         <Link
                                             to="https://hive.io/eco/"
-                                            target={'_blank'}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
                                         >
                                             Our dApps
                                         </Link>

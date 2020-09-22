@@ -489,6 +489,7 @@ class LoginForm extends Component {
                     <a
                         href={`${walletUrl}/@${username.value}/permissions`}
                         target="_blank"
+                        rel="noopener noreferrer"
                     >
                         {tt('loginform_jsx.login_warning_link_text')}
                     </a>
