@@ -363,7 +363,7 @@ class Voting extends React.Component {
         const payout_at = post.get('payout_at');
         const promoted = amt(post.get('promoted'));
         const max_payout = amt(post.get('max_accepted_payout'));
-        const percent_sbd = post.get('percent_steem_dollars') / 20000;
+        const percent_sbd = post.get('percent_hbd') / 20000;
 
         // pending payout, and completed author/curator payout
         const pending_payout = amt(post.get('pending_payout_value'));
