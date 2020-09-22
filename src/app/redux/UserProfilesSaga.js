@@ -1,6 +1,6 @@
 import { call, put, takeLatest } from 'redux-saga/effects';
 import * as userProfileActions from './UserProfilesReducer';
-import { callBridge } from 'app/utils/steemApi';
+import { callBridge, getHivePowerForUser } from 'app/utils/steemApi';
 
 const FETCH_PROFILE = 'userProfilesSaga/FETCH_PROFILE';
 
@@ -11,9 +11,14 @@ export const userProfilesWatches = [
 export function* fetchUserProfile(action) {
     const { account, observer } = action.payload;
     const ret = yield call(callBridge, 'get_profile', { account, observer });
+    const hive_power = yield getHivePowerForUser(account);
+
     if (!ret) throw new Error('Account not found');
     yield put(
-        userProfileActions.addProfile({ username: account, account: ret })
+        userProfileActions.addProfile({
+            username: account,
+            account: { ...ret, stats: { ...ret.stats, sp: hive_power } },
+        })
     );
 }
 

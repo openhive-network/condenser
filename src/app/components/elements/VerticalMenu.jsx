@@ -29,7 +29,11 @@ export default class VerticalMenu extends React.Component {
                         <li key={idx} onClick={this.closeMenu}>
                             {i.link ? (
                                 i.link.match(/^http(s?)/) ? (
-                                    <a href={i.link} target="_blank">
+                                    <a
+                                        href={i.link}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                    >
                                         {i.icon && <Icon name={i.icon} />}
                                         {i.label ? i.label : i.value}
                                     </a>
