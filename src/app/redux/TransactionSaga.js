@@ -494,7 +494,7 @@ export function* preBroadcast_comment({ operation, username }) {
     if (comment_options) {
         const {
             max_accepted_payout = ['1000000.000', DEBT_TICKER].join(' '),
-            percent_steem_dollars = 10000, // 10000 === 100%
+            percent_hbd = 10000, // 10000 === 100%
             allow_votes = true,
             allow_curation_rewards = true,
         } = comment_options;
@@ -504,7 +504,7 @@ export function* preBroadcast_comment({ operation, username }) {
                 author,
                 permlink,
                 max_accepted_payout,
-                percent_steem_dollars,
+                percent_hbd,
                 allow_votes,
                 allow_curation_rewards,
                 extensions: comment_options.extensions
