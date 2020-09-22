@@ -1,4 +1,5 @@
 import { api } from '@hiveio/hive-js';
+import _ from 'lodash';
 import { ifHive } from 'app/utils/Community';
 import stateCleaner from 'app/redux/stateCleaner';
 import {
@@ -28,8 +29,11 @@ export function getHivePowerForUser(account) {
                 'database_api.find_accounts',
                 { accounts: [account] }
             );
-            const post_voting_power =
-                fullAccounts['accounts'][0]['post_voting_power'];
+            const post_voting_power = _.get(
+                fullAccounts,
+                'accounts[0].post_voting_power',
+                0
+            );
             /**
              * This magic number is coming from
              * https://gitlab.syncad.com/hive/hivemind/-/blame/d2d5ef25107908db09438da5ee3da9d6fcb976bc/hive/server/bridge_api/objects.py
