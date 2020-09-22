@@ -23,7 +23,7 @@ export default class Link extends React.Component {
         const { props: { href, children }, onLocalClick } = this;
         if (this.localLink) return <a onClick={onLocalClick}>{children}</a>;
         return (
-            <a target="_blank" rel="noopener" href={href}>
+            <a target="_blank" rel="noopener noreferrer" href={href}>
                 {children}
             </a>
         );
