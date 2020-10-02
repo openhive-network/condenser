@@ -21,32 +21,6 @@ export async function callBridge(method, params) {
     });
 }
 
-export function getHivePowerForUser(account) {
-    return new Promise(async (resolve, reject) => {
-        try {
-            const fullAccounts = await api.callAsync(
-                'database_api.find_accounts',
-                { accounts: [account] }
-            );
-            const post_voting_power =
-                fullAccounts['accounts'][0]['post_voting_power'];
-            /**
-             * This magic number is coming from
-             * https://gitlab.syncad.com/hive/hivemind/-/blame/d2d5ef25107908db09438da5ee3da9d6fcb976bc/hive/server/bridge_api/objects.py
-             */
-            const MAGIC_NUMBER = 0.0005037;
-            const hive_power = (
-                post_voting_power.amount *
-                MAGIC_NUMBER *
-                (1 / Math.pow(10, post_voting_power.precision))
-            ).toFixed(0);
-            resolve(hive_power);
-        } catch (err) {
-            reject(err);
-        }
-    });
-}
-
 export async function getStateAsync(url, observer, ssr = false) {
     console.log('getStateAsync');
     if (observer === undefined) observer = null;
@@ -92,16 +66,8 @@ export async function getStateAsync(url, observer, ssr = false) {
     if (ssr && account) {
         // TODO: move to global reducer?
         const profile = await callBridge('get_profile', { account });
-        const hive_power = await getHivePowerForUser(account);
-
         if (profile && profile['name']) {
-            state['profiles'][account] = {
-                ...profile,
-                stats: {
-                    ...profile.stats,
-                    sp: hive_power,
-                },
-            };
+            state['profiles'][account] = profile;
         }
     }
 
