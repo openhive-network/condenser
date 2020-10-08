@@ -1,4 +1,5 @@
 import { api } from '@hiveio/hive-js';
+import Big from 'big.js';
 import { ifHive } from 'app/utils/Community';
 import stateCleaner from 'app/redux/stateCleaner';
 import {
@@ -28,19 +29,36 @@ export function getHivePowerForUser(account) {
                 'database_api.find_accounts',
                 { accounts: [account] }
             );
-            const post_voting_power =
-                fullAccounts['accounts'][0]['post_voting_power'];
-            /**
-             * This magic number is coming from
-             * https://gitlab.syncad.com/hive/hivemind/-/blame/d2d5ef25107908db09438da5ee3da9d6fcb976bc/hive/server/bridge_api/objects.py
-             */
-            const MAGIC_NUMBER = 0.0005037;
-            const hive_power = (
-                post_voting_power.amount *
-                MAGIC_NUMBER *
-                (1 / Math.pow(10, post_voting_power.precision))
-            ).toFixed(0);
-            resolve(hive_power);
+
+            api.getDynamicGlobalProperties((error, result) => {
+                if (error) return reject(error);
+
+                const {
+                    total_vesting_fund_hive,
+                    total_vesting_shares,
+                } = result;
+                const totalHive = total_vesting_fund_hive.split(' ')[0];
+                const totalVests = total_vesting_shares.split(' ')[0];
+
+                const post_voting_power =
+                    fullAccounts['accounts'][0]['post_voting_power'];
+                /**
+                 * old implementation instead of getting hive/vests dynamically
+                 * This magic number is coming from
+                 * https://gitlab.syncad.com/hive/hivemind/-/blame/d2d5ef25107908db09438da5ee3da9d6fcb976bc/hive/server/bridge_api/objects.py
+                 */
+                //    const MAGIC_NUMBER = 0.0005037;
+
+                const hiveDividedByVests = new Big(totalHive)
+                    .div(new Big(totalVests))
+                    .toFixed(7);
+
+                const hive_power = new Big(post_voting_power.amount)
+                    .times(new Big(hiveDividedByVests))
+                    .times(1 / Math.pow(10, post_voting_power.precision))
+                    .toFixed(0);
+                resolve(hive_power);
+            });
         } catch (err) {
             reject(err);
         }

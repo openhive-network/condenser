@@ -30,7 +30,7 @@ module.exports = {
     net_votes: 2017,
     root_comment: 24398348,
     max_accepted_payout: '1000000.000 SBD',
-    percent_steem_dollars: 10000,
+    percent_hbd: 10000,
     allow_replies: true,
     allow_votes: true,
     allow_curation_rewards: true,
