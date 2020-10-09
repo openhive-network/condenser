@@ -217,8 +217,6 @@ class Header extends React.Component {
                     username: user_title,
                 });
             }
-        } else if (route.page === 'ListManagement') {
-            page_title = 'Manage Lists';
         } else {
             page_name = ''; //page_title = route.page.replace( /([a-z])([A-Z])/g, '$1 $2' ).toLowerCase();
         }

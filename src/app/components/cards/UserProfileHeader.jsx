@@ -127,39 +127,6 @@ class UserProfileHeader extends React.Component {
                                     )}
                                 </span>
                             )}
-
-                            <span>
-                                <br />
-                                <Link to={`/@${accountname}/lists/blacklisted`}>
-                                    Blacklisted Users
-                                </Link>
-                            </span>
-
-                            <span>
-                                <Link to={`/@${accountname}/lists/muted`}>
-                                    Muted Users
-                                </Link>
-                            </span>
-
-                            <span>
-                                <Link
-                                    to={`/@${
-                                        accountname
-                                    }/lists/followed_blacklists`}
-                                >
-                                    Followed Blacklists
-                                </Link>
-                            </span>
-
-                            <span>
-                                <Link
-                                    to={`/@${
-                                        accountname
-                                    }/lists/followed_muted_lists`}
-                                >
-                                    Followed Muted Lists
-                                </Link>
-                            </span>
                         </div>
 
                         <p className="UserProfile__info">
