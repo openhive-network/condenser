@@ -99,9 +99,10 @@ function runApp(initial_state) {
         useAppbaseApi: !!config.steemd_use_appbase,
         alternative_api_endpoints: alternativeApiEndpoints,
         failover_threshold: config.failover_threshold,
+        rebranded_api: true,
     });
     steem.config.set('address_prefix', config.address_prefix);
-    steem.config.set('chain_id', config.chain_id);
+    steem.config.set('rebranded_api', true);
 
     window.$STM_Config = config;
     plugins(config);

@@ -7,23 +7,23 @@ import * as transactionActions from 'app/redux/TransactionReducer';
 const nothingToClaim = 'No rewards pending redemption.';
 
 const getRewardsString = account => {
-    const reward_steem =
-        parseFloat(account.get('reward_steem_balance').split(' ')[0]) > 0
-            ? account.get('reward_steem_balance')
+    const reward_hive =
+        parseFloat(account.get('reward_hive_balance').split(' ')[0]) > 0
+            ? account.get('reward_hive_balance')
             : null;
-    const reward_sbd =
-        parseFloat(account.get('reward_sbd_balance').split(' ')[0]) > 0
-            ? account.get('reward_sbd_balance')
+    const reward_hbd =
+        parseFloat(account.get('reward_hbd_balance').split(' ')[0]) > 0
+            ? account.get('reward_hbd_balance')
             : null;
-    const reward_sp =
-        parseFloat(account.get('reward_vesting_steem').split(' ')[0]) > 0
-            ? account.get('reward_vesting_steem').replace('STEEM', 'SP')
+    const reward_hp =
+        parseFloat(account.get('reward_vesting_hive').split(' ')[0]) > 0
+            ? account.get('reward_vesting_hive').replace('HIVE', 'HP')
             : null;
 
     const rewards = [];
-    if (reward_steem) rewards.push(reward_steem);
-    if (reward_sbd) rewards.push(reward_sbd);
-    if (reward_sp) rewards.push(reward_sp);
+    if (reward_hive) rewards.push(reward_hive);
+    if (reward_hbd) rewards.push(reward_hbd);
+    if (reward_hp) rewards.push(reward_hp);
 
     let rewards_str;
     switch (rewards.length) {
@@ -136,8 +136,8 @@ const mapDispatchToProps = dispatch => {
             };
             const operation = {
                 account: username,
-                reward_steem: account.get('reward_steem_balance'),
-                reward_sbd: account.get('reward_sbd_balance'),
+                reward_hive: account.get('reward_hive_balance'),
+                reward_hbd: account.get('reward_hbd_balance'),
                 reward_vests: account.get('reward_vesting_balance'),
             };
 

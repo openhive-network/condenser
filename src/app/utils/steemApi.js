@@ -14,9 +14,19 @@ export async function callBridge(method, params) {
         params && JSON.stringify(params).substring(0, 200)
     );
 
+    if (method === "get_ranked_posts" && params && (params.observer === null || params.observer === undefined))
+        return new Promise(function(resolve, reject) { resolve({"result": []})});
+
     return new Promise(function(resolve, reject) {
         api.call('bridge.' + method, params, function(err, data) {
-            if (err) reject(err);
+            if (err) 
+            {
+                if (method === "get_post_header")
+                {
+                    resolve({"result":[]});
+                }
+                reject(err);
+            }
             else resolve(data);
         });
     });
