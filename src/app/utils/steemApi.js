@@ -27,6 +27,15 @@ export async function callBridge(method, params) {
     return new Promise(function(resolve, reject) {
         api.call('bridge.' + method, params, function(err, data) {
             if (err) {
+                // [JES] This is also due to a change in hivemind that we've requested a change for.
+                // The condenser uses this call to make sure the permlink it generates is unique by asking
+                // hivemind for the post header with the generated permlink. Hivemind used to just return
+                // an emptry result if it wasn't found, but now it throws an exception instead. This allows
+                // the condenser to get past the unique check but we don't actually know if it's unique at this point.
+                // If it isn't, the final broadcast transaction will fail and the post won't create, so I'm really
+                // just pushing the error further down the chain and hoping the generated permlinks are unique.
+                // Once hivemind is fixed to return an empty result instead of an exception again, this code
+                // can be removed
                 if (method === 'get_post_header') {
                     resolve({ result: [] });
                 }
