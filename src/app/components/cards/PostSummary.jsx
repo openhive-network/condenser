@@ -124,7 +124,7 @@ class PostSummary extends React.Component {
         const isNsfw = hasNsfwTag(post);
         const isReply = post.get('depth') > 0;
         const showReblog = !isReply;
-        const full_power = post.get('percent_steem_dollars') === 0;
+        const full_power = post.get('percent_hbd') === 0;
 
         const author = post.get('author');
         const permlink = post.get('permlink');

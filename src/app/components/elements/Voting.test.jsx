@@ -31,7 +31,7 @@ const mockGlobal = Map({
                 total_votes: 1,
             },
             max_accepted_payout: '999999 HBD',
-            percent_steem_dollars: 0,
+            percent_hbd: 0,
             pending_payout_value: '10 HBD',
             payout_at: '2018-03-30T10:00:00Z',
             pending_payout_sbd: 99,
@@ -46,7 +46,7 @@ const voteTestObj = fromJS({
         total_votes: 1,
     },
     max_accepted_payout: '999999 HBD',
-    percent_steem_dollars: 0,
+    percent_hbd: 0,
     pending_payout_value: '10 HBD',
     payout_at: '2018-03-30T10:00:00Z',
 });
@@ -165,13 +165,13 @@ describe('Voting', () => {
         );
     });
 
-    it('should show all HP if percent_steem_dollars is 0', () => {
+    it('should show all HP if percent_hbd is 0', () => {
         const post_obj = fromJS({
             stats: {
                 total_votes: 1,
             },
             max_accepted_payout: '999999 HBD',
-            percent_steem_dollars: 0,
+            percent_hbd: 0,
             pending_payout_value: '10 HBD',
             payout_at: '2018-03-30T10:00:00Z',
         });
@@ -200,7 +200,7 @@ describe('Voting', () => {
                 total_votes: 1,
             },
             max_accepted_payout: '999999 HBD',
-            percent_steem_dollars: 10000,
+            percent_hbd: 10000,
             pending_payout_value: '10 HBD',
             payout_at: '2018-03-30T10:00:00Z',
         });
@@ -227,7 +227,7 @@ describe('Voting', () => {
                 total_votes: 1,
             },
             max_accepted_payout: '999999 HBD',
-            percent_steem_dollars: 10000,
+            percent_hbd: 10000,
             pending_payout_value: '10 HBD',
             payout_at: '2018-03-30T10:00:00Z',
         });

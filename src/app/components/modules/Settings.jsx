@@ -28,6 +28,7 @@ const KNOWN_API_NODES = [
     'hive.3speak.online',
     'rpc.ausbit.dev',
     'api.hivekings.com',
+    'beta.openhive.network',
 ];
 
 class Settings extends React.Component {
