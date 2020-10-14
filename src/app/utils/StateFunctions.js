@@ -57,10 +57,10 @@ export function filterTags(tags) {
         .filter((value, index, self) => value && self.indexOf(value) === index);
 }
 
-export function pricePerSteem(state) {
+export function pricePerHive(state) {
     const feed_price = state.global.get('feed_price');
     if (feed_price && feed_price.has('base') && feed_price.has('quote')) {
-        return formatter.pricePerSteem(feed_price.toJS());
+        return formatter.pricePerHive(feed_price.toJS());
     }
     return undefined;
 }

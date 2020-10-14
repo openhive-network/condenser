@@ -17,7 +17,7 @@ window.localStorage = global.localStorage;
 configure({ adapter: new Adapter() });
 
 const mockGlobal = Map({
-    props: Map({ sbd_print_rate: 99 }),
+    props: Map({ hbd_print_rate: 99 }),
     feed_price: Map({
         base: '5 HBD',
         quote: '10 HIVE',
@@ -67,8 +67,8 @@ describe('Voting', () => {
                 flag={true}
                 vote={(w, p) => {}}
                 post={voteTestObj}
-                price_per_steem={1}
-                sbd_print_rate={10000}
+                price_per_hive={1}
+                hbd_print_rate={10000}
                 store={mockStore}
             />
         ).dive();
@@ -94,8 +94,8 @@ describe('Voting', () => {
                 myVote={-666}
                 vote={(w, p) => {}}
                 post={voteTestObj}
-                price_per_steem={1}
-                sbd_print_rate={10000}
+                price_per_hive={1}
+                hbd_print_rate={10000}
                 store={mockStore}
             />
         ).dive();
@@ -124,8 +124,8 @@ describe('Voting', () => {
                 flag={false}
                 vote={(w, p) => {}}
                 post={voteTestObj}
-                price_per_steem={1}
-                sbd_print_rate={10000}
+                price_per_hive={1}
+                hbd_print_rate={10000}
                 store={mockStore}
             />
         ).dive();
@@ -148,8 +148,8 @@ describe('Voting', () => {
                 flag={false}
                 vote={(w, p) => {}}
                 post={voteTestObj}
-                price_per_steem={1}
-                sbd_print_rate={10000}
+                price_per_hive={1}
+                hbd_print_rate={10000}
                 store={mockStore}
             />
         ).dive();
@@ -182,8 +182,8 @@ describe('Voting', () => {
                     <Voting
                         vote={(w, p) => {}}
                         post={post_obj}
-                        price_per_steem={1}
-                        sbd_print_rate={10000}
+                        price_per_hive={1}
+                        hbd_print_rate={10000}
                     />
                 </IntlProvider>
             </Provider>
@@ -210,8 +210,8 @@ describe('Voting', () => {
                     <Voting
                         vote={(w, p) => {}}
                         post={post_obj}
-                        price_per_steem={1}
-                        sbd_print_rate={10000}
+                        price_per_hive={1}
+                        hbd_print_rate={10000}
                     />
                 </IntlProvider>
             </Provider>
@@ -238,8 +238,8 @@ describe('Voting', () => {
                     <Voting
                         vote={(w, p) => {}}
                         post={post_obj}
-                        price_per_steem={1}
-                        sbd_print_rate={5000}
+                        price_per_hive={1}
+                        hbd_print_rate={5000}
                     />
                 </IntlProvider>
             </Provider>

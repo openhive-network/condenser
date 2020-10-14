@@ -20,7 +20,7 @@ module.exports = {
         pending_rewarded_vesting_shares: '274189427.875310 VESTS',
         pending_rewarded_vesting_steem: '133161.266 STEEM',
         sbd_interest_rate: 0,
-        sbd_print_rate: 10000,
+        hbd_print_rate: 10000,
         maximum_block_size: 65536,
         current_aslot: 18899348,
         recent_slots_filled: '340282366920938463463374607431768211455',
