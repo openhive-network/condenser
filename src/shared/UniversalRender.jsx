@@ -470,7 +470,7 @@ async function apiFetchState(url) {
 
     try {
         const dgpo = await api.getDynamicGlobalPropertiesAsync();
-        onchain['props'] = { sbd_print_rate: dgpo['sbd_print_rate'] };
+        onchain['props'] = { hbd_print_rate: dgpo['hbd_print_rate'] };
     } catch (error) {
         console.error('Error fetching dgpo:', error);
     }
