@@ -103,6 +103,7 @@ function runApp(initial_state) {
     });
     steem.config.set('address_prefix', config.address_prefix);
     steem.config.set('rebranded_api', true);
+    steem.broadcast.updateOperations();
 
     window.$STM_Config = config;
     plugins(config);
