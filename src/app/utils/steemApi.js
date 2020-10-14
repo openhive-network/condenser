@@ -14,6 +14,8 @@ export async function callBridge(method, params) {
         params && JSON.stringify(params).substring(0, 200)
     );
 
+    // [JES] Hivemind throws an exception if you call for my/[trending/payouts/new/etc] with a null observer
+    // so just delete the 'my' tag if there is no observer specified
     if (
         method === 'get_ranked_posts' &&
         params &&
