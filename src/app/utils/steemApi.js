@@ -14,20 +14,22 @@ export async function callBridge(method, params) {
         params && JSON.stringify(params).substring(0, 200)
     );
 
-    if (method === "get_ranked_posts" && params && (params.observer === null || params.observer === undefined))
-        return new Promise(function(resolve, reject) { resolve({"result": []})});
+    if (
+        method === 'get_ranked_posts' &&
+        params &&
+        (params.observer === null || params.observer === undefined) &&
+        params.tag === 'my'
+    )
+        delete params.tag;
 
     return new Promise(function(resolve, reject) {
         api.call('bridge.' + method, params, function(err, data) {
-            if (err) 
-            {
-                if (method === "get_post_header")
-                {
-                    resolve({"result":[]});
+            if (err) {
+                if (method === 'get_post_header') {
+                    resolve({ result: [] });
                 }
                 reject(err);
-            }
-            else resolve(data);
+            } else resolve(data);
         });
     });
 }
@@ -43,31 +45,35 @@ export function getHivePowerForUser(account) {
             api.getDynamicGlobalProperties((error, result) => {
                 if (error) return reject(error);
 
-                const {
-                    total_vesting_fund_hive,
-                    total_vesting_shares,
-                } = result;
-                const totalHive = total_vesting_fund_hive.split(' ')[0];
-                const totalVests = total_vesting_shares.split(' ')[0];
+                try {
+                    const {
+                        total_vesting_fund_hive,
+                        total_vesting_shares,
+                    } = result;
+                    const totalHive = total_vesting_fund_hive.split(' ')[0];
+                    const totalVests = total_vesting_shares.split(' ')[0];
 
-                const post_voting_power =
-                    fullAccounts['accounts'][0]['post_voting_power'];
-                /**
-                 * old implementation instead of getting hive/vests dynamically
-                 * This magic number is coming from
-                 * https://gitlab.syncad.com/hive/hivemind/-/blame/d2d5ef25107908db09438da5ee3da9d6fcb976bc/hive/server/bridge_api/objects.py
-                 */
-                //    const MAGIC_NUMBER = 0.0005037;
+                    const post_voting_power =
+                        fullAccounts['accounts'][0]['post_voting_power'];
+                    /**
+                     * old implementation instead of getting hive/vests dynamically
+                     * This magic number is coming from
+                     * https://gitlab.syncad.com/hive/hivemind/-/blame/d2d5ef25107908db09438da5ee3da9d6fcb976bc/hive/server/bridge_api/objects.py
+                     */
+                    //    const MAGIC_NUMBER = 0.0005037;
 
-                const hiveDividedByVests = new Big(totalHive)
-                    .div(new Big(totalVests))
-                    .toFixed(7);
+                    const hiveDividedByVests = new Big(totalHive)
+                        .div(new Big(totalVests))
+                        .toFixed(7);
 
-                const hive_power = new Big(post_voting_power.amount)
-                    .times(new Big(hiveDividedByVests))
-                    .times(1 / Math.pow(10, post_voting_power.precision))
-                    .toFixed(0);
-                resolve(hive_power);
+                    const hive_power = new Big(post_voting_power.amount)
+                        .times(new Big(hiveDividedByVests))
+                        .times(1 / Math.pow(10, post_voting_power.precision))
+                        .toFixed(0);
+                    resolve(hive_power);
+                } catch (err) {
+                    return 0;
+                }
             });
         } catch (err) {
             reject(err);
