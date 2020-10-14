@@ -506,8 +506,8 @@ class Voting extends React.Component {
             avotes.sort((a, b) => (abs(a.rshares) > abs(b.rshares) ? -1 : 1));
             for (let v = 0; v < maxlen; ++v) {
                 const { rshares, voter } = avotes[v];
-                if (rshares == '0') continue;
-                const sign = rshares[0] == '-' ? '- ' : '+ ';
+                if (rshares === 0) continue;
+                const sign = rshares < 0 ? '- ' : '+ ';
                 voters.push({ value: sign + voter, link: '/@' + voter });
             }
 
