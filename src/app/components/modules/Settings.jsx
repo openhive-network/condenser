@@ -17,17 +17,10 @@ import Cookies from 'universal-cookie';
 const KNOWN_API_NODES = [
     'api.hive.blog',
     'anyx.io',
-    'hived.hive-engine.com',
-    'api.followbtcnews.com',
-    'rpc.esteem.app',
     'api.openhive.network',
-    'api.pharesim.me',
-    'hive.roelandp.nl',
-    'hived.privex.io',
-    'techcoderx.com',
-    'hive.3speak.online',
     'rpc.ausbit.dev',
     'api.hivekings.com',
+    'beta.openhive.network',
 ];
 
 class Settings extends React.Component {

@@ -28,7 +28,7 @@ module.exports = {
     net_votes: 0,
     root_comment: 0,
     max_accepted_payout: '0.000 STEEM',
-    percent_steem_dollars: 0,
+    percent_hbd: 0,
     allow_replies: false,
     allow_votes: false,
     allow_curation_rewards: false,

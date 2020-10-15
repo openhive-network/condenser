@@ -117,10 +117,10 @@
     lodash "^4.17.13"
     to-fast-properties "^2.0.0"
 
-"@hiveio/hive-js@0.0.5":
-  version "0.0.5"
-  resolved "https://registry.yarnpkg.com/@hiveio/hive-js/-/hive-js-0.0.5.tgz#f8619016636657d61128874d8978f19629b52f70"
-  integrity sha512-UpAEkRKlSQ86sm+Yq/G3MeSnSLWnt1fMYqDjSr6RBB2bccZOlz0Tk7FWwM99QnDpxJlvdEAnEX/chtkUceUg4A==
+"@hiveio/hive-js@0.8.4":
+  version "0.8.4"
+  resolved "https://registry.yarnpkg.com/@hiveio/hive-js/-/hive-js-0.8.4.tgz#26d474115cf040721da1440f8075d3d3a888353b"
+  integrity sha512-uvpTYAZPiIyRxIcPWHHo/10On6s2KocpdOfjouyv/CaUXkbvTFDqTu9imClSESSv2KdzoMUucjJ79Q7BjyBRsA==
   dependencies:
     "@steemit/rpc-auth" "^1.1.1"
     bigi "^1.4.2"
@@ -1902,6 +1902,11 @@ bcrypt-pbkdf@^1.0.0:
 big.js@^3.1.3:
   version "3.2.0"
   resolved "https://registry.yarnpkg.com/big.js/-/big.js-3.2.0.tgz#a5fc298b81b9e0dca2e458824784b65c52ba588e"
+
+big.js@^5.2.2:
+  version "5.2.2"
+  resolved "https://registry.yarnpkg.com/big.js/-/big.js-5.2.2.tgz#65f0af382f578bcdc742bd9c281e9cb2d7768328"
+  integrity sha512-vyL2OymJxmarO8gxMr0mhChsO9QGwhynfuu4+MHTAW6czfq9humCB7rKpUjDd9YUiDPU4mzpyupFSvOClAwbmQ==
 
 bigi@^1.1.0, bigi@^1.4.2:
   version "1.4.2"
@@ -4516,10 +4521,10 @@ hive-uri@^0.2.2:
   resolved "https://registry.npmjs.org/hive-uri/-/hive-uri-0.2.2.tgz#60d57a77a2c7a6394471f700e436f3f9822c737d"
   integrity sha512-95XH50GsJ+ZuWsLQaNcqYiZ6lmoVDawjG+BCgERqOkoy57b+OgHeNDPeYYY9qkNIi0ThcaYRi6RHVcLbI5EfBw==
 
-hivesigner@^3.2.0:
-  version "3.2.0"
-  resolved "https://registry.npmjs.org/hivesigner/-/hivesigner-3.2.0.tgz#25f4e450716c53d2b16fd0edf085609e679c6ba0"
-  integrity sha512-yeEnTAL1gQjkHPLEY5Rt8GQB2pC2qi9fdFY3W8tDPFZjQgRW82SU9f08lf2xF6YJ7thAl/9yM24N9/78SK7vZw==
+hivesigner@3.2.1:
+  version "3.2.1"
+  resolved "https://registry.yarnpkg.com/hivesigner/-/hivesigner-3.2.1.tgz#1b75d3d0b2e1316fae4128e86831f88d6b3d4d88"
+  integrity sha512-udSCOByBW0pXkcNYhXjhLX1oSB3FIBt2DJPX6NO0M6/Q3hq1VBEgpuGpeZ//wjkZ+Ds/L6564RP/NpZIC8BF1w==
   dependencies:
     babel-runtime "^6.26.0"
     cross-fetch "^3.0.1"

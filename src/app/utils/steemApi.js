@@ -1,5 +1,5 @@
 import { api } from '@hiveio/hive-js';
-import _ from 'lodash';
+import Big from 'big.js';
 import { ifHive } from 'app/utils/Community';
 import stateCleaner from 'app/redux/stateCleaner';
 import {
@@ -14,10 +14,33 @@ export async function callBridge(method, params) {
         params && JSON.stringify(params).substring(0, 200)
     );
 
+    // [JES] Hivemind throws an exception if you call for my/[trending/payouts/new/etc] with a null observer
+    // so just delete the 'my' tag if there is no observer specified
+    if (
+        method === 'get_ranked_posts' &&
+        params &&
+        (params.observer === null || params.observer === undefined) &&
+        params.tag === 'my'
+    )
+        delete params.tag;
+
     return new Promise(function(resolve, reject) {
         api.call('bridge.' + method, params, function(err, data) {
-            if (err) reject(err);
-            else resolve(data);
+            if (err) {
+                // [JES] This is also due to a change in hivemind that we've requested a change for.
+                // The condenser uses this call to make sure the permlink it generates is unique by asking
+                // hivemind for the post header with the generated permlink. Hivemind used to just return
+                // an emptry result if it wasn't found, but now it throws an exception instead. This allows
+                // the condenser to get past the unique check but we don't actually know if it's unique at this point.
+                // If it isn't, the final broadcast transaction will fail and the post won't create, so I'm really
+                // just pushing the error further down the chain and hoping the generated permlinks are unique.
+                // Once hivemind is fixed to return an empty result instead of an exception again, this code
+                // can be removed
+                if (method === 'get_post_header') {
+                    resolve({ result: [] });
+                }
+                reject(err);
+            } else resolve(data);
         });
     });
 }
@@ -29,22 +52,40 @@ export function getHivePowerForUser(account) {
                 'database_api.find_accounts',
                 { accounts: [account] }
             );
-            const post_voting_power = _.get(
-                fullAccounts,
-                'accounts[0].post_voting_power',
-                0
-            );
-            /**
-             * This magic number is coming from
-             * https://gitlab.syncad.com/hive/hivemind/-/blame/d2d5ef25107908db09438da5ee3da9d6fcb976bc/hive/server/bridge_api/objects.py
-             */
-            const MAGIC_NUMBER = 0.0005037;
-            const hive_power = (
-                post_voting_power.amount *
-                MAGIC_NUMBER *
-                (1 / Math.pow(10, post_voting_power.precision))
-            ).toFixed(0);
-            resolve(hive_power);
+
+            api.getDynamicGlobalProperties((error, result) => {
+                if (error) return reject(error);
+
+                try {
+                    const {
+                        total_vesting_fund_hive,
+                        total_vesting_shares,
+                    } = result;
+                    const totalHive = total_vesting_fund_hive.split(' ')[0];
+                    const totalVests = total_vesting_shares.split(' ')[0];
+
+                    const post_voting_power =
+                        fullAccounts['accounts'][0]['post_voting_power'];
+                    /**
+                     * old implementation instead of getting hive/vests dynamically
+                     * This magic number is coming from
+                     * https://gitlab.syncad.com/hive/hivemind/-/blame/d2d5ef25107908db09438da5ee3da9d6fcb976bc/hive/server/bridge_api/objects.py
+                     */
+                    //    const MAGIC_NUMBER = 0.0005037;
+
+                    const hiveDividedByVests = new Big(totalHive)
+                        .div(new Big(totalVests))
+                        .toFixed(7);
+
+                    const hive_power = new Big(post_voting_power.amount)
+                        .times(new Big(hiveDividedByVests))
+                        .times(1 / Math.pow(10, post_voting_power.precision))
+                        .toFixed(0);
+                    resolve(hive_power);
+                } catch (err) {
+                    return 0;
+                }
+            });
         } catch (err) {
             reject(err);
         }
