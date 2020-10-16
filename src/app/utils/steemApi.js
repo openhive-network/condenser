@@ -21,8 +21,10 @@ export async function callBridge(method, params) {
         params &&
         (params.observer === null || params.observer === undefined) &&
         params.tag === 'my'
-    )
+    ) {
         delete params.tag;
+        delete params.observer;
+    }
 
     return new Promise(function(resolve, reject) {
         api.call('bridge.' + method, params, function(err, data) {
