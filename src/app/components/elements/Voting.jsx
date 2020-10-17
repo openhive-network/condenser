@@ -12,7 +12,7 @@ import {
     INVEST_TOKEN_SHORT,
 } from 'app/client_config';
 import FormattedAsset from 'app/components/elements/FormattedAsset';
-import { pricePerSteem } from 'app/utils/StateFunctions';
+import { pricePerHive } from 'app/utils/StateFunctions';
 import shouldComponentUpdate from 'app/utils/shouldComponentUpdate';
 import {
     formatDecimal,
@@ -21,6 +21,7 @@ import {
 import DropdownMenu from 'app/components/elements/DropdownMenu';
 import TimeAgoWrapper from 'app/components/elements/TimeAgoWrapper';
 import Dropdown from 'app/components/elements/Dropdown';
+import { List } from 'immutable';
 
 const ABOUT_FLAG = (
     <div>
@@ -39,7 +40,7 @@ const ABOUT_FLAG = (
 
 const MAX_VOTES_DISPLAY = 20;
 const VOTE_WEIGHT_DROPDOWN_THRESHOLD = 1.0 * 1000.0 * 1000.0;
-const SBD_PRINT_RATE_MAX = 10000;
+const HBD_PRINT_RATE_MAX = 10000;
 const MAX_WEIGHT = 10000;
 const MIN_PAYOUT = 0.02;
 
@@ -70,8 +71,8 @@ class Voting extends React.Component {
         post: PropTypes.object,
         enable_slider: PropTypes.bool,
         voting: PropTypes.bool,
-        price_per_steem: PropTypes.number,
-        sbd_print_rate: PropTypes.number,
+        price_per_hive: PropTypes.number,
+        hbd_print_rate: PropTypes.number,
     };
 
     static defaultProps = {
@@ -223,8 +224,8 @@ class Voting extends React.Component {
             enable_slider,
             is_comment,
             post,
-            price_per_steem,
-            sbd_print_rate,
+            price_per_hive,
+            hbd_print_rate,
             username,
         } = this.props;
 
@@ -363,7 +364,7 @@ class Voting extends React.Component {
         const payout_at = post.get('payout_at');
         const promoted = amt(post.get('promoted'));
         const max_payout = amt(post.get('max_accepted_payout'));
-        const percent_sbd = post.get('percent_steem_dollars') / 20000;
+        const percent_hbd = post.get('percent_hbd') / 20000;
 
         // pending payout, and completed author/curator payout
         const pending_payout = amt(post.get('pending_payout_value'));
@@ -372,10 +373,10 @@ class Voting extends React.Component {
         const total_payout = pending_payout + author_payout + curator_payout;
 
         // estimated pending payout breakdowns
-        const _sbd = pending_payout * percent_sbd;
-        const pending_sp = (pending_payout - _sbd) / price_per_steem;
-        const pending_sbd = _sbd * (sbd_print_rate / SBD_PRINT_RATE_MAX);
-        const pending_steem = (_sbd - pending_sbd) / price_per_steem;
+        const _hbd = pending_payout * percent_hbd;
+        const pending_hp = (pending_payout - _hbd) / price_per_hive;
+        const pending_hbd = _hbd * (hbd_print_rate / HBD_PRINT_RATE_MAX);
+        const pending_hive = (_hbd - pending_hbd) / price_per_hive;
 
         const payout_limit_hit = total_payout >= max_payout;
         const shown_payout =
@@ -408,11 +409,11 @@ class Voting extends React.Component {
                     value:
                         tt('voting_jsx.breakdown') +
                         ': ' +
-                        (fmt(pending_sbd, DEBT_TOKEN_SHORT) + ', ') +
-                        (sbd_print_rate != SBD_PRINT_RATE_MAX
-                            ? fmt(pending_steem, LIQUID_TOKEN_UPPERCASE) + ', '
+                        (fmt(pending_hbd, DEBT_TOKEN_SHORT) + ', ') +
+                        (hbd_print_rate != HBD_PRINT_RATE_MAX
+                            ? fmt(pending_hive, LIQUID_TOKEN_UPPERCASE) + ', '
                             : '') +
-                        fmt(pending_sp, INVEST_TOKEN_SHORT),
+                        fmt(pending_hp, INVEST_TOKEN_SHORT),
                 });
             }
 
@@ -506,8 +507,8 @@ class Voting extends React.Component {
             avotes.sort((a, b) => (abs(a.rshares) > abs(b.rshares) ? -1 : 1));
             for (let v = 0; v < maxlen; ++v) {
                 const { rshares, voter } = avotes[v];
-                if (rshares == '0') continue;
-                const sign = rshares[0] == '-' ? '- ' : '+ ';
+                if (rshares === 0) continue;
+                const sign = rshares < 0 ? '- ' : '+ ';
                 voters.push({ value: sign + voter, link: '/@' + voter });
             }
 
@@ -613,7 +614,7 @@ export default connect(
     // mapStateToProps
     (state, ownProps) => {
         const post =
-            ownProps.post || state.global.getIn(['content', ownProps.post_ref]);
+            state.global.getIn(['content', ownProps.post_ref]) || ownProps.post;
 
         if (!post) {
             console.error('post_not_found', ownProps);
@@ -622,7 +623,8 @@ export default connect(
 
         const author = post.get('author');
         const permlink = post.get('permlink');
-        const active_votes = post.get('active_votes');
+        let votes_key = ['content', author + '/' + permlink, 'active_votes'];
+        const active_votes = state.global.getIn(votes_key, List());
         const is_comment = post.get('depth') == 0;
 
         const current = state.user.get('current');
@@ -630,18 +632,27 @@ export default connect(
         const net_vests = current ? current.get('effective_vests') : 0.0;
         const vote_status_key = `transaction_vote_active_${author}_${permlink}`;
         const voting = state.global.get(vote_status_key);
-        const price_per_steem =
-            pricePerSteem(state) || ownProps.price_per_steem;
-        const sbd_print_rate = state.global.getIn(
-            ['props', 'sbd_print_rate'],
-            ownProps.sbd_print_rate
+        const price_per_hive = pricePerHive(state) || ownProps.price_per_hive;
+        const hbd_print_rate = state.global.getIn(
+            ['props', 'hbd_print_rate'],
+            ownProps.hbd_print_rate
         );
         const enable_slider = net_vests > VOTE_WEIGHT_DROPDOWN_THRESHOLD;
 
         let myVote = ownProps.myVote || null; // ownProps: test only
         if (username && active_votes) {
             const vote = active_votes.find(el => el.get('voter') === username);
-            if (vote) myVote = parseInt(vote.get('rshares'), 10);
+            if (vote) {
+                let has_rshares = vote.get('rshares') !== undefined;
+                let has_percent = vote.get('percent') !== undefined;
+                if (has_rshares && !has_percent) {
+                    myVote = parseInt(vote.get('rshares'), 10);
+                } else if (!has_rshares && has_percent) {
+                    myVote = vote.get('percent');
+                } else if (has_rshares && has_percent) {
+                    myVote = null;
+                }
+            }
         }
 
         return {
@@ -656,8 +667,8 @@ export default connect(
             enable_slider,
             is_comment,
             voting,
-            price_per_steem,
-            sbd_print_rate,
+            price_per_hive,
+            hbd_print_rate,
         };
     },
 

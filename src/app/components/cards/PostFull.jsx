@@ -398,7 +398,8 @@ class PostFull extends React.Component {
             );
         }
         const high_quality_post = post.get('payout') > 10.0;
-        const full_power = post.get('percent_steem_dollars') === 0;
+        const full_power = post.get('percent_hbd') === 0;
+
         const isReply = post.get('depth') > 0;
 
         let post_header = (

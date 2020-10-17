@@ -25,7 +25,6 @@ global.$STM_Config = {
     steemd_connection_client: config.get('steemd_connection_client'),
     steemd_connection_server: config.get('steemd_connection_server'),
     steemd_use_appbase: config.get('steemd_use_appbase'),
-    chain_id: config.get('chain_id'),
     address_prefix: config.get('address_prefix'),
     img_proxy_prefix: config.get('img_proxy_prefix'),
     ipfs_prefix: config.get('ipfs_prefix'),
@@ -37,6 +36,7 @@ global.$STM_Config = {
     failover_threshold: config.get('failover_threshold'),
     alternative_api_endpoints: alternativeApiEndpoints,
     referral: config.get('referral'),
+    rebranded_api: true,
 };
 
 const WebpackIsomorphicTools = require('webpack-isomorphic-tools');
@@ -59,9 +59,11 @@ global.webpackIsomorphicTools.server(ROOT, () => {
         useAppbaseApi: !!config.steemd_use_appbase,
         alternative_api_endpoints: alternativeApiEndpoints,
         failover_threshold: config.get('failover_threshold'),
+        rebranded_api: true,
     });
     steem.config.set('address_prefix', config.get('address_prefix'));
-    steem.config.set('chain_id', config.get('chain_id'));
+    steem.config.set('rebranded_api', true);
+    steem.broadcast.updateOperations();
 
     // const CliWalletClient = require('shared/api_client/CliWalletClient').default;
     // if (process.env.NODE_ENV === 'production') connect_promises.push(CliWalletClient.instance().connect_promise());

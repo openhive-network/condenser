@@ -17,7 +17,7 @@ window.localStorage = global.localStorage;
 configure({ adapter: new Adapter() });
 
 const mockGlobal = Map({
-    props: Map({ sbd_print_rate: 99 }),
+    props: Map({ hbd_print_rate: 99 }),
     feed_price: Map({
         base: '5 HBD',
         quote: '10 HIVE',
@@ -31,7 +31,7 @@ const mockGlobal = Map({
                 total_votes: 1,
             },
             max_accepted_payout: '999999 HBD',
-            percent_steem_dollars: 0,
+            percent_hbd: 0,
             pending_payout_value: '10 HBD',
             payout_at: '2018-03-30T10:00:00Z',
             pending_payout_sbd: 99,
@@ -46,7 +46,7 @@ const voteTestObj = fromJS({
         total_votes: 1,
     },
     max_accepted_payout: '999999 HBD',
-    percent_steem_dollars: 0,
+    percent_hbd: 0,
     pending_payout_value: '10 HBD',
     payout_at: '2018-03-30T10:00:00Z',
 });
@@ -67,8 +67,8 @@ describe('Voting', () => {
                 flag={true}
                 vote={(w, p) => {}}
                 post={voteTestObj}
-                price_per_steem={1}
-                sbd_print_rate={10000}
+                price_per_hive={1}
+                hbd_print_rate={10000}
                 store={mockStore}
             />
         ).dive();
@@ -94,8 +94,8 @@ describe('Voting', () => {
                 myVote={-666}
                 vote={(w, p) => {}}
                 post={voteTestObj}
-                price_per_steem={1}
-                sbd_print_rate={10000}
+                price_per_hive={1}
+                hbd_print_rate={10000}
                 store={mockStore}
             />
         ).dive();
@@ -124,8 +124,8 @@ describe('Voting', () => {
                 flag={false}
                 vote={(w, p) => {}}
                 post={voteTestObj}
-                price_per_steem={1}
-                sbd_print_rate={10000}
+                price_per_hive={1}
+                hbd_print_rate={10000}
                 store={mockStore}
             />
         ).dive();
@@ -148,8 +148,8 @@ describe('Voting', () => {
                 flag={false}
                 vote={(w, p) => {}}
                 post={voteTestObj}
-                price_per_steem={1}
-                sbd_print_rate={10000}
+                price_per_hive={1}
+                hbd_print_rate={10000}
                 store={mockStore}
             />
         ).dive();
@@ -165,13 +165,13 @@ describe('Voting', () => {
         );
     });
 
-    it('should show all HP if percent_steem_dollars is 0', () => {
+    it('should show all HP if percent_hbd is 0', () => {
         const post_obj = fromJS({
             stats: {
                 total_votes: 1,
             },
             max_accepted_payout: '999999 HBD',
-            percent_steem_dollars: 0,
+            percent_hbd: 0,
             pending_payout_value: '10 HBD',
             payout_at: '2018-03-30T10:00:00Z',
         });
@@ -182,8 +182,8 @@ describe('Voting', () => {
                     <Voting
                         vote={(w, p) => {}}
                         post={post_obj}
-                        price_per_steem={1}
-                        sbd_print_rate={10000}
+                        price_per_hive={1}
+                        hbd_print_rate={10000}
                     />
                 </IntlProvider>
             </Provider>
@@ -200,7 +200,7 @@ describe('Voting', () => {
                 total_votes: 1,
             },
             max_accepted_payout: '999999 HBD',
-            percent_steem_dollars: 10000,
+            percent_hbd: 10000,
             pending_payout_value: '10 HBD',
             payout_at: '2018-03-30T10:00:00Z',
         });
@@ -210,8 +210,8 @@ describe('Voting', () => {
                     <Voting
                         vote={(w, p) => {}}
                         post={post_obj}
-                        price_per_steem={1}
-                        sbd_print_rate={10000}
+                        price_per_hive={1}
+                        hbd_print_rate={10000}
                     />
                 </IntlProvider>
             </Provider>
@@ -227,7 +227,7 @@ describe('Voting', () => {
                 total_votes: 1,
             },
             max_accepted_payout: '999999 HBD',
-            percent_steem_dollars: 10000,
+            percent_hbd: 10000,
             pending_payout_value: '10 HBD',
             payout_at: '2018-03-30T10:00:00Z',
         });
@@ -238,8 +238,8 @@ describe('Voting', () => {
                     <Voting
                         vote={(w, p) => {}}
                         post={post_obj}
-                        price_per_steem={1}
-                        sbd_print_rate={5000}
+                        price_per_hive={1}
+                        hbd_print_rate={5000}
                     />
                 </IntlProvider>
             </Provider>
