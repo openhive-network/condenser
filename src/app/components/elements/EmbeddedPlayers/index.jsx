@@ -206,7 +206,6 @@ export function validateIframeUrl(url, large = true) {
         }
 
         if (validUrl !== false) {
-            console.log(`Found a valid ${provider.id} iframe URL`);
             return {
                 providerId: provider.id,
                 sandboxAttributes: provider.sandboxAttributes || [],
@@ -218,7 +217,9 @@ export function validateIframeUrl(url, large = true) {
         }
     }
 
-    return false;
+    return {
+        validUrl: false,
+    };
 }
 
 /**

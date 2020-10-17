@@ -68,7 +68,6 @@ export function normalizeEmbedUrl(url) {
  * @returns {null|{id: *, canonical: string, url: *}}
  */
 function extractMetadata(data) {
-    console.log('data', data);
     if (!data) return null;
     const m = data.match(regex.main);
     if (!m || m.length < 2) return null;
@@ -94,7 +93,6 @@ export function embedNode(child, links /*images*/) {
     try {
         const { data } = child;
         const mixcloud = extractMetadata(data);
-        console.log('mixcloud', mixcloud);
         if (!mixcloud) return child;
 
         child.data = data.replace(
