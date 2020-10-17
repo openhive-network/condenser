@@ -5,11 +5,18 @@ import React from 'react';
  * @type {{htmlReplacement: RegExp, main: RegExp, sanitize: RegExp}}
  */
 const regex = {
-    main: /(?:https?:\/\/(?:(?:open.spotify.com\/playlist\/(.*))))/i,
-    sanitize: /^https:\/\/open\.spotify\.com\/embed\/playlist\/(.*)/i,
+    main: /(?:https?:\/\/(?:(?:www\.mixcloud.com(\/(.*?)\/(.*?)\/))))/i,
+    sanitize: /^https:\/\/www\.mixcloud\.com\/widget\/iframe\/.*?feed=(.*)/i,
 };
 
 export default regex;
+
+export function getIframeDimensions() {
+    return {
+        width: '100%',
+        height: '120',
+    };
+}
 
 /**
  * Configuration for HTML iframe's `sandbox` attribute
@@ -22,7 +29,7 @@ export const sandboxConfig = {
 
 /**
  * Check if the iframe code in the post editor is to an allowed URL
- * <iframe src="https://open.spotify.com/embed/playlist/37i9dQZF1DWSDCcNkUu5tr" width="300" height="380" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>
+ * <iframe width="100%" height="120" src="https://www.mixcloud.com/widget/iframe/?hide_cover=1&feed=%2FMagneticMagazine%2Fambient-meditations-vol-21-anane%2F" frameborder="0" ></iframe>
  * @param url
  * @returns {boolean|*}
  */
@@ -33,7 +40,9 @@ export function validateIframeUrl(url) {
         return false;
     }
 
-    return `https://open.spotify.com/embed/playlist/${match[1]}`;
+    return `https://www.mixcloud.com/widget/iframe/?hide_cover=1&feed=${
+        match[1]
+    }`;
 }
 
 //////
@@ -47,7 +56,7 @@ export function normalizeEmbedUrl(url) {
     const match = url.match(regex.contentId);
 
     if (match && match.length >= 2) {
-        return `https://player.spotify.com/video/${match[1]}`;
+        return `https://www.mixcloud.com/widget/iframe/?feed=${match[1]}`;
     }
 
     return false;
@@ -59,6 +68,7 @@ export function normalizeEmbedUrl(url) {
  * @returns {null|{id: *, canonical: string, url: *}}
  */
 function extractMetadata(data) {
+    console.log('data', data);
     if (!data) return null;
     const m = data.match(regex.main);
     if (!m || m.length < 2) return null;
@@ -69,8 +79,8 @@ function extractMetadata(data) {
         id: m[1],
         url: m[0],
         startTime: startTime ? startTime[1] : 0,
-        canonical: `https://open.spotify.com/playlist/${m[1]}`,
-        // thumbnail: requires a callback - http://stackoverflow.com/questions/1361149/get-img-thumbnails-from-spotify
+        canonical: `https://open.mixcloud.com/playlist/${m[1]}`,
+        // thumbnail: requires a callback - http://stackoverflow.com/questions/1361149/get-img-thumbnails-from-mixcloud
     };
 }
 
@@ -83,16 +93,17 @@ function extractMetadata(data) {
 export function embedNode(child, links /*images*/) {
     try {
         const { data } = child;
-        const spotify = extractMetadata(data);
-        if (!spotify) return child;
+        const mixcloud = extractMetadata(data);
+        console.log('mixcloud', mixcloud);
+        if (!mixcloud) return child;
 
         child.data = data.replace(
-            spotify.url,
-            `~~~ embed:${spotify.id} spotify ~~~`
+            mixcloud.url,
+            `~~~ embed:${mixcloud.id} mixcloud ~~~`
         );
 
-        if (links) links.add(spotify.canonical);
-        // if(images) images.add(spotify.thumbnail) // not available
+        if (links) links.add(mixcloud.canonical);
+        // if(images) images.add(mixcloud.thumbnail) // not available
     } catch (error) {
         console.log(error);
     }
@@ -107,8 +118,12 @@ export function embedNode(child, links /*images*/) {
  * @param height
  * @returns {*}
  */
-export function genIframeMd(idx, id, width, height) {
-    const url = `https://open.spotify.com/embed/playlist/${id}`;
+export function genIframeMd(idx, id) {
+    const width = '100%';
+    const height = 120;
+    const url = `https://www.mixcloud.com/widget/iframe/?hide_cover=1&feed=${
+        id
+    }`;
 
     let sandbox = sandboxConfig.useSandbox;
     if (sandbox) {
@@ -135,9 +150,9 @@ export function genIframeMd(idx, id, width, height) {
     }
 
     return (
-        <div key={`spotify-${id}-${idx}`} className="videoWrapper">
+        <div key={`mixcloud-${id}-${idx}`} className="videoWrapper">
             <iframe
-                title="spotify embedded player"
+                title="mixcloud embedded player"
                 // eslint-disable-next-line react/jsx-props-no-spreading
                 {...iframeProps}
             />

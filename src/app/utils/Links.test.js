@@ -6,6 +6,7 @@ import youtubeRegex from 'app/components/elements/EmbeddedPlayers/youtube';
 import threespeakRegex from 'app/components/elements/EmbeddedPlayers/threespeak';
 import twitterRegex from 'app/components/elements/EmbeddedPlayers/twitter';
 import spotifyRegex from 'app/components/elements/EmbeddedPlayers/spotify';
+import mixcloudRegex from 'app/components/elements/EmbeddedPlayers/mixcloud';
 
 describe('Links', () => {
     it('all', () => {
@@ -341,6 +342,16 @@ describe('Performance', () => {
         match(
             spotifyRegex.sanitize,
             'https://open.spotify.com/embed/playlist/37i9dQZF1DWSDCcNkUu5tr'
+        );
+    });
+    it('mixcloud', () => {
+        match(
+            mixcloudRegex.main,
+            'https://www.mixcloud.com/MagneticMagazine/ambient-meditations-vol-21-anane/'
+        );
+        match(
+            mixcloudRegex.sanitize,
+            'https://www.mixcloud.com/widget/iframe/?hide_cover=1&feed=%2FMagneticMagazine%2Fambient-meditations-vol-21-anane%2F'
         );
     });
 });
