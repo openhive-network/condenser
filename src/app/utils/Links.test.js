@@ -5,6 +5,7 @@ import { PARAM_VIEW_MODE, VIEW_MODE_WHISTLE } from '../../shared/constants';
 import youtubeRegex from 'app/components/elements/EmbeddedPlayers/youtube';
 import threespeakRegex from 'app/components/elements/EmbeddedPlayers/threespeak';
 import twitterRegex from 'app/components/elements/EmbeddedPlayers/twitter';
+import spotifyRegex from 'app/components/elements/EmbeddedPlayers/spotify';
 
 describe('Links', () => {
     it('all', () => {
@@ -330,6 +331,16 @@ describe('Performance', () => {
         match(
             twitterRegex.htmlReplacement,
             '<blockquote><p>Dear government and elites in the UK, a short thread about your attempted suppression of Tommy Robinson through your ability to control private enterprises like Twitter, Facebook and YouTube /1</p>&amp;mdash; 🇮🇱Dr BrianofLondon.me (<a href="/@brianoflondon" class="keychainify-checked">@brianoflondon</a>) <a href="https://twitter.com/brianoflondon/status/1219518959168389121?ref_src=twsrc%5Etfw" rel="nofollow noopener" title="This link will take you away from hive.blog">January 21, 2020</a></blockquote>'
+        );
+    });
+    it('spotify', () => {
+        match(
+            spotifyRegex.main,
+            'https://open.spotify.com/playlist/37i9dQZF1DWSDCcNkUu5tr?si=WPhzYzqATGSIa0d3kbNgBg'
+        );
+        match(
+            spotifyRegex.sanitize,
+            'https://open.spotify.com/embed/playlist/37i9dQZF1DWSDCcNkUu5tr'
         );
     });
 });

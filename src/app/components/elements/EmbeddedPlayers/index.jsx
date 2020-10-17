@@ -20,6 +20,14 @@ import {
 } from 'app/components/elements/EmbeddedPlayers/soundcloud';
 
 import {
+    validateIframeUrl as validateSpotifyIframeUrl,
+    genIframeMd as genSpotifyIframeMd,
+    normalizeEmbedUrl as normalizeSpotifyEmbedUrl,
+    embedNode as embedSpotifyNode,
+    sandboxConfig as sandboxConfigSpotify,
+} from 'app/components/elements/EmbeddedPlayers/spotify';
+
+import {
     genIframeMd as genYoutubeIframeMd,
     validateIframeUrl as validateYoutubeIframeUrl,
     normalizeEmbedUrl as normalizeYoutubeEmbedUrl,
@@ -92,6 +100,14 @@ const supportedProviders = [
         embedNodeFn: null,
         genIframeMdFn: null,
         ...sandboxConfigSoundcloud,
+    },
+    {
+        id: 'spotify',
+        validateIframeUrlFn: validateSpotifyIframeUrl,
+        normalizeEmbedUrlFn: normalizeSpotifyEmbedUrl,
+        embedNodeFn: embedSpotifyNode,
+        genIframeMdFn: genSpotifyIframeMd,
+        ...sandboxConfigSpotify,
     },
     {
         id: 'youtube',
