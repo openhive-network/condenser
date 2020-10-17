@@ -21,6 +21,7 @@ import {
 import DropdownMenu from 'app/components/elements/DropdownMenu';
 import TimeAgoWrapper from 'app/components/elements/TimeAgoWrapper';
 import Dropdown from 'app/components/elements/Dropdown';
+import { List } from 'immutable';
 
 const ABOUT_FLAG = (
     <div>
@@ -613,7 +614,7 @@ export default connect(
     // mapStateToProps
     (state, ownProps) => {
         const post =
-            ownProps.post || state.global.getIn(['content', ownProps.post_ref]);
+            state.global.getIn(['content', ownProps.post_ref]) || ownProps.post;
 
         if (!post) {
             console.error('post_not_found', ownProps);
@@ -622,7 +623,8 @@ export default connect(
 
         const author = post.get('author');
         const permlink = post.get('permlink');
-        const active_votes = post.get('active_votes');
+        let votes_key = ['content', author + '/' + permlink, 'active_votes'];
+        const active_votes = state.global.getIn(votes_key, List());
         const is_comment = post.get('depth') == 0;
 
         const current = state.user.get('current');
@@ -640,7 +642,17 @@ export default connect(
         let myVote = ownProps.myVote || null; // ownProps: test only
         if (username && active_votes) {
             const vote = active_votes.find(el => el.get('voter') === username);
-            if (vote) myVote = parseInt(vote.get('rshares'), 10);
+            if (vote) {
+                let has_rshares = vote.get('rshares') !== undefined;
+                let has_percent = vote.get('percent') !== undefined;
+                if (has_rshares && !has_percent) {
+                    myVote = parseInt(vote.get('rshares'), 10);
+                } else if (!has_rshares && has_percent) {
+                    myVote = vote.get('percent');
+                } else if (has_rshares && has_percent) {
+                    myVote = null;
+                }
+            }
         }
 
         return {

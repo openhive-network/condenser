@@ -181,6 +181,14 @@ export default function reducer(state = defaultState, action = {}) {
                 c.mergeDeep(content)
             );
 
+            // merge vote info taking pending votes into account
+            let votes_key = ['content', key, 'active_votes'];
+            let old_votes = state.getIn(votes_key, List());
+            let new_votes = content.get('active_votes');
+            const { merge } = require('immutable');
+            let merged_votes = new_votes.merge(new_votes, old_votes);
+            new_state = new_state.setIn(votes_key, merged_votes);
+
             // set creation-pending key (optimistic UI update)
             if (content.get('depth') == 0) {
                 const category = content.get('category');
@@ -246,10 +254,9 @@ export default function reducer(state = defaultState, action = {}) {
 
             const idx = votes.findIndex(v => v.get('voter') === voter);
             votes = idx === -1 ? votes.push(vote) : votes.set(idx, vote);
-            console.log('Applying vote @ idx', idx, payload);
 
             // TODO: new state never returned -- masked by RECEIVE_CONTENT
-            state.setIn(key, votes);
+            state = state.setIn(key, votes);
             return state;
         }
 
