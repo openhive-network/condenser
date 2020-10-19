@@ -128,6 +128,7 @@ const SidePanel = ({
                 label: tt('navigation.api_docs'),
                 link: 'https://developers.hive.io/',
             },
+            /*
             {
                 label: tt('navigation.bluepaper'),
                 link: 'https://hive.io/hive-bluepaper.pdf',
@@ -136,9 +137,10 @@ const SidePanel = ({
                 label: tt('navigation.smt_whitepaper'),
                 link: 'https://hive.io/hive-smt-whitepaper.pdf',
             },
+            */
             {
                 label: tt('navigation.whitepaper'),
-                link: 'https://hive.io/hive-whitepaper.pdf',
+                link: 'https://hive.io/whitepaper.pdf',
             },
         ],
 
