@@ -340,8 +340,24 @@ describe('Performance', () => {
             'https://open.spotify.com/playlist/37i9dQZF1DWSDCcNkUu5tr?si=WPhzYzqATGSIa0d3kbNgBg'
         );
         match(
+            spotifyRegex.main,
+            'https://open.spotify.com/show/37i9dQZF1DWSDCcNkUu5tr?si=WPhzYzqATGSIa0d3kbNgBg'
+        );
+        match(
+            spotifyRegex.main,
+            'https://open.spotify.com/episode/37i9dQZF1DWSDCcNkUu5tr?si=WPhzYzqATGSIa0d3kbNgBg'
+        );
+        match(
             spotifyRegex.sanitize,
             'https://open.spotify.com/embed/playlist/37i9dQZF1DWSDCcNkUu5tr'
+        );
+        match(
+            spotifyRegex.sanitize,
+            'https://open.spotify.com/embed-podcast/show/37i9dQZF1DWSDCcNkUu5tr'
+        );
+        match(
+            spotifyRegex.sanitize,
+            'https://open.spotify.com/embed-podcast/episode/37i9dQZF1DWSDCcNkUu5tr'
         );
     });
     it('mixcloud', () => {
