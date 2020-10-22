@@ -228,6 +228,8 @@ export function validateIframeUrl(url, large = true) {
  * @returns {boolean|*}
  */
 export function normalizeEmbedUrl(url) {
+    console.log('normalize url', url);
+
     for (let pi = 0; pi < supportedProviders.length; pi += 1) {
         const provider = supportedProviders[pi];
 
