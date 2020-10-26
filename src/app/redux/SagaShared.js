@@ -55,7 +55,9 @@ export function* getAccount(username, force = false) {
                 account.account_is_witness = true;
             }
 
+            console.log('*****DEBUG***** raw account:', account);
             account = fromJS(account);
+            console.log('*****DEBUG***** account fromJS: ', account);
             yield put(globalActions.receiveAccount({ account }));
         }
     }

@@ -494,6 +494,10 @@ class ListManagement extends React.Component {
                 </center>
             );
 
+        console.log(
+            '*****DEBUG***** profile is: ',
+            this.props.profile.get('metadata')
+        );
         let blacklist_description = this.props.profile
             .get('metadata')
             .get('profile')

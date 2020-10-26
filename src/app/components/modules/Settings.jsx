@@ -1043,9 +1043,6 @@ class Settings extends React.Component {
                             </div>
                         </div>
                     )}
-                <div>
-                    <h4>Blacklisted Users</h4>
-                </div>
             </div>
         );
     }
@@ -1057,6 +1054,7 @@ function read_profile_v2(account) {
 
     // use new `posting_json_md` if {version: 2} is present
     let md = o2j.ifStringParseJSON(account.get('posting_json_metadata'));
+    console.log('*****debug***** md is: ', md);
     if (md && md.profile && md.profile.account_is_witness) {
         md.profile.account_is_witness = accountIsWitness;
     }
