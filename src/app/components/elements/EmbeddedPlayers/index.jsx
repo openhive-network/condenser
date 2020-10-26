@@ -193,6 +193,11 @@ function getIframeDimensions(large) {
  * @returns { boolean | { providerId: string, sandboxAttributes: string[], useSandbox: boolean, validUrl: string }}
  */
 export function validateIframeUrl(url, large = true) {
+    if (!url) {
+        return {
+            validUrl: false,
+        };
+    }
     for (let pi = 0; pi < supportedProviders.length; pi += 1) {
         const provider = supportedProviders[pi];
 
@@ -228,6 +233,8 @@ export function validateIframeUrl(url, large = true) {
  * @returns {boolean|*}
  */
 export function normalizeEmbedUrl(url) {
+    console.log('normalize url', url);
+
     for (let pi = 0; pi < supportedProviders.length; pi += 1) {
         const provider = supportedProviders[pi];
 
