@@ -138,7 +138,7 @@ export function embedNode(child, links, images) {
         if (threespeak) {
             child.data = data.replace(
                 threespeak.url,
-                `~~~ embed:${threespeak.id} threespeak ~~~`
+                `~~~ embed:${threespeak.fullId} threespeak ~~~`
             );
 
             if (links) {

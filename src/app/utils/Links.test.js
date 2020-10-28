@@ -7,6 +7,8 @@ import threespeakRegex from 'app/components/elements/EmbeddedPlayers/threespeak'
 import twitterRegex from 'app/components/elements/EmbeddedPlayers/twitter';
 import spotifyRegex from 'app/components/elements/EmbeddedPlayers/spotify';
 import mixcloudRegex from 'app/components/elements/EmbeddedPlayers/mixcloud';
+import archiveorg from 'app/components/elements/EmbeddedPlayers/archiveorg';
+import bandcamp from 'app/components/elements/EmbeddedPlayers/bandcamp';
 
 describe('Links', () => {
     it('all', () => {
@@ -368,6 +370,19 @@ describe('Performance', () => {
         match(
             mixcloudRegex.sanitize,
             'https://www.mixcloud.com/widget/iframe/?hide_cover=1&feed=%2FMagneticMagazine%2Fambient-meditations-vol-21-anane%2F'
+        );
+    });
+    it('archiveorg', () => {
+        match(archiveorg.main, 'https://archive.org/details/geometry_dash_1.9');
+        match(
+            archiveorg.sanitize,
+            'https://archive.org/embed/geometry_dash_1.9'
+        );
+    });
+    it('bandcamp', () => {
+        match(
+            bandcamp.sanitize,
+            'https://bandcamp.com/EmbeddedPlayer/album=313320652/size=large/bgcol=ffffff/linkcol=0687f5/tracklist=false/transparent=true/'
         );
     });
 });
