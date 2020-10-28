@@ -64,12 +64,19 @@ function getIframeDimensions(large) {
  * @param url
  * @returns { boolean | { providerId: string, sandboxAttributes: string[], useSandbox: boolean, validUrl: string }}
  */
-export function validateIframeUrl(url, large = true) {
+export function validateIframeUrl(
+    url,
+    large = true,
+    width = null,
+    height = null
+) {
     if (!url) {
         return {
             validUrl: false,
         };
     }
+
+    console.log('wid', width, height);
 
     const providersKeys = Object.keys(supportedProviders);
     for (let pi = 0; pi < providersKeys.length; pi += 1) {
@@ -83,7 +90,9 @@ export function validateIframeUrl(url, large = true) {
             provider,
             'getIframeDimensions',
             large,
-            url
+            url,
+            width,
+            height
         );
         if (iframeDimensions === null) {
             iframeDimensions = getIframeDimensions(large);
