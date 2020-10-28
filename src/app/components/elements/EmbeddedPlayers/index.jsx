@@ -1,4 +1,5 @@
 import _ from 'lodash';
+import * as archiveorg from 'app/components/elements/EmbeddedPlayers/archiveorg';
 import * as dapplr from 'app/components/elements/EmbeddedPlayers/dapplr';
 import * as dtube from 'app/components/elements/EmbeddedPlayers/dtube';
 import * as mixcloud from 'app/components/elements/EmbeddedPlayers/mixcloud';
@@ -11,6 +12,7 @@ import * as vimeo from 'app/components/elements/EmbeddedPlayers/vimeo';
 import * as youtube from 'app/components/elements/EmbeddedPlayers/youtube';
 
 const supportedProviders = {
+    archiveorg,
     dapplr,
     dtube,
     mixcloud,
