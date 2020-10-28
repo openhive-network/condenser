@@ -1,7 +1,10 @@
 # Example Media Players 2020-07-23
 
 ## archive.org direct html iframe markup
+Video:
 <iframe src="https://archive.org/embed/namaz-nasil-kilinir" width="640" height="480" frameborder="0" webkitallowfullscreen="true" mozallowfullscreen="true" allowfullscreen></iframe>
+Music:
+<iframe src="https://archive.org/embed/geometry_dash_1.9" width="500" height="140" frameborder="0" webkitallowfullscreen="true" mozallowfullscreen="true" allowfullscreen></iframe>
 
 ## bandcamp direct html iframe markup
 Small artwork without tracklist
