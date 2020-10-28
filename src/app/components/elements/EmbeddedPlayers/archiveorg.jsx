@@ -2,16 +2,12 @@ import React from 'react';
 
 /**
  * Regular expressions for detecting and validating provider URLs
- * https://open.spotify.com/show/6C1Q7ITJKvZVosOdC9M1RM?si=dKAVgQw4Squbnnt5R68bdg
- * https://open.spotify.com/episode/7iVhSqisUmWEEHmEG67gxS?si=eNP1iEsmRBCed0SFo4n_QA
- * https://open.spotify.com/playlist/5UV4uC6N0lZ7q9ui3yIbqn?si=v-oAN2mOT5i4bFk0NrRjqw
  * @type {{htmlReplacement: RegExp, main: RegExp, sanitize: RegExp}}
  */
 const regex = {
-    main: /(?:https?:\/\/(?:(?:open.spotify.com\/(playlist|show|episode)\/(.*))))/i,
-    sanitize: /^https:\/\/open\.spotify\.com\/(embed|embed-podcast)\/(playlist|show|episode)\/(.*)/i,
+    sanitize: /^https:\/\/archive\.org\/embed\/(.*)/i,
+    main: /^https:\/\/archive\.org\/details\/(.*)/i,
 };
-
 export default regex;
 
 /**
@@ -19,31 +15,40 @@ export default regex;
  * @type {useSandbox: boolean, sandboxAttributes: string[]}
  */
 export const sandboxConfig = {
-    useSandbox: true,
-    sandboxAttributes: [
-        'allow-scripts',
-        'allow-same-origin',
-        'allow-popups',
-        'allow-forms',
-    ],
+    useSandbox: false,
+    sandboxAttributes: [],
 };
 
 /**
  * Check if the iframe code in the post editor is to an allowed URL
- * <iframe src="https://open.spotify.com/embed/playlist/37i9dQZF1DWSDCcNkUu5tr" width="300" height="380" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>
- * <iframe src="https://open.spotify.com/embed-podcast/show/6C1Q7ITJKvZVosOdC9M1RM" width="100%" height="232" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>
- * <iframe src="https://open.spotify.com/embed-podcast/episode/49EzBVgb4exGi2AIRKmTGK" width="100%" height="232" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>
+ * <iframe src="https://archive.org/embed/namaz-nasil-kilinir" width="640" height="480" frameborder="0" webkitallowfullscreen="true" mozallowfullscreen="true" allowfullscreen></iframe>
+ * <iframe src="https://archive.org/embed/geometry_dash_1.9" width="500" height="140" frameborder="0" webkitallowfullscreen="true" mozallowfullscreen="true" allowfullscreen></iframe>
  * @param url
  * @returns {boolean|*}
  */
 export function validateIframeUrl(url) {
     const match = url.match(regex.sanitize);
 
-    if (!match || match.length !== 4) {
+    if (!match || match.length !== 2) {
         return false;
     }
 
-    return `https://open.spotify.com/${match[1]}/${match[2]}/${match[3]}`;
+    return 'https://archive.org/embed/' + match[1];
+}
+
+/**
+ * Rewrites the embedded URL to a normalized format
+ * @param url
+ * @returns {string|boolean}
+ */
+export function normalizeEmbedUrl(url) {
+    const match = url.match(regex.sanitize);
+
+    if (match && match.length >= 2) {
+        return `https://archive.org/embed/${match[1]}`;
+    }
+
+    return false;
 }
 
 /**
@@ -57,13 +62,12 @@ function extractMetadata(data) {
     if (!m || m.length < 2) return null;
 
     const startTime = m.input.match(/t=(\d+)s?/);
-    const embed = m[1] === 'playlist' ? 'embed' : 'embed-podcast';
 
     return {
-        id: `${embed}/${m[1]}/${m[2]}`,
+        id: m[1],
         url: m[0],
         startTime: startTime ? startTime[1] : 0,
-        canonical: `https://open.spotify.com/${m[1]}/${m[2]}`,
+        canonical: `https://archive.org/embed/${m[1]}`,
     };
 }
 
@@ -76,16 +80,19 @@ function extractMetadata(data) {
 export function embedNode(child, links /*images*/) {
     try {
         const { data } = child;
-        const spotify = extractMetadata(data);
-        if (!spotify) return child;
+        const archiveorg = extractMetadata(data);
+        if (!archiveorg) return child;
 
         child.data = data.replace(
-            spotify.url,
-            `~~~ embed:${spotify.id} spotify ~~~`
+            archiveorg.url,
+            `~~~ embed:${archiveorg.id} archiveorg ~~~`
         );
 
-        if (links) links.add(spotify.canonical);
-        // if(images) images.add(spotify.thumbnail) // not available
+        if (links) {
+            links.add(archiveorg.canonical);
+        }
+
+        if (links) links.add(archiveorg.canonical);
     } catch (error) {
         console.log(error);
     }
@@ -98,10 +105,11 @@ export function embedNode(child, links /*images*/) {
  * @param id
  * @param width
  * @param height
+ * @param startTime
  * @returns {*}
  */
 export function genIframeMd(idx, id, width, height) {
-    const url = `https://open.spotify.com/${id}`;
+    const url = `https://archive.org/embed/${id}`;
 
     let sandbox = sandboxConfig.useSandbox;
     if (sandbox) {
@@ -128,9 +136,9 @@ export function genIframeMd(idx, id, width, height) {
     }
 
     return (
-        <div key={`spotify-${id}-${idx}`} className="videoWrapper">
+        <div key={`archiveorg-${id}-${idx}`} className="videoWrapper">
             <iframe
-                title="spotify embedded player"
+                title="Archive.org embedded player"
                 // eslint-disable-next-line react/jsx-props-no-spreading
                 {...iframeProps}
             />

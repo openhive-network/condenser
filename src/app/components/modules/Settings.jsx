@@ -91,6 +91,8 @@ class Settings extends React.Component {
                 'witness_owner',
                 'witness_description',
                 'account_is_witness',
+                'blacklist_description',
+                'mute_list_description',
             ],
             initialValues: props.profile,
             validation: values => {
@@ -134,6 +136,16 @@ class Settings extends React.Component {
                         values.witness_description &&
                         values.witness_description.length > 512
                             ? tt('settings_jsx.witness_description_is_too_long')
+                            : null,
+                    blacklist_description:
+                        values.blacklist_description &&
+                        values.blacklist_description.length > 256
+                            ? 'description is too long'
+                            : null,
+                    mute_list_description:
+                        values.mute_list_description &&
+                        values.mute_list_description.length > 256
+                            ? 'description is too long'
                             : null,
                 };
             },
@@ -207,6 +219,8 @@ class Settings extends React.Component {
             website,
             witness_owner,
             witness_description,
+            blacklist_description,
+            mute_list_description,
         } = this.state;
 
         // Update relevant fields
@@ -218,6 +232,8 @@ class Settings extends React.Component {
         metaData.profile.website = website.value;
         metaData.profile.witness_owner = witness_owner.value;
         metaData.profile.witness_description = witness_description.value;
+        metaData.profile.blacklist_description = blacklist_description.value;
+        metaData.profile.mute_list_description = mute_list_description.value;
         metaData.profile.version = 2; // signal upgrade to posting_json_metadata
 
         // Remove empty keys
@@ -232,6 +248,10 @@ class Settings extends React.Component {
             delete metaData.profile.witness_owner;
         if (!metaData.profile.witness_description)
             delete metaData.profile.witness_description;
+        if (!metaData.profile.blacklist_description)
+            delete metaData.profile.blacklist_description;
+        if (!metaData.profile.mute_list_description)
+            delete metaData.profile.mute_list_description;
 
         const { account, updateAccount } = this.props;
         this.setState({ loading: true });
@@ -503,6 +523,8 @@ class Settings extends React.Component {
             witness_description,
             progress,
             account_is_witness,
+            blacklist_description,
+            mute_list_description,
         } = this.state;
 
         const endpoint_options = this.generateAPIEndpointOptions();
@@ -652,6 +674,38 @@ class Settings extends React.Component {
                                                 {...website.props}
                                                 maxLength="100"
                                                 autoComplete="off"
+                                            />
+                                        </label>
+                                        <div className="error">
+                                            {website.blur &&
+                                                website.touched &&
+                                                website.error}
+                                        </div>
+                                    </div>
+                                    <div className="form__field column small-12 medium-6 large-4">
+                                        <label>
+                                            Blacklist Description
+                                            <input
+                                                type="text"
+                                                maxLength="256"
+                                                autoComplete="off"
+                                                {...blacklist_description.props}
+                                            />
+                                        </label>
+                                        <div className="error">
+                                            {website.blur &&
+                                                website.touched &&
+                                                website.error}
+                                        </div>
+                                    </div>
+                                    <div className="form__field column small-12 medium-6 large-4">
+                                        <label>
+                                            Mute List Description
+                                            <input
+                                                type="text"
+                                                maxLength="256"
+                                                autoComplete="off"
+                                                {...mute_list_description.props}
                                             />
                                         </label>
                                         <div className="error">
@@ -1000,6 +1054,7 @@ function read_profile_v2(account) {
 
     // use new `posting_json_md` if {version: 2} is present
     let md = o2j.ifStringParseJSON(account.get('posting_json_metadata'));
+    console.log('*****debug***** md is: ', md);
     if (md && md.profile && md.profile.account_is_witness) {
         md.profile.account_is_witness = accountIsWitness;
     }
