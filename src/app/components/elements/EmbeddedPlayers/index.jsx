@@ -1,5 +1,6 @@
 import _ from 'lodash';
 import * as archiveorg from 'app/components/elements/EmbeddedPlayers/archiveorg';
+import * as bandcamp from 'app/components/elements/EmbeddedPlayers/bandcamp';
 import * as dapplr from 'app/components/elements/EmbeddedPlayers/dapplr';
 import * as dtube from 'app/components/elements/EmbeddedPlayers/dtube';
 import * as mixcloud from 'app/components/elements/EmbeddedPlayers/mixcloud';
@@ -13,6 +14,7 @@ import * as youtube from 'app/components/elements/EmbeddedPlayers/youtube';
 
 const supportedProviders = {
     archiveorg,
+    bandcamp,
     dapplr,
     dtube,
     mixcloud,
@@ -46,10 +48,8 @@ function callProviderMethod(provider, methodName, ...parms) {
 // is unsupported in Internet Explorer 9 and earlier.
 // See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe.
 function getProviderSandboxConfig(provider) {
-    if (Object.prototype.hasOwnProperty.call(provider, 'sandboxConfig')) {
-        return provider.sandboxConfig;
-    }
-    return null;
+    const sandboxConfig = _.get(provider, 'sandboxConfig', null);
+    return sandboxConfig;
 }
 
 function getIframeDimensions(large) {
@@ -82,7 +82,8 @@ export function validateIframeUrl(url, large = true) {
         iframeDimensions = callProviderMethod(
             provider,
             'getIframeDimensions',
-            large
+            large,
+            url
         );
         if (iframeDimensions === null) {
             iframeDimensions = getIframeDimensions(large);
@@ -94,8 +95,8 @@ export function validateIframeUrl(url, large = true) {
                 providerId: provider.id,
                 sandboxAttributes: sandboxConfig.sandboxAttributes || [],
                 useSandbox: sandboxConfig.useSandbox,
-                width: iframeDimensions.width,
-                height: iframeDimensions.height,
+                width: iframeDimensions.width.toString(),
+                height: iframeDimensions.height.toString(),
                 validUrl,
             };
         }
@@ -217,7 +218,8 @@ export function generateMd(section, idx, large) {
             let iframeDimensions = callProviderMethod(
                 provider,
                 'getIframeDimensions',
-                large
+                large,
+                id
             );
             if (!iframeDimensions) {
                 iframeDimensions = getIframeDimensions(large);
