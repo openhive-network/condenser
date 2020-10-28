@@ -10,6 +10,23 @@ const regex = {
 };
 export default regex;
 
+export function getIframeDimensions(...args) {
+    // Since we can't tell the difference between video and audio embed players from the URL, lets use the width/height
+    // provided by archive.org's iframe HTML code.
+    const [large, , width, height] = args;
+    if (width && height) {
+        return {
+            width,
+            height,
+        };
+    }
+
+    return {
+        width: large ? 640 : 480,
+        height: large ? 360 : 270,
+    };
+}
+
 /**
  * Configuration for HTML iframe's `sandbox` attribute
  * @type {useSandbox: boolean, sandboxAttributes: string[]}
