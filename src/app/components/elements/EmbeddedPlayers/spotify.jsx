@@ -20,7 +20,12 @@ export default regex;
  */
 export const sandboxConfig = {
     useSandbox: true,
-    sandboxAttributes: ['allow-scripts', 'allow-same-origin', 'allow-popups'],
+    sandboxAttributes: [
+        'allow-scripts',
+        'allow-same-origin',
+        'allow-popups',
+        'allow-forms',
+    ],
 };
 
 /**

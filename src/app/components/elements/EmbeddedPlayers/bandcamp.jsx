@@ -56,10 +56,8 @@ export function validateIframeUrl(url) {
     const match = url.match(regex.sanitize);
 
     if (!match || match.length !== 2) {
-        console.log('no match');
         return false;
     }
-    console.log('match');
 
     return 'https://bandcamp.com/EmbeddedPlayer/' + match[1];
 }
