@@ -55,8 +55,6 @@ https://open.spotify.com/episode/523CYPCmCXdv8uBME5yzZ7?si=l2uwhVjERe21N86grg3ZE
 https://3speak.online/watch?v=threespeak/iaarkpvf
 
 ## twitch direct html iframe markup
-It's broken, because we don't set parameter `parent` in url query. Iframe's attribute `src` should be something like `https://player.twitch.tv/?<channel, video, or collection>&parent=streamernews.example.com`. From their docs: "parent string (required) Domain(s) that will be embedding Twitch. You must have one parent key for each domain your site uses."
-
 <iframe src="https://player.twitch.tv/?channel=tfue" frameborder="0" allowfullscreen="true" scrolling="no" height="378" width="620"></iframe>
 
 ## twitter

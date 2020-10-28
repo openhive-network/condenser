@@ -14,6 +14,13 @@ const regex = {
 
 export default regex;
 
+export function getIframeDimensions() {
+    return {
+        width: '100%',
+        height: '240',
+    };
+}
+
 /**
  * Configuration for HTML iframe's `sandbox` attribute
  * @type {useSandbox: boolean, sandboxAttributes: string[]}
