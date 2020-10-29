@@ -84,6 +84,7 @@
     "react-router-redux": "4.0.8",
     "react-router-scroll": "0.4.4",
     "react-sparklines": "1.7.0",
+    "react-tabs": "^3.1.1",
     "redux": "3.7.2",
     "redux-form": "5.3.4",
     "redux-saga": "0.16.0",
