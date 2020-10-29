@@ -108,11 +108,6 @@
         svg {fill: #def;}
     }
 
-    .Userpic {
-        margin-right: 0.75rem;
-        vertical-align: middle;
-    }
-
     .UserProfile__rep {
         font-size: 80%;
         font-weight: 200;
@@ -219,4 +214,61 @@
     }
 }
 
+.UserProfile__Userpic {
+    position: relative;
+    display: inline-block;
+    width: 48px;
+    height: 48px;
+    margin-right: 0.75rem;
+    vertical-align: middle;
+}
 
+.UserProfile__badge_image_hivebuzzlevel {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    top: 30px;
+    left: 30px;
+    transition: width 0.25s, height 0.25s, top 0.25s, left 0.25s;
+
+    &:hover {
+        width: 30px;
+        height: 30px;
+        top: 26px;
+        left: 26px;
+    }
+}
+
+.UserProfile__badges {
+    background-color: rgba(0, 0, 0, 0.7);
+    border-radius: 4px;
+    padding: 5px;
+    margin-left: 50px;
+    margin-right: 50px;
+    margin-bottom: 10px;
+
+    a {
+        display: inline-block;
+    }
+
+    .UserProfile__badge_image {
+        margin: 3px 2px;
+        img {
+            vertical-align: top;
+            width: 28px;
+            transition: width 0.25s;
+            &:hover {
+                width: 36px;
+            }
+        }
+    }
+
+    .react-tabs {
+        min-height: 75px;
+    }
+
+    .react-tabs__tab {
+        font-size: 12px;
+        padding: 3px 8px;
+    }
+}
