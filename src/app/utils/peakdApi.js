@@ -4,7 +4,7 @@ const getBadges = async payload => {
         // Little hack until Peakd opens up by adding CORS headers
         xhr.open(
             'GET',
-            `https://beta.peakd.com/api/public/badge/${payload.account}`
+            `https://peakd.com/api/public/badge/${payload.account}`
         );
         xhr.onload = () => {
             if (xhr.status === 200) {
