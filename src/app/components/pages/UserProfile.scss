@@ -247,8 +247,12 @@
     margin-right: 50px;
     margin-bottom: 10px;
 
+    a {
+        display: inline-block;
+    }
+
     .UserProfile__badge_image {
-        margin: 0 3px;
+        margin: 3px 2px;
         img {
             vertical-align: top;
             width: 28px;
@@ -260,7 +264,7 @@
     }
 
     .react-tabs {
-        height: 75px;
+        min-height: 75px;
     }
 
     .react-tabs__tab {
