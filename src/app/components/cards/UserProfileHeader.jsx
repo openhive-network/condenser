@@ -2,6 +2,9 @@
 import React from 'react';
 import { Link } from 'react-router';
 import { connect } from 'react-redux';
+import _ from 'lodash';
+import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
+import 'react-tabs/style/react-tabs.css';
 import Icon from 'app/components/elements/Icon';
 import Follow from 'app/components/elements/Follow';
 import Tooltip from 'app/components/elements/Tooltip';
@@ -17,7 +20,57 @@ import DropdownMenu from 'app/components/elements/DropdownMenu';
 
 class UserProfileHeader extends React.Component {
     render() {
-        const { current_user, accountname, profile } = this.props;
+        const { current_user, accountname, profile, badges } = this.props;
+        const badgesTypes = {
+            activity: [],
+            perso: [],
+            meetup: [],
+            challenge: [],
+            badges: [],
+        };
+        const hivebuzzBadges = _.get(badges, 'hivebuzz', []);
+        const peakdBadges = _.get(badges, 'peakd', []);
+        if (hivebuzzBadges) {
+            hivebuzzBadges.forEach(badge => {
+                const type = badge.get('type');
+                badgesTypes[type].push(
+                    <a
+                        className="UserProfile__badge_image"
+                        key={badge.get('id')}
+                        href={`https://hivebuzz.me/@${accountname}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        <img
+                            src={badge.get('url')}
+                            alt={badge.get('title')}
+                            title={badge.get('title')}
+                        />
+                    </a>
+                );
+            });
+        }
+        if (peakdBadges) {
+            peakdBadges.forEach(badge => {
+                const type = badge.get('type');
+                badgesTypes[type].push(
+                    <a
+                        className="UserProfile__badge_image"
+                        key={badge.get('id')}
+                        href={`https://peakd.com/b/${badge.get('name')}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        <img
+                            src={badge.get('url')}
+                            alt={badge.get('title')}
+                            title={badge.get('title')}
+                            className="UserProfile__badge_image"
+                        />
+                    </a>
+                );
+            });
+        }
         const isMyAccount = current_user === accountname;
 
         const { name, location, about, website, cover_image } = profile
@@ -61,7 +114,22 @@ class UserProfileHeader extends React.Component {
                         </div>
                     </div>
                     <h1>
-                        <Userpic account={accountname} hideIfDefault />
+                        <div className="UserProfile__Userpic">
+                            <Userpic account={accountname} hideIfDefault />
+                            <a
+                                href={`http://hivebuzz.me/@${accountname}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                            >
+                                <img
+                                    src={`https://hivebuzz.me/@${
+                                        accountname
+                                    }/level.png`}
+                                    alt="Hivebuzz level badge"
+                                    className="UserProfile__badge_image_hivebuzzlevel"
+                                />
+                            </a>
+                        </div>
                         {name || accountname}{' '}
                         <Tooltip
                             t={tt(
@@ -182,6 +250,54 @@ class UserProfileHeader extends React.Component {
                             <Icon name="calendar" /> Active{' '}
                             <TimeAgoWrapper date={profile.get('active')} />
                         </p>
+                        {(hivebuzzBadges.size > 0 || peakdBadges.size > 0) && (
+                            <div className="row">
+                                <div className="UserProfile__badges column">
+                                    <Tabs>
+                                        <TabList>
+                                            {badgesTypes.badges.length > 0 && (
+                                                <Tab>Badges</Tab>
+                                            )}
+                                            {badgesTypes.activity.length >
+                                                0 && <Tab>Activity</Tab>}
+                                            {badgesTypes.perso.length > 0 && (
+                                                <Tab>Personal</Tab>
+                                            )}
+                                            {badgesTypes.meetup.length > 0 && (
+                                                <Tab>Meetups</Tab>
+                                            )}
+                                            {badgesTypes.challenge.length >
+                                                0 && <Tab>Challenges</Tab>}
+                                        </TabList>
+                                        {badgesTypes.badges.length > 0 && (
+                                            <TabPanel>
+                                                {badgesTypes.badges}
+                                            </TabPanel>
+                                        )}
+                                        {badgesTypes.activity.length > 0 && (
+                                            <TabPanel>
+                                                {badgesTypes.activity}
+                                            </TabPanel>
+                                        )}
+                                        {badgesTypes.perso.length > 0 && (
+                                            <TabPanel>
+                                                {badgesTypes.perso}
+                                            </TabPanel>
+                                        )}
+                                        {badgesTypes.meetup.length > 0 && (
+                                            <TabPanel>
+                                                {badgesTypes.meetup}
+                                            </TabPanel>
+                                        )}
+                                        {badgesTypes.challenge.length > 0 && (
+                                            <TabPanel>
+                                                {badgesTypes.challenge}
+                                            </TabPanel>
+                                        )}
+                                    </Tabs>
+                                </div>
+                            </div>
+                        )}
                     </div>
                     <div className="UserProfile__buttons_mobile show-for-small-only">
                         <Follow
