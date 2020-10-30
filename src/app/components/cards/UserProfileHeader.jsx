@@ -116,6 +116,23 @@ class UserProfileHeader extends React.Component {
                     <h1>
                         <div className="UserProfile__Userpic">
                             <Userpic account={accountname} hideIfDefault />
+                        </div>
+                        {name || accountname}{' '}
+                        <Tooltip
+                            t={tt(
+                                'user_profile.this_is_users_reputations_score_it_is_based_on_history_of_votes',
+                                { name: accountname }
+                            )}
+                        >
+                            <span className="UserProfile__rep">
+                                ({Math.floor(profile.get('reputation'))})
+                            </span>
+                        </Tooltip>
+                        <Tooltip
+                            t={tt('user_profile.hivebuzz_level_badge', {
+                                name: accountname,
+                            })}
+                        >
                             <a
                                 href={`http://hivebuzz.me/@${accountname}`}
                                 target="_blank"
@@ -129,17 +146,6 @@ class UserProfileHeader extends React.Component {
                                     className="UserProfile__badge_image_hivebuzzlevel"
                                 />
                             </a>
-                        </div>
-                        {name || accountname}{' '}
-                        <Tooltip
-                            t={tt(
-                                'user_profile.this_is_users_reputations_score_it_is_based_on_history_of_votes',
-                                { name: accountname }
-                            )}
-                        >
-                            <span className="UserProfile__rep">
-                                ({Math.floor(profile.get('reputation'))})
-                            </span>
                         </Tooltip>
                         {blacklists}
                         {AffiliationMap[accountname] ? (
@@ -251,8 +257,8 @@ class UserProfileHeader extends React.Component {
                             <TimeAgoWrapper date={profile.get('active')} />
                         </p>
                         {(hivebuzzBadges.size > 0 || peakdBadges.size > 0) && (
-                            <div className="row">
-                                <div className="UserProfile__badges column">
+                            <div className="UserProfile__badges row">
+                                <div className="UserProfile__badges_tabs_container">
                                     <Tabs>
                                         <TabList>
                                             {badgesTypes.badges.length > 0 && (
