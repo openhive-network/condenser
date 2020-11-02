@@ -16,18 +16,6 @@ export const userProfilesWatches = [
     takeLatest(FETCH_PEAKD_BADGES, fetchUserPeakdBadges),
 ];
 
-export function* fetchLists(action) {
-    const { observer, follow_type } = action.payload;
-    const ret = yield call(callBridge, 'get_follow_list', {
-        observer,
-        follow_type,
-    });
-    if (!ret) throw new Error('Account not found');
-    yield put(
-        userProfileActions.addList({ username: observer, listed_accounts: ret })
-    );
-}
-
 export function* fetchUserProfile(action) {
     const { account, observer } = action.payload;
     const ret = yield call(callBridge, 'get_profile', { account, observer });

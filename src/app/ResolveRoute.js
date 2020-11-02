@@ -13,11 +13,7 @@ const reg = pattern => {
         )
         .replace('<tag>', '([\\w\\W\\d-]{1,32})')
         .replace('<permlink>', '([\\w\\d-]+)')
-        .replace('/', '\\/')
-        .replace(
-            '<list_type>',
-            '(blacklisted|muted|followed_blacklists|followed_muted_lists)'
-        );
+        .replace('/', '\\/');
     return new RegExp('^\\/' + pattern + '$');
 };
 
@@ -31,7 +27,6 @@ export const routeRegex = {
     PostJson: reg('<tag>/<account>/<permlink>(\\.json)'),
     UserJson: reg('<account>(\\.json)'),
     Search: reg('search'),
-    ListManagement: reg('<account>/lists/<list_type>'),
 };
 
 export default function resolveRoute(path) {
@@ -93,8 +88,6 @@ export default function resolveRoute(path) {
     // /search, /search?q=searchTerm&s=searchOrder
     match = path.match(routeRegex.Search);
     if (match) return { page: 'SearchIndex' };
-    match = path.match(routeRegex.ListManagement);
-    if (match) return { page: 'ListManagement', params: match.slice(2) }; //, params: match.slice(1) };
 
     // -----------
 
