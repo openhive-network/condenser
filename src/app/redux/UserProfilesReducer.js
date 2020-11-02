@@ -8,7 +8,6 @@ const ADD_PEAKD_BADGES = 'user_profile/PEAKD_BADGES';
 
 const defaultState = fromJS({
     profiles: {},
-    listed_accounts: {},
 });
 
 export default function reducer(state = defaultState, action) {
