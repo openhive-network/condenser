@@ -5,13 +5,11 @@ import PeakdApi from 'app/utils/peakdApi';
 import * as userProfileActions from './UserProfilesReducer';
 
 const FETCH_PROFILE = 'userProfilesSaga/FETCH_PROFILE';
-const FETCH_LISTS = 'userProfilesSaga/FETCH_LISTS';
 const FETCH_HIVEBUZZ_BADGES = 'userProfileSaga/FETCH_HIVEBUZZ_BADGES';
 const FETCH_PEAKD_BADGES = 'userProfileSaga/FETCH_PEAKD_BADGES';
 
 export const userProfilesWatches = [
     takeLatest(FETCH_PROFILE, fetchUserProfile),
-    takeLatest(FETCH_LISTS, fetchLists),
     takeLatest(FETCH_HIVEBUZZ_BADGES, fetchUserHivebuzzBadges),
     takeLatest(FETCH_PEAKD_BADGES, fetchUserPeakdBadges),
 ];
