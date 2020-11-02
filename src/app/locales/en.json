@@ -460,7 +460,9 @@
             "other": "%(count)s posts"
         },
         "hide_reblogs": "Hide Reblogs",
-        "show_all": "Show All"
+        "show_all": "Show All",
+        "hivebuzz_level_badge":
+            "This is %(name)s's level badged earned from Hivebuzz programs"
     },
     "post_jsx": {
         "now_showing_comments_with_low_ratings":

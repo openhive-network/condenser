@@ -437,6 +437,11 @@ function* accepted_delete_comment({ operation }) {
     yield put(globalActions.deleteContent(operation));
 }
 
+const wait = ms =>
+    new Promise(resolve => {
+        setTimeout(() => resolve(), ms);
+    });
+
 function* accepted_vote({ operation: { author, permlink, weight } }) {
     console.log(
         'Vote accepted, weight',
@@ -451,6 +456,7 @@ function* accepted_vote({ operation: { author, permlink, weight } }) {
             key: `transaction_vote_active_${author}_${permlink}`,
         })
     );
+    yield call(wait, 9000);
     yield call(getContent, { author, permlink });
 }
 

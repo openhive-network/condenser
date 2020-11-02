@@ -73,17 +73,45 @@ export default class UserProfile extends React.Component {
     }
 
     componentWillMount() {
-        const { profile, accountname, fetchProfile, username } = this.props;
-        if (!profile) fetchProfile(accountname, username);
+        const {
+            profile,
+            hivebuzzBadges,
+            peakdBadges,
+            accountname,
+            fetchProfile,
+            fetchHivebuzzBadges,
+            fetchPeakdBadges,
+            username,
+        } = this.props;
+        if (!profile) {
+            fetchProfile(accountname, username);
+        }
+        if (!hivebuzzBadges) {
+            fetchHivebuzzBadges(accountname);
+        }
+        if (!peakdBadges) {
+            fetchPeakdBadges(accountname);
+        }
     }
 
     componentDidUpdate(prevProps) {
-        const { profile, accountname, fetchProfile, username } = this.props;
+        const {
+            profile,
+            hivebuzzBadges,
+            peakdBadges,
+            accountname,
+            fetchProfile,
+            fetchHivebuzzBadges,
+            fetchPeakdBadges,
+            username,
+        } = this.props;
         if (
             prevProps.accountname != accountname ||
             prevProps.username != username
         ) {
             if (!profile) fetchProfile(accountname, username);
+            if (!hivebuzzBadges) fetchHivebuzzBadges(accountname);
+            if (!peakdBadges) fetchPeakdBadges(accountname);
         }
     }
 
@@ -134,6 +162,8 @@ export default class UserProfile extends React.Component {
                 order,
                 posts,
                 profile,
+                hivebuzzBadges,
+                peakdBadges,
                 notifications,
                 subscriptions,
             },
@@ -268,7 +298,11 @@ export default class UserProfile extends React.Component {
                 <div className="columns shrink">
                     <ul className="menu" style={{ flexWrap: 'wrap' }}>
                         <li>
-                            <a href={walletUrl} target="_blank">
+                            <a
+                                href={walletUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                            >
                                 Wallet
                             </a>
                         </li>
@@ -286,6 +320,10 @@ export default class UserProfile extends React.Component {
                     current_user={username}
                     accountname={accountname}
                     profile={profile}
+                    badges={{
+                        hivebuzz: hivebuzzBadges,
+                        peakd: peakdBadges,
+                    }}
                 />
                 <div className="UserProfile__top-nav row expanded">
                     {top_menu}
@@ -357,6 +395,14 @@ module.exports = {
                 ),
                 blogmode: state.app.getIn(['user_preferences', 'blogmode']),
                 profile: state.userProfiles.getIn(['profiles', accountname]),
+                hivebuzzBadges: state.userProfiles.getIn([
+                    'hivebuzzBadges',
+                    accountname,
+                ]),
+                peakdBadges: state.userProfiles.getIn([
+                    'peakdBadges',
+                    accountname,
+                ]),
                 walletUrl: walletUrl + '/@' + accountname + '/transfers',
                 section,
                 order,
@@ -373,12 +419,22 @@ module.exports = {
             login: () => {
                 dispatch(userActions.showLogin());
             },
-            requestData: args =>
-                dispatch(fetchDataSagaActions.requestData(args)),
-            fetchProfile: (account, observer) =>
+            requestData: args => {
+                dispatch(fetchDataSagaActions.requestData(args));
+            },
+            fetchProfile: (account, observer) => {
                 dispatch(
                     UserProfilesSagaActions.fetchProfile({ account, observer })
-                ),
+                );
+            },
+            fetchHivebuzzBadges: account => {
+                dispatch(
+                    UserProfilesSagaActions.fetchHivebuzzBadges({ account })
+                );
+            },
+            fetchPeakdBadges: account => {
+                dispatch(UserProfilesSagaActions.fetchPeakdBadges({ account }));
+            },
         })
     )(UserProfile),
 };
