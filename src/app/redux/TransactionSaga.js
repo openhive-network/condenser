@@ -387,7 +387,8 @@ function* broadcastPayload({
 
 function* accepted_comment({ operation }) {
     const { author, permlink } = operation;
-    // update again with new $$ amount from the steemd node
+    //sleep for a few seconds so we can get the latest info from hivemind once it updates (this is a temporary workaround)
+    yield call(wait, 9000);
     yield call(getContent, { author, permlink });
     yield put(globalActions.linkReply(operation));
 }
