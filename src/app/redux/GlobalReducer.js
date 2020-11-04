@@ -32,6 +32,7 @@ const FETCH_JSON_RESULT = 'global/FETCH_JSON_RESULT';
 const SHOW_DIALOG = 'global/SHOW_DIALOG';
 const HIDE_DIALOG = 'global/HIDE_DIALOG';
 const RECEIVE_REWARDS = 'global/RECEIVE_REWARDS';
+const LAZY_UPDATE = 'global/LAZY_UPDATE';
 
 const postKey = (author, permlink) => {
     if ((author || '') === '' || (permlink || '') === '') return null;
@@ -76,6 +77,18 @@ export default function reducer(state = defaultState, action = {}) {
                 );
             });
         }
+
+        case LAZY_UPDATE:
+            // update edited post/comment in state
+            let key = payload.author + '/' + payload.permlink;
+            let update = {
+                body: payload.body,
+                title: payload.title,
+                category: payload.category,
+            };
+            return state.updateIn(['content', key], Map(), c =>
+                c.mergeDeep(update)
+            );
 
         case RECEIVE_STATE: {
             console.log(
@@ -486,5 +499,10 @@ export const showDialog = payload => ({
 
 export const hideDialog = payload => ({
     type: HIDE_DIALOG,
+    payload,
+});
+
+export const lazyUpdate = payload => ({
+    type: LAZY_UPDATE,
     payload,
 });
