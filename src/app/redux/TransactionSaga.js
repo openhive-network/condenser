@@ -55,6 +55,10 @@ function* preBroadcast_vote({ operation, username }) {
     return operation;
 }
 
+export function* lazyUpdate(payload) {
+    yield put(globalActions.lazyUpdate(payload));
+}
+
 /** Keys, username, and password are not needed for the initial call.  This will check the login and may trigger an action to prompt for the password / key. */
 export function* broadcastOperation({
     payload: {
@@ -387,9 +391,13 @@ function* broadcastPayload({
 
 function* accepted_comment({ operation }) {
     const { author, permlink } = operation;
-    //sleep for a few seconds so we can get the latest info from hivemind once it updates (this is a temporary workaround)
-    yield call(wait, 9000);
-    yield call(getContent, { author, permlink });
+    //yield call(getContent, { author, permlink });
+    if (operation.title === '') {
+        yield call(lazyUpdate, operation);
+    } else {
+        yield call(wait, 9000);
+        yield call(getContent, { author, permlink });
+    }
     yield put(globalActions.linkReply(operation));
 }
 
@@ -478,8 +486,8 @@ export function* preBroadcast_comment({ operation, username }) {
     if (originalBody) {
         const patch = createPatch(originalBody, body);
         // Putting body into buffer will expand Unicode characters into their true length
-        if (patch && patch.length < new Buffer(body, 'utf-8').length)
-            body2 = patch;
+        //if (patch && patch.length < new Buffer(body, 'utf-8').length)
+        //    body2 = patch;
     }
     if (!body2) body2 = body;
     if (!permlink) permlink = yield createPermlink(title, author);
