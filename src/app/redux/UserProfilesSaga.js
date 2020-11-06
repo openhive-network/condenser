@@ -18,8 +18,9 @@ export function* fetchUserProfile(action) {
     const { account, observer } = action.payload;
     const ret = yield call(callBridge, 'get_profile', { account, observer });
     const hive_power = yield getHivePowerForUser(account);
-
+    console.log('ret', ret);
     if (!ret) throw new Error('Account not found');
+    console.log('ret', ret);
     yield put(
         userProfileActions.addProfile({
             username: account,
