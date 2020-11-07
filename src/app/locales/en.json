@@ -7,6 +7,10 @@
         "and": "and",
         "are_you_sure": "Are you sure?",
         "ask": "Ask",
+        "badges_and_achievements": "Badges and achievements",
+        "badges_and_achievements_description":
+            "These are badges received by the author via the third-party apps",
+        "badges_and_achievements_none": "You haven't received any badges yet.",
         "balance": "Balance: %(balanceValue)s",
         "balances": "Balances",
         "beneficiaries": "Beneficiaries",
@@ -25,6 +29,9 @@
         "close": "Close",
         "collapse_or_expand": "Collapse/Expand",
         "communities": "Communities",
+        "community_subscriptions": "Community Subscriptions",
+        "community_subscriptions_description":
+            "The author has subscribed to the following Hive Communities",
         "community_settings_header": "Community Settings",
         "community_settings_description": "What does your community stand for?",
         "community_list_header": "Communities",
@@ -36,6 +43,8 @@
         "community_user_role_edit_header": "Change User Role",
         "community_user_title_edit_header": "Change User Title",
         "community_user_title_edit_description": "Set Title for @%(username)s",
+        "community_no_subscriptions":
+            "Welcome! You don't have any subscriptions yet.",
         "comments": "Comments",
         "confirm": "Confirm",
         "convert": "Convert",
@@ -124,6 +133,7 @@
         "sell": "Sell",
         "settings": "Settings",
         "share_this_post": "Share this post",
+        "social": "Social",
         "mute_this_post": "Mute post/comment",
         "mute_this_post_description":
             "Please provide a note regarding your decision to mute this content.",
@@ -135,7 +145,6 @@
         "sign_up": "Sign up",
         "since": "since %(date)s",
         "submit": "Submit",
-        "subscriptions": "Subscriptions",
         "power_up": "Power Up",
         "submit_a_story": "Post",
         "tag": "Tag",
@@ -860,69 +869,8 @@
         "all": "All",
         "replies": "Replies",
         "follows": "Follows",
-        "resteems": "Reblogs",
+        "resteems": "Resteems",
         "upvotes": "Upvotes",
         "mentions": "Mentions"
-    },
-    "list_management_jsx": {
-        "busy":
-            "currently waiting for a broadcast operation to finish, try again soon",
-        "button_unblacklist": "Unblacklist",
-        "button_unmute": "Unmute",
-        "button_unfollow_blacklist": "Unfollow Blacklist",
-        "button_unfollow_muted_list": "Unfollow Muted List",
-        "button_busy": "Busy, Please Wait",
-        "blacklisted_header": "Accounts Blacklisted By ",
-        "muted_header": "Accounts Muted By ",
-        "followed_blacklists_header": "Followed Blacklists",
-        "followed_muted_lists_header": "Followed Muted LIsts",
-        "add_to_blacklist": "Add Accounts To Blacklist ",
-        "add_to_muted_list": "Add Accounts to Muted List",
-        "follow_blacklists": "Follow Blacklists Of These Accounts ",
-        "follow_muted_lists": "Follow Muted Lists Of These Accounts ",
-        "button_blacklist": "Blacklist Accounts",
-        "button_mute": "Mute Users",
-        "button_follow_blacklists": "Follow Blacklists",
-        "button_follow_muted_lists": "Follow Muted Lists",
-        "unknown_accounts": "Unable to find account(s): ",
-        "page_count": "Viewing Page %(current)s of %(total)s",
-        "search_for_user": "Search List For Account:",
-        "add_users_to_list": "Add Account(s) To List",
-        "multi_add_notes": "(single account or comma separated list)",
-        "updates_are_pending":
-            "Your list will reflect the updates shortly. You do not have to remain on this page for them to take effect.",
-        "list_description_field":
-            "Enter a description for your list (how you choose people, if they can contact you for removal, etc)",
-        "save_description": "Save Description",
-        "reset_blacklist": "Reset Blacklist",
-        "reset_muted_list": "Reset Muted List",
-        "reset_followed_blacklists": "Reset Followed Blacklists",
-        "reset_followed_muted_list": "Reset Followed Muted Lists",
-        "reset_all_lists": "Reset All Follows/Lists",
-        "reset_header": "Reset Options",
-        "empty_list": "There are no users on this list yet",
-        "welcome_header": "It looks like you might be new here!",
-        "welcome_body":
-            "This is the new decentralized list feature. You can create your own black list and mute list and give them a description",
-        "list_description_placement": "List Description:",
-        "no_results_found": "No search results found",
-        "acknowledge": "Acknowledge",
-        "what_is_this": "What Is This?",
-        "info1":
-            "This is the new decentralized list system. From here you can manage your own mute list or blacklist, as well as subscribe to the mute lists and blacklists of other users. ",
-        "info2": "There are some new fields on the ",
-        "info3": "Settings ",
-        "info4":
-            "page where you can set a description of how you choose who you've added to your lists and if there are any actions that account can take to get removed from them. ",
-        "info5":
-            "You can see the descriptions of the lists of other accounts by browsing directly to their personal blacklist or mute list page. These links can be found on their profile page below the follower information. ",
-        "info6":
-            "To get started, we recommend that you follow the blacklists/mute lists of these accounts: ",
-        "info7":
-            "Click the button below to dismiss this dialog. This will automatically subscribe you to the mute list and blacklist of the null account.",
-        "first": "First",
-        "previous": "Previous",
-        "next": "Next",
-        "last": "Last"
     }
 }

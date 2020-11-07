@@ -217,6 +217,10 @@ export default class UserProfile extends React.Component {
                 <SubscriptionsList
                     username={accountname}
                     subscriptions={subscriptions}
+                    badges={{
+                        hivebuzz: hivebuzzBadges,
+                        peakd: peakdBadges,
+                    }}
                 />
             );
         } else if (section === 'settings') {
@@ -285,7 +289,7 @@ export default class UserProfile extends React.Component {
                         <li>{_tablink('blog', tt('g.blog'))}</li>
                         <li>{_tablink('posts', tt('g.posts'))}</li>
                         <li>{_tablink('replies', tt('g.replies'))}</li>
-                        <li>{_tablink('communities', tt('g.communities'))}</li>
+                        <li>{_tablink('communities', tt('g.social'))}</li>
                         <li>
                             {_tablink('notifications', tt('g.notifications'))}
                         </li>
@@ -320,10 +324,6 @@ export default class UserProfile extends React.Component {
                     current_user={username}
                     accountname={accountname}
                     profile={profile}
-                    badges={{
-                        hivebuzz: hivebuzzBadges,
-                        peakd: peakdBadges,
-                    }}
                 />
                 <div className="UserProfile__top-nav row expanded">
                     {top_menu}
@@ -366,6 +366,8 @@ module.exports = {
             ].includes(section)
                 ? section
                 : null;
+
+            const profile = state.userProfiles.getIn(['profiles', accountname]);
 
             return {
                 posts: state.global.getIn([
@@ -423,6 +425,7 @@ module.exports = {
                 dispatch(fetchDataSagaActions.requestData(args));
             },
             fetchProfile: (account, observer) => {
+                console.log('fetch profile');
                 dispatch(
                     UserProfilesSagaActions.fetchProfile({ account, observer })
                 );
