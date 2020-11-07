@@ -79,12 +79,12 @@ class UserProfileHeader extends React.Component {
                             })}
                         >
                             <a
-                                href={`http://hivebuzz.me/@${accountname}`}
+                                href={`https://hivebuzz.me/@${accountname}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
                             >
                                 <img
-                                    src={`https://hivebuzz.me/@${
+                                    src={`https:wq.me/@${
                                         accountname
                                     }/level.png`}
                                     alt="Hivebuzz level badge"
