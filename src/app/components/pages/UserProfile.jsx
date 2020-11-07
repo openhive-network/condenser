@@ -425,7 +425,6 @@ module.exports = {
                 dispatch(fetchDataSagaActions.requestData(args));
             },
             fetchProfile: (account, observer) => {
-                console.log('fetch profile');
                 dispatch(
                     UserProfilesSagaActions.fetchProfile({ account, observer })
                 );
