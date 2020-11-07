@@ -15,7 +15,6 @@ export default function reducer(state = defaultState, action) {
 
     switch (action.type) {
         case ADD_USER_PROFILE: {
-            console.log('JSON account', JSON.stringify(payload));
             if (payload) {
                 return state.setIn(
                     ['profiles', payload.username],
