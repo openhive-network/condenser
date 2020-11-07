@@ -2,30 +2,15 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Link } from 'react-router';
-import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import _ from 'lodash';
 import 'react-tabs/style/react-tabs.css';
+import tt from 'counterpart';
+import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import LoadingIndicator from 'app/components/elements/LoadingIndicator';
 import { actions as fetchDataSagaActions } from 'app/redux/FetchDataSaga';
 import Callout from 'app/components/elements/Callout';
-import tt from 'counterpart';
 
 class SubscriptionsList extends React.Component {
-    static propTypes = {
-        username: PropTypes.string.isRequired,
-        subscriptions: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.string)),
-        loading: PropTypes.bool,
-    };
-
-    static defaultProps = {
-        subscriptions: [],
-        loading: true,
-    };
-
-    constructor() {
-        super();
-    }
-
     componentWillMount() {
         const { username, getAccountSubscriptions } = this.props;
         if (username) {
@@ -42,7 +27,6 @@ class SubscriptionsList extends React.Component {
 
     render() {
         const { subscriptions, loading, badges, username } = this.props;
-        console.log('badges', badges);
         const badgesTypes = {
             activity: [],
             perso: [],
@@ -107,21 +91,18 @@ class SubscriptionsList extends React.Component {
 
         return (
             <div>
-                <div className=".article_section">
+                <div className="article_section">
                     <h4>{tt('g.community_subscriptions')}</h4>
-                    {subscriptions &&
-                        subscriptions.length > 0 && (
-                            <ul>
-                                {subscriptions.map(item => renderItem(item))}
-                            </ul>
-                        )}
-                    {subscriptions.length === 0 &&
+                    <p>{tt('g.community_subscriptions_description')}</p>
+                    {!_.isEmpty(subscriptions) && (
+                        <ul>{subscriptions.map(item => renderItem(item))}</ul>
+                    )}
+                    {_.isEmpty(subscriptions) &&
                         !loading && (
                             <Callout>
-                                Welcome! You don't have any subscriptions yet.
+                                {tt('g.community_no_subscriptions')}
                             </Callout>
                         )}
-
                     {loading && (
                         <center>
                             <LoadingIndicator
@@ -131,71 +112,109 @@ class SubscriptionsList extends React.Component {
                         </center>
                     )}
                 </div>
-                <div className=".article_section">
+                <div className="article_section">
                     <h4>{tt('g.badges_and_achievements')}</h4>
-                    {(hivebuzzBadges.size > 0 || peakdBadges.size > 0) && (
-                        <div className="BadgesAchievements row">
-                            <div className="BadgesAchievements_tabs_container">
-                                <Tabs>
-                                    <TabList>
-                                        {badgesTypes.badges.length > 0 && (
-                                            <Tab>Badges</Tab>
+                    {(!_.isEmpty(hivebuzzBadges) ||
+                        !_.isEmpty(peakdBadges.size)) && (
+                        <div>
+                            <p>
+                                {tt('g.badges_and_achievements_description')}{' '}
+                                <a
+                                    href="https://peakd.com/"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                >
+                                    Peakd
+                                </a>{' '}
+                                &{' '}
+                                <a
+                                    href="https://hivebuzz.me"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                >
+                                    Hivebuzz
+                                </a>
+                                .
+                            </p>
+                            <div className="BadgesAchievements row">
+                                <div className="BadgesAchievements_tabs_container">
+                                    <Tabs>
+                                        <TabList>
+                                            {!_.isEmpty(badgesTypes.badges) && (
+                                                <Tab>Badges</Tab>
+                                            )}
+                                            {!_.isEmpty(
+                                                badgesTypes.activity
+                                            ) && <Tab>Activity</Tab>}
+                                            {!_.isEmpty(badgesTypes.perso) && (
+                                                <Tab>Personal</Tab>
+                                            )}
+                                            {!_.isEmpty(badgesTypes.meetup) && (
+                                                <Tab>Meetups</Tab>
+                                            )}
+                                            {!_.isEmpty(
+                                                badgesTypes.challenge
+                                            ) && <Tab>Challenges</Tab>}
+                                        </TabList>
+                                        {!_.isEmpty(badgesTypes.badges) && (
+                                            <TabPanel>
+                                                {badgesTypes.badges}
+                                            </TabPanel>
                                         )}
-                                        {badgesTypes.activity.length > 0 && (
-                                            <Tab>Activity</Tab>
+                                        {!_.isEmpty(badgesTypes.activity) && (
+                                            <TabPanel>
+                                                {badgesTypes.activity}
+                                            </TabPanel>
                                         )}
-                                        {badgesTypes.perso.length > 0 && (
-                                            <Tab>Personal</Tab>
+                                        {!_.isEmpty(badgesTypes.perso) && (
+                                            <TabPanel>
+                                                {badgesTypes.perso}
+                                            </TabPanel>
                                         )}
-                                        {badgesTypes.meetup.length > 0 && (
-                                            <Tab>Meetups</Tab>
+                                        {!_.isEmpty(badgesTypes.meetup) && (
+                                            <TabPanel>
+                                                {badgesTypes.meetup}
+                                            </TabPanel>
                                         )}
-                                        {badgesTypes.challenge.length > 0 && (
-                                            <Tab>Challenges</Tab>
+                                        {!_.isEmpty(badgesTypes.challenge) && (
+                                            <TabPanel>
+                                                {badgesTypes.challenge}
+                                            </TabPanel>
                                         )}
-                                    </TabList>
-                                    {badgesTypes.badges.length > 0 && (
-                                        <TabPanel>
-                                            {badgesTypes.badges}
-                                        </TabPanel>
-                                    )}
-                                    {badgesTypes.activity.length > 0 && (
-                                        <TabPanel>
-                                            {badgesTypes.activity}
-                                        </TabPanel>
-                                    )}
-                                    {badgesTypes.perso.length > 0 && (
-                                        <TabPanel>{badgesTypes.perso}</TabPanel>
-                                    )}
-                                    {badgesTypes.meetup.length > 0 && (
-                                        <TabPanel>
-                                            {badgesTypes.meetup}
-                                        </TabPanel>
-                                    )}
-                                    {badgesTypes.challenge.length > 0 && (
-                                        <TabPanel>
-                                            {badgesTypes.challenge}
-                                        </TabPanel>
-                                    )}
-                                </Tabs>
+                                    </Tabs>
+                                </div>
                             </div>
                         </div>
                     )}
+                    {_.isEmpty(hivebuzzBadges) &&
+                        !_.isEmpty(peakdBadges.size) && (
+                            <p>{tt('g.badges_and_achievements_none')}</p>
+                        )}
                 </div>
             </div>
         );
     }
 }
 
+SubscriptionsList.defaultProps = {
+    subscriptions: [],
+    loading: true,
+};
+
+SubscriptionsList.propTypes = {
+    username: PropTypes.string.isRequired,
+    subscriptions: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.string)),
+    loading: PropTypes.bool,
+};
+
 export default connect(
     (state, props) => {
+        const { username } = props;
+        const { user, global } = state;
         const isOwnAccount =
-            state.user.getIn(['current', 'username'], '') === props.username;
-        const loading = state.global.getIn(['subscriptions', 'loading']);
-        const subscriptions = state.global.getIn([
-            'subscriptions',
-            props.username,
-        ]);
+            user.getIn(['current', 'username'], '') === username;
+        const loading = global.getIn(['subscriptions', 'loading']);
+        const subscriptions = global.getIn(['subscriptions', username]);
         return {
             ...props,
             subscriptions: subscriptions ? subscriptions.toJS() : [],

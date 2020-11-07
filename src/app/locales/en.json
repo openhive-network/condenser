@@ -8,6 +8,9 @@
         "are_you_sure": "Are you sure?",
         "ask": "Ask",
         "badges_and_achievements": "Badges and achievements",
+        "badges_and_achievements_description":
+            "These are badges received by the author via the third-party apps",
+        "badges_and_achievements_none": "You haven't received any badges yet.",
         "balance": "Balance: %(balanceValue)s",
         "balances": "Balances",
         "beneficiaries": "Beneficiaries",
@@ -27,6 +30,8 @@
         "collapse_or_expand": "Collapse/Expand",
         "communities": "Communities",
         "community_subscriptions": "Community Subscriptions",
+        "community_subscriptions_description":
+            "The author has subscribed to the following Hive Communities",
         "community_settings_header": "Community Settings",
         "community_settings_description": "What does your community stand for?",
         "community_list_header": "Communities",
@@ -38,6 +43,8 @@
         "community_user_role_edit_header": "Change User Role",
         "community_user_title_edit_header": "Change User Title",
         "community_user_title_edit_description": "Set Title for @%(username)s",
+        "community_no_subscriptions":
+            "Welcome! You don't have any subscriptions yet.",
         "comments": "Comments",
         "confirm": "Confirm",
         "convert": "Convert",
@@ -736,7 +743,6 @@
         "upload_image": "Upload an image",
         "uploading_image": "Uploading image",
         "profile_image_url": "Profile picture url",
-        "badges_and_achievements": "Badges and achievements",
         "cover_image_url": "Cover image url",
         "profile_name": "Display Name",
         "profile_about": "About",

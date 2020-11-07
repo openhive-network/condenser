@@ -31,7 +31,7 @@
 
 .BadgesAchievements {
     .BadgesAchievements_tabs_container {
-        padding: 5px;
+        padding: 5px 15px;
     }
 
     @media screen and (max-width: 39.9375em) {
@@ -47,6 +47,9 @@
         img {
             vertical-align: top;
             width: 64px;
+            @media screen and (max-width: 39.9375em) {
+                width: 48px;
+            }
         }
     }
 
@@ -64,6 +67,10 @@
         border-color: transparent;
         border-radius: 0;
         color: white;
+    }
+
+    .react-tabs__tab-panel {
+        min-height: 58px;
     }
 }
 

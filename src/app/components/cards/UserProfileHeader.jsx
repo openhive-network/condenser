@@ -18,8 +18,6 @@ import DropdownMenu from 'app/components/elements/DropdownMenu';
 class UserProfileHeader extends React.Component {
     render() {
         const { current_user, accountname, profile } = this.props;
-        const isMyAccount = current_user === accountname;
-
         const { name, location, about, website, cover_image } = profile
             ? profile.getIn(['metadata', 'profile']).toJS()
             : {};
