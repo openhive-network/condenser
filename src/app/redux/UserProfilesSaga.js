@@ -5,34 +5,19 @@ import PeakdApi from 'app/utils/peakdApi';
 import * as userProfileActions from './UserProfilesReducer';
 
 const FETCH_PROFILE = 'userProfilesSaga/FETCH_PROFILE';
-const FETCH_LISTS = 'userProfilesSaga/FETCH_LISTS';
 const FETCH_HIVEBUZZ_BADGES = 'userProfileSaga/FETCH_HIVEBUZZ_BADGES';
 const FETCH_PEAKD_BADGES = 'userProfileSaga/FETCH_PEAKD_BADGES';
 
 export const userProfilesWatches = [
     takeLatest(FETCH_PROFILE, fetchUserProfile),
-    takeLatest(FETCH_LISTS, fetchLists),
     takeLatest(FETCH_HIVEBUZZ_BADGES, fetchUserHivebuzzBadges),
     takeLatest(FETCH_PEAKD_BADGES, fetchUserPeakdBadges),
 ];
-
-export function* fetchLists(action) {
-    const { observer, follow_type } = action.payload;
-    const ret = yield call(callBridge, 'get_follow_list', {
-        observer,
-        follow_type,
-    });
-    if (!ret) throw new Error('Account not found');
-    yield put(
-        userProfileActions.addList({ username: observer, listed_accounts: ret })
-    );
-}
 
 export function* fetchUserProfile(action) {
     const { account, observer } = action.payload;
     const ret = yield call(callBridge, 'get_profile', { account, observer });
     const hive_power = yield getHivePowerForUser(account);
-
     if (!ret) throw new Error('Account not found');
     yield put(
         userProfileActions.addProfile({

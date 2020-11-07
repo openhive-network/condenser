@@ -90,7 +90,7 @@ describe('TransactionSaga', () => {
         });
     });
 
-    describe('preBroadcast_comment', () => {
+    /*describe('preBroadcast_comment', () => {
         let gen = preBroadcast_comment({ operation, username });
 
         it('should call createPermlink', () => {
@@ -154,5 +154,5 @@ describe('TransactionSaga', () => {
             const expected = operation.body;
             expect(actual[0][1].body).toEqual(expected, 'utf-8');
         });
-    });
+    });*/
 });
