@@ -23,6 +23,7 @@ class ExplorePost extends Component {
         this.Hiveblocks = this.Hiveblocks.bind(this);
         this.Hivedb = this.Hivedb.bind(this);
         this.Peakd = this.Peakd.bind(this);
+        this.Ecency = this.Ecency.bind(this);
     }
 
     Hiveblocks() {
@@ -37,8 +38,8 @@ class ExplorePost extends Component {
         serverApiRecordEvent('PeakdView', this.props.permlink);
     }
 
-    Esteem() {
-        serverApiRecordEvent('EsteemView', this.props.permlink);
+    Ecency() {
+        serverApiRecordEvent('EcencyView', this.props.permlink);
     }
 
     onCopy() {
@@ -59,7 +60,7 @@ class ExplorePost extends Component {
         const hiveblocks = 'https://hiveblocks.com' + link;
         const hivedb = 'https://hive-db.com' + link;
         const peakd = 'https://peakd.com' + link;
-        const esteem = 'https://esteem.app' + link;
+        const ecency = 'https://ecency.com' + link;
         const hiveblog = 'https://hive.blog' + link;
         const hiveblogMd = '[' + title + '](https://hive.blog' + link + ')';
         let text =
@@ -140,12 +141,12 @@ class ExplorePost extends Component {
                     </li>
                     <li>
                         <a
-                            href={esteem}
-                            onClick={this.Esteem}
+                            href={ecency}
+                            onClick={this.Ecency}
                             target="_blank"
                             rel="noopener noreferrer"
                         >
-                            esteem.app <Icon name="extlink" />
+                            ecency.com <Icon name="extlink" />
                         </a>
                     </li>
                 </ul>
