@@ -85,6 +85,12 @@ export default function reducer(state = defaultState, action = {}) {
                 body: payload.body,
                 title: payload.title,
                 category: payload.category,
+                stats: {
+                    hide: false,
+                    gray: false,
+                    total_votes: 0,
+                    flag_weight: 0,
+                },
             };
             return state.updateIn(['content', key], Map(), c =>
                 c.mergeDeep(update)
