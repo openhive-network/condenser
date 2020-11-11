@@ -79,7 +79,7 @@ class UserProfileHeader extends React.Component {
                             })}
                         >
                             <a
-                                href={`http://hivebuzz.me/@${accountname}`}
+                                href={`https://hivebuzz.me/@${accountname}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
                             >
