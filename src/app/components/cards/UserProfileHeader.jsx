@@ -84,7 +84,7 @@ class UserProfileHeader extends React.Component {
                                 rel="noopener noreferrer"
                             >
                                 <img
-                                    src={`https:wq.me/@${
+                                    src={`https://hivebuzz.me/@${
                                         accountname
                                     }/level.png`}
                                     alt="Hivebuzz level badge"
