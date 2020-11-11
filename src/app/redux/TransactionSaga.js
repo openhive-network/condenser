@@ -392,7 +392,10 @@ function* broadcastPayload({
 function* accepted_comment({ operation }) {
     const { author, permlink } = operation;
     //yield call(getContent, { author, permlink });
-    if (operation.title === '') {
+    if (
+        operation.__config.originalBody !== null &&
+        operation.__config.originalBody !== undefined
+    ) {
         yield call(lazyUpdate, operation);
     } else {
         yield call(wait, 9000);

@@ -28,3 +28,52 @@
         width: 40px;
     }
 }
+
+.BadgesAchievements {
+    .BadgesAchievements_tabs_container {
+        padding: 5px 15px;
+    }
+
+    @media screen and (max-width: 39.9375em) {
+        margin: 0;
+    }
+
+    a {
+        display: inline-block;
+    }
+
+    .BadgesAchievements__badge_image {
+        margin: 5px;
+        img {
+            vertical-align: top;
+            width: 64px;
+            @media screen and (max-width: 39.9375em) {
+                width: 48px;
+            }
+        }
+    }
+
+    .react-tabs__tab-list {
+        background-color: $color-background-off-white;
+    }
+
+    .react-tabs__tab {
+        color: $color-text-dark;
+        font-weight: bold;
+    }
+
+    .react-tabs__tab--selected {
+        background-color: $color-blue-dark;
+        border-color: transparent;
+        border-radius: 0;
+        color: white;
+    }
+
+    .react-tabs__tab-panel {
+        min-height: 58px;
+    }
+}
+
+.article_section {
+    margin-bottom: 40px;
+}
