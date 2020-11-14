@@ -26,6 +26,9 @@ export async function callBridge(method, params) {
         delete params.observer;
     }
 
+    if (params.observer === null || params.observer === undefined)
+        params.observer = $STM_Config.default_observer;
+
     return new Promise(function(resolve, reject) {
         api.call('bridge.' + method, params, function(err, data) {
             if (err) {
