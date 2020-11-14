@@ -37,6 +37,7 @@ global.$STM_Config = {
     alternative_api_endpoints: alternativeApiEndpoints,
     referral: config.get('referral'),
     rebranded_api: true,
+    default_observer: config.get('default_observer'),
 };
 
 const WebpackIsomorphicTools = require('webpack-isomorphic-tools');
