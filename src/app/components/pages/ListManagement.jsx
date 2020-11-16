@@ -234,6 +234,7 @@ class ListManagement extends React.Component {
         if (text === '') {
             this.setState({ unmatched_accounts: [], validated_accounts: [] });
         }
+        text = text.replace(/\s+/g, '');
         this.setState({ unmatched_accounts: [] });
         let accounts = [];
         let validated_accounts = [];
