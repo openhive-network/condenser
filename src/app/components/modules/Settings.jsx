@@ -502,6 +502,7 @@ class Settings extends React.Component {
             isOwnAccount,
             user_preferences,
             follow,
+            metaData,
         } = this.props;
 
         const { submitting, valid, touched } = this.state.accountSettings;
@@ -1054,7 +1055,7 @@ function read_profile_v2(account) {
 
     // use new `posting_json_md` if {version: 2} is present
     let md = o2j.ifStringParseJSON(account.get('posting_json_metadata'));
-    if (md && md.profile && md.profile.account_is_witness) {
+    if (md && md.profile) {
         md.profile.account_is_witness = accountIsWitness;
     }
     if (md && md.profile && md.profile.version) return md;
