@@ -80,6 +80,16 @@ export default function reducer(state = defaultState, action) {
             return state;
         }
 
+        case ADD_LISTED_ACCOUNTS: {
+            if (payload) {
+                return state.setIn(
+                    ['listedAccounts', payload.username],
+                    fromJS(payload.listed_accounts)
+                );
+            }
+            return state;
+        }
+
         default:
             return state;
     }
