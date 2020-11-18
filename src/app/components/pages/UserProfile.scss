@@ -157,6 +157,7 @@
             padding: 0px 10px;
             border-left: 1px solid #CCC;
             &:first-child {border-left: none;}
+            &:nth-child(5) {border-left: none; border-right: 1px solid #CCC}
         }
     }
 }
