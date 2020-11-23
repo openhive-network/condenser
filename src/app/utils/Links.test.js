@@ -365,7 +365,7 @@ describe('Performance', () => {
     it('mixcloud', () => {
         match(
             mixcloudRegex.main,
-            'https://www.mixcloud.com/MagneticMagazine/ambient-meditations-vol-21-anane/'
+            'https://www.mixcloud.com/MagneticMagazine/ambient-meditations-vol-21-anane'
         );
         match(
             mixcloudRegex.sanitize,
