@@ -47,6 +47,13 @@ class UserProfileHeader extends React.Component {
             </DropdownMenu>
         );
 
+        const hideHivebuzzLevelBadge = () => {
+            const badge = document.getElementById('hivebuzz-level-badge');
+            if (badge) {
+                badge.style.display = 'none';
+            }
+        };
+
         return (
             <div className="UserProfile__banner row expanded">
                 <div className="column" style={cover_image_style}>
@@ -89,6 +96,8 @@ class UserProfileHeader extends React.Component {
                                     }/level.png`}
                                     alt="Hivebuzz level badge"
                                     className="UserProfile__badge_image_hivebuzzlevel"
+                                    id="hivebuzz-level-badge"
+                                    onError={hideHivebuzzLevelBadge}
                                 />
                             </a>
                         </Tooltip>
