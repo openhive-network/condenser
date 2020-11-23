@@ -17,7 +17,7 @@ You are entirely responsible for saving your password, backing it up, and keepin
 ### 2. Obtain and backup your keys
 
 Your keys are available from your Wallet page. Back them up and keep them secure! 
-- **Owner Key:** Used for regenerating other keys.
+- **Owner Key:** Used for changing other keys.
 - **Active Key:** Used to manage your funds and participate in governance.
 - **Posting Key:** Used to post and comment.
 - **Memo Key:** Used for decrypting encrypted memos.
