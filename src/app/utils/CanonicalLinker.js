@@ -40,6 +40,7 @@ function allowed_app(app) {
         'esteem',
         'steempeak',
         'travelfeed',
+        'leofinance',
     ];
     return whitelist.includes(app);
 }
