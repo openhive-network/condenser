@@ -38,9 +38,10 @@ function allowed_app(app) {
         'peakd',
         'steemit',
         'esteem',
+        'ecency',
         'steempeak',
         'travelfeed',
-        'leofinance',
+        'leofinance'
     ];
     return whitelist.includes(app);
 }
