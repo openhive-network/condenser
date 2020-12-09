@@ -893,7 +893,8 @@
         "button_mute": "Mute Users",
         "button_follow_blacklists": "Follow Blacklists",
         "button_follow_muted_lists": "Follow Muted Lists",
-        "unknown_accounts": "Unable to find account(s): ",
+        "unknown_accounts":
+            "These accounts cannot be added because they can't be validated or are already on the list: ",
         "page_count": "Viewing Page %(current)s of %(total)s",
         "search_for_user": "Search List For Account:",
         "add_users_to_list": "Add Account(s) To List",
@@ -932,6 +933,7 @@
         "first": "First",
         "previous": "Previous",
         "next": "Next",
-        "last": "Last"
+        "last": "Last",
+        "users_on_list": "Users On List: %(user_count)s"
     }
 }

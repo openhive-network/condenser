@@ -34,6 +34,7 @@ class ListManagement extends React.Component {
             updates_are_pending: false,
             first_time_user: false,
             expand_welcome_panel: false,
+            warning_message: '',
         };
         this.handle_filter_change = this.handle_filter_change.bind(this);
         this.validate_accounts_to_add = this.validate_accounts_to_add.bind(
@@ -144,7 +145,11 @@ class ListManagement extends React.Component {
                         result.length != this.state.all_listed_accounts.length
                     ) {
                         //updates came through, so set pending to false
-                        this.setState({ updates_are_pending: false });
+                        this.setState({
+                            updates_are_pending: false,
+                            warning_message: '',
+                        });
+                        this.multiadd = '';
                     }
                     this.setState({ all_listed_accounts: result });
                 },
@@ -239,6 +244,19 @@ class ListManagement extends React.Component {
         let accounts = [];
         let validated_accounts = [];
         let all_users = text.split(',');
+        if (this.state.error_message !== '')
+            this.setState({ error_message: '' });
+        if (all_users.length > 100)
+            this.setState({
+                warning_message:
+                    'You are adding a large number of accounts. Numerous brodcast operations will be required.',
+            });
+        else this.setState({ warning_message: '' });
+
+        let names_only = this.state.all_listed_accounts.map(item => {
+            return item.name;
+        });
+
         for (var user of all_users) {
             if (user !== '') accounts.push(user);
         }
@@ -248,6 +266,10 @@ class ListManagement extends React.Component {
             let result_string = JSON.stringify(result);
             for (var check_user of all_users) {
                 if (check_user === '') continue;
+                if (names_only.includes(check_user)) {
+                    bad_accounts.push(check_user);
+                    continue;
+                }
                 if (!result_string.includes(check_user))
                     bad_accounts.push(check_user);
                 else validated_accounts.push(check_user);
@@ -305,16 +327,29 @@ class ListManagement extends React.Component {
 
         let follower = this.props.username;
         let following = this.state.validated_accounts;
+
+        let followings = [];
+        if (following.length > 100) {
+            let i = 0;
+            while (following.length > 0) {
+                let new_following = following.splice(0, 100);
+                followings.push(new_following);
+            }
+        } else {
+            followings.push(following);
+        }
+
         this.setState({ is_busy: true });
-        this.props.updateList(follower, following, what, () => {
-            this.multiadd.value = '';
-            this.setState({
-                is_busy: false,
-                validated_accounts: [],
-                unmatched_accounts: [],
-                updates_are_pending: true,
-            });
+        for (var following_list of followings) {
+            this.props.updateList(follower, following_list, what, () => {});
+        }
+        this.setState({
+            is_busy: false,
+            validate_accounts: [],
+            unmatched_accounts: [],
+            updates_are_pending: true,
         });
+        this.multiadd.value = '';
     }
 
     generate_table_rows() {
@@ -602,7 +637,7 @@ class ListManagement extends React.Component {
                     this.state.expand_welcome_panel) && (
                     <div>
                         <center>
-                            <table style={{ width: '35%', border: '2' }}>
+                            <table style={{ width: '35%', border: 2 }}>
                                 <thead />
 
                                 <tbody>
@@ -676,9 +711,12 @@ class ListManagement extends React.Component {
                     </div>
                 )}
                 <p />
+
                 <div>
                     <center>
-                        <h4>{header_text}</h4>
+                        <h5>
+                            <b>{header_text}</b>
+                        </h5>
                         {(this.props.list_type === 'blacklisted' ||
                             this.props.list_type === 'muted') && (
                             <h6>
@@ -690,29 +728,7 @@ class ListManagement extends React.Component {
                                     : mute_list_description}
                             </h6>
                         )}
-                        <p />
-                        <table style={{ width: '35%' }}>
-                            <thead />
-                            <tbody>
-                                <tr>
-                                    <td style={{ textAlign: 'right' }}>
-                                        <right>
-                                            {tt(
-                                                'list_management_jsx.search_for_user'
-                                            )}
-                                        </right>
-                                    </td>
-                                    <td>
-                                        <input
-                                            type="text"
-                                            ref={el => (this.searchbox = el)}
-                                            style={{ width: '350px' }}
-                                            onChange={this.handle_filter_change}
-                                        />
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
+
                         <p />
 
                         <table style={{ width: '35%' }}>
@@ -765,6 +781,13 @@ class ListManagement extends React.Component {
                                 {tt('list_management_jsx.last')}
                             </span>
                         )}
+                        {list_length > 0 && (
+                            <div>
+                                {tt('list_management_jsx.users_on_list', {
+                                    user_count: list_length,
+                                })}
+                            </div>
+                        )}
                         {list_length > this.state.entries_per_page && (
                             <div>
                                 {tt('list_management_jsx.page_count', {
@@ -778,11 +801,13 @@ class ListManagement extends React.Component {
                             <div>
                                 <p />
                                 <p />
-                                <h4>
-                                    {tt(
-                                        'list_management_jsx.add_users_to_list'
-                                    )}
-                                </h4>
+                                <h5>
+                                    <b>
+                                        {tt(
+                                            'list_management_jsx.add_users_to_list'
+                                        )}
+                                    </b>
+                                </h5>
                                 <table style={{ width: '35%' }}>
                                     <thead />
                                     <tbody>
@@ -815,52 +840,70 @@ class ListManagement extends React.Component {
 
                                             <td style={{ width: '25%' }}>
                                                 {this.state.validated_accounts
-                                                    .length > 0 &&
-                                                    this.state
-                                                        .unmatched_accounts
-                                                        .length == 0 && (
-                                                        <span
-                                                            className="button slim hollow secondary"
-                                                            onClick={
-                                                                this
-                                                                    .broadcastFollowOperation
-                                                            }
-                                                        >
-                                                            {button_text}
-                                                        </span>
-                                                    )}
+                                                    .length > 0 && (
+                                                    <span
+                                                        className="button slim hollow secondary"
+                                                        onClick={
+                                                            this
+                                                                .broadcastFollowOperation
+                                                        }
+                                                    >
+                                                        {button_text}
+                                                    </span>
+                                                )}
                                             </td>
                                         </tr>
                                     </tbody>
                                 </table>
-                                <p />
-                                <h4>
-                                    {tt('list_management_jsx.reset_header')}
-                                </h4>
-                                <span
-                                    className="button slim hollow secondary"
-                                    onClick={this.handle_reset_list.bind(
-                                        this,
-                                        false
-                                    )}
-                                >
-                                    {this.state.is_busy
-                                        ? tt('list_management_jsx.button_busy')
-                                        : reset_button_text}
-                                </span>
-                                <span
-                                    className="button slim hollow secondary"
-                                    onClick={this.handle_reset_list.bind(
-                                        this,
-                                        true
-                                    )}
-                                >
-                                    {this.state.is_busy
-                                        ? tt('list_management_jsx.button_busy')
-                                        : reset_all_button_text}
-                                </span>
                             </div>
                         )}
+
+                        <h5>
+                            <b>Search This List</b>
+                        </h5>
+                        <table style={{ width: '35%' }}>
+                            <thead />
+                            <tbody>
+                                <tr>
+                                    <td
+                                        colSpan="2"
+                                        style={{ textAlign: 'right' }}
+                                    >
+                                        <center>
+                                            <input
+                                                type="text"
+                                                ref={el =>
+                                                    (this.searchbox = el)
+                                                }
+                                                style={{ width: '350px' }}
+                                                onChange={
+                                                    this.handle_filter_change
+                                                }
+                                            />
+                                        </center>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <p />
+                        <h4>{tt('list_management_jsx.reset_header')}</h4>
+                        <span
+                            className="button slim hollow secondary"
+                            onClick={this.handle_reset_list.bind(this, false)}
+                        >
+                            {this.state.is_busy
+                                ? tt('list_management_jsx.button_busy')
+                                : reset_button_text}
+                        </span>
+                        <span
+                            className="button slim hollow secondary"
+                            onClick={this.handle_reset_list.bind(this, true)}
+                        >
+                            {this.state.is_busy
+                                ? tt('list_management_jsx.button_busy')
+                                : reset_all_button_text}
+                        </span>
 
                         {this.state.unmatched_accounts.length > 0 && (
                             <div style={{ color: 'red' }}>
@@ -877,6 +920,16 @@ class ListManagement extends React.Component {
                                         'list_management_jsx.updates_are_pending'
                                     )}
                                 </b>
+                            </div>
+                        )}
+                        {this.state.error_message !== '' && (
+                            <div style={{ color: 'red' }}>
+                                <b>{this.state.error_message}</b>
+                            </div>
+                        )}
+                        {this.state.warning_message !== '' && (
+                            <div style={{ color: 'orange' }}>
+                                <b>{this.state.warning_message}</b>
                             </div>
                         )}
                     </center>
