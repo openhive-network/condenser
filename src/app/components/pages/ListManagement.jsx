@@ -920,7 +920,9 @@ class ListManagement extends React.Component {
                         </table>
 
                         <p />
-                        <h4>{tt('list_management_jsx.reset_header')}</h4>
+                        <h5>
+                            <b>{tt('list_management_jsx.reset_header')}</b>
+                        </h5>
                         <span
                             className="button slim hollow secondary"
                             onClick={this.handle_reset_list.bind(this, false)}
