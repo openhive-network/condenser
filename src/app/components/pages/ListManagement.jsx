@@ -345,7 +345,7 @@ class ListManagement extends React.Component {
         }
         this.setState({
             is_busy: false,
-            validate_accounts: [],
+            validated_accounts: [],
             unmatched_accounts: [],
             updates_are_pending: true,
         });
@@ -409,7 +409,7 @@ class ListManagement extends React.Component {
         for (var account of listed_accounts) {
             let item = (
                 <tr key={account.name + 'tr'}>
-                    <td style={{ width: '75%' }}>
+                    <td style={{ width: '75%', whiteSpace: 'nowrap' }}>
                         <Link to={'/@' + account.name}>
                             <strong>{account.name}</strong>
                         </Link>
@@ -432,7 +432,10 @@ class ListManagement extends React.Component {
                     </td>
                     <td>
                         <span
-                            style={{ display: show_button }}
+                            style={{
+                                display: show_button,
+                                whiteSpace: 'nowrap',
+                            }}
                             className="button slim hollow secondary"
                             onClick={this.handle_unlist.bind(
                                 this,
@@ -808,53 +811,83 @@ class ListManagement extends React.Component {
                                         )}
                                     </b>
                                 </h5>
-                                <table style={{ width: '35%' }}>
-                                    <thead />
-                                    <tbody>
-                                        <tr>
-                                            <td
-                                                style={{
-                                                    width: '50%',
-                                                    textAlign: 'right',
-                                                }}
-                                            >
-                                                {add_to_text}{' '}
-                                                {tt(
-                                                    'list_management_jsx.multi_add_notes'
-                                                )}
-                                            </td>
-                                            <td style={{ width: '25%' }}>
-                                                <input
-                                                    type="text"
-                                                    name="multiadd"
-                                                    ref={el =>
-                                                        (this.multiadd = el)
-                                                    }
-                                                    onChange={e => {
-                                                        this.validate_accounts_to_add(
-                                                            e.target.value
-                                                        );
+                                <h6>
+                                    {tt('list_management_jsx.multi_add_notes')}
+                                </h6>
+                                <center>
+                                    <table style={{ width: '35%' }}>
+                                        <thead />
+                                        <tbody>
+                                            <tr>
+                                                <td
+                                                    style={{
+                                                        whiteSpace: 'nowrap',
                                                     }}
-                                                />
-                                            </td>
+                                                >
+                                                    <center>
+                                                        <input
+                                                            style={{
+                                                                width: '60%',
+                                                                whiteSpace:
+                                                                    'nowrap',
+                                                            }}
+                                                            type="text"
+                                                            name="multiadd"
+                                                            ref={el =>
+                                                                (this.multiadd = el)
+                                                            }
+                                                            onChange={e => {
+                                                                this.validate_accounts_to_add(
+                                                                    e.target
+                                                                        .value
+                                                                );
+                                                            }}
+                                                        />
+                                                    </center>
+                                                </td>
+                                            </tr>
 
-                                            <td style={{ width: '25%' }}>
-                                                {this.state.validated_accounts
-                                                    .length > 0 && (
-                                                    <span
-                                                        className="button slim hollow secondary"
-                                                        onClick={
-                                                            this
-                                                                .broadcastFollowOperation
-                                                        }
-                                                    >
-                                                        {button_text}
-                                                    </span>
+                                            <tr>
+                                                <td
+                                                    style={{
+                                                        width: '60%',
+                                                        whiteSpace: 'nowrap',
+                                                    }}
+                                                >
+                                                    <center>
+                                                        {this.state
+                                                            .validated_accounts
+                                                            .length > 0 && (
+                                                            <span
+                                                                className="button slim hollow secondary"
+                                                                onClick={
+                                                                    this
+                                                                        .broadcastFollowOperation
+                                                                }
+                                                            >
+                                                                {button_text}
+                                                            </span>
+                                                        )}
+                                                    </center>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+
+                                    {this.state.unmatched_accounts.length >
+                                        0 && (
+                                        <div style={{ color: 'red' }}>
+                                            <b>
+                                                {tt(
+                                                    'list_management_jsx.unknown_accounts'
+                                                )}{' '}
+                                                {this.state.unmatched_accounts.join(
+                                                    ', '
                                                 )}
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+                                            </b>
+                                        </div>
+                                    )}
+                                </center>
                             </div>
                         )}
 
@@ -905,14 +938,6 @@ class ListManagement extends React.Component {
                                 : reset_all_button_text}
                         </span>
 
-                        {this.state.unmatched_accounts.length > 0 && (
-                            <div style={{ color: 'red' }}>
-                                <b>
-                                    {tt('list_management_jsx.unknown_accounts')}{' '}
-                                    {this.state.unmatched_accounts.join(', ')}
-                                </b>
-                            </div>
-                        )}
                         {this.state.updates_are_pending && (
                             <div style={{ color: 'red' }}>
                                 <b>
