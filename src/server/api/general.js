@@ -328,7 +328,7 @@ export default function useGeneralApi(app) {
         if (!checkCSRF(this, csrf)) return;
         try {
             const searchResult = yield fetch(
-                'https://api.search.esteem.app/search',
+                'https://api.hivesearcher.com/search',
                 passThrough
             );
             const resultJson = yield searchResult.json();

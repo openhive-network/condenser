@@ -47,6 +47,13 @@ class UserProfileHeader extends React.Component {
             </DropdownMenu>
         );
 
+        const hideHivebuzzLevelBadge = () => {
+            const badge = document.getElementById('hivebuzz-level-badge');
+            if (badge) {
+                badge.style.display = 'none';
+            }
+        };
+
         return (
             <div className="UserProfile__banner row expanded">
                 <div className="column" style={cover_image_style}>
@@ -89,6 +96,8 @@ class UserProfileHeader extends React.Component {
                                     }/level.png`}
                                     alt="Hivebuzz level badge"
                                     className="UserProfile__badge_image_hivebuzzlevel"
+                                    id="hivebuzz-level-badge"
+                                    onError={hideHivebuzzLevelBadge}
                                 />
                             </a>
                         </Tooltip>
@@ -146,6 +155,39 @@ class UserProfileHeader extends React.Component {
                                     )}
                                 </span>
                             )}
+
+                            <span>
+                                <br />
+                                <Link to={`/@${accountname}/lists/blacklisted`}>
+                                    Blacklisted Users
+                                </Link>
+                            </span>
+
+                            <span>
+                                <Link to={`/@${accountname}/lists/muted`}>
+                                    Muted Users
+                                </Link>
+                            </span>
+
+                            <span>
+                                <Link
+                                    to={`/@${
+                                        accountname
+                                    }/lists/followed_blacklists`}
+                                >
+                                    Followed Blacklists
+                                </Link>
+                            </span>
+
+                            <span>
+                                <Link
+                                    to={`/@${
+                                        accountname
+                                    }/lists/followed_muted_lists`}
+                                >
+                                    Followed Muted Lists
+                                </Link>
+                            </span>
                         </div>
 
                         <p className="UserProfile__info">
