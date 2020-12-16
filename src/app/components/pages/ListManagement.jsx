@@ -50,6 +50,7 @@ class ListManagement extends React.Component {
         );
         this.toggle_help = this.toggle_help.bind(this);
         this.dismiss_intro = this.dismiss_intro.bind(this);
+        this.follow_hive_blog_lists = this.follow_hive_blog_lists.bind(this);
     }
 
     componentDidMount() {
@@ -295,9 +296,7 @@ class ListManagement extends React.Component {
     }
 
     dismiss_intro() {
-        //Subscribes them to blacklist and mute list of the null account
-        //Null account has no lists, but this is a way for us to determine
-        //if the user has been here before or not
+        //Subscribes them to blacklist and mute list of the hive.blog account
         this.setState({ expand_welcome_panel: false, first_time_user: false });
         this.handle_reset_list(true);
     }
@@ -487,8 +486,24 @@ class ListManagement extends React.Component {
         let following = 'all'; //there is an 'all' account, but it appears unused so i'm stealing their identity for this
         this.setState({ is_busy: true });
         this.props.updateList(follower, following, what, () => {
-            this.setState({ is_busy: false, updates_are_pending: false });
-            this.get_accounts_from_api();
+            setTimeout(() => {
+                this.follow_hive_blog_lists();
+            }, 5000);
+        });
+    }
+
+    follow_hive_blog_lists() {
+        let follower = this.props.username;
+        let following = 'hive.blog';
+        let what = 'follow_muted';
+        this.props.updateList(follower, following, what, () => {
+            setTimeout(() => {
+                //[JES] Uncomment after hivemind follow bug gets fixed
+                //let what = 'follow_blacklist';
+                //this.props.updateList(follower, following, what, () => {});
+                this.setState({ is_busy: false, updates_are_pending: false });
+                //this.get_accounts_from_api();
+            }, 1000);
         });
     }
 
