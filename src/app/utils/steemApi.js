@@ -26,7 +26,11 @@ export async function callBridge(method, params) {
         delete params.observer;
     }
 
-    if (params.observer === null || params.observer === undefined)
+    if (
+        method !== 'account_notifications' &&
+        method !== 'unread_notifications' &&
+        (params.observer === null || params.observer === undefined)
+    )
         params.observer = $STM_Config.default_observer;
 
     return new Promise(function(resolve, reject) {
