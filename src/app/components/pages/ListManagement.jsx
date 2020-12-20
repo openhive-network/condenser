@@ -948,7 +948,8 @@ class ListManagement extends React.Component {
                         </span>
                         <span
                             className="button slim hollow secondary"
-                            onClick={this.handle_reset_list.bind(this, true)}
+                            // onClick={this.handle_reset_list.bind(this, true)}
+                            disabled="true"
                         >
                             {this.state.is_busy
                                 ? tt('list_management_jsx.button_busy')
