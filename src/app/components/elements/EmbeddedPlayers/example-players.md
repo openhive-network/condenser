@@ -52,10 +52,10 @@ Episode
 https://open.spotify.com/episode/523CYPCmCXdv8uBME5yzZ7?si=l2uwhVjERe21N86grg3ZEg
 
 ## threespeak direct html iframe markup
-<iframe src="https://3speak.online/embed?v=threespeak/iaarkpvf"></iframe>
+<iframe src="https://3speak.co/embed?v=threespeak/iaarkpvf"></iframe>
 
 ## threespeak iframe embedded from link
-https://3speak.online/watch?v=threespeak/iaarkpvf
+https://3speak.co/watsch?v=threespeak/iaarkpvf
 
 ## twitch direct html iframe markup
 <iframe src="https://player.twitch.tv/?channel=tfue" frameborder="0" allowfullscreen="true" scrolling="no" height="378" width="620"></iframe>
