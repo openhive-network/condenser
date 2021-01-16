@@ -74,6 +74,7 @@ class ReplyEditor extends React.Component {
         jsonMetadata: PropTypes.object, // An existing comment has its own meta data
         category: PropTypes.string, // initial value
         title: PropTypes.string, // initial value
+        summary: PropTypes.string,
         body: PropTypes.string, // initial value
         defaultPayoutType: PropTypes.string,
         payoutType: PropTypes.string,
@@ -122,7 +123,7 @@ class ReplyEditor extends React.Component {
             let draft = localStorage.getItem('replyEditorData-' + formId);
             if (draft) {
                 draft = JSON.parse(draft);
-                const { tags, title } = this.state;
+                const { tags, title, summary } = this.state;
 
                 if (tags) {
                     this.checkTagsCommunity(draft.tags);
@@ -130,6 +131,7 @@ class ReplyEditor extends React.Component {
                 }
 
                 if (title) title.props.onChange(draft.title);
+                if (summary) summary.props.onChange(draft.summary);
                 if (draft.payoutType)
                     this.props.setPayoutType(formId, draft.payoutType);
                 if (draft.maxAcceptedPayout)
@@ -258,7 +260,7 @@ class ReplyEditor extends React.Component {
 
                 if (nextProps.postTemplateName.indexOf('create_') === 0) {
                     const { username } = tp;
-                    const { body, title, tags } = ns;
+                    const { body, title, summary, tags } = ns;
                     const { payoutType, beneficiaries } = np;
                     const userTemplates = loadUserTemplates(username);
                     const newTemplateName = nextProps.postTemplateName.replace(
@@ -271,6 +273,7 @@ class ReplyEditor extends React.Component {
                         payoutType,
                         markdown: body !== undefined ? body.value : '',
                         title: title !== undefined ? title.value : '',
+                        summary: summary !== undefined ? summary.value : '',
                         tags: tags !== undefined ? tags.value : '',
                     };
 
@@ -297,6 +300,7 @@ class ReplyEditor extends React.Component {
                         if (template.name === nextProps.postTemplateName) {
                             this.state.body.props.onChange(template.markdown);
                             this.state.title.props.onChange(template.title);
+                            this.state.summary.props.onChange(template.summary);
                             this.state.tags.props.onChange(template.tags);
                             this.props.setPayoutType(
                                 formId,
@@ -314,11 +318,12 @@ class ReplyEditor extends React.Component {
                 }
             }
 
-            // Save curent draft to localStorage
+            // Save current draft to localStorage
             if (
                 ts.body.value !== ns.body.value ||
                 (ns.tags && ts.tags.value !== ns.tags.value) ||
                 (ns.title && ts.title.value !== ns.title.value) ||
+                (ns.summary && ts.summary.value !== ns.summary.value) ||
                 np.payoutType !== tp.payoutType ||
                 np.beneficiaries !== tp.beneficiaries ||
                 np.maxAcceptedPayout !== tp.maxAcceptedPayout
@@ -330,12 +335,13 @@ class ReplyEditor extends React.Component {
                     beneficiaries,
                     maxAcceptedPayout,
                 } = np;
-                const { tags, title, body } = ns;
+                const { tags, title, summary, body } = ns;
                 const data = {
                     formId,
                     title: title ? title.value : undefined,
                     tags: tags ? tags.value : undefined,
                     body: body.value,
+                    summary: summary ? summary.value : undefined,
                     payoutType,
                     beneficiaries,
                     maxAcceptedPayout,
@@ -368,6 +374,7 @@ class ReplyEditor extends React.Component {
             name: 'replyForm',
             initialValues: props.initialValues,
             validation: values => {
+                const markdownRegex = /(?:\*[\w\s]*\*|\#[\w\s]*\#|_[\w\s]*_|~[\w\s]*~|\]\s*\(|\]\s*\[)/;
                 let bodyValidation = null;
                 if (!values.body) {
                     bodyValidation = tt('g.required');
@@ -386,28 +393,22 @@ class ReplyEditor extends React.Component {
                             ? tt('g.required')
                             : values.title.length > 255
                               ? tt('reply_editor.shorten_title')
-                              : null),
+                              : markdownRegex.test(values.title)
+                                ? tt('reply_editor.markdown_not_supported')
+                                : null),
                     tags: isStory && validateTagInput(values.tags, !isEdit),
                     body: bodyValidation,
+                    summary:
+                        isStory &&
+                        (values.summary.length > 140
+                            ? tt('reply_editor.shorten_summary')
+                            : markdownRegex.test(values.summary)
+                              ? tt('reply_editor.markdown_not_supported')
+                              : null),
                 };
             },
         });
     }
-
-    onTitleChange = e => {
-        const value = e.target.value;
-        // TODO block links in title (they do not make good permlinks)
-        const hasMarkdown = /(?:\*[\w\s]*\*|\#[\w\s]*\#|_[\w\s]*_|~[\w\s]*~|\]\s*\(|\]\s*\[)/.test(
-            value
-        );
-        this.setState({
-            titleWarn: hasMarkdown
-                ? tt('reply_editor.markdown_not_supported')
-                : '',
-        });
-        const { title } = this.state;
-        title.props.onChange(e);
-    };
 
     onCancel = e => {
         if (e) e.preventDefault();
@@ -620,10 +621,11 @@ class ReplyEditor extends React.Component {
             category: this.props.category,
             body: this.props.body,
         };
-        const { onCancel, onTitleChange } = this;
+        const { onCancel } = this;
         const {
             title,
             tags,
+            summary,
             body,
             community,
             disabledCommunity,
@@ -652,7 +654,7 @@ class ReplyEditor extends React.Component {
             handleSubmit,
             resetForm,
         } = this.state.replyForm;
-        const { postError, titleWarn, rte } = this.state;
+        const { postError, summaryWarn, rte } = this.state;
         const { progress, noClipboardData } = this.state;
         const disabled = submitting || !valid;
         const loading = submitting || this.state.loading;
@@ -700,13 +702,23 @@ class ReplyEditor extends React.Component {
         let titleError = null;
         // The Required title error (triggered onBlur) can shift the form making it hard to click on things..
         if (
-            (hasTitleError &&
-                (title.error !== tt('g.required') || body.value !== '')) ||
-            titleWarn
+            hasTitleError &&
+            (title.error !== tt('g.required') || body.value !== '')
         ) {
             titleError = (
                 <div className={hasTitleError ? 'error' : 'warning'}>
-                    {hasTitleError ? title.error : titleWarn}&nbsp;
+                    {title.error}
+                    &nbsp;
+                </div>
+            );
+        }
+
+        const hasSummaryError = summary && summary.touched && summary.error;
+        let summaryError = null;
+        if ((hasSummaryError && body.value !== '') || summaryWarn) {
+            summaryError = (
+                <div className={hasSummaryError ? 'error' : 'warning'}>
+                    {hasSummaryError ? summary.error : summaryWarn}&nbsp;
                 </div>
             );
         }
@@ -784,7 +796,7 @@ class ReplyEditor extends React.Component {
                                     <input
                                         type="text"
                                         className="ReplyEditor__title"
-                                        onChange={onTitleChange}
+                                        onChange={title.props.onChange}
                                         disabled={loading}
                                         placeholder={tt('reply_editor.title')}
                                         autoComplete="off"
@@ -925,12 +937,34 @@ class ReplyEditor extends React.Component {
                         >
                             {isStory && (
                                 <span>
+                                    <input
+                                        type="text"
+                                        className="ReplyEditor__summary"
+                                        onChange={summary.props.onChange}
+                                        disabled={loading}
+                                        placeholder={tt('reply_editor.summary')}
+                                        autoComplete="off"
+                                        ref="summaryRef"
+                                        tabIndex={3}
+                                        {...summary.props}
+                                    />
+                                </span>
+                            )}
+                            {summaryError}
+                        </div>
+
+                        <div
+                            className={vframe_section_shrink_class}
+                            style={{ marginTop: '0.5rem' }}
+                        >
+                            {isStory && (
+                                <span>
                                     <TagInput
                                         {...tags.props}
                                         onChange={tags.props.onChange}
                                         disabled={loading}
                                         isEdit={isEdit}
-                                        tabIndex={3}
+                                        tabIndex={4}
                                     />
                                     {(tags.touched || tags.value) && (
                                         <div className="error">
@@ -1200,8 +1234,9 @@ export default formId =>
                 /submit_story/.test(type) || (isEdit && !parent_author);
             if (isStory) fields.push('title');
             if (isStory) fields.push('tags');
+            if (isStory) fields.push('summary');
 
-            let { category, title, body } = ownProps;
+            let { category, title, body, summary } = ownProps;
             if (/submit_/.test(type)) title = body = '';
             // type: PropTypes.oneOf(['submit_story', 'submit_comment', 'edit'])
 
@@ -1310,7 +1345,7 @@ export default formId =>
                 beneficiaries,
                 postTemplateName,
                 maxAcceptedPayout,
-                initialValues: { title, body, tags },
+                initialValues: { title, summary, body, tags },
                 formId,
             };
         },
@@ -1352,6 +1387,7 @@ export default formId =>
             reply: ({
                 tags,
                 title,
+                summary,
                 body,
                 author,
                 permlink,
@@ -1426,20 +1462,33 @@ export default formId =>
 
                 // merge
                 const meta = isEdit ? jsonMetadata : {};
-                if (metaTags.size) meta.tags = metaTags.toJS();
-                else delete meta.tags;
-                if (rtags.usertags.size) meta.users = Array.from(rtags.usertags);
-                else delete meta.users;
-                if (rtags.images.size)
+                if (metaTags.size) {
+                    meta.tags = metaTags.toJS();
+                } else {
+                    delete meta.tags;
+                }
+                if (rtags.usertags.size) {
+                    meta.users = Array.from(rtags.usertags);
+                } else {
+                    delete meta.users;
+                }
+                if (rtags.images.size) {
                     meta.image = Array.from(rtags.images).slice(0, 1);
-                else delete meta.image;
-                if (rtags.links.size)
+                } else {
+                    delete meta.image;
+                }
+                if (rtags.links.size) {
                     meta.links = Array.from(rtags.links).slice(0, 1);
-                else delete meta.links;
+                } else {
+                    delete meta.links;
+                }
 
                 meta.app = 'hiveblog/0.1';
                 if (isStory) {
                     meta.format = isHtml ? 'html' : 'markdown';
+                    if (summary) {
+                        meta.description = summary;
+                    }
                 }
 
                 const sanitizeErrors = [];
