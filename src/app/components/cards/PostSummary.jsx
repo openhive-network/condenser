@@ -140,8 +140,6 @@ class PostSummary extends React.Component {
         if (crossPostedBy) {
             summary = extractBodySummary(post.get('cross_post_body'), isReply);
         } else {
-            //post.get('json_metadata')
-            //summary = extractBodySummary(post.get('body'), isReply);
             summary = getPostSummary(
                 post.get('json_metadata'),
                 post.get('body'),
