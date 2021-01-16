@@ -8,12 +8,6 @@ import {
 } from 'app/utils/CrossPosts';
 
 export async function callBridge(method, params) {
-    console.log(
-        'call bridge',
-        method,
-        params && JSON.stringify(params).substring(0, 200)
-    );
-
     // [JES] Hivemind throws an exception if you call for my/[trending/payouts/new/etc] with a null observer
     // so just delete the 'my' tag if there is no observer specified
     if (
@@ -26,8 +20,20 @@ export async function callBridge(method, params) {
         delete params.observer;
     }
 
-    if (params.observer === null || params.observer === undefined)
+    if (
+        method !== 'account_notifications' &&
+        method !== 'unread_notifications' &&
+        method !== 'list_all_subscriptions' &&
+        method !== 'get_post_header' &&
+        (params.observer === null || params.observer === undefined)
+    )
         params.observer = $STM_Config.default_observer;
+
+    console.log(
+        'call bridge',
+        method,
+        params && JSON.stringify(params).substring(0, 200)
+    );
 
     return new Promise(function(resolve, reject) {
         api.call('bridge.' + method, params, function(err, data) {

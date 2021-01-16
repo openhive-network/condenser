@@ -36,6 +36,7 @@ class SubscriptionsList extends React.Component {
         };
         const hivebuzzBadges = _.get(badges, 'hivebuzz', []);
         const peakdBadges = _.get(badges, 'peakd', []);
+        const hasBadges = !_.isEmpty(hivebuzzBadges) || !_.isEmpty(peakdBadges);
         if (hivebuzzBadges) {
             hivebuzzBadges.forEach(badge => {
                 const type = badge.get('type');
@@ -114,8 +115,7 @@ class SubscriptionsList extends React.Component {
                 </div>
                 <div className="article_section">
                     <h4>{tt('g.badges_and_achievements')}</h4>
-                    {(!_.isEmpty(hivebuzzBadges) ||
-                        !_.isEmpty(peakdBadges.size)) && (
+                    {hasBadges && (
                         <div>
                             <p>
                                 {tt('g.badges_and_achievements_description')}{' '}
@@ -186,10 +186,9 @@ class SubscriptionsList extends React.Component {
                             </div>
                         </div>
                     )}
-                    {_.isEmpty(hivebuzzBadges) &&
-                        !_.isEmpty(peakdBadges.size) && (
-                            <p>{tt('g.badges_and_achievements_none')}</p>
-                        )}
+                    {!hasBadges && (
+                        <p>{tt('g.badges_and_achievements_none')}</p>
+                    )}
                 </div>
             </div>
         );

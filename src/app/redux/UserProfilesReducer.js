@@ -5,13 +5,17 @@ const ADD_USER_PROFILE = 'user_profile/ADD';
 const ADD_LISTED_ACCOUNTS = 'user_profile/LISTED';
 const ADD_HIVEBUZZ_BADGES = 'user_profile/HIVEBUZZ_BADGES';
 const ADD_PEAKD_BADGES = 'user_profile/PEAKD_BADGES';
+const SET_ERROR = 'user_profile/ERROR';
 
 const defaultState = fromJS({
     profiles: {},
+    error: false,
+    hivebuzzBadges: [],
+    peakdBadges: [],
 });
 
 export default function reducer(state = defaultState, action) {
-    const payload = action.payload;
+    const { payload } = action;
 
     switch (action.type) {
         case ADD_USER_PROFILE: {
@@ -80,13 +84,12 @@ export default function reducer(state = defaultState, action) {
             return state;
         }
 
-        case ADD_LISTED_ACCOUNTS: {
+        case SET_ERROR: {
             if (payload) {
-                return state.setIn(
-                    ['listedAccounts', payload.username],
-                    fromJS(payload.listed_accounts)
-                );
+                const { error } = payload;
+                return state.setIn(['error'], error);
             }
+
             return state;
         }
 
@@ -108,6 +111,11 @@ export const addHivebuzzBadges = payload => ({
 
 export const addPeakdBadges = payload => ({
     type: ADD_PEAKD_BADGES,
+    payload,
+});
+
+export const setError = payload => ({
+    type: SET_ERROR,
     payload,
 });
 
