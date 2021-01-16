@@ -654,7 +654,7 @@ class ReplyEditor extends React.Component {
             handleSubmit,
             resetForm,
         } = this.state.replyForm;
-        const { postError, summaryWarn, rte } = this.state;
+        const { postError, rte } = this.state;
         const { progress, noClipboardData } = this.state;
         const disabled = submitting || !valid;
         const loading = submitting || this.state.loading;
@@ -715,10 +715,11 @@ class ReplyEditor extends React.Component {
 
         const hasSummaryError = summary && summary.touched && summary.error;
         let summaryError = null;
-        if ((hasSummaryError && body.value !== '') || summaryWarn) {
+        if (hasSummaryError) {
             summaryError = (
                 <div className={hasSummaryError ? 'error' : 'warning'}>
-                    {hasSummaryError ? summary.error : summaryWarn}&nbsp;
+                    {summary.error}
+                    &nbsp;
                 </div>
             );
         }
@@ -804,6 +805,7 @@ class ReplyEditor extends React.Component {
                                         tabIndex={1}
                                         {...title.props}
                                     />
+                                    {titleError}
                                     <div
                                         className="float-left primary"
                                         style={{ margin: '0.8rem 0 0 0' }}
@@ -834,7 +836,6 @@ class ReplyEditor extends React.Component {
                                                 </a>
                                             )}
                                     </div>
-                                    {titleError}
                                 </span>
                             )}
                         </div>
