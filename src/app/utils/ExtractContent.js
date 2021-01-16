@@ -3,6 +3,7 @@ import sanitize from 'sanitize-html';
 import { htmlDecode } from 'app/utils/Html';
 import HtmlReady from 'shared/HtmlReady';
 import Remarkable from 'remarkable';
+import _ from 'lodash';
 
 const remarkable = new Remarkable({ html: true, linkify: false });
 
@@ -84,7 +85,11 @@ export function extractBodySummary(body, stripQuotes = false) {
 }
 
 export function getPostSummary(jsonMetadata, body, stripQuotes = false) {
-    const shortDescription = jsonMetadata.get('description');
+    const shortDescription = _.get(
+        jsonMetadata,
+        'description',
+        jsonMetadata.get('description')
+    );
 
     if (!shortDescription) {
         return extractBodySummary(body, stripQuotes);
