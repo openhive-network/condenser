@@ -10,7 +10,11 @@ import Icon from 'app/components/elements/Icon';
 import Reblog from 'app/components/elements/Reblog';
 import resolveRoute from 'app/ResolveRoute';
 import Voting from 'app/components/elements/Voting';
-import { extractBodySummary, extractImageLink } from 'app/utils/ExtractContent';
+import {
+    getPostSummary,
+    extractBodySummary,
+    extractImageLink,
+} from 'app/utils/ExtractContent';
 import VotesAndComments from 'app/components/elements/VotesAndComments';
 import Author from 'app/components/elements/Author';
 import Tag from 'app/components/elements/Tag';
@@ -136,7 +140,13 @@ class PostSummary extends React.Component {
         if (crossPostedBy) {
             summary = extractBodySummary(post.get('cross_post_body'), isReply);
         } else {
-            summary = extractBodySummary(post.get('body'), isReply);
+            //post.get('json_metadata')
+            //summary = extractBodySummary(post.get('body'), isReply);
+            summary = getPostSummary(
+                post.get('json_metadata'),
+                post.get('body'),
+                isReply
+            );
         }
 
         const content_body = (
