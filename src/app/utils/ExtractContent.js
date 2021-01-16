@@ -56,11 +56,10 @@ export function extractImageLink(json_metadata, body = null) {
  *
  * if `strip_quotes`, try to remove any block quotes at beginning of body.
  */
-export function extractBodySummary(body, strip_quotes = false) {
+export function extractBodySummary(body, stripQuotes = false) {
     let desc = body;
 
-    if (strip_quotes)
-        desc = desc.replace(/(^(\n|\r|\s)*)>([\s\S]*?).*\s*/g, '');
+    if (stripQuotes) desc = desc.replace(/(^(\n|\r|\s)*)>([\s\S]*?).*\s*/g, '');
     desc = remarkableStripper.render(desc); // render markdown to html
     desc = sanitize(desc, { allowedTags: [] }); // remove all html, leaving text
     desc = htmlDecode(desc);
@@ -82,4 +81,14 @@ export function extractBodySummary(body, strip_quotes = false) {
     }
 
     return desc;
+}
+
+export function getPostSummary(jsonMetadata, body, stripQuotes = false) {
+    const shortDescription = jsonMetadata.get('description');
+
+    if (!shortDescription) {
+        return extractBodySummary(body, stripQuotes);
+    }
+
+    return shortDescription;
 }
