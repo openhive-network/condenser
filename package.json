@@ -52,7 +52,6 @@
     "@hiveio/hive-js": "0.8.4",
     "@hiveio/hivescript": "^1.2.0",
     "@steem/crypto-session": "git+https://github.com/steemit/crypto-session.git#83a90b319ce5bc6a70362d52a15a815de7e729bb",
-    "big.js": "^5.2.2",
     "assert": "1.4.1",
     "autoprefixer": "^9.6.1",
     "axios": "^0.18.1",
@@ -60,6 +59,7 @@
     "babel-loader": "8.1.0",
     "babel-plugin-react-intl": "2.3.1",
     "babel-plugin-transform-inline-environment-variables": "0.2.0",
+    "big.js": "^5.2.2",
     "bigi": "1.4.2",
     "blocked": "1.2.1",
     "blueimp-file-upload": "9.22.1",
@@ -75,6 +75,7 @@
     "cpu-stat": "2.0.1",
     "diff-match-patch": "1.0.4",
     "disk-stat": "1.0.4",
+    "foundation-sites": "git+https://gitlab.syncad.com/hive/foundation-sites.git#544fb8a26efcf45e9ba9ccaa77b04d0ae35b9722",
     "hivesigner": "3.2.1",
     "humanize-number": "0.0.2",
     "intl": "1.2.5",
@@ -189,7 +190,6 @@
     "eslint-plugin-jsx-a11y": "6.2.3",
     "eslint-plugin-react": "7.19.0",
     "file-loader": "6.2.0",
-    "foundation-sites": "git+https://github.com/steemit/foundation-sites.git#e8e32c715bbc4c822b80b555345f61337269ca78",
     "git-rev-sync": "1.9.1",
     "husky": "0.14.3",
     "imports-loader": "1.2.0",
@@ -241,6 +241,6 @@
     }
   },
   "browserslist": [
-      "defaults"
+    "defaults"
   ]
 }
