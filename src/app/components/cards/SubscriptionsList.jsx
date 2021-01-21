@@ -40,42 +40,58 @@ class SubscriptionsList extends React.Component {
         if (hivebuzzBadges) {
             hivebuzzBadges.forEach(badge => {
                 const type = badge.get('type');
-                badgesTypes[type].push(
-                    <a
-                        className="BadgesAchievements__badge_image"
-                        key={badge.get('id')}
-                        href={`https://hivebuzz.me/@${username}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                    >
-                        <img
-                            src={badge.get('url')}
-                            alt={badge.get('title')}
-                            title={badge.get('title')}
-                        />
-                    </a>
-                );
+                let valid = true;
+                if (
+                    badgesTypes[type] === undefined ||
+                    badgesTypes[type] === null
+                )
+                    valid = false;
+                if (valid) {
+                    badgesTypes[type].push(
+                        <a
+                            className="BadgesAchievements__badge_image"
+                            key={badge.get('id')}
+                            href={`https://hivebuzz.me/@${username}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            <img
+                                src={badge.get('url')}
+                                alt={badge.get('title')}
+                                title={badge.get('title')}
+                            />
+                        </a>
+                    );
+                }
             });
         }
         if (peakdBadges) {
             peakdBadges.forEach(badge => {
                 const type = badge.get('type');
-                badgesTypes[type].push(
-                    <a
-                        className="BadgesAchievements__badge_image"
-                        key={badge.get('id')}
-                        href={`https://peakd.com/b/${badge.get('name')}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                    >
-                        <img
-                            src={badge.get('url')}
-                            alt={badge.get('title')}
-                            title={badge.get('title')}
-                            className="UserProfile__badge_image"
-                        />
-                    </a>
-                );
+                let valid = true;
+                if (
+                    badgesTypes[type] === undefined ||
+                    badgesTypes[type] === null
+                )
+                    valid = false;
+                if (valid) {
+                    badgesTypes[type].push(
+                        <a
+                            className="BadgesAchievements__badge_image"
+                            key={badge.get('id')}
+                            href={`https://peakd.com/b/${badge.get('name')}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            <img
+                                src={badge.get('url')}
+                                alt={badge.get('title')}
+                                title={badge.get('title')}
+                                className="UserProfile__badge_image"
+                            />
+                        </a>
+                    );
+                }
             });
         }
 
