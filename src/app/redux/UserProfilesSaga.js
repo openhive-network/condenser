@@ -5,6 +5,7 @@ import PeakdApi from 'app/utils/peakdApi';
 import * as userProfileActions from './UserProfilesReducer';
 
 const FETCH_PROFILE = 'userProfilesSaga/FETCH_PROFILE';
+const FETCH_LISTS = 'userProfilesSaga/FETCH_LISTS';
 const FETCH_HIVEBUZZ_BADGES = 'userProfileSaga/FETCH_HIVEBUZZ_BADGES';
 const FETCH_PEAKD_BADGES = 'userProfileSaga/FETCH_PEAKD_BADGES';
 
@@ -29,28 +30,60 @@ export function* fetchUserProfile(action) {
 
 export function* fetchUserHivebuzzBadges(action) {
     const { account } = action.payload;
-    const ret = yield call(HivebuzzApi.getBadges, { account });
-    if (!ret) throw new Error('Hivebuzz badges error');
-
-    yield put(
-        userProfileActions.addHivebuzzBadges({
-            username: account,
-            badges: [...ret],
-        })
-    );
+    try {
+        const ret = yield call(HivebuzzApi.getBadges, { account });
+        if (!ret) {
+            console.error('Hivebuzz badges error');
+            yield put(
+                userProfileActions.setError({
+                    error: true,
+                })
+            );
+        } else {
+            yield put(
+                userProfileActions.addHivebuzzBadges({
+                    username: account,
+                    badges: [...ret],
+                })
+            );
+        }
+    } catch (e) {
+        console.error('Hivebuzz badges error');
+        yield put(
+            userProfileActions.setError({
+                error: true,
+            })
+        );
+    }
 }
 
 export function* fetchUserPeakdBadges(action) {
     const { account } = action.payload;
-    const ret = yield call(PeakdApi.getBadges, { account });
-    if (!ret) throw new Error('Peakd badges error');
-
-    yield put(
-        userProfileActions.addPeakdBadges({
-            username: account,
-            badges: [...ret],
-        })
-    );
+    try {
+        const ret = yield call(PeakdApi.getBadges, { account });
+        if (!ret) {
+            console.error('Peakd badges error');
+            yield put(
+                userProfileActions.setError({
+                    error: true,
+                })
+            );
+        } else {
+            yield put(
+                userProfileActions.addPeakdBadges({
+                    username: account,
+                    badges: [...ret],
+                })
+            );
+        }
+    } catch (e) {
+        console.error('Peakd badges error');
+        yield put(
+            userProfileActions.setError({
+                error: true,
+            })
+        );
+    }
 }
 
 // Action creators
