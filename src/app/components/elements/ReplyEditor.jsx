@@ -661,7 +661,10 @@ class ReplyEditor extends React.Component {
         // Generate an array of images used in the post body.
         // This will be used to display the cover image selector.
         let selectedCoverImage = '';
-        const rtags = extractRtags(body.value);
+        let rtags;
+        if (isStory) {
+            rtags = extractRtags(body.value);
+        }
 
         const errorCallback = estr => {
             this.setState({ postError: estr, loading: false });
