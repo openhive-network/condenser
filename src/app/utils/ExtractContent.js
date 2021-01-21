@@ -36,10 +36,11 @@ export function extractRtags(body = null) {
 
 export function extractImageLink(json_metadata, body = null) {
     const json = json_metadata || {};
+    const jsonImage = _.get(json, 'image', json.get('image'));
     let image_link;
 
     try {
-        image_link = json && json.image ? getValidImage(json.image) : null;
+        image_link = jsonImage ? getValidImage(Array.from(jsonImage)) : null;
     } catch (error) {}
 
     // If nothing found in json metadata, parse body and check images/links
