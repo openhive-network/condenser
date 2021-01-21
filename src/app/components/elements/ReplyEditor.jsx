@@ -14,6 +14,7 @@ import SlateEditor, {
     deserializeHtml,
     getDemoState,
 } from 'app/components/elements/SlateEditor';
+import { extractRtags } from 'app/utils/ExtractContent';
 import LoadingIndicator from 'app/components/elements/LoadingIndicator';
 import PostCategoryBanner from 'app/components/elements/PostCategoryBanner';
 import shouldComponentUpdate from 'app/utils/shouldComponentUpdate';
@@ -657,6 +658,11 @@ class ReplyEditor extends React.Component {
         const disabled = submitting || !valid;
         const loading = submitting || this.state.loading;
 
+        // Generate an array of images used in the post body.
+        // This will be used to display the cover image selector.
+        let selectedCoverImage = '';
+        const rtags = extractRtags(body.value);
+
         const errorCallback = estr => {
             this.setState({ postError: estr, loading: false });
         };
@@ -724,6 +730,23 @@ class ReplyEditor extends React.Component {
             });
         };
 
+        const onSelectCoverImage = event => {
+            const { target } = event;
+
+            const postImages = document.getElementsByClassName(
+                'ReplyEditor__options__image_selector__image_container'
+            );
+            for (let pi = 0; pi < postImages.length; pi += 1) {
+                const postImage = postImages[pi];
+                postImage.classList.remove('selected');
+            }
+
+            target.classList.add('selected');
+            selectedCoverImage = target.style.backgroundImage
+                .slice(4, -1)
+                .replace(/"/g, '');
+        };
+
         return (
             <div
                 className={classnames({
@@ -771,6 +794,7 @@ class ReplyEditor extends React.Component {
                                 ...data,
                                 ...replyParams,
                                 startLoadingIndicator,
+                                selectedCoverImage,
                             };
                             reply(replyPayload);
                         })}
@@ -1016,6 +1040,36 @@ class ReplyEditor extends React.Component {
                                                         </span>
                                                     )}
                                             </div>
+                                            {Array.from(rtags.images).length >
+                                                0 && (
+                                                <div className="ReplyEditor__options__cover_image_selector">
+                                                    <h6>
+                                                        {tt(
+                                                            'reply_editor.select_cover_image'
+                                                        )}
+                                                        :
+                                                    </h6>
+                                                    <div className="ReplyEditor__options__image_selector">
+                                                        {Array.from(
+                                                            rtags.images
+                                                        ).map(image => {
+                                                            return (
+                                                                <div
+                                                                    className="ReplyEditor__options__image_selector__image_container"
+                                                                    style={{
+                                                                        backgroundImage: `url(${
+                                                                            image
+                                                                        })`,
+                                                                    }}
+                                                                    onClick={
+                                                                        onSelectCoverImage
+                                                                    }
+                                                                />
+                                                            );
+                                                        })}
+                                                    </div>
+                                                </div>
+                                            )}
                                             <a
                                                 href="#"
                                                 onClick={
@@ -1369,6 +1423,7 @@ export default formId =>
                 successCallback,
                 errorCallback,
                 startLoadingIndicator,
+                selectedCoverImage,
             }) => {
                 const isEdit = type === 'edit';
                 const isNew = /^submit_/.test(type);
@@ -1426,16 +1481,40 @@ export default formId =>
 
                 // merge
                 const meta = isEdit ? jsonMetadata : {};
-                if (metaTags.size) meta.tags = metaTags.toJS();
-                else delete meta.tags;
-                if (rtags.usertags.size) meta.users = Array.from(rtags.usertags);
-                else delete meta.users;
-                if (rtags.images.size)
-                    meta.image = Array.from(rtags.images).slice(0, 1);
-                else delete meta.image;
-                if (rtags.links.size)
+
+                if (metaTags.size) {
+                    meta.tags = metaTags.toJS();
+                } else {
+                    delete meta.tags;
+                }
+
+                if (rtags.usertags.size) {
+                    meta.users = Array.from(rtags.usertags);
+                } else {
+                    delete meta.users;
+                }
+
+                if (rtags.images.size) {
+                    const moveToFirst = (array, first) => {
+                        array.sort((x, y) => {
+                            return x === first ? -1 : y === first ? 1 : 0;
+                        });
+                    };
+                    meta.image = Array.from(rtags.images);
+
+                    // If a cover image has been manually selected,
+                    // move it to the first element of the image array.
+                    if (selectedCoverImage) {
+                        moveToFirst(meta.image, selectedCoverImage);
+                    }
+                } else {
+                    delete meta.image;
+                }
+                if (rtags.links.size) {
                     meta.links = Array.from(rtags.links).slice(0, 1);
-                else delete meta.links;
+                } else {
+                    delete meta.links;
+                }
 
                 meta.app = 'hiveblog/0.1';
                 if (isStory) {
