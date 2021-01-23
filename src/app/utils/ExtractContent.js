@@ -36,7 +36,13 @@ export function extractRtags(body = null) {
 
 export function extractImageLink(json_metadata, body = null) {
     const json = json_metadata || {};
-    const jsonImage = _.get(json, 'image', json.get('image'));
+
+    let jsonImage;
+    if (typeof json.get === 'function') {
+        jsonImage = json.get('image');
+    } else {
+        jsonImage = _.get(json, 'image');
+    }
     let image_link;
 
     try {
