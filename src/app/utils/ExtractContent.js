@@ -92,11 +92,12 @@ export function extractBodySummary(body, stripQuotes = false) {
 }
 
 export function getPostSummary(jsonMetadata, body, stripQuotes = false) {
-    const shortDescription = _.get(
-        jsonMetadata,
-        'description',
-        jsonMetadata.get('description')
-    );
+    let shortDescription;
+    if (typeof jsonMetadata.get === 'function') {
+        shortDescription = jsonMetadata.get('description');
+    } else {
+        shortDescription = _.get(jsonMetadata, 'description');
+    }
 
     if (!shortDescription) {
         return extractBodySummary(body, stripQuotes);
