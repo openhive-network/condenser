@@ -16,29 +16,36 @@ const getValidImage = array => {
         : null;
 };
 
+export function extractRtags(body = null) {
+    let rtags;
+    {
+        const isHtml = /^<html>([\S\s]*)<\/html>$/.test(body);
+        const htmlText = isHtml
+            ? body
+            : remarkable.render(
+                  body.replace(
+                      /<!--([\s\S]+?)(-->|$)/g,
+                      '(html comment removed: $1)'
+                  )
+              );
+        rtags = HtmlReady(htmlText, { mutate: false });
+    }
+
+    return rtags;
+}
+
 export function extractImageLink(json_metadata, body = null) {
-    let json = json_metadata || {};
+    const json = json_metadata || {};
+    const jsonImage = _.get(json, 'image', json.get('image'));
     let image_link;
 
     try {
-        image_link = json && json.image ? getValidImage(json.image) : null;
+        image_link = jsonImage ? getValidImage(Array.from(jsonImage)) : null;
     } catch (error) {}
 
     // If nothing found in json metadata, parse body and check images/links
     if (!image_link) {
-        let rtags;
-        {
-            const isHtml = /^<html>([\S\s]*)<\/html>$/.test(body);
-            const htmlText = isHtml
-                ? body
-                : remarkable.render(
-                      body.replace(
-                          /<!--([\s\S]+?)(-->|$)/g,
-                          '(html comment removed: $1)'
-                      )
-                  );
-            rtags = HtmlReady(htmlText, { mutate: false });
-        }
+        const rtags = extractRtags(body);
 
         if (rtags.images) {
             [image_link] = Array.from(rtags.images);
