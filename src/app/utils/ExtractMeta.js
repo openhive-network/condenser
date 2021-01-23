@@ -1,4 +1,8 @@
-import { extractBodySummary, extractImageLink } from 'app/utils/ExtractContent';
+import {
+    getPostSummary,
+    extractBodySummary,
+    extractImageLink,
+} from 'app/utils/ExtractContent';
 import { makeCanonicalLink } from 'app/utils/CanonicalLinker.js';
 import { proxifyImageUrl } from 'app/utils/ProxifyUrl';
 
@@ -35,7 +39,8 @@ function addPostMeta(metas, content, profile) {
     const isReply = content.depth > 0;
 
     const title = content.title + ' — Hive';
-    const desc = extractBodySummary(body, isReply) + ' by ' + content.author;
+    const desc =
+        getPostSummary(json_metadata, body, isReply) + ' by ' + content.author;
     const image_link = extractImageLink(json_metadata, body);
 
     const canonicalUrl = makeCanonicalLink(content, json_metadata);

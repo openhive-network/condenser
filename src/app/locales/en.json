@@ -362,6 +362,8 @@
         "enable_sidebyside": "Enable side-by-side editor",
         "disable_sidebyside": "Disable side-by-side editor",
         "post_options": "Post options",
+        "summary": "Post summary (for posts list & SEO, max 140 chars)",
+        "shorten_summary": "Shorten summary",
         "select_cover_image": "Select your cover image"
     },
     "beneficiary_selector_jsx": {
