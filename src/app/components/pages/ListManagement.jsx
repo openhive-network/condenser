@@ -483,7 +483,7 @@ class ListManagement extends React.Component {
         if (reset_all) what = 'reset_all_lists';
 
         let follower = this.props.username;
-        let following = 'all'; //there is an 'all' account, but it appears unused so i'm stealing their identity for this
+        let following = 'null'; //there is an 'all' account, but it appears unused so i'm stealing their identity for this
         this.setState({ is_busy: true });
         this.props.updateList(follower, following, what, () => {
             setTimeout(() => {
