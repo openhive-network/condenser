@@ -36,7 +36,13 @@ export function extractRtags(body = null) {
 
 export function extractImageLink(json_metadata, body = null) {
     const json = json_metadata || {};
-    const jsonImage = _.get(json, 'image', json.get('image'));
+
+    let jsonImage;
+    if (typeof json.get === 'function') {
+        jsonImage = json.get('image');
+    } else {
+        jsonImage = _.get(json, 'image');
+    }
     let image_link;
 
     try {
@@ -92,11 +98,12 @@ export function extractBodySummary(body, stripQuotes = false) {
 }
 
 export function getPostSummary(jsonMetadata, body, stripQuotes = false) {
-    const shortDescription = _.get(
-        jsonMetadata,
-        'description',
-        jsonMetadata.get('description')
-    );
+    let shortDescription;
+    if (typeof jsonMetadata.get === 'function') {
+        shortDescription = jsonMetadata.get('description');
+    } else {
+        shortDescription = _.get(jsonMetadata, 'description');
+    }
 
     if (!shortDescription) {
         return extractBodySummary(body, stripQuotes);
