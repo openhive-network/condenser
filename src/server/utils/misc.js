@@ -59,7 +59,7 @@ function getSupportedLocales() {
     return locales;
 }
 
-export default {
+module.exports = {
     getRemoteIp,
     rateLimitReq,
     checkCSRF,
