@@ -261,15 +261,14 @@ function* broadcastPayload({
         yield new Promise((resolve, reject) => {
             // Bump transaction (for live UI testing).. Put 0 in now (no effect),
             // to enable browser's autocomplete and help prevent typos.
-            const { env } = process;
-            const bump = env.BROWSER ? parseInt(localStorage.getItem('bump') || 0) : 0;
-            if (env.BROWSER && bump === 1) {
+            const bump = process.env.BROWSER ? parseInt(localStorage.getItem('bump') || 0) : 0;
+            if (process.env.BROWSER && bump === 1) {
                 // for testing
                 console.log('TransactionSaga bump(no broadcast) and reject', JSON.stringify(operations, null, 2));
                 setTimeout(() => {
                     reject(new Error('Testing, fake error'));
                 }, 2000);
-            } else if (env.BROWSER && bump === 2) {
+            } else if (process.env.BROWSER && bump === 2) {
                 // also for testing
                 console.log('TransactionSaga bump(no broadcast) and resolve', JSON.stringify(operations, null, 2));
                 setTimeout(() => {
