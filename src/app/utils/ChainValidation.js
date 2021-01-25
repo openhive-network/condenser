@@ -1,13 +1,14 @@
 import tt from 'counterpart';
 import BadActorList from 'app/utils/BadActorList';
 
+// eslint-disable-next-line import/prefer-default-export
 export function validate_account_name(value) {
-    let i, label, len, length, ref;
+    let i, label, len;
 
     if (!value) {
         return tt('chainvalidation_js.account_name_should_not_be_empty');
     }
-    length = value.length;
+    const { length } = value;
     if (length < 3) {
         return tt('chainvalidation_js.account_name_should_be_longer');
     }
@@ -17,8 +18,8 @@ export function validate_account_name(value) {
     if (BadActorList.includes(value)) {
         return tt('chainvalidation_js.badactor');
     }
-    ref = value.split('.');
-    for (i = 0, len = ref.length; i < len; i++) {
+    const ref = value.split('.');
+    for (i = 0, len = ref.length; i < len; i += 1) {
         label = ref[i];
         if (!/^[a-z]/.test(label)) {
             return tt('chainvalidation_js.each_account_segment_should_start_with_a_letter');

@@ -1,7 +1,6 @@
+/*eslint global-require: "warn"*/
 import App from 'app/components/App';
-import Benchmark from 'app/components/pages/Benchmark';
 import PostsIndex from 'app/components/pages/PostsIndex';
-import SearchIndex from 'app/components/pages/SearchIndex';
 import resolveRoute from './ResolveRoute';
 
 // polyfill webpack require.ensure

@@ -5,19 +5,19 @@ jest.mock('./utils/GDPRUserList');
 describe('routeRegex', () => {
     it('should produce the desired regex patterns', () => {
         const test_cases = [
-            ['UserFeed', /^\/(@[\w\.\d-]+)\/feed\/?$/],
+            ['UserFeed', /^\/(@[\w.\d-]+)\/feed\/?$/],
             [
                 'UserProfile',
-                /^\/(@[\w\.\d-]+)(?:\/(blog|posts|comments|replies|payout|feed|followed|followers|settings|notifications|communities))?\/?$/,
+                /^\/(@[\w.\d-]+)(?:\/(blog|posts|comments|replies|payout|feed|followed|followers|settings|notifications|communities))?\/?$/,
             ],
             [
                 'CategoryFilters',
                 /^\/(hot|trending|promoted|payout|payout_comments|muted|created)(?:\/([\w\W\d-]{1,32}))?\/?$/,
             ],
-            ['PostNoCategory', /^\/(@[\w\.\d-]+)\/([\w\d-]+)$/],
-            ['Post', /^\/([\w\W\d-]{1,32})\/(@[\w\.\d-]+)\/([\w\d-]+)\/?$/],
-            ['PostJson', /^\/([\w\W\d-]{1,32})\/(@[\w\.\d-]+)\/([\w\d-]+)(\.json)$/],
-            ['UserJson', /^\/(@[\w\.\d-]+)(\.json)$/],
+            ['PostNoCategory', /^\/(@[\w.\d-]+)\/([\w\d-]+)$/],
+            ['Post', /^\/([\w\W\d-]{1,32})\/(@[\w.\d-]+)\/([\w\d-]+)\/?$/],
+            ['PostJson', /^\/([\w\W\d-]{1,32})\/(@[\w.\d-]+)\/([\w\d-]+)(\.json)$/],
+            ['UserJson', /^\/(@[\w.\d-]+)(\.json)$/],
         ];
 
         test_cases.forEach((r) => {

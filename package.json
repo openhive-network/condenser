@@ -12,7 +12,7 @@
     "test": "jest",
     "eslint": "LIST=`git diff-index --name-only HEAD | grep .*\\.js | grep -v json`; if [ \"$LIST\" ]; then eslint $LIST; fi",
     "ci:test": "jest --coverage",
-    "ci:eslint": "eslint --fix src/",
+    "ci:eslint": "eslint src/",
     "fmt": "prettier --config .prettierrc --write 'src/**/*.+(js|jsx)'",
     "precommit": "lint-staged",
     "production": "NODE_ENV=production node lib/server/index.js",
@@ -226,6 +226,9 @@
   },
   "lint-staged": {
     "src/**/*.+(js|jsx)": [
+      "eslint"
+    ],
+    "src/**/*.+(json|css|md)": [
       "prettier --write",
       "git add"
     ]

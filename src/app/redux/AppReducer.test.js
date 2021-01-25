@@ -1,4 +1,4 @@
-import { Map, OrderedMap, getIn } from 'immutable';
+import { Map, OrderedMap } from 'immutable';
 
 import reducer, {
     defaultState,
@@ -20,8 +20,6 @@ const mockPayloads = {
     },
     removeNotification: {
         pathname: 'testPath',
-    },
-    removeNotification: {
         key: 'testKey',
     },
     setUserPreferences: {

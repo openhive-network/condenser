@@ -1,6 +1,9 @@
+// eslint-disable-next-line import/prefer-default-export
 export const cleanReduxInput = (i) => {
     // Remove all props that don't belong.  Triggers React warnings.
-    const { name, placeholder, label, value, checked, onChange, onBlur, onFocus } = i;
+    const {
+ name, placeholder, label, value, checked, onChange, onBlur, onFocus
+} = i;
     const ret = {
         name,
         placeholder,

@@ -1,3 +1,4 @@
+// eslint-disable-next-line max-classes-per-file
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import { connect } from 'react-redux';
@@ -11,6 +12,7 @@ class Coin extends Component {
     }
 
     componentDidMount() {
+        // eslint-disable-next-line react/no-find-dom-node,react/no-string-refs
         const node = ReactDOM.findDOMNode(this.refs.coin);
         node.querySelectorAll('circle').forEach((circle) => {
             circle.setAttribute('r', '8');
@@ -25,6 +27,7 @@ class Coin extends Component {
     }
 
     componentWillUnmount() {
+        // eslint-disable-next-line react/no-find-dom-node,react/no-string-refs
         const node = ReactDOM.findDOMNode(this.refs.coin);
         node.querySelectorAll('circle').forEach((circle) => {
             circle.removeEventListener('mouseover', this.onPointMouseMove);
@@ -33,14 +36,13 @@ class Coin extends Component {
     }
 
     render() {
-        const color = this.props.color;
-        const coin = this.props.coin;
-        const name = coin.get('name');
+        const { color, coin } = this.props;
         const symbol = coin.get('symbol');
         const timepoints = coin.get('timepoints');
         const priceUsd = timepoints.last().get('price_usd');
         const pricesUsd = timepoints.map((point) => parseFloat(point.get('price_usd'))).toJS();
         return (
+            // eslint-disable-next-line react/no-string-refs
             <div ref="coin" className="coin">
                 <div className="chart">
                     <Sparklines data={pricesUsd}>
@@ -55,7 +57,8 @@ class Coin extends Component {
                     <div className="caption" />
                 </div>
                 <div className="coin-label">
-                    <span className="symbol">{symbol}</span>{' '}
+                    <span className="symbol">{symbol}</span>
+                    {' '}
                     <span className="price">{parseFloat(priceUsd).toFixed(2)}</span>
                 </div>
             </div>
@@ -63,12 +66,14 @@ class Coin extends Component {
     }
 
     onPointMouseMove(e) {
+        // eslint-disable-next-line react/no-find-dom-node,react/no-string-refs
         const node = ReactDOM.findDOMNode(this.refs.coin);
         const caption = node.querySelector('.caption');
         const circle = e.currentTarget;
         const circles = node.querySelectorAll('circle');
         const index = Array.prototype.indexOf.call(circles, circle);
-        const points = this.props.coin.get('timepoints');
+        const { coin } = this.props;
+        const points = coin.get('timepoints');
         const point = points.get(index);
         const priceUsd = parseFloat(point.get('price_usd')).toFixed(2);
         const timepoint = point.get('timepoint');
@@ -76,7 +81,8 @@ class Coin extends Component {
         caption.innerText = `$${priceUsd} ${time}`;
     }
 
-    onPointMouseOut(e) {
+    onPointMouseOut() {
+        // eslint-disable-next-line react/no-find-dom-node,react/no-string-refs
         const node = ReactDOM.findDOMNode(this.refs.coin);
         const caption = node.querySelector('.caption');
         caption.innerText = '';
@@ -85,7 +91,7 @@ class Coin extends Component {
 
 class SteemMarket extends Component {
     render() {
-        const steemMarketData = this.props.steemMarketData;
+        const { steemMarketData } = this.props;
         if (steemMarketData.isEmpty()) {
             return null;
         }
@@ -122,5 +128,5 @@ export default connect(
         };
     },
     // mapDispatchToProps
-    (dispatch) => ({})
+    () => ({})
 )(SteemMarket);

@@ -1,3 +1,4 @@
+/*eslint no-multi-assign: "warn"*/
 /**
     @arg {string} name - form state will appear in this.state[name]
     @arg {object} instance - `this` for the component
@@ -5,7 +6,9 @@
     @arg {object} initialValues required for checkboxes {save: false, ...}
     @arg {function} validation - values => ({ username: ! values.username ? 'Required' : null, ... })
 */
-export default function reactForm({ name, instance, fields, initialValues, validation = () => {} }) {
+export default function reactForm({
+ name, instance, fields, initialValues, validation = () => {}
+}) {
     if (typeof instance !== 'object') throw new TypeError('instance is a required object');
     if (!Array.isArray(fields)) throw new TypeError('fields is a required array');
     if (typeof initialValues !== 'object') throw new TypeError('initialValues is a required object');
@@ -35,14 +38,16 @@ export default function reactForm({ name, instance, fields, initialValues, valid
                 // TODO, support promise ret
                 const ret = submitCallback({ data, event, updateInitialValues }) || {};
                 // Look for field level errors
+                // eslint-disable-next-line no-restricted-syntax
                 for (const fieldName of Object.keys(ret)) {
                     const error = ret[fieldName];
-                    if (!error) continue;
-                    const value = instance.state[fieldName] || {};
-                    value.error = error;
-                    value.touched = true;
-                    if (error) formValid = false;
-                    instance.setState({ [fieldName]: value });
+                    if (error) {
+                        const value = instance.state[fieldName] || {};
+                        value.error = error;
+                        value.touched = true;
+                        if (error) formValid = false;
+                        instance.setState({ [fieldName]: value });
+                    }
                 }
                 fs.submitting = false;
                 fs.valid = formValid;
@@ -50,6 +55,7 @@ export default function reactForm({ name, instance, fields, initialValues, valid
             });
         },
         resetForm: () => {
+            // eslint-disable-next-line no-restricted-syntax
             for (const field of fields) {
                 const fieldName = n(field);
                 const f = instance.state[fieldName];
@@ -58,6 +64,7 @@ export default function reactForm({ name, instance, fields, initialValues, valid
             }
         },
         clearForm: () => {
+            // eslint-disable-next-line no-restricted-syntax
             for (const field of fields) {
                 const fieldName = n(field);
                 const f = instance.state[fieldName];
@@ -66,10 +73,10 @@ export default function reactForm({ name, instance, fields, initialValues, valid
         },
     };
 
+    // eslint-disable-next-line no-restricted-syntax
     for (const field of fields) {
         const fieldName = n(field);
         const fieldType = t(field);
-
         const fs = (formState[fieldName] = {
             value: null,
             error: null,
@@ -128,6 +135,7 @@ function setFormState(name, instance, fields, validation) {
     let formValid = true;
     let formTouched = false;
     const v = validation(getData(fields, instance.state));
+    // eslint-disable-next-line no-restricted-syntax
     for (const field of fields) {
         const fieldName = n(field);
         const validate = v[fieldName];
@@ -147,6 +155,7 @@ function setFormState(name, instance, fields, validation) {
 
 function setInitialValuesFromForm(name, instance, fields, initialValues) {
     const data = getData(fields, instance.state);
+    // eslint-disable-next-line no-restricted-syntax
     for (const field of fields) {
         const fieldName = n(field);
         initialValues[fieldName] = data[fieldName];
@@ -155,6 +164,7 @@ function setInitialValuesFromForm(name, instance, fields, initialValues) {
 
 function getData(fields, state) {
     const data = {};
+    // eslint-disable-next-line no-restricted-syntax
     for (const field of fields) {
         const fieldName = n(field);
         data[fieldName] = state[fieldName].value;

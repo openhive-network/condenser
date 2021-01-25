@@ -26,8 +26,7 @@ export default function frontendLogger(event) {
  * @return {object}
  */
 export function formatEventReport(event, href, version) {
-    const trace =
-        typeof event.error === 'object' && event.error !== null && typeof event.error.stack === 'string'
+    const trace = typeof event.error === 'object' && event.error !== null && typeof event.error.stack === 'string'
             ? event.error.stack
             : false;
     return {

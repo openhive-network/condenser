@@ -3,7 +3,6 @@ import 'core-js/stable';
 import 'regenerator-runtime/runtime';
 import 'whatwg-fetch';
 import store from 'store';
-import { VIEW_MODE_WHISTLE, PARAM_VIEW_MODE } from 'shared/constants';
 import './assets/stylesheets/app.scss';
 import plugins from 'app/utils/JsPlugins';
 import Iso from 'iso';
@@ -43,6 +42,7 @@ function runApp(initial_state) {
         switch (command) {
             case CMD_LOG_O:
                 konami.enabled = false;
+                return 'done';
             case CMD_LOG_TOGGLE:
             case CMD_LOG_T:
                 konami.enabled = !konami.enabled;
@@ -119,13 +119,11 @@ function runApp(initial_state) {
     if (locale) initial_state.user.locale = locale;
     initial_state.user.maybeLoggedIn = !!store.get('autopost2');
     if (initial_state.user.maybeLoggedIn) {
-        const username = new Buffer(store.get('autopost2'), 'hex').toString().split('\t')[0];
+        const username = Buffer.from(store.get('autopost2'), 'hex').toString().split('\t')[0];
         initial_state.user.current = {
             username,
         };
     }
-
-    const location = `${window.location.pathname}${window.location.search}${window.location.hash}`;
 
     try {
         clientRender(initial_state);
@@ -139,6 +137,7 @@ if (!window.Intl) {
     require.ensure(
         ['intl/dist/Intl'],
         (require) => {
+            // eslint-disable-next-line no-multi-assign
             window.IntlPolyfill = window.Intl = require('intl/dist/Intl');
             require('intl/locale-data/jsonp/en-US.js');
             require('intl/locale-data/jsonp/es.js');

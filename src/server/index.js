@@ -12,6 +12,7 @@ const ROOT = path.join(__dirname, '../..');
 // use Object.assign to bypass transform-inline-environment-variables-babel-plugin (process.env.NODE_PATH= will not work)
 Object.assign(process.env, { NODE_PATH: path.resolve(__dirname, '..') });
 
+// eslint-disable-next-line no-underscore-dangle
 require('module').Module._initPaths();
 
 // Load Intl polyfill
@@ -66,6 +67,7 @@ global.webpackIsomorphicTools.server(ROOT, () => {
     // const CliWalletClient = require('shared/api_client/CliWalletClient').default;
     // if (process.env.NODE_ENV === 'production') connect_promises.push(CliWalletClient.instance().connect_promise());
     try {
+        // eslint-disable-next-line global-require
         require('./server');
     } catch (error) {
         console.error(error);

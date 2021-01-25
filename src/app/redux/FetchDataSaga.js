@@ -1,7 +1,7 @@
-import { call, put, select, fork, takeLatest, takeEvery } from 'redux-saga/effects';
-import { api } from '@hiveio/hive-js';
+import {
+ call, put, select, fork, takeLatest, takeEvery
+} from 'redux-saga/effects';
 import { loadFollows } from 'app/redux/FollowSaga';
-import { fromJS, Map, Set } from 'immutable';
 import { getStateAsync, callBridge } from 'app/utils/steemApi';
 import { fetchCrossPosts, augmentContentWithCrossPost } from 'app/utils/CrossPosts';
 import * as globalActions from './GlobalReducer';
@@ -45,7 +45,7 @@ export function* getPostHeader(action) {
 let is_initial_state = true;
 export function* fetchState(location_change_action) {
     const { pathname } = location_change_action.payload;
-    const m = pathname.match(/^\/@([a-z0-9\.-]+)(\/notifications)?/);
+    const m = pathname.match(/^\/@([a-z0-9.-]+)(\/notifications)?/);
     if (m && m.length >= 2) {
         const username = m[1];
         yield fork(loadFollows, 'getFollowersAsync', username, 'blog');
@@ -85,54 +85,42 @@ export function* fetchState(location_change_action) {
 
 function* syncSpecialPosts() {
     // Bail if we're rendering serverside since there is no localStorage
-    if (!process.env.BROWSER) return null;
+    if (process.env.BROWSER) {
+        // Get special posts from the store.
+        const specialPosts = yield select((state) => state.offchain.get('special_posts'));
 
-    // Get special posts from the store.
-    const specialPosts = yield select((state) => state.offchain.get('special_posts'));
+        // Mark seen featured posts.
+        const seenFeaturedPosts = specialPosts.get('featured_posts').map((post) => {
+            const id = `${post.get('author')}/${post.get('permlink')}`;
+            return post.set('seen', localStorage.getItem(`featured-post-seen:${id}`) === 'true');
+        });
 
-    // Mark seen featured posts.
-    const seenFeaturedPosts = specialPosts.get('featured_posts').map((post) => {
-        const id = `${post.get('author')}/${post.get('permlink')}`;
-        return post.set('seen', localStorage.getItem(`featured-post-seen:${id}`) === 'true');
-    });
+        // Mark seen promoted posts.
+        const seenPromotedPosts = specialPosts.get('promoted_posts').map((post) => {
+            const id = `${post.get('author')}/${post.get('permlink')}`;
+            return post.set('seen', localStorage.getItem(`promoted-post-seen:${id}`) === 'true');
+        });
 
-    // Mark seen promoted posts.
-    const seenPromotedPosts = specialPosts.get('promoted_posts').map((post) => {
-        const id = `${post.get('author')}/${post.get('permlink')}`;
-        return post.set('seen', localStorage.getItem(`promoted-post-seen:${id}`) === 'true');
-    });
+        // Look up seen post URLs.
+        yield put(
+            globalActions.syncSpecialPosts({
+                featuredPosts: seenFeaturedPosts,
+                promotedPosts: seenPromotedPosts,
+            })
+        );
 
-    // Look up seen post URLs.
-    yield put(
-        globalActions.syncSpecialPosts({
-            featuredPosts: seenFeaturedPosts,
-            promotedPosts: seenPromotedPosts,
-        })
-    );
+        // Mark all featured posts as seen.
+        specialPosts.get('featured_posts').forEach((post) => {
+            const id = `${post.get('author')}/${post.get('permlink')}`;
+            localStorage.setItem(`featured-post-seen:${id}`, 'true');
+        });
 
-    // Mark all featured posts as seen.
-    specialPosts.get('featured_posts').forEach((post) => {
-        const id = `${post.get('author')}/${post.get('permlink')}`;
-        localStorage.setItem(`featured-post-seen:${id}`, 'true');
-    });
-
-    // Mark all promoted posts as seen.
-    specialPosts.get('promoted_posts').forEach((post) => {
-        const id = `${post.get('author')}/${post.get('permlink')}`;
-        localStorage.setItem(`promoted-post-seen:${id}`, 'true');
-    });
-}
-
-/**
- * Request account data for a set of usernames.
- *
- * @todo batch the put()s
- *
- * @param {Iterable} usernames
- */
-function* getAccounts(usernames) {
-    const accounts = yield call([api, api.getAccountsAsync], usernames);
-    yield put(globalActions.receiveAccounts({ accounts }));
+        // Mark all promoted posts as seen.
+        specialPosts.get('promoted_posts').forEach((post) => {
+            const id = `${post.get('author')}/${post.get('permlink')}`;
+            localStorage.setItem(`promoted-post-seen:${id}`, 'true');
+        });
+    }
 }
 
 /**
@@ -172,12 +160,11 @@ export function* getCommunity(action) {
     });
 
     // TODO: Handle error state
-    if (community.name)
-        yield put(
+    if (community.name) { yield put(
             globalActions.receiveCommunity({
                 [community.name]: { ...community },
             })
-        );
+        ); }
 }
 
 /**
@@ -220,7 +207,6 @@ export function* getAccountNotifications(action) {
             console.error('~~ Saga getAccountNotifications error ~~>', notifications.error);
             yield put(appActions.steemApiError(notifications.error.message));
         } else {
-            const limit = action.payload.limit ? action.payload.limit : 100;
             const isLastPage = notifications.length < action.payload.limit;
             yield put(
                 globalActions.receiveNotifications({
@@ -295,7 +281,9 @@ export function* markNotificationsAsReadSaga(action) {
 
 export function* fetchData(action) {
     // TODO: postFilter unused
-    const { order, author, permlink, postFilter, observer } = action.payload;
+    const {
+ order, author, permlink, postFilter, observer
+} = action.payload;
     let { category } = action.payload;
     if (!category) category = '';
 
@@ -360,7 +348,7 @@ export function* fetchData(action) {
                 data = posts;
             }
 
-            batch++;
+            batch += 1;
             fetchLimitReached = batch >= constants.MAX_BATCHES;
 
             if (data.length > 0) {
@@ -398,7 +386,11 @@ export function* fetchData(action) {
     @arg {string} url
     @arg {object} body (for JSON.stringify)
 */
-function* fetchJson({ payload: { id, url, body, successCallback, skipLoading = false } }) {
+function* fetchJson({
+ payload: {
+ id, url, body, successCallback, skipLoading = false
+}
+}) {
     try {
         const payload = {
             method: body ? 'POST' : 'GET',
@@ -417,7 +409,7 @@ function* fetchJson({ payload: { id, url, body, successCallback, skipLoading = f
         yield put(globalActions.fetchJsonResult({ id, error }));
     }
 }
-export function* getRewardsDataSaga(action) {
+export function* getRewardsDataSaga() {
     yield put(appActions.fetchDataBegin());
     try {
         const rewards = yield call(callBridge, 'get_payout_stats', {});

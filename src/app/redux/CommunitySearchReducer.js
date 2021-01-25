@@ -1,4 +1,4 @@
-import { Map, List, fromJS } from 'immutable';
+import { Map, List } from 'immutable';
 
 const COMMUNITY_SEARCH_DISPATCH = 'communitySearch/COMMUNITY_SEARCH_DISPATCH';
 const COMMUNITY_SEARCH_PENDING = 'communitySearch/COMMUNITY_SEARCH_PENDING';

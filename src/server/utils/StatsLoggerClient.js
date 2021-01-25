@@ -16,6 +16,7 @@ export default class StatsLoggerClient {
             // Implement debug loggers here, as any new calls are added in methods below.
             this.SDC = {
                 timing() {
+                    // eslint-disable-next-line prefer-rest-params
                     console.log('StatsLoggerClient call: ', arguments);
                 },
             };
@@ -27,7 +28,7 @@ export default class StatsLoggerClient {
      * log them all to statsd.
      */
     logTimers(tuples) {
-        const timestamp = +new Date();
+        // eslint-disable-next-line array-callback-return
         tuples.map((tuple) => {
             this.SDC.timing(tuple[0], tuple[1]);
         });

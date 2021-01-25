@@ -29,7 +29,7 @@ export default function reducer(state = defaultSearchState, action) {
             return state.setIn(['error'], error);
         }
         case SEARCH_RESULT: {
-            const { hits, results, scroll_id, append } = payload;
+            const { results, scroll_id, append } = payload;
 
             const posts = List(
                 results.map((post) => {

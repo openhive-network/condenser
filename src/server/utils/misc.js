@@ -13,7 +13,7 @@ function rateLimitReq(ctx, req) {
     const now = Date.now();
 
     // purge hits older than minutes_max
-    ip_last_hit.forEach((v, k) => {
+    ip_last_hit.forEach((v) => {
         const seconds = (now - v) / 1000;
         if (seconds > 1) {
             ip_last_hit.delete(ip);
@@ -51,6 +51,7 @@ function checkCSRF(ctx, csrf) {
 function getSupportedLocales() {
     const locales = [];
     const files = fs.readdirSync(path.join(__dirname, '../../..', 'src/app/locales'));
+    // eslint-disable-next-line no-restricted-syntax
     for (const filename of files) {
         const match_res = filename.match(/(\w+)\.json?$/);
         if (match_res) locales.push(match_res[1]);
@@ -58,7 +59,7 @@ function getSupportedLocales() {
     return locales;
 }
 
-module.exports = {
+export default {
     getRemoteIp,
     rateLimitReq,
     checkCSRF,

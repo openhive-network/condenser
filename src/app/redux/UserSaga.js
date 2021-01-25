@@ -1,13 +1,16 @@
-import { fromJS, Set, List } from 'immutable';
-import { call, put, select, fork, takeLatest } from 'redux-saga/effects';
+/*eslint no-shadow: "warn"*/
+/* global $STM_Config */
+import { fromJS, Set } from 'immutable';
+import {
+ call, put, select, fork, takeLatest
+} from 'redux-saga/effects';
 import { api, auth } from '@hiveio/hive-js';
 import { PrivateKey, Signature, hash } from '@hiveio/hive-js/lib/auth/ecc';
 
 import { accountAuthLookup } from 'app/redux/AuthSaga';
 import { getAccount } from 'app/redux/SagaShared';
 import * as userActions from 'app/redux/UserReducer';
-import { receiveFeatureFlags } from 'app/redux/AppReducer';
-import { hasCompatibleKeychain, isLoggedInWithKeychain } from 'app/utils/HiveKeychain';
+import { isLoggedInWithKeychain } from 'app/utils/HiveKeychain';
 import { packLoginData, extractLoginData } from 'app/utils/UserUtil';
 import { browserHistory } from 'react-router';
 import {
@@ -22,6 +25,7 @@ import { translate } from 'app/Translator';
 import DMCAUserList from 'app/utils/DMCAUserList';
 import { setHiveSignerAccessToken, isLoggedInWithHiveSigner, hiveSignerClient } from 'app/utils/HiveSigner';
 
+// eslint-disable-next-line import/prefer-default-export
 export const userWatches = [
     takeLatest('user/lookupPreviousOwnerAuthority', lookupPreviousOwnerAuthority),
     takeLatest(userActions.CHECK_KEY_TYPE, checkKeyType),
@@ -38,8 +42,6 @@ export const userWatches = [
         }
     }),
 ];
-
-const strCmp = (a, b) => (a > b ? 1 : a < b ? -1 : 0);
 
 function effectiveVests(account) {
     const vests = parseFloat(account.get('vesting_shares'));
@@ -95,8 +97,8 @@ function* usernamePasswordLogin(action) {
     // or if the user's browser does not support session storage,
     // show the announcement.
     if (
-        typeof sessionStorage === 'undefined' ||
-        (typeof sessionStorage !== 'undefined' && sessionStorage.getItem('hideAnnouncement') !== 'true')
+        typeof sessionStorage === 'undefined'
+        || (typeof sessionStorage !== 'undefined' && sessionStorage.getItem('hideAnnouncement') !== 'true')
     ) {
         // Uncomment to re-enable announcment
         // TODO: use config to enable/disable
@@ -170,7 +172,7 @@ function* usernamePasswordLogin2({
         [username, userProvidedRole] = username.split('/');
     }
 
-    const pathname = yield select((state) => state.global.get('pathname'));
+    yield select((state) => state.global.get('pathname'));
     const isRole = (role, fn) => (!userProvidedRole || role === userProvidedRole ? fn() : undefined);
 
     const account = yield call(getAccount, username);
@@ -320,7 +322,7 @@ function* usernamePasswordLogin2({
 
         if (account.get('memo_key') !== memo_pubkey || memo_pubkey === owner_pubkey || memo_pubkey === active_pubkey)
             // provided password did not yield memo key, or matched active/owner
-            private_keys = private_keys.remove('memo_private');
+            { private_keys = private_keys.remove('memo_private'); }
 
         if (posting_pubkey === owner_pubkey || posting_pubkey === active_pubkey) {
             yield put(
@@ -419,7 +421,7 @@ function* usernamePasswordLogin2({
 
             console.log('Logging in as', username);
             const response = yield serverApiLogin(username, signatures);
-            const body = yield response.json();
+            yield response.json();
         }
     } catch (error) {
         // Does not need to be fatal
@@ -464,9 +466,11 @@ function* promptTosAcceptance(username) {
     }
 }
 
-function* getFeatureFlags(username, posting_private) {
+// eslint-disable-next-line require-yield
+function* getFeatureFlags(/*username, posting_private*/) {
     // not yet in use
-    return;
+    return null;
+/*
     try {
         let flags;
         if (!posting_private && hasCompatibleKeychain()) {
@@ -498,6 +502,7 @@ function* getFeatureFlags(username, posting_private) {
     } catch (error) {
         // Do nothing; feature flags are not ready yet. Or posting_private is not available.
     }
+ */
 }
 
 function* saveLogin_localStorage() {
@@ -571,6 +576,7 @@ function* saveLogin_localStorage() {
 function* logout(action) {
     const payload = (action || {}).payload || {};
     const logoutType = payload.type || 'default';
+    // eslint-disable-next-line prefer-rest-params
     console.log('Logging out', arguments, 'logout type', logoutType);
 
     // Just in case it is still showing
@@ -583,7 +589,9 @@ function* logout(action) {
     yield serverApiLogout();
 }
 
+// eslint-disable-next-line require-yield
 function* loginError({
+    // eslint-disable-next-line no-empty-pattern
     payload: {
         /*error*/
     },
@@ -596,6 +604,7 @@ function* loginError({
     find the next owner key history record after the change and store it under
     user.previous_owner_authority.
 */
+// eslint-disable-next-line no-empty-pattern
 function* lookupPreviousOwnerAuthority({ payload: {} }) {
     const current = yield select((state) => state.user.getIn(['current']));
     if (!current) return;
@@ -618,6 +627,7 @@ function* lookupPreviousOwnerAuthority({ payload: {} }) {
         return aa < bb ? -1 : aa > bb ? 1 : 0;
     });
     const previous_owner_authority = owner_history.find((o) => {
+        // eslint-disable-next-line no-shadow
         const auth = o.get('previous_owner_authority');
         const weight_threshold = auth.get('weight_threshold');
         const key3 = auth
@@ -632,7 +642,12 @@ function* lookupPreviousOwnerAuthority({ payload: {} }) {
     yield put(userActions.setUser({ previous_owner_authority }));
 }
 
-function* uploadImage({ payload: { file, dataUrl, filename = 'image.txt', progress } }) {
+function* uploadImage({
+ payload: {
+ file, dataUrl, filename = 'image.txt', progress
+}
+}) {
+    // eslint-disable-next-line no-underscore-dangle
     const _progress = progress;
     progress = (msg) => {
         _progress(msg);
@@ -663,7 +678,7 @@ function* uploadImage({ payload: { file, dataUrl, filename = 'image.txt', progre
         const reader = new FileReader();
         data = yield new Promise((resolve) => {
             reader.addEventListener('load', () => {
-                const result = new Buffer(reader.result, 'binary');
+                const result = Buffer.from(reader.result, 'binary');
                 resolve(result);
             });
             reader.readAsBinaryString(file);
@@ -672,11 +687,11 @@ function* uploadImage({ payload: { file, dataUrl, filename = 'image.txt', progre
         // recover from preview
         const commaIdx = dataUrl.indexOf(',');
         dataBs64 = dataUrl.substring(commaIdx + 1);
-        data = new Buffer(dataBs64, 'base64');
+        data = Buffer.from(dataBs64, 'base64');
     }
 
     // The challenge needs to be prefixed with a constant (both on the server and checked on the client) to make sure the server can't easily make the client sign a transaction doing something else.
-    const prefix = new Buffer('ImageSigningChallenge');
+    const prefix = Buffer.from('ImageSigningChallenge');
     const buf = Buffer.concat([prefix, data]);
     const bufSha = hash.sha256(buf);
 

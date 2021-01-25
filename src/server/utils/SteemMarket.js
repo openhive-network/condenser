@@ -2,13 +2,14 @@ import * as config from 'config';
 import axios from 'axios';
 import NodeCache from 'node-cache';
 
+// eslint-disable-next-line import/prefer-default-export
 export function SteemMarket() {
     const { ttl } = config.steem_market_cache;
     const cache = new NodeCache({
         stdTTL: ttl,
     });
     const { key } = config.steem_market_cache;
-    cache.on('expired', (k, v) => {
+    cache.on('expired', (k) => {
         console.log('Cache key expired', k);
         if (key === k) {
             this.refresh();
@@ -21,8 +22,8 @@ export function SteemMarket() {
 
 SteemMarket.prototype.storeEmpty = function () {
     const { key } = config.steem_market_cache;
-    return new Promise((res, rej) => {
-        this.cache.set(key, {}, (err, success) => {
+    return new Promise((res) => {
+        this.cache.set(key, {}, () => {
             console.info('Storing empty Steem Market data...');
             res();
         });
@@ -30,7 +31,7 @@ SteemMarket.prototype.storeEmpty = function () {
 };
 
 SteemMarket.prototype.get = async function () {
-    return new Promise((res, rej) => {
+    return new Promise((res) => {
         const { key } = config.steem_market_cache;
         this.cache.get(key, (err, value) => {
             if (err) {
@@ -54,6 +55,7 @@ SteemMarket.prototype.refresh = async function () {
         return this.storeEmpty();
     }
 
+    // eslint-disable-next-line no-return-await
     return await axios({
         url,
         method: 'GET',
@@ -63,9 +65,10 @@ SteemMarket.prototype.refresh = async function () {
     })
         .then((response) => {
             console.info('Received Steem Market data from endpoint...');
-            this.cache.set(key, response.data, (err, success) => {
+            this.cache.set(key, response.data, (err) => {
                 if (err) {
-                    rej(err);
+                    // rej(err);
+                    console.error(err);
                     return;
                 }
                 console.info('Steem Market data refreshed...');

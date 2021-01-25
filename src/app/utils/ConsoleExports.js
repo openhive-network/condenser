@@ -1,4 +1,7 @@
-import { PrivateKey, PublicKey, Aes, key_utils } from '@hiveio/hive-js/lib/auth/ecc';
+/*eslint global-require: "warn"*/
+import {
+ PrivateKey, PublicKey, Aes, key_utils
+} from '@hiveio/hive-js/lib/auth/ecc';
 
 // import secureRandom from 'secure-random'
 // import links from 'app/utils/Links'
@@ -50,9 +53,11 @@ module.exports = {
 
     init: (context) => {
         if (!context) return;
+        // eslint-disable-next-line no-restricted-syntax
         for (const obj in module.exports) {
-            if (obj === 'init') continue;
-            context[obj] = module.exports[obj];
+            if (obj !== 'init') {
+                context[obj] = module.exports[obj];
+            }
         }
     },
 

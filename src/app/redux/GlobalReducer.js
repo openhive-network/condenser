@@ -1,4 +1,7 @@
-import { Map, List, fromJS, Iterable } from 'immutable';
+/*eslint no-case-declarations: "warn", no-shadow: "warn" */
+import {
+ Map, List, fromJS, Iterable
+} from 'immutable';
 
 export const defaultState = Map({
     status: {},
@@ -45,8 +48,7 @@ const postKey = (author, permlink) => {
  * @param {Object} account
  */
 
-const transformAccount = (account) =>
-    fromJS(account, (key, value) => {
+const transformAccount = (account) => fromJS(account, (key, value) => {
         if (key === 'witness_votes') return value.toSet();
         const isIndexed = Iterable.isIndexed(value);
         return isIndexed ? value.toList() : value.toOrderedMap();
@@ -97,13 +99,9 @@ export default function reducer(state = defaultState, action = {}) {
 
         case RECEIVE_NOTIFICATIONS: {
             console.log('Receive notifications', payload);
-            return state.updateIn(['notifications', payload.name], Map(), (n) =>
-                n.withMutations((nmut) =>
-                    nmut
+            return state.updateIn(['notifications', payload.name], Map(), (n) => n.withMutations((nmut) => nmut
                         .update('notifications', List(), (a) => a.concat(fromJS(payload.notifications)))
-                        .set('isLastPage', payload.isLastPage)
-                )
-            );
+                        .set('isLastPage', payload.isLastPage)));
         }
 
         case RECEIVE_UNREAD_NOTIFICATIONS: {
@@ -136,9 +134,6 @@ export default function reducer(state = defaultState, action = {}) {
         case RECEIVE_COMMUNITIES: {
             const map = Map(payload.map((c) => [c.name, fromJS(c)]));
             const idx = List(payload.map((c) => c.name));
-            if (map.length <= 0) {
-                debugger;
-            }
             return state.setIn(['community'], map).setIn(['community_idx'], idx);
         }
 
@@ -178,7 +173,6 @@ export default function reducer(state = defaultState, action = {}) {
             const votes_key = ['content', key, 'active_votes'];
             const old_votes = state.getIn(votes_key, List());
             const new_votes = content.get('active_votes');
-            const { merge } = require('immutable');
             const merged_votes = new_votes.merge(new_votes, old_votes);
             new_state = new_state.setIn(votes_key, merged_votes);
 
@@ -193,14 +187,14 @@ export default function reducer(state = defaultState, action = {}) {
         }
 
         case LINK_REPLY: {
-            const { author, permlink, parent_author = '', parent_permlink = '' } = payload;
+            const {
+ author, permlink, parent_author = '', parent_permlink = ''
+} = payload;
             const parent_key = postKey(parent_author, parent_permlink);
             if (!parent_key) return state;
             const key = author + '/' + permlink;
             // Add key if not exist
-            let updatedState = state.updateIn(['content', parent_key, 'replies'], List(), (l) =>
-                l.findIndex((i) => i === key) === -1 ? l.push(key) : l
-            );
+            let updatedState = state.updateIn(['content', parent_key, 'replies'], List(), (l) => l.findIndex((i) => i === key) === -1 ? l.push(key) : l);
             const children = updatedState.getIn(['content', parent_key, 'replies'], List()).size;
             updatedState = updatedState.updateIn(['content', parent_key, 'children'], 0, () => children);
             return updatedState;
@@ -213,15 +207,15 @@ export default function reducer(state = defaultState, action = {}) {
             const parent_key = postKey(content.get('parent_author'), content.get('parent_permlink'));
             let updatedState = state.deleteIn(['content', key]);
             if (parent_key) {
-                updatedState = updatedState.updateIn(['content', parent_key, 'replies'], List(), (r) =>
-                    r.filter((i) => i !== key)
-                );
+                updatedState = updatedState.updateIn(['content', parent_key, 'replies'], List(), (r) => r.filter((i) => i !== key));
             }
             return updatedState;
         }
 
         case VOTED: {
-            const { voter, author, permlink, weight } = payload;
+            const {
+ voter, author, permlink, weight
+} = payload;
             const vote = Map({ voter, percent: weight });
             const key = ['content', author + '/' + permlink, 'active_votes'];
             let votes = state.getIn(key, List());
@@ -243,7 +237,9 @@ export default function reducer(state = defaultState, action = {}) {
         }
 
         case RECEIVE_DATA: {
-            const { data, order, category, fetching, endOfData } = payload;
+            const {
+ data, order, category, fetching, endOfData
+} = payload;
             let new_state;
 
             // append content keys to `discussion_idx` list

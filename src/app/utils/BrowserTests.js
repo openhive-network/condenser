@@ -5,6 +5,7 @@ import { config } from '@hiveio/hive-js';
 
 export const browserTests = {};
 
+// eslint-disable-next-line consistent-return
 export default function runTests() {
     let rpt = '';
     let pass = true;

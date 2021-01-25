@@ -1,5 +1,4 @@
 import { call, put } from 'redux-saga/effects';
-import { api } from '@hiveio/hive-js';
 import { callBridge } from 'app/utils/steemApi';
 import { fetchCrossPosts } from 'app/utils/CrossPosts';
 import * as appActions from './AppReducer';

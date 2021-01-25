@@ -1,4 +1,7 @@
-import { fromJS, Map, Set, OrderedSet } from 'immutable';
+/*eslint no-shadow: "warn"*/
+import {
+ fromJS, Map, OrderedSet
+} from 'immutable';
 import { call, put, select } from 'redux-saga/effects';
 import { api } from '@hiveio/hive-js';
 
@@ -9,6 +12,7 @@ import * as globalActions from 'app/redux/GlobalReducer';
 */
 
 // Test limit with 2 (not 1, infinate looping)
+// eslint-disable-next-line import/prefer-default-export
 export function* loadFollows(method, account, type, force = false) {
     if (yield select((state) => state.global.getIn(['follow', method, account, type + '_loading']))) {
         return; //already loading
@@ -49,6 +53,7 @@ function* loadFollowsLoop(method, account, type, start = '', limit = 1000) {
 
                     const whatList = value.get('what');
                     const accountNameKey = method === 'getFollowingAsync' ? 'following' : 'follower';
+                    // eslint-disable-next-line no-multi-assign
                     const accountName = (lastAccountName = value.get(accountNameKey));
                     whatList.forEach((what) => {
                         //currently this is always true: what === type
@@ -74,14 +79,12 @@ function* loadFollowsLoop(method, account, type, start = '', limit = 1000) {
 
                     const result = m.getIn(['follow_inprogress', method, account, type], OrderedSet());
                     m.deleteIn(['follow_inprogress', method, account, type]);
-                    m.updateIn(['follow', method, account], Map(), (mm) =>
-                        mm.merge({
+                    m.updateIn(['follow', method, account], Map(), (mm) => mm.merge({
                             // Count may be set separately without loading the full xxx_result set
                             [type + '_count']: result.size,
                             [type + '_result']: result.reverse(),
                             [type + '_loading']: false,
-                        })
-                    );
+                        }));
                     return m.asImmutable();
                 },
             })

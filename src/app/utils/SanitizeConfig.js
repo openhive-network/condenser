@@ -1,4 +1,5 @@
-import { isDefaultImageSize, defaultSrcSet, defaultWidth } from 'app/utils/ProxifyUrl';
+/* global $STM_Config */
+import { isDefaultImageSize, defaultSrcSet } from 'app/utils/ProxifyUrl';
 import { getPhishingWarningMessage, getExternalLinkWarningMessage } from 'shared/HtmlReady'; // the only allowable title attributes for div and a tags
 
 import { validateIframeUrl as validateEmbbeddedPlayerIframeUrl } from 'app/components/elements/EmbeddedPlayers';
@@ -14,7 +15,9 @@ export const allowedTags = `
     .split(/,\s*/);
 
 // Medium insert plugin uses: div, figure, figcaption, iframe
-export default ({ large = true, highQualityPost = true, noImage = false, sanitizeErrors = [] }) => ({
+export default ({
+ large = true, highQualityPost = true, noImage = false, sanitizeErrors = []
+}) => ({
     allowedTags,
     // figure, figcaption,
 
@@ -49,7 +52,9 @@ export default ({ large = true, highQualityPost = true, noImage = false, sanitiz
             const srcAtty = attribs.src;
             const widthAtty = attribs.width;
             const heightAtty = attribs.height;
-            const { validUrl, useSandbox, sandboxAttributes, width, height } = validateEmbbeddedPlayerIframeUrl(
+            const {
+ validUrl, useSandbox, sandboxAttributes, width, height
+} = validateEmbbeddedPlayerIframeUrl(
                 srcAtty,
                 large,
                 widthAtty,
@@ -87,7 +92,8 @@ export default ({ large = true, highQualityPost = true, noImage = false, sanitiz
         img: (tagName, attribs) => {
             if (noImage) return { tagName: 'div', text: noImageText };
             //See https://github.com/punkave/sanitize-html/issues/117
-            let { src, alt } = attribs;
+            let { src } = attribs;
+            const { alt } = attribs;
             if (!/^(https?:)?\/\//i.test(src)) {
                 console.log('Blocked, image tag src does not appear to be a url', tagName, attribs);
                 sanitizeErrors.push('An image in this post did not save properly.');
@@ -137,7 +143,7 @@ export default ({ large = true, highQualityPost = true, noImage = false, sanitiz
             href = href.trim();
             const attys = { href };
             // If it's not a (relative or absolute) hive URL...
-            if (!href.match(`^(\/(?!\/)|https:\/\/${$STM_Config.site_domain})`)) {
+            if (!href.match(`^(/(?!/)|https://${$STM_Config.site_domain})`)) {
                 // attys.target = '_blank' // pending iframe impl https://mathiasbynens.github.io/rel-noopener/
                 attys.rel = highQualityPost ? 'noopener' : 'nofollow noopener';
                 attys.title = getExternalLinkWarningMessage();

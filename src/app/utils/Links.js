@@ -8,7 +8,7 @@ const urlChars = '(?:' + urlChar + '*' + urlCharEnd + ')?';
 
 const urlSet = ({ domain = domainPath, path } = {}) => {
     // urlChars is everything but html or markdown stop chars
-    return `https?:\/\/${domain}(?::\\d{2,5})?(?:[/\\?#]${urlChars}${path ? path : ''})${path ? '' : '?'}`;
+    return `https?://${domain}(?::\\d{2,5})?(?:[/\\?#]${urlChars}${path ? path : ''})${path ? '' : '?'}`;
 };
 
 /**
@@ -16,8 +16,7 @@ const urlSet = ({ domain = domainPath, path } = {}) => {
 */
 export const any = (flags = 'i') => new RegExp(urlSet(), flags);
 export const local = (flags = 'i') => new RegExp(urlSet({ domain: '(?:localhost|(?:.*\\.)?hive.blog)' }), flags);
-export const remote = (flags = 'i') =>
-    new RegExp(urlSet({ domain: `(?!localhost|(?:.*\\.)?hive.blog)${domainPath}` }), flags);
+export const remote = (flags = 'i') => new RegExp(urlSet({ domain: `(?!localhost|(?:.*\\.)?hive.blog)${domainPath}` }), flags);
 export const image = (flags = 'i') => new RegExp(urlSet({ path: imagePath }), flags);
 export const imageFile = (flags = 'i') => new RegExp(imagePath, flags);
 // export const nonImage = (flags = 'i') => new RegExp(urlSet({path: '!' + imageFile}), flags)
@@ -71,7 +70,7 @@ export const makeParams = (params, prefix) => {
  */
 export const determineViewMode = (search) => {
     const searchList = search.indexOf('?') === 0 ? search.substr(1).split('&') : search.split('&');
-    for (let i = 0; i < searchList.length; i++) {
+    for (let i = 0; i < searchList.length; i += 1) {
         if (searchList[i].indexOf(PARAM_VIEW_MODE) === 0) {
             if (searchList[i] == PARAM_VIEW_MODE + '=' + VIEW_MODE_WHISTLE) {
                 //we only want to support known view modes.

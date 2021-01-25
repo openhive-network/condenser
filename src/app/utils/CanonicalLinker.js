@@ -40,6 +40,7 @@ function allowed_app(app) {
     return whitelist.includes(app);
 }
 
+// eslint-disable-next-line import/prefer-default-export
 export function makeCanonicalLink(post, metadata) {
     let scheme;
 

@@ -1,13 +1,17 @@
-import { call, put, select, all, takeEvery } from 'redux-saga/effects';
-import { fromJS, Set, Map } from 'immutable';
+/*eslint no-shadow: "warn", no-underscore-dangle: "warn" */
+/* global $STM_Config */
+import {
+ call, put, select, takeEvery
+} from 'redux-saga/effects';
+import { Set, Map } from 'immutable';
 import tt from 'counterpart';
 import getSlug from 'speakingurl';
 import base58 from 'bs58';
 import secureRandom from 'secure-random';
-import { PrivateKey, PublicKey } from '@hiveio/hive-js/lib/auth/ecc';
-import { api, broadcast, auth, memo } from '@hiveio/hive-js';
+import { PrivateKey } from '@hiveio/hive-js/lib/auth/ecc';
+import { broadcast } from '@hiveio/hive-js';
 
-import { getAccount, getContent } from 'app/redux/SagaShared';
+import { getContent } from 'app/redux/SagaShared';
 import { postingOps, findSigningKey } from 'app/redux/AuthSaga';
 import * as appActions from 'app/redux/AppReducer';
 import * as globalActions from 'app/redux/GlobalReducer';
@@ -17,7 +21,7 @@ import { DEBT_TICKER } from 'app/client_config';
 import { serverApiRecordEvent } from 'app/utils/ServerApiClient';
 import { isLoggedInWithKeychain } from 'app/utils/HiveKeychain';
 import { callBridge } from 'app/utils/steemApi';
-import { isLoggedInWithHiveSigner, hiveSignerClient, sendOperationsWithHiveSigner } from 'app/utils/HiveSigner';
+import { isLoggedInWithHiveSigner, hiveSignerClient } from 'app/utils/HiveSigner';
 
 import diff_match_patch from 'diff-match-patch';
 
@@ -33,8 +37,6 @@ const hook = {
     accepted_delete_comment,
     accepted_vote,
 };
-
-const toStringUtf8 = (o) => (o ? (Buffer.isBuffer(o) ? o.toString('utf-8') : o.toString()) : o);
 
 function* preBroadcast_vote({ operation, username }) {
     if (!operation.voter) operation.voter = username;
@@ -148,12 +150,12 @@ export function* broadcastOperation({
             }
         }
         // if the customJsonPayload has a 'required_posting_auths' key, that has value undefined, and the user is logged in. Update it.
-        const updatedOps = payload.operations.map((op, idx, src) => {
+        const updatedOps = payload.operations.map((op) => {
             if (op[0] === 'custom_json') {
                 if (
-                    op[1].required_posting_auths &&
-                    op[1].required_posting_auths.filter((u) => u === undefined).length > 0 &&
-                    username
+                    op[1].required_posting_auths
+                    && op[1].required_posting_auths.filter((u) => u === undefined).length > 0
+                    && username
                 ) {
                     op[1].required_posting_auths = [username];
                 }
@@ -178,15 +180,17 @@ export function* broadcastOperation({
 
 function hasPrivateKeys(payload) {
     const blob = JSON.stringify(payload.operations);
-    let m,
-        re = /P?(5[123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{50})/g;
+    let m;
+    const re = /P?(5[123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{50})/g;
     while (true) {
         m = re.exec(blob);
         if (m) {
             try {
                 PrivateKey.fromWif(m[1]); // performs the base58check
                 return true;
-            } catch (e) {}
+            } catch (e) {
+                // Nothing
+            }
         } else {
             break;
         }
@@ -194,12 +198,17 @@ function hasPrivateKeys(payload) {
     return false;
 }
 
-function* broadcastPayload({ payload: { operations, keys, username, successCallback, errorCallback } }) {
+function* broadcastPayload({
+ payload: {
+ operations, keys, username, successCallback, errorCallback
+}
+}) {
     let needsActiveAuth = false;
 
     console.log('broadcastPayload', operations, username);
 
     if ($STM_Config.read_only_mode) return;
+    // eslint-disable-next-line no-restricted-syntax
     for (const [type] of operations) {
         // see also transaction/ERROR
         yield put(transactionActions.remove({ key: ['TransactionError', type] }));
@@ -210,13 +219,17 @@ function* broadcastPayload({ payload: { operations, keys, username, successCallb
 
     {
         const newOps = [];
+        // eslint-disable-next-line no-restricted-syntax
         for (const [type, operation] of operations) {
             if (hook['preBroadcast_' + type]) {
                 const op = yield call(hook['preBroadcast_' + type], {
                     operation,
                     username,
                 });
-                if (Array.isArray(op)) for (const o of op) newOps.push(o);
+                if (Array.isArray(op)) {
+                    // eslint-disable-next-line no-restricted-syntax
+                    for (const o of op) newOps.push(o);
+                }
                 else newOps.push([type, op]);
             } else {
                 newOps.push([type, operation]);
@@ -227,6 +240,7 @@ function* broadcastPayload({ payload: { operations, keys, username, successCallb
 
     // status: broadcasting
     const broadcastedEvent = () => {
+        // eslint-disable-next-line no-restricted-syntax
         for (const [type, operation] of operations) {
             if (hook['broadcasted_' + type]) {
                 try {
@@ -274,7 +288,7 @@ function* broadcastPayload({ payload: { operations, keys, username, successCallb
                 });
             } else if (isLoggedInWithHiveSigner()) {
                 if (!needsActiveAuth) {
-                    hiveSignerClient.broadcast(operations, (err, result) => {
+                    hiveSignerClient.broadcast(operations, (err) => {
                         if (err) {
                             reject(err.error_description);
                         } else {
@@ -283,7 +297,8 @@ function* broadcastPayload({ payload: { operations, keys, username, successCallb
                         }
                     });
                 } else {
-                    sendOperationsWithHiveSigners(operations, {}, (err, result) => {
+                    // eslint-disable-next-line no-undef
+                    sendOperationsWithHiveSigners(operations, {}, (err) => {
                         if (err) {
                             reject(err.error_description);
                         } else {
@@ -304,6 +319,7 @@ function* broadcastPayload({ payload: { operations, keys, username, successCallb
             }
         });
         // status: accepted
+        // eslint-disable-next-line no-restricted-syntax
         for (const [type, operation] of operations) {
             if (hook['accepted_' + type]) {
                 try {
@@ -323,16 +339,16 @@ function* broadcastPayload({ payload: { operations, keys, username, successCallb
                 );
             }
         }
-        if (successCallback)
-            try {
+        if (successCallback) { try {
                 successCallback(operations);
             } catch (error) {
                 console.error('defaultErrorCallback', error);
-            }
+            } }
     } catch (error) {
         console.error('TransactionSaga\tbroadcastPayload', error);
         // status: error
         yield put(transactionActions.error({ operations, error, errorCallback }));
+        // eslint-disable-next-line no-restricted-syntax
         for (const [type, operation] of operations) {
             if (hook['error_' + type]) {
                 try {
@@ -403,8 +419,7 @@ function* accepted_delete_comment({ operation }) {
     yield put(globalActions.deleteContent(operation));
 }
 
-const wait = (ms) =>
-    new Promise((resolve) => {
+const wait = (ms) => new Promise((resolve) => {
         setTimeout(() => resolve(), ms);
     });
 
@@ -435,6 +450,7 @@ export function* preBroadcast_comment({ operation, username }) {
 
     let body2;
     if (originalBody) {
+        // eslint-disable-next-line no-unused-vars
         const patch = createPatch(originalBody, body);
         // Putting body into buffer will expand Unicode characters into their true length
         //if (patch && patch.length < new Buffer(body, 'utf-8').length)

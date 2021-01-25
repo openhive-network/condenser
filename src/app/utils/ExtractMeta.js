@@ -1,4 +1,5 @@
-import { getPostSummary, extractBodySummary, extractImageLink } from 'app/utils/ExtractContent';
+/* global $STM_Config */
+import { getPostSummary, extractImageLink } from 'app/utils/ExtractContent';
 import { makeCanonicalLink } from 'app/utils/CanonicalLinker.js';
 import { proxifyImageUrl } from 'app/utils/ProxifyUrl';
 
@@ -30,7 +31,9 @@ function addSiteMeta(metas) {
 
 function addPostMeta(metas, content, profile) {
     const { profile_image } = profile;
-    const { category, created, body, json_metadata } = content;
+    const {
+ category, created, body, json_metadata
+} = content;
     const isReply = content.depth > 0;
 
     const title = content.title + ' — Hive';

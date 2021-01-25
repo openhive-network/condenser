@@ -1,3 +1,4 @@
+/*eslint global-require: "warn"*/
 import path from 'path';
 import Koa from 'koa';
 import mount from 'koa-mount';
@@ -17,6 +18,7 @@ import secureRandom from 'secure-random';
 import userIllegalContent from 'app/utils/userIllegalContent';
 import koaLocale from 'koa-locale';
 import fs from 'fs';
+// eslint-disable-next-line import/named
 import { getSupportedLocales } from './utils/misc';
 import { specialPosts } from './utils/SpecialPosts';
 import usePostJson from './json/post_json';
@@ -52,6 +54,7 @@ app.use(mount('/images', staticCache(path.join(__dirname, '../app/assets/images'
 app.use(mount('/javascripts', staticCache(path.join(__dirname, '../app/assets/javascripts'), cacheOpts)));
 
 app.use(
+    // eslint-disable-next-line require-yield
     mount('/ads.txt', function* () {
         this.type = 'text/plain';
         this.body = adstxt;
@@ -76,6 +79,7 @@ let resolvedAssets = false;
 let supportedLocales = false;
 
 if (process.env.NODE_ENV === 'production') {
+    // eslint-disable-next-line import/no-dynamic-require
     resolvedAssets = require(path.join(__dirname, '../..', '/tmp/webpack-stats-prod.json'));
     supportedLocales = getSupportedLocales();
 }
@@ -138,10 +142,10 @@ app.use(function* (next) {
 
     // normalize user name url from cased params
     if (
-        this.method === 'GET' &&
-        (routeRegex.UserProfile.test(this.url) ||
-            routeRegex.PostNoCategory.test(this.url) ||
-            routeRegex.Post.test(this.url))
+        this.method === 'GET'
+        && (routeRegex.UserProfile.test(this.url)
+            || routeRegex.PostNoCategory.test(this.url)
+            || routeRegex.Post.test(this.url))
     ) {
         const p = this.originalUrl.toLowerCase();
         let userCheck = '';
@@ -176,6 +180,7 @@ app.use(function* (next) {
     if (this.method === 'GET' && /\?[^\w]*(ch=|cn=|r=)/.test(this.url)) {
         let redir = this.url.replace(/((ch|cn|r)=[^&]+)/gi, (r) => {
             const p = r.split('=');
+            // eslint-disable-next-line prefer-destructuring
             if (p.length === 2) this.session[p[0]] = p[1];
             return '';
         });
@@ -212,6 +217,7 @@ if (env === 'production') {
 app.use(mount('/static', staticCache(path.join(__dirname, '../app/assets/static'), cacheOpts)));
 
 app.use(
+    // eslint-disable-next-line require-yield
     mount('/robots.txt', function* () {
         this.set('Cache-Control', 'public, max-age=86400000');
         this.type = 'text/plain';
@@ -223,6 +229,7 @@ app.use(
 // FIXME SECURITY PRIVACY cycle this uid after a period of time
 app.use(function* (next) {
     const { last_visit } = this.session;
+    // eslint-disable-next-line no-bitwise
     this.session.last_visit = (new Date().getTime() / 1000) | 0;
     const from_link = this.request.headers.referer;
     if (!this.session.uid) {
@@ -252,6 +259,7 @@ if (env === 'production') {
         reportOnly: config.get('helmet.reportOnly'),
         setAllHeaders: config.get('helmet.setAllHeaders'),
     };
+    // eslint-disable-next-line prefer-destructuring
     helmetConfig.directives.reportUri = helmetConfig.directives.reportUri[0];
     if (helmetConfig.directives.reportUri === '-') {
         delete helmetConfig.directives.reportUri;
@@ -268,7 +276,7 @@ if (env !== 'test') {
     app.specialPostsPromise = specialPosts();
     // refresh special posts every five minutes
     setInterval(() => {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve) => {
             app.specialPostsPromise = specialPosts();
             resolve();
         });
@@ -282,13 +290,13 @@ if (env !== 'test') {
         }
     });
 
-    const argv = minimist(process.argv.slice(2));
+    minimist(process.argv.slice(2));
 
     const port = process.env.PORT ? parseInt(process.env.PORT) : 8080;
 
     if (env === 'production' && process.env.DISABLE_CLUSTERING !== 'true') {
         if (cluster.isMaster) {
-            for (let i = 0; i < numProcesses; i++) {
+            for (let i = 0; i < numProcesses; i += 1) {
                 cluster.fork();
             }
             // if a worker dies replace it so application keeps running

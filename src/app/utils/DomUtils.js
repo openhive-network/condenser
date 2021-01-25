@@ -17,11 +17,10 @@ export function getViewportDimensions(w) {
 
     // For IE (or any browser) in Standards mode
     const d = w.document;
-    if (document.compatMode == 'CSS1Compat')
-        return {
+    if (document.compatMode == 'CSS1Compat') { return {
             w: d.documentElement.clientWidth,
             h: d.documentElement.clientHeight,
-        };
+        }; }
 
     // For browsers in Quirks mode
     return { w: d.body.clientWidth, h: d.body.clientHeight };

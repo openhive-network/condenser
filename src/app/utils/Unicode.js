@@ -153,14 +153,13 @@ const Unicode = {
 Unicode.C = Unicode.Cc + Unicode.Cf + Unicode.Cs + Unicode.Co;
 //+ Unicode.Cn ; //This is not defined.
 
-Unicode.L =
-    Unicode.Lu +
-    Unicode.Ll +
-    Unicode.Lt +
-    Unicode.Lm +
-    Unicode.Mn + //Added 2014-05-29 due to some letters in names not being recognized.
+Unicode.L = Unicode.Lu
+    + Unicode.Ll
+    + Unicode.Lt
+    + Unicode.Lm
+    + Unicode.Mn //Added 2014-05-29 due to some letters in names not being recognized.
     //This is where accent marks are individually combined instead of using an explicit character.
-    Unicode.Lo;
+    + Unicode.Lo;
 
 Unicode.LC = Unicode.Lu + Unicode.Ll + Unicode.Lt;
 
@@ -178,6 +177,7 @@ Unicode.Z = Unicode.Zs + Unicode.Zl + Unicode.Zp;
 Unicode.w = '_' + Unicode.L + Unicode.N;
 
 //A Unicode based word boundry built with non-capturing parentheses
+// eslint-disable-next-line no-useless-concat
 Unicode.b = '(?:[' + Unicode.w + '](?:[^' + Unicode.w + ']|$)' + '|(?:^|[^' + Unicode.w + '])[' + Unicode.w + ']' + ')';
 
 //A Unicode based word boundry build with non-capturing parentheses
@@ -193,6 +193,7 @@ Unicode.bIn = '(?:^|[^' + Unicode.w + '])';
 Unicode.bInCapture = '(?:^|([^' + Unicode.w + ']))';
 
 //A Unicode based non-word boundry build with non-capturing parentheses
+// eslint-disable-next-line no-useless-concat
 Unicode.B = '(?:[' + Unicode.w + '][' + Unicode.w + ']' + '|[^' + Unicode.w + '][^' + Unicode.w + ']' + ')';
 
 Unicode.d = Unicode.N;

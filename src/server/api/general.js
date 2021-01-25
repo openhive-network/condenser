@@ -1,4 +1,4 @@
-/*global $STM_Config */
+/*eslint no-underscore-dangle: "warn"*/
 import koa_router from 'koa-router';
 import koa_body from 'koa-body';
 import config from 'config';
@@ -129,6 +129,7 @@ export default function useGeneralApi(app) {
         }
     });
 
+    // eslint-disable-next-line require-yield
     router.post('/logout_account', koaBody, function* () {
         // if (rateLimitReq(this, this.req)) return; - logout maybe immediately followed with login_attempt event
         const params = this.request.body;
@@ -163,6 +164,7 @@ export default function useGeneralApi(app) {
         this.body = '';
     });
 
+    // eslint-disable-next-line require-yield
     router.post('/setUserPreferences', koaBody, function* () {
         const params = this.request.body;
         const { csrf, payload } = _parse(params);

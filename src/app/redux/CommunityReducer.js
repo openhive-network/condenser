@@ -70,9 +70,7 @@ export default function reducer(state = defaultCommunityState, action) {
                     });
                 });
             }
-            return state.updateIn([community, 'roles'], List(), (items) =>
-                items.update(index, (item) => item.set(0, payload.account).set(1, payload.role))
-            );
+            return state.updateIn([community, 'roles'], List(), (items) => items.update(index, (item) => item.set(0, payload.account).set(1, payload.role)));
         }
 
         default:

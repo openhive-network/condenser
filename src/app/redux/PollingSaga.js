@@ -1,4 +1,6 @@
-import { put, call, take, race } from 'redux-saga/effects';
+import {
+ put, call, take, race
+} from 'redux-saga/effects';
 import { delay } from 'redux-saga';
 
 const START_POLLING = 'START_POLLING';

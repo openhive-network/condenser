@@ -2,7 +2,7 @@ import GDPRUserList from './utils/GDPRUserList';
 
 const reg = (pattern) => {
     pattern = pattern
-        .replace('<account>', '(@[\\w\\.\\d-]+)')
+        .replace('<account>', '(@[\\w.\\d-]+)')
         .replace(
             '<account-tab>',
             '(blog|posts|comments|replies|payout|feed|followed|followers|settings|notifications|communities)'
@@ -54,31 +54,27 @@ export default function resolveRoute(path) {
 
     // /@user/feed
     match = path.match(routeRegex.UserFeed);
-    if (match)
-        return GDPRUserList.includes(match[1].substring(1))
+    if (match) { return GDPRUserList.includes(match[1].substring(1))
             ? { page: 'NotFound' }
-            : { page: 'PostsIndex', params: ['home', match[1]] };
+            : { page: 'PostsIndex', params: ['home', match[1]] }; }
 
     // /@user, /@user/blog, /@user/settings
     match = path.match(routeRegex.UserProfile);
-    if (match)
-        return GDPRUserList.includes(match[1].substring(1))
+    if (match) { return GDPRUserList.includes(match[1].substring(1))
             ? { page: 'NotFound' }
-            : { page: 'UserProfile', params: match.slice(1) };
+            : { page: 'UserProfile', params: match.slice(1) }; }
 
-    // /@user/permlink (redirects to /category/@user/permlink)
+    // /@user/permlink (redirects to /category/@user/permlink):wq
     match = path.match(routeRegex.PostNoCategory);
-    if (match)
-        return GDPRUserList.includes(match[1].substring(1))
+    if (match) { return GDPRUserList.includes(match[1].substring(1))
             ? { page: 'NotFound' }
-            : { page: 'PostNoCategory', params: match.slice(1) };
+            : { page: 'PostNoCategory', params: match.slice(1) }; }
 
     // /category/@user/permlink
     match = path.match(routeRegex.Post);
-    if (match)
-        return GDPRUserList.includes(match[2].substring(1))
+    if (match) { return GDPRUserList.includes(match[2].substring(1))
             ? { page: 'NotFound' }
-            : { page: 'Post', params: match.slice(1) };
+            : { page: 'Post', params: match.slice(1) }; }
 
     // /trending, /trending/category
     match = path.match(routeRegex.CategoryFilters);

@@ -1,4 +1,6 @@
-import { Map, OrderedMap, getIn, List, fromJS, Set, merge } from 'immutable';
+import {
+ Map, OrderedMap, List, fromJS,
+} from 'immutable';
 import * as globalActions from './GlobalReducer';
 import reducer, { defaultState } from './GlobalReducer';
 
@@ -46,16 +48,6 @@ describe('Global reducer', () => {
             },
         };
         const initial = reducer();
-        const expected = Map({
-            status: {},
-            accounts: Map({
-                foo: Map({
-                    name: 'foo',
-                    be_List: List(['alice', 'bob', 'claire']),
-                    be_orderedMap: OrderedMap({ foo: 'barman' }),
-                }),
-            }),
-        });
         // Act
         const actual = reducer(initial, globalActions.receiveAccount(payload));
         // Assert

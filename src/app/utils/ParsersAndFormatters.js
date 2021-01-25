@@ -7,7 +7,8 @@ function fractional_part_len(value) {
 
 // FIXME this should be unit tested.. here is one bug: 501,695,.505
 export function formatDecimal(value, decPlaces = 2, truncate0s = true) {
-    let decSeparator, fl, i, j, sign, thouSeparator, abs_value;
+    let fl, j;
+    // eslint-disable-next-line no-void,no-restricted-globals
     if (value === null || value === void 0 || isNaN(value)) {
         return ['N', 'a', 'N'];
     }
@@ -16,16 +17,16 @@ export function formatDecimal(value, decPlaces = 2, truncate0s = true) {
         if (fl < 2) fl = 2;
         if (fl < decPlaces) decPlaces = fl;
     }
-    decSeparator = '.';
-    thouSeparator = ',';
-    sign = value < 0 ? '-' : '';
-    abs_value = Math.abs(value);
-    i = parseInt(abs_value.toFixed(decPlaces), 10) + '';
+    const decSeparator = '.';
+    const thouSeparator = ',';
+    const sign = value < 0 ? '-' : '';
+    const abs_value = Math.abs(value);
+    const i = parseInt(abs_value.toFixed(decPlaces), 10) + '';
     j = i.length;
     j = i.length > 3 ? j % 3 : 0;
     const decPart = decPlaces
-        ? decSeparator +
-          Math.abs(abs_value - i)
+        ? decSeparator
+          + Math.abs(abs_value - i)
               .toFixed(decPlaces)
               .slice(2)
         : '';
@@ -58,8 +59,10 @@ export const repLog10 = (rep2) => {
     rep = neg ? rep.substring(1) : rep;
 
     let out = log10(rep);
+    // eslint-disable-next-line no-restricted-globals
     if (isNaN(out)) out = 0;
     out = Math.max(out - 9, 0); // @ -9, $0.50 earned is approx magnitude 1
+    // eslint-disable-next-line operator-assignment
     out = (neg ? -1 : 1) * out;
     out = out * 9 + 25; // 9 points per magnitude. center at 25
     // base-line 0 to darken and < 0 to auto hide (grep rephide)
@@ -70,7 +73,7 @@ export const repLog10 = (rep2) => {
 export function countDecimals(amount) {
     if (amount == null) return amount;
     amount = String(amount)
-        .match(/[\d\.]+/g)
+        .match(/[\d.]+/g)
         .join(''); // just dots and digits
     const parts = amount.split('.');
     return parts.length > 2 ? undefined : parts.length === 1 ? 0 : parts[1].length;

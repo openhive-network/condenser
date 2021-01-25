@@ -1,3 +1,5 @@
+/*eslint prefer-destructuring: "warn"*/
+/* global $STM_Config */
 import { api } from '@hiveio/hive-js';
 import Big from 'big.js';
 import { ifHive } from 'app/utils/Community';
@@ -8,23 +10,22 @@ export async function callBridge(method, params) {
     // [JES] Hivemind throws an exception if you call for my/[trending/payouts/new/etc] with a null observer
     // so just delete the 'my' tag if there is no observer specified
     if (
-        method === 'get_ranked_posts' &&
-        params &&
-        (params.observer === null || params.observer === undefined) &&
-        params.tag === 'my'
+        method === 'get_ranked_posts'
+        && params
+        && (params.observer === null || params.observer === undefined)
+        && params.tag === 'my'
     ) {
         delete params.tag;
         delete params.observer;
     }
 
     if (
-        method !== 'account_notifications' &&
-        method !== 'unread_notifications' &&
-        method !== 'list_all_subscriptions' &&
-        method !== 'get_post_header' &&
-        (params.observer === null || params.observer === undefined)
-    )
-        params.observer = $STM_Config.default_observer;
+        method !== 'account_notifications'
+        && method !== 'unread_notifications'
+        && method !== 'list_all_subscriptions'
+        && method !== 'get_post_header'
+        && (params.observer === null || params.observer === undefined)
+    ) params.observer = $STM_Config.default_observer;
 
     console.log('call bridge', method, params && JSON.stringify(params).substring(0, 200));
 
@@ -50,10 +51,12 @@ export async function callBridge(method, params) {
 }
 
 export function getHivePowerForUser(account) {
+    // eslint-disable-next-line no-async-promise-executor
     return new Promise(async (resolve, reject) => {
         try {
             const fullAccounts = await api.callAsync('database_api.find_accounts', { accounts: [account] });
 
+            // eslint-disable-next-line consistent-return
             api.getDynamicGlobalProperties((error, result) => {
                 if (error) return reject(error);
 
@@ -74,6 +77,7 @@ export function getHivePowerForUser(account) {
 
                     const hive_power = new Big(post_voting_power.amount)
                         .times(new Big(hiveDividedByVests))
+                        // eslint-disable-next-line no-restricted-properties
                         .times(1 / Math.pow(10, post_voting_power.precision))
                         .toFixed(0);
                     resolve(hive_power);
@@ -91,7 +95,9 @@ export async function getStateAsync(url, observer, ssr = false) {
     console.log('getStateAsync');
     if (observer === undefined) observer = null;
 
-    const { page, tag, sort, key } = parsePath(url);
+    const {
+ page, tag, sort, key
+} = parsePath(url);
 
     console.log('GSA', url, observer, ssr);
     const state = {
@@ -121,7 +127,9 @@ export async function getStateAsync(url, observer, ssr = false) {
                 name: tag,
                 observer,
             });
-        } catch (e) {}
+        } catch (e) {
+            // Nothing
+        }
     }
 
     // for SSR, load profile on any profile page or discussion thread author
@@ -207,16 +215,16 @@ async function loadPosts(sort, tag, observer) {
 
 function parsePath(url) {
     // strip off query string
-    url = url.split('?')[0];
+    let baseUrl = url.split('?')[0];
 
     // strip off leading and trailing slashes
-    if (url.length > 0 && url[0] == '/') url = url.substring(1, url.length);
-    if (url.length > 0 && url[url.length - 1] == '/') url = url.substring(0, url.length - 1);
+    if (baseUrl.length > 0 && baseUrl[0] == '/') baseUrl = baseUrl.substring(1, baseUrl.length);
+    if (baseUrl.length > 0 && baseUrl[baseUrl.length - 1] == '/') baseUrl = baseUrl.substring(0, baseUrl.length - 1);
 
     // blank URL defaults to `trending`
-    if (url === '') url = 'trending';
+    if (baseUrl === '') baseUrl = 'trending';
 
-    const part = url.split('/');
+    const part = baseUrl.split('/');
     const parts = part.length;
     const sorts = ['trending', 'promoted', 'hot', 'created', 'payout', 'payout_comments', 'muted'];
     const acct_tabs = ['blog', 'feed', 'posts', 'comments', 'replies', 'payout'];

@@ -29,6 +29,8 @@ export const defaultState = Map({
 });
 
 export default function reducer(state = defaultState, action = {}) {
+    let newFlags;
+
     switch (action.type) {
         case '@@router/LOCATION_CHANGE':
             return state.set('location', { pathname: action.payload.pathname });
@@ -65,7 +67,7 @@ export default function reducer(state = defaultState, action = {}) {
         case TOGGLE_BLOGMODE:
             return state.setIn(['user_preferences', 'blogmode'], !state.getIn(['user_preferences', 'blogmode']));
         case RECEIVE_FEATURE_FLAGS:
-            const newFlags = state.get('featureFlags')
+            newFlags = state.get('featureFlags')
                 ? state.get('featureFlags').merge(action.flags)
                 : Map(action.flags);
             return state.set('featureFlags', newFlags);

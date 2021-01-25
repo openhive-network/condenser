@@ -1,3 +1,4 @@
+/* global $STM_Config */
 import xmldom from 'xmldom';
 import tt from 'counterpart';
 import linksRe, { any as linksAny } from 'app/utils/Links';
@@ -92,6 +93,7 @@ export default function (html, { mutate = true, hideImages = false } = {}) {
         traverse(doc, state);
         if (mutate) {
             if (hideImages) {
+                // eslint-disable-next-line no-restricted-syntax
                 for (const image of Array.from(doc.getElementsByTagName('img'))) {
                     const pre = doc.createElement('pre');
                     pre.setAttribute('class', 'image-url-only');
@@ -143,10 +145,10 @@ function link(state, child) {
 
             // Unlink potential phishing attempts
             if (
-                (url.indexOf('#') !== 0 && // Allow in-page links
-                    child.textContent.match(/(www\.)?steemit\.com/i) &&
-                    !url.match(/https?:\/\/(.*@)?(www\.)?steemit\.com/i)) ||
-                Phishing.looksPhishy(url)
+                (url.indexOf('#') !== 0 // Allow in-page links
+                    && child.textContent.match(/(www\.)?steemit\.com/i)
+                    && !url.match(/https?:\/\/(.*@)?(www\.)?steemit\.com/i))
+                || Phishing.looksPhishy(url)
             ) {
                 const phishyDiv = child.ownerDocument.createElement('div');
                 phishyDiv.textContent = `${child.textContent} / ${url}`;
@@ -223,6 +225,7 @@ function linkifyNode(child, state) {
         if (mutate && content !== data) {
             const newChild = DOMParser.parseFromString(`<span>${content}</span>`);
             child.parentNode.replaceChild(newChild, child);
+            // eslint-disable-next-line consistent-return
             return newChild;
         }
     } catch (error) {
@@ -245,7 +248,7 @@ function linkify(content, mutate, hashtags, usertags, images, links) {
     // usertag (mention)
     // Cribbed from https://github.com/twitter/twitter-text/blob/v1.14.7/js/twitter-text.js#L90
     content = content.replace(
-        /(^|[^a-zA-Z0-9_!#$%&*@＠\/]|(^|[^a-zA-Z0-9_+~.-\/#]))[@＠]([a-z][-\.a-z\d]+[a-z\d])/gi,
+        /(^|[^a-zA-Z0-9_!#$%&*@＠/]|(^|[^a-zA-Z0-9_+~.-/#]))[@＠]([a-z][-.a-z\d]+[a-z\d])/gi,
         (match, preceeding1, preceeding2, user) => {
             const userLower = user.toLowerCase();
             const valid = validate_account_name(userLower) == null;

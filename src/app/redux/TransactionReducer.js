@@ -52,7 +52,7 @@ export default function reducer(state = defaultState, action) {
             return state;
 
         case ERROR: {
-            const { operations, error, errorCallback } = payload;
+            const { error, errorCallback } = payload;
 
             let msg;
             const key = error.toString().replace(/rethrow$/, '');

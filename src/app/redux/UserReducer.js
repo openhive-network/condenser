@@ -1,4 +1,4 @@
-import { Map, fromJS } from 'immutable';
+import { fromJS } from 'immutable';
 import { DEFAULT_LANGUAGE } from 'app/client_config';
 
 // Action constants
@@ -20,8 +20,6 @@ export const SET_USER = 'user/SET_USER';
 const CLOSE_LOGIN = 'user/CLOSE_LOGIN';
 export const LOGIN_ERROR = 'user/LOGIN_ERROR';
 export const LOGOUT = 'user/LOGOUT';
-const SHOW_SIGN_UP = 'user/SHOW_SIGN_UP';
-const HIDE_SIGN_UP = 'user/HIDE_SIGN_UP';
 const KEYS_ERROR = 'user/KEYS_ERROR';
 const ACCOUNT_AUTH_LOOKUP = 'user/ACCOUNT_AUTH_LOOKUP';
 const SET_AUTHORITY = 'user/SET_AUTHORITY';
@@ -202,11 +200,15 @@ export default function reducer(state = defaultState, action) {
             return state.set('show_post_advanced_settings_modal', '');
 
         case SHOW_ANNOUNCEMENT:
-            typeof sessionStorage !== 'undefined' && sessionStorage.setItem('hideAnnouncement', 'false');
+            if (typeof sessionStorage !== 'undefined') {
+                sessionStorage.setItem('hideAnnouncement', 'false');
+            }
             return state.set('showAnnouncement', true);
 
         case HIDE_ANNOUNCEMENT:
-            typeof sessionStorage !== 'undefined' && sessionStorage.setItem('hideAnnouncement', 'true');
+            if (typeof sessionStorage !== 'undefined') {
+                sessionStorage.setItem('hideAnnouncement', 'true');
+            }
             return state.set('showAnnouncement', false);
 
         default:

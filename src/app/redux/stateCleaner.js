@@ -21,9 +21,7 @@ const gdprFilterContent = (stateContent) => {
     if (stateContent === undefined) {
         return [];
     }
-    const contentToRemove = Object.keys(stateContent).filter((key) =>
-        accountsToRemove.includes(stateContent[key].author)
-    );
+    const contentToRemove = Object.keys(stateContent).filter((key) => accountsToRemove.includes(stateContent[key].author));
 
     const contentToKeep = Object.keys(stateContent).filter(
         (key) => !accountsToRemove.includes(stateContent[key].author)

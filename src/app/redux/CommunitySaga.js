@@ -1,4 +1,6 @@
-import { call, put, takeEvery, select } from 'redux-saga/effects';
+import {
+ call, put, takeEvery, select
+} from 'redux-saga/effects';
 import * as reducer from 'app/redux/CommunityReducer';
 import { getCommunity } from 'app/redux/FetchDataSaga';
 import { callBridge } from 'app/utils/steemApi';
