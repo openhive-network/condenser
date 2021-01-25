@@ -12,9 +12,7 @@ export default class StatsLoggerClient {
                 prefix: 'condenser',
             });
         } else {
-            console.log(
-                'StatsLoggerClient: no server available, logging to console.'
-            );
+            console.log('StatsLoggerClient: no server available, logging to console.');
             // Implement debug loggers here, as any new calls are added in methods below.
             this.SDC = {
                 timing() {
@@ -30,7 +28,7 @@ export default class StatsLoggerClient {
      */
     logTimers(tuples) {
         const timestamp = +new Date();
-        tuples.map(tuple => {
+        tuples.map((tuple) => {
             this.SDC.timing(tuple[0], tuple[1]);
         });
     }

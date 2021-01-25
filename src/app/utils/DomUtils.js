@@ -1,10 +1,5 @@
 export function findParent(el, class_name) {
-    if (
-        el.className &&
-        el.className.indexOf &&
-        el.className.indexOf(class_name) !== -1
-    )
-        return el;
+    if (el.className && el.className.indexOf && el.className.indexOf(class_name) !== -1) return el;
     if (el.parentNode) return findParent(el.parentNode, class_name);
     return null;
 }
@@ -21,7 +16,7 @@ export function getViewportDimensions(w) {
     if (w.innerWidth != null) return { w: w.innerWidth, h: w.innerHeight };
 
     // For IE (or any browser) in Standards mode
-    var d = w.document;
+    const d = w.document;
     if (document.compatMode == 'CSS1Compat')
         return {
             w: d.documentElement.clientWidth,

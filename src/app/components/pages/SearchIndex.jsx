@@ -16,8 +16,7 @@ class SearchIndex extends React.Component {
             q: PropTypes.string,
             s: PropTypes.string,
         }).isRequired,
-        scrollId: PropTypes.oneOfType([PropTypes.string, PropTypes.bool])
-            .isRequired,
+        scrollId: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]).isRequired,
         result: PropTypes.arrayOf(
             PropTypes.shape({
                 app: PropTypes.string,
@@ -71,12 +70,7 @@ class SearchIndex extends React.Component {
         const { result, loading, params, performSearch } = this.props;
 
         const searchResults = (
-            <PostsList
-                ref="list"
-                posts={fromJS(result)}
-                loading={loading}
-                loadMore={this.fetchMoreResults}
-            />
+            <PostsList ref="list" posts={fromJS(result)} loading={loading} loadMore={this.fetchMoreResults} />
         );
 
         return (
@@ -87,18 +81,14 @@ class SearchIndex extends React.Component {
                             <ElasticSearchInput
                                 initValue={params.q}
                                 expanded={true}
-                                handleSubmit={q => {
+                                handleSubmit={(q) => {
                                     performSearch({ q, s: undefined });
                                 }}
                                 redirect={true}
                             />
                         </div>
                     </div>
-                    {!loading && result.length === 0 ? (
-                        <Callout>{'Nothing was found.'}</Callout>
-                    ) : (
-                        searchResults
-                    )}
+                    {!loading && result.length === 0 ? <Callout>{'Nothing was found.'}</Callout> : searchResults}
                 </article>
             </div>
         );
@@ -118,8 +108,8 @@ module.exports = {
                 params,
             };
         },
-        dispatch => ({
-            performSearch: args => dispatch(search(args)),
+        (dispatch) => ({
+            performSearch: (args) => dispatch(search(args)),
         })
     )(SearchIndex),
 };

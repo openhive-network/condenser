@@ -38,9 +38,7 @@ export function validateIframeUrl(url) {
     const match = url.match(regex.sanitize);
 
     if (match) {
-        return `https://player.twitch.tv/?${match[2]}=${
-            match[3]
-        }&parent=${getParentDomain()}`;
+        return `https://player.twitch.tv/?${match[2]}=${match[3]}&parent=${getParentDomain()}`;
     }
 
     return false;
@@ -56,14 +54,10 @@ export function normalizeEmbedUrl(url) {
 
     if (match && match.length >= 3) {
         if (match[1] === undefined) {
-            return `https://player.twitch.tv/?autoplay=false&channel=${
-                match[2]
-            }&parent=${getParentDomain()}`;
+            return `https://player.twitch.tv/?autoplay=false&channel=${match[2]}&parent=${getParentDomain()}`;
         }
 
-        return `https://player.twitch.tv/?autoplay=false&video=${
-            match[1]
-        }&parent=${getParentDomain()}`;
+        return `https://player.twitch.tv/?autoplay=false&video=${match[1]}&parent=${getParentDomain()}`;
     }
 
     return false;
@@ -86,12 +80,8 @@ function extractMetadata(data) {
         url: m[0],
         canonical:
             m[1] === `videos`
-                ? `https://player.twitch.tv/?video=${
-                      m[2]
-                  }&parent=${getParentDomain()}`
-                : `https://player.twitch.tv/?channel=${
-                      m[2]
-                  }&parent=${getParentDomain()}`,
+                ? `https://player.twitch.tv/?video=${m[2]}&parent=${getParentDomain()}`
+                : `https://player.twitch.tv/?channel=${m[2]}&parent=${getParentDomain()}`,
     };
 }
 
@@ -101,10 +91,7 @@ export function embedNode(child, links /*images*/) {
         const twitch = extractMetadata(data);
         if (!twitch) return child;
 
-        child.data = data.replace(
-            twitch.url,
-            `~~~ embed:${twitch.id} twitch ~~~`
-        );
+        child.data = data.replace(twitch.url, `~~~ embed:${twitch.id} twitch ~~~`);
 
         if (links) links.add(twitch.canonical);
     } catch (error) {
@@ -127,12 +114,7 @@ export function genIframeMd(idx, id, width, height) {
 
     let sandbox = sandboxConfig.useSandbox;
     if (sandbox) {
-        if (
-            Object.prototype.hasOwnProperty.call(
-                sandboxConfig,
-                'sandboxAttributes'
-            )
-        ) {
+        if (Object.prototype.hasOwnProperty.call(sandboxConfig, 'sandboxAttributes')) {
             sandbox = sandboxConfig.sandboxAttributes.join(' ');
         }
     }

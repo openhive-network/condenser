@@ -21,7 +21,7 @@ class Dialogs extends React.Component {
     constructor() {
         super();
         this.shouldComponentUpdate = shouldComponentUpdate(this, 'Dialogs');
-        this.hide = name => {
+        this.hide = (name) => {
             this.props.hide(name);
         };
     }
@@ -38,60 +38,37 @@ class Dialogs extends React.Component {
             const cmp =
                 k === 'qr_reader' ? (
                     <span key={`dialog-${k}`}>
-                        <Reveal
-                            onHide={this['hide_' + k]}
-                            show
-                            revealStyle={{ width: '355px' }}
-                        >
+                        <Reveal onHide={this['hide_' + k]} show revealStyle={{ width: '355px' }}>
                             <CloseButton onClick={this['hide_' + k]} />
-                            <QrReader
-                                onClose={this['hide_' + k]}
-                                {...v.get('params').toJS()}
-                            />
+                            <QrReader onClose={this['hide_' + k]} {...v.get('params').toJS()} />
                         </Reveal>
                     </span>
                 ) : k === 'promotePost' ? (
                     <span key={`dialog-${k}`}>
                         <Reveal onHide={this['hide_' + k]} show>
                             <CloseButton onClick={this['hide_' + k]} />
-                            <PromotePost
-                                onClose={this['hide_' + k]}
-                                {...v.get('params').toJS()}
-                            />
+                            <PromotePost onClose={this['hide_' + k]} {...v.get('params').toJS()} />
                         </Reveal>
                     </span>
                 ) : k === 'explorePost' ? (
                     <span key={`dialog-${k}`}>
                         <Reveal onHide={this['hide_' + k]} show>
                             <CloseButton onClick={this['hide_' + k]} />
-                            <ExplorePost
-                                onClick={this['hide_' + k]}
-                                {...v.get('params').toJS()}
-                            />
+                            <ExplorePost onClick={this['hide_' + k]} {...v.get('params').toJS()} />
                         </Reveal>
                     </span>
                 ) : k === 'communitySubscribers' ? (
                     <span key={`dialog-${k}`}>
                         <Reveal onHide={this['hide_' + k]} show>
                             <CloseButton onClick={this['hide_' + k]} />
-                            <CommunitySubscriberList
-                                onClick={this['hide_' + k]}
-                                {...v.get('params').toJS()}
-                            />
+                            <CommunitySubscriberList onClick={this['hide_' + k]} {...v.get('params').toJS()} />
                         </Reveal>
                     </span>
                 ) : k === 'communityModerationLog' ? (
                     <span key={`dialog-${k}`}>
                         <Reveal onHide={this['hide_' + k]} show>
                             <CloseButton onClick={this['hide_' + k]} />
-                            <NotificationsList
-                                username={v.getIn([
-                                    'params',
-                                    'community',
-                                    'name',
-                                ])}
-                                isLastPage={false}
-                            />
+                            <NotificationsList username={v.getIn(['params', 'community', 'name'])} isLastPage={false} />
                         </Reveal>
                     </span>
                 ) : null;
@@ -109,13 +86,13 @@ class Dialogs extends React.Component {
 const emptyMap = Map();
 
 export default connect(
-    state => {
+    (state) => {
         return {
             active_dialogs: state.global.get('active_dialogs') || emptyMap,
         };
     },
-    dispatch => ({
-        hide: name => {
+    (dispatch) => ({
+        hide: (name) => {
             dispatch(globalActions.hideDialog({ name }));
         },
     })

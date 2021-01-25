@@ -27,9 +27,7 @@ export function* getCommunityRoles(action) {
 
 export function* getCommunitySubscribers(action) {
     const community = action.payload;
-    yield put(
-        reducer.getCommunitySubscribersPending({ community, pending: true })
-    );
+    yield put(reducer.getCommunitySubscribersPending({ community, pending: true }));
     try {
         const subscribers = yield call(callBridge, 'list_subscribers', {
             community,
@@ -39,18 +37,14 @@ export function* getCommunitySubscribers(action) {
     } catch (error) {
         yield put(reducer.getCommunitySubscribersError({ community, error }));
     }
-    yield put(
-        reducer.getCommunitySubscribersPending({ community, pending: false })
-    );
+    yield put(reducer.getCommunitySubscribersPending({ community, pending: false }));
 }
 
 export function* updateUserRole(action) {
     const { community } = action.payload;
     yield put(reducer.setUserRolePending({ community, pending: true }));
     try {
-        const username = yield select(state =>
-            state.user.getIn(['current', 'username'])
-        );
+        const username = yield select((state) => state.user.getIn(['current', 'username']));
 
         yield put(
             transactionActions.broadcastOperation({

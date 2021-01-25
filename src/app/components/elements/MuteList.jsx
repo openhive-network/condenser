@@ -28,7 +28,7 @@ class MuteList extends React.Component {
         const { busy } = this.state;
         const { unmute } = this;
 
-        const items = users.map(user => (
+        const items = users.map((user) => (
             <li key={user}>
                 <Link to={'/@' + user}>
                     <strong>@{user}</strong>
@@ -37,7 +37,7 @@ class MuteList extends React.Component {
                 {busy == user ? (
                     <span>saving....</span>
                 ) : (
-                    <a href="#" onClick={e => unmute(e, user)}>
+                    <a href="#" onClick={(e) => unmute(e, user)}>
                         [unmute]
                     </a>
                 )}
@@ -50,7 +50,7 @@ class MuteList extends React.Component {
 
 module.exports = connect(
     (state, props) => ({}),
-    dispatch => ({
+    (dispatch) => ({
         updateFollow: (follower, following, type, done) => {
             const what = type ? [type] : [];
             const json = ['follow', { follower, following, what }];

@@ -52,26 +52,18 @@ export default function reducer(state = defaultState, action = {}) {
                 dismissAfter: 10000,
                 ...action.payload,
             };
-            return state.update('notifications', s => {
+            return state.update('notifications', (s) => {
                 return s ? s.set(n.key, n) : OrderedMap({ [n.key]: n });
             });
         }
         case REMOVE_NOTIFICATION:
-            return state.update('notifications', s =>
-                s.delete(action.payload.key)
-            );
+            return state.update('notifications', (s) => s.delete(action.payload.key));
         case SET_USER_PREFERENCES:
             return state.set('user_preferences', Map(action.payload));
         case TOGGLE_NIGHTMODE:
-            return state.setIn(
-                ['user_preferences', 'nightmode'],
-                !state.getIn(['user_preferences', 'nightmode'])
-            );
+            return state.setIn(['user_preferences', 'nightmode'], !state.getIn(['user_preferences', 'nightmode']));
         case TOGGLE_BLOGMODE:
-            return state.setIn(
-                ['user_preferences', 'blogmode'],
-                !state.getIn(['user_preferences', 'blogmode'])
-            );
+            return state.setIn(['user_preferences', 'blogmode'], !state.getIn(['user_preferences', 'blogmode']));
         case RECEIVE_FEATURE_FLAGS:
             const newFlags = state.get('featureFlags')
                 ? state.get('featureFlags').merge(action.flags)
@@ -82,7 +74,7 @@ export default function reducer(state = defaultState, action = {}) {
     }
 }
 
-export const steemApiError = error => ({
+export const steemApiError = (error) => ({
     type: STEEM_API_ERROR,
     error,
 });
@@ -95,17 +87,17 @@ export const fetchDataEnd = () => ({
     type: FETCH_DATA_END,
 });
 
-export const addNotification = payload => ({
+export const addNotification = (payload) => ({
     type: ADD_NOTIFICATION,
     payload,
 });
 
-export const removeNotification = payload => ({
+export const removeNotification = (payload) => ({
     type: REMOVE_NOTIFICATION,
     payload,
 });
 
-export const setUserPreferences = payload => ({
+export const setUserPreferences = (payload) => ({
     type: SET_USER_PREFERENCES,
     payload,
 });
@@ -118,12 +110,11 @@ export const toggleBlogmode = () => ({
     type: TOGGLE_BLOGMODE,
 });
 
-export const receiveFeatureFlags = flags => ({
+export const receiveFeatureFlags = (flags) => ({
     type: RECEIVE_FEATURE_FLAGS,
     flags,
 });
 
 export const selectors = {
-    getFeatureFlag: (state, flagName) =>
-        state.getIn(['featureFlags', flagName], false),
+    getFeatureFlag: (state, flagName) => state.getIn(['featureFlags', flagName], false),
 };

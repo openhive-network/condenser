@@ -127,11 +127,9 @@
         "account_name": "用户名",
         "recover_your_account": "恢复你的账号",
         "reset_usernames_password": "重置%(username)s的密码",
-        "this_will_update_usernames_authtype_key":
-            "确定更改%(username)s%(authType)s的密钥",
+        "this_will_update_usernames_authtype_key": "确定更改%(username)s%(authType)s的密钥",
         "passwords_do_not_match": "密码不匹配",
-        "you_need_private_password_or_key_not_a_public_key":
-            "你需要一个私钥或密码(不能用公钥)",
+        "you_need_private_password_or_key_not_a_public_key": "你需要一个私钥或密码(不能用公钥)",
         "the_rules_of_APP_NAME": {
             "one": "%(APP_NAME)s的第一条规则是: 不要丢失你的密码。",
             "second": "%(APP_NAME)s的第二条规则是: 不要丢失你的密码。",
@@ -148,8 +146,7 @@
         "enter_account_show_password": "输入一个有效的帐户名称以显示密码",
         "click_to_generate_password": "点击生成密码",
         "re_enter_generate_password": "重新输入生成的密码",
-        "understand_that_APP_NAME_cannot_recover_password":
-            "我知道%(APP_NAME)s无法恢复丢失的密码",
+        "understand_that_APP_NAME_cannot_recover_password": "我知道%(APP_NAME)s无法恢复丢失的密码",
         "i_saved_password": "我安全地保存了我生成的密码",
         "update_password": "修改密码",
         "confirm_password": "确认密码",
@@ -163,12 +160,9 @@
         "account_name_should_start_with_a_letter": "帐户名称应该以字母开头",
         "account_name_should_be_shorter": "账户名应该更短",
         "account_name_should_be_longer": "账户名应该更长",
-        "account_name_should_have_only_letters_digits_or_dashes":
-            "帐户名称应该只有字母、数字或破折号",
-        "cannot_increase_reward_of_post_within_the_last_minute_before_payout":
-            "在收到奖励前的最后一分钟内不能增加奖励",
-        "only_one_APP_NAME_account_allowed_per_ip_address_every_10_minutes":
-            "每10分钟一个IP地址只允许一个Hive账号",
+        "account_name_should_have_only_letters_digits_or_dashes": "帐户名称应该只有字母、数字或破折号",
+        "cannot_increase_reward_of_post_within_the_last_minute_before_payout": "在收到奖励前的最后一分钟内不能增加奖励",
+        "only_one_APP_NAME_account_allowed_per_ip_address_every_10_minutes": "每10分钟一个IP地址只允许一个Hive账号",
         "reblog_this_post": "转发这这篇文章",
         "reblog": "转发",
         "write_your_story": "写下你的故事",
@@ -178,23 +172,18 @@
         "show_private_key": "显示私钥",
         "login_to_show": "登录显示",
         "not_valid_email": "不是有效的电子邮件",
-        "thank_you_for_being_an_early_visitor_to_APP_NAME":
-            "感谢你成为%(APP_NAME)早期访问者。我们将尽快回复你。",
+        "thank_you_for_being_an_early_visitor_to_APP_NAME": "感谢你成为%(APP_NAME)早期访问者。我们将尽快回复你。",
         "author_rewards": "作者奖励",
         "curation_rewards": "审查奖励",
-        "sorry_your_reddit_account_doesnt_have_enough_karma":
-            "不好意思，你的Reddit级别不够高，我们不能为你免费注册账号。请在等候名单上加上你的电子邮件地址",
+        "sorry_your_reddit_account_doesnt_have_enough_karma": "不好意思，你的Reddit级别不够高，我们不能为你免费注册账号。请在等候名单上加上你的电子邮件地址",
         "register_with_facebook": "用Facebook注册",
-        "or_click_the_button_below_to_register_with_facebook":
-            "或者点击下面的按钮，用Facebook注册",
+        "or_click_the_button_below_to_register_with_facebook": "或者点击下面的按钮，用Facebook注册",
         "server_returned_error": "服务器返回错误",
         "APP_NAME_support": "%(APP_NAME)s的支持",
         "please_email_questions_to": "请把你的问题发邮件给",
         "next_7_strings_single_block": {
-            "authors_get_paid_when_people_like_you_upvote_their_post":
-                "当你和其他人给帖子点赞时，作者会得到报酬",
-            "if_you_enjoyed_what_you_read_earn_amount":
-                "如果你喜欢阅读这里的内容，请立即创建你的帐户，并开始免费赚取HIVE！",
+            "authors_get_paid_when_people_like_you_upvote_their_post": "当你和其他人给帖子点赞时，作者会得到报酬",
+            "if_you_enjoyed_what_you_read_earn_amount": "如果你喜欢阅读这里的内容，请立即创建你的帐户，并开始免费赚取HIVE！",
             "free_hive": "免费的Hive代币！",
             "sign_up_earn_hive": "现在注册来赚取"
         },
@@ -203,8 +192,7 @@
             "show_less": "显示更少",
             "value_posts": "低价值的帖子"
         },
-        "read_only_mode":
-            "由于服务器维护，我们只在只读模式下运行。很抱歉给您带来不便。",
+        "read_only_mode": "由于服务器维护，我们只在只读模式下运行。很抱歉给您带来不便。",
         "tags_and_topics": "标签和主题",
         "show_more_topics": "显示更多的主题",
         "basic": "基本",
@@ -243,8 +231,7 @@
         "api_docs": "Hive API文档",
         "whitepaper": "Hive白皮书",
         "intro_tagline": "妙笔生金",
-        "intro_paragraph":
-            "你的思想是有有价值的。赶快加入发表文章获得赏金的社区。",
+        "intro_paragraph": "你的思想是有有价值的。赶快加入发表文章获得赏金的社区。",
         "hive_proposals": "Hive Proposals",
         "blockexplorer": "Blockexplorer",
         "what_is_hive": "What is Hive?"
@@ -257,8 +244,7 @@
         "shorten_title": "缩短标题",
         "exceeds_maximum_length": "超过最大长度(%(maxKb)sKB)",
         "including_the_category": "(包括类别'%(rootCategory)s ')",
-        "use_limited_amount_of_tags":
-            "你总共可以标记%(tagsLength)s个标签%(includingCategory)s。请在你的文章分类栏中最多使用5个标签。",
+        "use_limited_amount_of_tags": "你总共可以标记%(tagsLength)s个标签%(includingCategory)s。请在你的文章分类栏中最多使用5个标签。",
         "are_you_sure_you_want_to_clear_this_form": "你确定要清除这个表格吗?",
         "uploading": "上传",
         "draft_saved": "草稿已保存。",
@@ -285,10 +271,8 @@
         "exceeds_max_beneficiaries": "Can have at most 8 beneficiaries",
         "beneficiary_cannot_be_self": "Cannot specify self as beneficiary",
         "beneficiary_cannot_be_duplicate": "Beneficiary cannot be duplicate",
-        "beneficiary_percent_invalid":
-            "Beneficiary percentage must be from 1-100",
-        "beneficiary_percent_total_invalid":
-            "Beneficiary total percentage must be less than 100"
+        "beneficiary_percent_invalid": "Beneficiary percentage must be from 1-100",
+        "beneficiary_percent_total_invalid": "Beneficiary total percentage must be less than 100"
     },
     "category_selector_jsx": {
         "tag_your_story": "标签(最多5个标签)，第一个标签是您文章的主要类别。",
@@ -304,39 +288,32 @@
     },
     "post_advanced_settings_jsx": {
         "payout_option_header": "Author rewards",
-        "payout_option_description":
-            "What type of tokens do you want as rewards from this post?",
+        "payout_option_description": "What type of tokens do you want as rewards from this post?",
         "current_default": "Default",
         "update_default_in_settings": "Update"
     },
     "postfull_jsx": {
-        "this_post_is_not_available_due_to_a_copyright_claim":
-            "由于版权限制，暂不能显示这篇文章。",
+        "this_post_is_not_available_due_to_a_copyright_claim": "由于版权限制，暂不能显示这篇文章。",
         "share_on_facebook": "分享到脸书",
         "share_on_twitter": "分享到推特",
         "share_on_linkedin": "分享到Linkedin",
         "recent_password": "最近的密码",
-        "in_week_convert_DEBT_TOKEN_to_LIQUID_TOKEN":
-            "在3.5天内，将%(amount)s%(DEBT_TOKEN)s兑换为%(LIQUID_TOKEN)s",
+        "in_week_convert_DEBT_TOKEN_to_LIQUID_TOKEN": "在3.5天内，将%(amount)s%(DEBT_TOKEN)s兑换为%(LIQUID_TOKEN)s",
         "view_the_full_context": "查看全文",
         "view_the_direct_parent": "查看上一级",
-        "you_are_viewing_a_single_comments_thread_from":
-            "你正在查看单个评论的主题"
+        "you_are_viewing_a_single_comments_thread_from": "你正在查看单个评论的主题"
     },
     "recoveraccountstep1_jsx": {
-        "recover_account_intro":
-            "有时候，Hive 的拥有者钥匙可能会被盗用。被盗帐户恢复给予合法的帐户所有者30天，从小偷更改其所有者密钥的时候恢复其帐户。盗用帐户恢复只能在%(APP_URL)s上使用，如果帐户所有者已经明确列出 %(APP_NAME)s作为其帐户受信任者，并遵守了 %(APP_NAME)s 的服务条款。"
+        "recover_account_intro": "有时候，Hive 的拥有者钥匙可能会被盗用。被盗帐户恢复给予合法的帐户所有者30天，从小偷更改其所有者密钥的时候恢复其帐户。盗用帐户恢复只能在%(APP_URL)s上使用，如果帐户所有者已经明确列出 %(APP_NAME)s作为其帐户受信任者，并遵守了 %(APP_NAME)s 的服务条款。"
     },
     "user_profile": {
         "unknown_account": "未知的账户",
         "user_hasnt_made_any_posts_yet": "看起来%(name)s还没有发过任何帖子!",
         "user_hasnt_started_bloggin_yet": "看起来%(name)s还没有开始写博客!",
-        "user_hasnt_followed_anything_yet":
-            "看起来%(name)s还没有关注任何人!如果%(name)s最近添加关注了新的用户，他们的个性化主页上将会有显示。",
+        "user_hasnt_followed_anything_yet": "看起来%(name)s还没有关注任何人!如果%(name)s最近添加关注了新的用户，他们的个性化主页上将会有显示。",
         "user_hasnt_had_any_replies_yet": "%(name)s目前还没有回复",
         "followers": "关注者",
-        "this_is_users_reputations_score_it_is_based_on_history_of_votes":
-            "这是%(name)s的声誉分数。声誉分数取决于账户收到的历史投票记录, 用于隐藏低质量的内容。",
+        "this_is_users_reputations_score_it_is_based_on_history_of_votes": "这是%(name)s的声誉分数。声誉分数取决于账户收到的历史投票记录, 用于隐藏低质量的内容。",
         "follower_count": {
             "zero": "没有关注者",
             "one": "1个关注者",
@@ -361,13 +338,11 @@
         "comments_were_hidden_due_to_low_ratings": "评论由于评级不足而被隐藏"
     },
     "voting_jsx": {
-        "flagging_post_can_remove_rewards_the_flag_should_be_used_for_the_following":
-            "举报帖子可撤销奖励且使其不可见。常见举报原因",
+        "flagging_post_can_remove_rewards_the_flag_should_be_used_for_the_following": "举报帖子可撤销奖励且使其不可见。常见举报原因",
         "disagreement_on_rewards": "奖励不一致",
         "fraud_or_plagiarism": "欺诈或剽窃",
         "hate_speech_or_internet_trolling": "仇恨言论或互联网钓鱼",
-        "intentional_miss_categorized_content_or_spam":
-            "故意错误分类或垃圾信息",
+        "intentional_miss_categorized_content_or_spam": "故意错误分类或垃圾信息",
         "pending_payout": "待获得赏金$%(value)s",
         "payout_declined": "拒绝赏金",
         "max_accepted_payout": "赏金上限$%(value)s",
@@ -375,8 +350,7 @@
         "past_payouts": "累计赏金$%(value)s",
         "past_payouts_author": "- 作者收入 $%(value)s",
         "past_payouts_curators": " - 审查收入 $%(value)s",
-        "we_will_reset_curation_rewards_for_this_post":
-            "将重置你对这篇帖子的审查奖励",
+        "we_will_reset_curation_rewards_for_this_post": "将重置你对这篇帖子的审查奖励",
         "removing_your_vote": "取消你的投票",
         "changing_to_an_upvote": "改为投票",
         "changing_to_a_downvote": "改为差评",
@@ -405,57 +379,41 @@
         "private": "私有的",
         "public_something_key": "公开的%(key)s密钥",
         "private_something_key": "私有的%(key)s密钥",
-        "posting_key_is_required_it_should_be_different":
-            "Posting Key用于发帖和投票。它应与Active Key和Owner Key区分使用。",
-        "the_active_key_is_used_to_make_transfers_and_place_orders":
-            "Active Key用于转帐和在内部市场下单。",
-        "the_owner_key_is_required_to_change_other_keys":
-            "Owner Key是帐户的主密钥，用于更改其它密钥。",
-        "the_private_key_or_password_should_be_kept_offline":
-            "Owner Key的私钥或密码应尽可能保持离线。",
-        "the_memo_key_is_used_to_create_and_read_memos":
-            "Memo Key用于创建和读取备注。"
+        "posting_key_is_required_it_should_be_different": "Posting Key用于发帖和投票。它应与Active Key和Owner Key区分使用。",
+        "the_active_key_is_used_to_make_transfers_and_place_orders": "Active Key用于转帐和在内部市场下单。",
+        "the_owner_key_is_required_to_change_other_keys": "Owner Key是帐户的主密钥，用于更改其它密钥。",
+        "the_private_key_or_password_should_be_kept_offline": "Owner Key的私钥或密码应尽可能保持离线。",
+        "the_memo_key_is_used_to_create_and_read_memos": "Memo Key用于创建和读取备注。"
     },
     "suggestpassword_jsx": {
-        "APP_NAME_cannot_recover_passwords_keep_this_page_in_a_secure_location":
-            "%(APP_NAME)s无法恢复密码。请将此页面保存到安全的位置如防火保险箱。",
+        "APP_NAME_cannot_recover_passwords_keep_this_page_in_a_secure_location": "%(APP_NAME)s无法恢复密码。请将此页面保存到安全的位置如防火保险箱。",
         "APP_NAME_password_backup": "%(APP_NAME)s密码备份",
         "APP_NAME_password_backup_required": "%(APP_NAME)s密码备份(必填)",
         "after_printing_write_down_your_user_name": "打印后，请写下你的用户名"
     },
     "converttohive_jsx": {
-        "your_existing_DEBT_TOKEN_are_liquid_and_transferable":
-            "你现有的%(DEBT_TOKEN)s是可流动和可转让的。你可以希望直接在本网站%(link)s交易%(DEBT_TOKEN)s或转移到外部市场。",
-        "this_is_a_price_feed_conversion":
-            "这通过系统喂价来进行转换。为了防止恶意欺骗系统喂价，你的转换需要等待3.5天",
+        "your_existing_DEBT_TOKEN_are_liquid_and_transferable": "你现有的%(DEBT_TOKEN)s是可流动和可转让的。你可以希望直接在本网站%(link)s交易%(DEBT_TOKEN)s或转移到外部市场。",
+        "this_is_a_price_feed_conversion": "这通过系统喂价来进行转换。为了防止恶意欺骗系统喂价，你的转换需要等待3.5天",
         "convert_to_LIQUID_TOKEN": "转换为%(LIQUID_TOKEN)s",
-        "DEBT_TOKEN_will_be_unavailable":
-            "此操作将在3.5天内完成且不能取消。这些%(DEBT_TOKEN)s将立即变得不可用"
+        "DEBT_TOKEN_will_be_unavailable": "此操作将在3.5天内完成且不能取消。这些%(DEBT_TOKEN)s将立即变得不可用"
     },
     "tips_js": {
-        "liquid_token":
-            "可交易代币可以在任何时候发送到任何地方。%(LIQUID_TOKEN)s可以在一个被称为Power Up的过程中被转换成%(VESTING_TOKEN)s。",
-        "influence_token":
-            "代币的影响力可以使你对文章的赏金有更大的控制权，并可以获得审查奖励。",
+        "liquid_token": "可交易代币可以在任何时候发送到任何地方。%(LIQUID_TOKEN)s可以在一个被称为Power Up的过程中被转换成%(VESTING_TOKEN)s。",
+        "influence_token": "代币的影响力可以使你对文章的赏金有更大的控制权，并可以获得审查奖励。",
         "estimated_value": "基于美元计算，%(LIQUID_TOKEN)s的估值。",
-        "non_transferable":
-            "%(VESTING_TOKEN)s是不可转让的，需要3个月(13笔付款)才可换回%(LIQUID_TOKEN)s",
-        "converted_VESTING_TOKEN_can_be_sent_to_yourself_but_can_not_transfer_again":
-            "%(VESTING_TOKEN)s可以转给你自己或其他人，但是只有转回%(LIQUID_TOKEN)s后，才可以进行下一次转账。",
-        "part_of_your_hive_power_is_currently_delegated":
-            "有一部分HIVE POWER是代理给你使用的。代理的HIVE POWER是为了帮助新用户在Hive上进行操作。你被代理的数量可能会有波动。"
+        "non_transferable": "%(VESTING_TOKEN)s是不可转让的，需要3个月(13笔付款)才可换回%(LIQUID_TOKEN)s",
+        "converted_VESTING_TOKEN_can_be_sent_to_yourself_but_can_not_transfer_again": "%(VESTING_TOKEN)s可以转给你自己或其他人，但是只有转回%(LIQUID_TOKEN)s后，才可以进行下一次转账。",
+        "part_of_your_hive_power_is_currently_delegated": "有一部分HIVE POWER是代理给你使用的。代理的HIVE POWER是为了帮助新用户在Hive上进行操作。你被代理的数量可能会有波动。"
     },
     "promote_post_jsx": {
         "promote_post": "推广帖子",
-        "spend_your_DEBT_TOKEN_to_advertise_this_post":
-            "花费%(DEBT_TOKEN)s在推广模块宣传这篇帖子",
+        "spend_your_DEBT_TOKEN_to_advertise_this_post": "花费%(DEBT_TOKEN)s在推广模块宣传这篇帖子",
         "you_successfully_promoted_this_post": "你成功的推广了这个帖子",
         "this_post_was_hidden_due_to_low_ratings": "此贴由于评级不足而被隐藏"
     },
     "about_jsx": {
         "about_app": "关于%(APP_NAME)s",
-        "about_app_details":
-            "%(APP_NAME)s是一个社交媒体平台，通过写文章和审查文章内容，每个人都可以得到赏金。它有一个强大的数字积分系统，称为Hive，其通过市场价格发现机制和流动性，来支撑数字奖励的真实价值。",
+        "about_app_details": "%(APP_NAME)s是一个社交媒体平台，通过写文章和审查文章内容，每个人都可以得到赏金。它有一个强大的数字积分系统，称为Hive，其通过市场价格发现机制和流动性，来支撑数字奖励的真实价值。",
         "learn_more_at_app_url": "了解更多%(APP_URL)s",
         "resources": "资源"
     },
@@ -475,8 +433,7 @@
     },
     "posts_index": {
         "empty_feed_1": "看起来你还没有关注任何人",
-        "empty_feed_2":
-            "如果你最近关注了新的用户，更新内容将会显示在你的个性化主页",
+        "empty_feed_2": "如果你最近关注了新的用户，更新内容将会显示在你的个性化主页",
         "empty_feed_3": "浏览流行文章",
         "empty_feed_4": "阅读快速入门指南",
         "empty_feed_5": "浏览常见问题解答"
@@ -500,38 +457,30 @@
         "comments_by": "评论"
     },
     "loginform_jsx": {
-        "you_need_a_private_password_or_key":
-            "你需要一个私人密码或密钥(非公钥)",
+        "you_need_a_private_password_or_key": "你需要一个私人密码或密钥(非公钥)",
         "cryptography_test_failed": "加密测试失败",
         "unable_to_log_you_in": "我们不允许使用当前浏览器登录。",
         "the_latest_versions_of": "最新版本的",
-        "are_well_tested_and_known_to_work_with":
-            "是经过良好测试，并可以正常使用%(APP_URL)s的。",
-        "due_to_server_maintenance":
-            "由于服务器维护，我们只在只读模式下运行。很抱歉给您带来不便。",
+        "are_well_tested_and_known_to_work_with": "是经过良好测试，并可以正常使用%(APP_URL)s的。",
+        "due_to_server_maintenance": "由于服务器维护，我们只在只读模式下运行。很抱歉给您带来不便。",
         "login_to_vote": "登录后投票",
         "login_to_post": "登录后发帖",
         "login_to_comment": "登录后评论",
         "posting": "发帖",
         "active_or_owner": "Active 或 Owner",
-        "this_password_is_bound_to_your_account_owner_key":
-            "此密码已绑定到您的帐户的Owner Key，不能用于登录到此站点。",
+        "this_password_is_bound_to_your_account_owner_key": "此密码已绑定到您的帐户的Owner Key，不能用于登录到此站点。",
         "however_you_can_use_it_to": "但是，您可以使用它来",
         "update_your_password": "修改密码",
         "to_obtain_a_more_secure_set_of_keys": "获取一组更安全的密钥。",
-        "this_password_is_bound_to_your_account_active_key":
-            "此密码已绑定到你的帐户的Active Key，不能用于登录到此页面。",
-        "you_may_use_this_active_key_on_other_more":
-            "你可以在其他更安全的页面上使用这个Active Key，比如钱包或市场页面。",
+        "this_password_is_bound_to_your_account_active_key": "此密码已绑定到你的帐户的Active Key，不能用于登录到此页面。",
+        "you_may_use_this_active_key_on_other_more": "你可以在其他更安全的页面上使用这个Active Key，比如钱包或市场页面。",
         "you_account_has_been_successfully_created": "您的帐号已经成功创建!",
         "you_account_has_been_successfully_recovered": "您的帐号已经成功恢复!",
         "password_update_succes": "%(accountName)s的密码成功修改",
-        "password_info":
-            "密码或私钥输入不正确。有可能是输入错误。提示：Hive创建的密码或私钥中永远不包含 0(零)， O(大写O)， I(大写i)和l (小写L)。",
+        "password_info": "密码或私钥输入不正确。有可能是输入错误。提示：Hive创建的密码或私钥中永远不包含 0(零)， O(大写O)， I(大写i)和l (小写L)。",
         "enter_your_username": "输入您的用户名",
         "password_or_wif": "密码或WIF",
-        "this_operation_requires_your_key_or_master_password":
-            "此操作需要您的%(authType)s密钥或主密码。",
+        "this_operation_requires_your_key_or_master_password": "此操作需要您的%(authType)s密钥或主密码。",
         "keep_me_logged_in": "保持登录状态",
         "amazing_community": "神奇的社区",
         "to_comment_and_reward_others": "评论和奖励他人。",
@@ -587,13 +536,10 @@
         "this_memo_is_private": "这个备注是私有的",
         "this_memo_is_public": "这个备注是公开的",
         "convert_to_VESTING_TOKEN": "转换成%(VESTING_TOKEN)s",
-        "balance_subject_to_3_day_withdraw_waiting_period":
-            "余额取决于3天的提款等待期，",
+        "balance_subject_to_3_day_withdraw_waiting_period": "余额取决于3天的提款等待期，",
         "move_funds_to_another_account": "将资金转移给另一个Hive的用户。",
-        "protect_funds_by_requiring_a_3_day_withdraw_waiting_period":
-            "通过设置3天的提款等待期来保护资金。",
-        "withdraw_funds_after_the_required_3_day_waiting_period":
-            "需要在3天的等待期后提取资金。",
+        "protect_funds_by_requiring_a_3_day_withdraw_waiting_period": "通过设置3天的提款等待期来保护资金。",
+        "withdraw_funds_after_the_required_3_day_waiting_period": "需要在3天的等待期后提取资金。",
         "from": "从",
         "to": "到",
         "asset_currently_collecting": "%(asset)s目前获得%(interest)s%%利息"
@@ -608,12 +554,10 @@
         "convert_to_LIQUID_TOKEN": "转换为%(LIQUID_TOKEN)s",
         "withdraw_LIQUID_TOKEN": "取出%(LIQUID_TOKEN)s",
         "withdraw_DEBT_TOKENS": "取出%(DEBT_TOKENS)s",
-        "tokens_worth_about_1_of_LIQUID_TICKER":
-            "价值约为1.00美金的%(LIQUID_TICKER)s，目前正在获得%(hbdInterest)s%%的利息。",
+        "tokens_worth_about_1_of_LIQUID_TICKER": "价值约为1.00美金的%(LIQUID_TICKER)s，目前正在获得%(hbdInterest)s%%的利息。",
         "savings": "储蓄",
         "estimated_account_value": "账户估值",
-        "next_power_down_is_scheduled_to_happen":
-            "下一次的Power Down计划发生在",
+        "next_power_down_is_scheduled_to_happen": "下一次的Power Down计划发生在",
         "transfers_are_temporary_disabled": "转移功能暂时被禁用。",
         "history": "历史",
         "redeem_rewards": "赎回奖励(转移至余额)",

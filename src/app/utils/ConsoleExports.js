@@ -1,9 +1,4 @@
-import {
-    PrivateKey,
-    PublicKey,
-    Aes,
-    key_utils,
-} from '@hiveio/hive-js/lib/auth/ecc';
+import { PrivateKey, PublicKey, Aes, key_utils } from '@hiveio/hive-js/lib/auth/ecc';
 
 // import secureRandom from 'secure-random'
 // import links from 'app/utils/Links'
@@ -40,12 +35,12 @@ module.exports = {
         }
         return new Promise((resolve, reject) => {
             object
-                .then(result => {
+                .then((result) => {
                     console.log(result);
                     resolve(result);
                     window[atty] = result;
                 })
-                .catch(error => {
+                .catch((error) => {
                     console.error('resolve_err', error);
                     reject(error);
                     window[atty] = error;
@@ -53,7 +48,7 @@ module.exports = {
         });
     },
 
-    init: context => {
+    init: (context) => {
         if (!context) return;
         for (const obj in module.exports) {
             if (obj === 'init') continue;

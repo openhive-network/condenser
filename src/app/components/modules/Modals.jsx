@@ -76,19 +76,18 @@ class Modals extends React.Component {
         } = this.props;
 
         const notifications_array = notifications
-            ? notifications.toArray().map(n => {
+            ? notifications.toArray().map((n) => {
                   n.onClick = () => removeNotification(n.key);
                   return n;
               })
             : [];
 
-        const buySteemPower = e => {
+        const buySteemPower = (e) => {
             if (e && e.preventDefault) e.preventDefault();
             const new_window = window.open();
             new_window.opener = null;
             new_window.location =
-                'https://blocktrades.us/?input_coin_type=eth&output_coin_type=steem_power&receive_address=' +
-                username;
+                'https://blocktrades.us/?input_coin_type=eth&output_coin_type=steem_power&receive_address=' + username;
         };
         return (
             <div>
@@ -114,10 +113,7 @@ class Modals extends React.Component {
                     </Reveal>
                 )}
                 {show_bandwidth_error_modal && (
-                    <Reveal
-                        onHide={hideBandwidthError}
-                        show={show_bandwidth_error_modal}
-                    >
+                    <Reveal onHide={hideBandwidthError} show={show_bandwidth_error_modal}>
                         <div>
                             <CloseButton onClick={hideBandwidthError} />
                             <h4>{tt('modals_jsx.your_transaction_failed')}</h4>
@@ -125,19 +121,11 @@ class Modals extends React.Component {
                             <h5>{tt('modals_jsx.out_of_bandwidth_title')}</h5>
                             <p>{tt('modals_jsx.out_of_bandwidth_reason')}</p>
                             <p>{tt('modals_jsx.out_of_bandwidth_reason_2')}</p>
-                            <p>
-                                {tt('modals_jsx.out_of_bandwidth_option_title')}
-                            </p>
+                            <p>{tt('modals_jsx.out_of_bandwidth_option_title')}</p>
                             <ol>
-                                <li>
-                                    {tt('modals_jsx.out_of_bandwidth_option_1')}
-                                </li>
-                                <li>
-                                    {tt('modals_jsx.out_of_bandwidth_option_2')}
-                                </li>
-                                <li>
-                                    {tt('modals_jsx.out_of_bandwidth_option_3')}
-                                </li>
+                                <li>{tt('modals_jsx.out_of_bandwidth_option_1')}</li>
+                                <li>{tt('modals_jsx.out_of_bandwidth_option_2')}</li>
+                                <li>{tt('modals_jsx.out_of_bandwidth_option_3')}</li>
                             </ol>
                             <button className="button" onClick={buySteemPower}>
                                 {tt('g.buy_hive_power')}
@@ -146,20 +134,15 @@ class Modals extends React.Component {
                     </Reveal>
                 )}
                 {show_post_advanced_settings_modal && (
-                    <Reveal
-                        onHide={hidePostAdvancedSettings}
-                        show={show_post_advanced_settings_modal ? true : false}
-                    >
+                    <Reveal onHide={hidePostAdvancedSettings} show={show_post_advanced_settings_modal ? true : false}>
                         <CloseButton onClick={hidePostAdvancedSettings} />
-                        <PostAdvancedSettings
-                            formId={show_post_advanced_settings_modal}
-                        />
+                        <PostAdvancedSettings formId={show_post_advanced_settings_modal} />
                     </Reveal>
                 )}
                 <NotificationStack
                     style={false}
                     notifications={notifications_array}
-                    onDismiss={n => removeNotification(n.key)}
+                    onDismiss={(n) => removeNotification(n.key)}
                 />
             </div>
         );
@@ -167,19 +150,13 @@ class Modals extends React.Component {
 }
 
 export default connect(
-    state => {
+    (state) => {
         const rcErr = state.transaction.getIn(['errors', 'bandwidthError']);
         // get the onErrorCB and call it on cancel
         const show_login_modal = state.user.get('show_login_modal');
         let loginBroadcastOperation = {};
-        if (
-            show_login_modal &&
-            state.user &&
-            state.user.getIn(['loginBroadcastOperation'])
-        ) {
-            loginBroadcastOperation = state.user
-                .getIn(['loginBroadcastOperation'])
-                .toJS();
+        if (show_login_modal && state.user && state.user.getIn(['loginBroadcastOperation'])) {
+            loginBroadcastOperation = state.user.getIn(['loginBroadcastOperation']).toJS();
         }
         return {
             username: state.user.getIn(['current', 'username']),
@@ -189,42 +166,35 @@ export default connect(
             notifications: state.app.get('notifications'),
             show_terms_modal:
                 state.user.get('show_terms_modal') &&
-                state.routing.locationBeforeTransitions.pathname !==
-                    '/tos.html' &&
-                state.routing.locationBeforeTransitions.pathname !==
-                    '/privacy.html',
+                state.routing.locationBeforeTransitions.pathname !== '/tos.html' &&
+                state.routing.locationBeforeTransitions.pathname !== '/privacy.html',
             show_bandwidth_error_modal: rcErr,
-            show_post_advanced_settings_modal: state.user.get(
-                'show_post_advanced_settings_modal'
-            ),
+            show_post_advanced_settings_modal: state.user.get('show_post_advanced_settings_modal'),
             loginBroadcastOperation,
         };
     },
-    dispatch => ({
-        hideLogin: e => {
+    (dispatch) => ({
+        hideLogin: (e) => {
             if (e) e.preventDefault();
             dispatch(userActions.hideLogin());
         },
-        hideConfirm: e => {
+        hideConfirm: (e) => {
             if (e) e.preventDefault();
             dispatch(transactionActions.hideConfirm());
         },
-        hidePromotePost: e => {
+        hidePromotePost: (e) => {
             if (e) e.preventDefault();
             dispatch(userActions.hidePromotePost());
         },
-        hideBandwidthError: e => {
+        hideBandwidthError: (e) => {
             if (e) e.preventDefault();
-            dispatch(
-                transactionActions.dismissError({ key: 'bandwidthError' })
-            );
+            dispatch(transactionActions.dismissError({ key: 'bandwidthError' }));
         },
-        hidePostAdvancedSettings: e => {
+        hidePostAdvancedSettings: (e) => {
             if (e) e.preventDefault();
             dispatch(userActions.hidePostAdvancedSettings());
         },
         // example: addNotification: ({key, message}) => dispatch({type: 'ADD_NOTIFICATION', payload: {key, message}}),
-        removeNotification: key =>
-            dispatch(appActions.removeNotification({ key })),
+        removeNotification: (key) => dispatch(appActions.removeNotification({ key })),
     })
 )(Modals);

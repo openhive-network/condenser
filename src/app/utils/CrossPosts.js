@@ -39,9 +39,7 @@ export async function fetchCrossPosts(posts, observer) {
 
                 if (response.state === 'resolved') {
                     const crossPost = response.value;
-                    const crossPostKey = `${crossPost.author}/${
-                        crossPost.permlink
-                    }`;
+                    const crossPostKey = `${crossPost.author}/${crossPost.permlink}`;
                     crossPosts[crossPostKey] = crossPost;
                 } else {
                     console.error('cross post error', response);

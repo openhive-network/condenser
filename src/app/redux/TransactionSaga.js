@@ -17,15 +17,11 @@ import { DEBT_TICKER } from 'app/client_config';
 import { serverApiRecordEvent } from 'app/utils/ServerApiClient';
 import { isLoggedInWithKeychain } from 'app/utils/HiveKeychain';
 import { callBridge } from 'app/utils/steemApi';
-import {
-    isLoggedInWithHiveSigner,
-    hiveSignerClient,
-    sendOperationsWithHiveSigner,
-} from 'app/utils/HiveSigner';
+import { isLoggedInWithHiveSigner, hiveSignerClient, sendOperationsWithHiveSigner } from 'app/utils/HiveSigner';
 
-export const transactionWatches = [
-    takeEvery(transactionActions.BROADCAST_OPERATION, broadcastOperation),
-];
+import diff_match_patch from 'diff-match-patch';
+
+export const transactionWatches = [takeEvery(transactionActions.BROADCAST_OPERATION, broadcastOperation)];
 
 const hook = {
     preBroadcast_comment,
@@ -38,8 +34,7 @@ const hook = {
     accepted_vote,
 };
 
-const toStringUtf8 = o =>
-    o ? (Buffer.isBuffer(o) ? o.toString('utf-8') : o.toString()) : o;
+const toStringUtf8 = (o) => (o ? (Buffer.isBuffer(o) ? o.toString('utf-8') : o.toString()) : o);
 
 function* preBroadcast_vote({ operation, username }) {
     if (!operation.voter) operation.voter = username;
@@ -135,22 +130,20 @@ export function* broadcastOperation({
                     password,
                 });
                 if (signingKey) payload.keys.push(signingKey);
-                else {
-                    if (!password) {
-                        yield put(
-                            userActions.showLogin({
-                                operation: {
-                                    type,
-                                    operation,
-                                    username,
-                                    successCallback,
-                                    errorCallback,
-                                    saveLogin: true,
-                                },
-                            })
-                        );
-                        return;
-                    }
+                else if (!password) {
+                    yield put(
+                        userActions.showLogin({
+                            operation: {
+                                type,
+                                operation,
+                                username,
+                                successCallback,
+                                errorCallback,
+                                saveLogin: true,
+                            },
+                        })
+                    );
+                    return;
                 }
             }
         }
@@ -159,8 +152,7 @@ export function* broadcastOperation({
             if (op[0] === 'custom_json') {
                 if (
                     op[1].required_posting_auths &&
-                    op[1].required_posting_auths.filter(u => u === undefined)
-                        .length > 0 &&
+                    op[1].required_posting_auths.filter((u) => u === undefined).length > 0 &&
                     username
                 ) {
                     op[1].required_posting_auths = [username];
@@ -173,14 +165,10 @@ export function* broadcastOperation({
 
         yield call(broadcastPayload, { payload });
         let eventType = type
-            .replace(/^([a-z])/, g => g.toUpperCase())
-            .replace(/_([a-z])/g, g => g[1].toUpperCase());
-        if (eventType === 'Comment' && !operation.parent_author)
-            eventType = 'Post';
-        const page =
-            eventType === 'Vote'
-                ? `@${operation.author}/${operation.permlink}`
-                : '';
+            .replace(/^([a-z])/, (g) => g.toUpperCase())
+            .replace(/_([a-z])/g, (g) => g[1].toUpperCase());
+        if (eventType === 'Comment' && !operation.parent_author) eventType = 'Post';
+        const page = eventType === 'Vote' ? `@${operation.author}/${operation.permlink}` : '';
         serverApiRecordEvent(eventType, page);
     } catch (error) {
         console.error('TransactionSage', error);
@@ -206,9 +194,7 @@ function hasPrivateKeys(payload) {
     return false;
 }
 
-function* broadcastPayload({
-    payload: { operations, keys, username, successCallback, errorCallback },
-}) {
+function* broadcastPayload({ payload: { operations, keys, username, successCallback, errorCallback } }) {
     let needsActiveAuth = false;
 
     console.log('broadcastPayload', operations, username);
@@ -216,9 +202,7 @@ function* broadcastPayload({
     if ($STM_Config.read_only_mode) return;
     for (const [type] of operations) {
         // see also transaction/ERROR
-        yield put(
-            transactionActions.remove({ key: ['TransactionError', type] })
-        );
+        yield put(transactionActions.remove({ key: ['TransactionError', type] }));
         if (!postingOps.has(type)) {
             needsActiveAuth = true;
         }
@@ -255,7 +239,7 @@ function* broadcastPayload({
     };
 
     // get username
-    const currentUser = yield select(state => state.user.get('current'));
+    const currentUser = yield select((state) => state.user.get('current'));
     const currentUsername = currentUser && currentUser.get('username');
     username = username || currentUsername;
 
@@ -263,86 +247,60 @@ function* broadcastPayload({
         yield new Promise((resolve, reject) => {
             // Bump transaction (for live UI testing).. Put 0 in now (no effect),
             // to enable browser's autocomplete and help prevent typos.
-            const env = process.env;
-            const bump = env.BROWSER
-                ? parseInt(localStorage.getItem('bump') || 0)
-                : 0;
+            const { env } = process;
+            const bump = env.BROWSER ? parseInt(localStorage.getItem('bump') || 0) : 0;
             if (env.BROWSER && bump === 1) {
                 // for testing
-                console.log(
-                    'TransactionSaga bump(no broadcast) and reject',
-                    JSON.stringify(operations, null, 2)
-                );
+                console.log('TransactionSaga bump(no broadcast) and reject', JSON.stringify(operations, null, 2));
                 setTimeout(() => {
                     reject(new Error('Testing, fake error'));
                 }, 2000);
             } else if (env.BROWSER && bump === 2) {
                 // also for testing
-                console.log(
-                    'TransactionSaga bump(no broadcast) and resolve',
-                    JSON.stringify(operations, null, 2)
-                );
+                console.log('TransactionSaga bump(no broadcast) and resolve', JSON.stringify(operations, null, 2));
                 setTimeout(() => {
                     resolve();
                     broadcastedEvent();
                 }, 2000);
-            } else {
-                if (isLoggedInWithKeychain()) {
-                    const authType = needsActiveAuth ? 'active' : 'posting';
-                    window.hive_keychain.requestBroadcast(
-                        username,
-                        operations,
-                        authType,
-                        response => {
-                            if (!response.success) {
-                                reject(response.message);
-                            } else {
-                                broadcastedEvent();
-                                resolve();
-                            }
-                        }
-                    );
-                } else if (isLoggedInWithHiveSigner()) {
-                    if (!needsActiveAuth) {
-                        hiveSignerClient.broadcast(
-                            operations,
-                            (err, result) => {
-                                if (err) {
-                                    reject(err.error_description);
-                                } else {
-                                    broadcastedEvent();
-                                    resolve();
-                                }
-                            }
-                        );
+            } else if (isLoggedInWithKeychain()) {
+                const authType = needsActiveAuth ? 'active' : 'posting';
+                window.hive_keychain.requestBroadcast(username, operations, authType, (response) => {
+                    if (!response.success) {
+                        reject(response.message);
                     } else {
-                        sendOperationsWithHiveSigners(
-                            operations,
-                            {},
-                            (err, result) => {
-                                if (err) {
-                                    reject(err.error_description);
-                                } else {
-                                    broadcastedEvent();
-                                    resolve();
-                                }
-                            }
-                        );
+                        broadcastedEvent();
+                        resolve();
                     }
-                } else {
-                    broadcast.send(
-                        { extensions: [], operations },
-                        keys,
-                        err => {
-                            if (err) {
-                                reject(err);
-                            } else {
-                                broadcastedEvent();
-                                resolve();
-                            }
+                });
+            } else if (isLoggedInWithHiveSigner()) {
+                if (!needsActiveAuth) {
+                    hiveSignerClient.broadcast(operations, (err, result) => {
+                        if (err) {
+                            reject(err.error_description);
+                        } else {
+                            broadcastedEvent();
+                            resolve();
                         }
-                    );
+                    });
+                } else {
+                    sendOperationsWithHiveSigners(operations, {}, (err, result) => {
+                        if (err) {
+                            reject(err.error_description);
+                        } else {
+                            broadcastedEvent();
+                            resolve();
+                        }
+                    });
                 }
+            } else {
+                broadcast.send({ extensions: [], operations }, keys, (err) => {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        broadcastedEvent();
+                        resolve();
+                    }
+                });
             }
         });
         // status: accepted
@@ -374,9 +332,7 @@ function* broadcastPayload({
     } catch (error) {
         console.error('TransactionSaga\tbroadcastPayload', error);
         // status: error
-        yield put(
-            transactionActions.error({ operations, error, errorCallback })
-        );
+        yield put(transactionActions.error({ operations, error, errorCallback }));
         for (const [type, operation] of operations) {
             if (hook['error_' + type]) {
                 try {
@@ -392,10 +348,7 @@ function* broadcastPayload({
 function* accepted_comment({ operation }) {
     const { author, permlink } = operation;
     //yield call(getContent, { author, permlink });
-    if (
-        operation.__config.originalBody !== null &&
-        operation.__config.originalBody !== undefined
-    ) {
+    if (operation.__config.originalBody !== null && operation.__config.originalBody !== undefined) {
         yield call(lazyUpdate, operation);
     } else {
         yield call(wait, 9000);
@@ -406,14 +359,14 @@ function* accepted_comment({ operation }) {
 
 function updateFollowState(action, following, state) {
     if (action == null) {
-        state = state.update('blog_result', Set(), r => r.delete(following));
-        state = state.update('ignore_result', Set(), r => r.delete(following));
+        state = state.update('blog_result', Set(), (r) => r.delete(following));
+        state = state.update('ignore_result', Set(), (r) => r.delete(following));
     } else if (action === 'blog') {
-        state = state.update('blog_result', Set(), r => r.add(following));
-        state = state.update('ignore_result', Set(), r => r.delete(following));
+        state = state.update('blog_result', Set(), (r) => r.add(following));
+        state = state.update('ignore_result', Set(), (r) => r.delete(following));
     } else if (action === 'ignore') {
-        state = state.update('ignore_result', Set(), r => r.add(following));
-        state = state.update('blog_result', Set(), r => r.delete(following));
+        state = state.update('ignore_result', Set(), (r) => r.add(following));
+        state = state.update('blog_result', Set(), (r) => r.delete(following));
     }
     state = state.set('blog_count', state.get('blog_result', Set()).size);
     state = state.set('ignore_count', state.get('ignore_result', Set()).size);
@@ -426,20 +379,21 @@ function* accepted_custom_json({ operation }) {
         console.log(operation);
         try {
             if (json[0] === 'follow') {
-                const { follower, following, what: [action] } = json[1];
+                const {
+                    follower,
+                    following,
+                    what: [action],
+                } = json[1];
                 yield put(
                     globalActions.update({
                         key: ['follow', 'getFollowingAsync', follower],
                         notSet: Map(),
-                        updater: m => updateFollowState(action, following, m),
+                        updater: (m) => updateFollowState(action, following, m),
                     })
                 );
             }
         } catch (e) {
-            console.error(
-                'TransactionSaga unrecognized follow custom_json format',
-                operation.json
-            );
+            console.error('TransactionSaga unrecognized follow custom_json format', operation.json);
         }
     }
     return operation;
@@ -449,19 +403,13 @@ function* accepted_delete_comment({ operation }) {
     yield put(globalActions.deleteContent(operation));
 }
 
-const wait = ms =>
-    new Promise(resolve => {
+const wait = (ms) =>
+    new Promise((resolve) => {
         setTimeout(() => resolve(), ms);
     });
 
 function* accepted_vote({ operation: { author, permlink, weight } }) {
-    console.log(
-        'Vote accepted, weight',
-        weight,
-        'on',
-        author + '/' + permlink,
-        'weight'
-    );
+    console.log('Vote accepted, weight', weight, 'on', author + '/' + permlink, 'weight');
     // update again with new $$ amount from the steemd node
     yield put(
         globalActions.remove({
@@ -474,12 +422,12 @@ function* accepted_vote({ operation: { author, permlink, weight } }) {
 
 export function* preBroadcast_comment({ operation, username }) {
     if (!operation.author) operation.author = username;
-    let permlink = operation.permlink;
-    const { author, __config: { originalBody, comment_options } } = operation;
+    let { permlink } = operation;
     const {
-        parent_author = '',
-        parent_permlink = operation.category,
+        author,
+        __config: { originalBody, comment_options },
     } = operation;
+    const { parent_author = '', parent_permlink = operation.category } = operation;
     const { title } = operation;
     let { body } = operation;
 
@@ -495,8 +443,7 @@ export function* preBroadcast_comment({ operation, username }) {
     if (!body2) body2 = body;
     if (!permlink) permlink = yield createPermlink(title, author);
 
-    if (typeof operation.json_metadata !== 'string')
-        throw 'json not serialized';
+    if (typeof operation.json_metadata !== 'string') throw 'json not serialized';
     const op = {
         ...operation,
         permlink: permlink.toLowerCase(),
@@ -525,9 +472,7 @@ export function* preBroadcast_comment({ operation, username }) {
                 percent_hbd,
                 allow_votes,
                 allow_curation_rewards,
-                extensions: comment_options.extensions
-                    ? comment_options.extensions
-                    : [],
+                extensions: comment_options.extensions ? comment_options.extensions : [],
             },
         ]);
     }
@@ -551,9 +496,7 @@ export function* createPermlink(title, author) {
             permlink: s,
         });
         if (head && !!head.category) {
-            const noise = base58
-                .encode(secureRandom.randomBuffer(4))
-                .toLowerCase();
+            const noise = base58.encode(secureRandom.randomBuffer(4)).toLowerCase();
             permlink = noise + '-' + s;
         } else {
             permlink = s;
@@ -569,8 +512,6 @@ export function* createPermlink(title, author) {
 
     return permlink;
 }
-
-import diff_match_patch from 'diff-match-patch';
 const dmp = new diff_match_patch();
 
 export function createPatch(text1, text2) {

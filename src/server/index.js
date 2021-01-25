@@ -3,6 +3,7 @@ import config from 'config';
 import * as steem from '@hiveio/hive-js';
 
 const path = require('path');
+
 const ROOT = path.join(__dirname, '../..');
 
 // Tell `require` calls to look into `/app` also
@@ -16,9 +17,7 @@ require('module').Module._initPaths();
 // Load Intl polyfill
 // require('utils/intl-polyfill')(require('./config/init').locales);
 
-const alternativeApiEndpoints = config
-    .get('alternative_api_endpoints')
-    .split(' ');
+const alternativeApiEndpoints = config.get('alternative_api_endpoints').split(' ');
 
 global.$STM_Config = {
     fb_app: config.get('facebook_app_id'),
@@ -43,9 +42,7 @@ global.$STM_Config = {
 const WebpackIsomorphicTools = require('webpack-isomorphic-tools');
 const WebpackIsomorphicToolsConfig = require('../../webpack/webpack-isotools-config');
 
-global.webpackIsomorphicTools = new WebpackIsomorphicTools(
-    WebpackIsomorphicToolsConfig
-);
+global.webpackIsomorphicTools = new WebpackIsomorphicTools(WebpackIsomorphicToolsConfig);
 
 global.webpackIsomorphicTools.server(ROOT, () => {
     steem.api.setOptions({

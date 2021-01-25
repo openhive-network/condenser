@@ -27,12 +27,7 @@ export function getIframeDimensions() {
  */
 export const sandboxConfig = {
     useSandbox: true,
-    sandboxAttributes: [
-        'allow-scripts',
-        'allow-same-origin',
-        'allow-popups',
-        'allow-forms',
-    ],
+    sandboxAttributes: ['allow-scripts', 'allow-same-origin', 'allow-popups', 'allow-forms'],
 };
 
 /**
@@ -86,10 +81,7 @@ export function embedNode(child, links /*images*/) {
         const spotify = extractMetadata(data);
         if (!spotify) return child;
 
-        child.data = data.replace(
-            spotify.url,
-            `~~~ embed:${spotify.id} spotify ~~~`
-        );
+        child.data = data.replace(spotify.url, `~~~ embed:${spotify.id} spotify ~~~`);
 
         if (links) links.add(spotify.canonical);
         // if(images) images.add(spotify.thumbnail) // not available
@@ -112,12 +104,7 @@ export function genIframeMd(idx, id, width, height) {
 
     let sandbox = sandboxConfig.useSandbox;
     if (sandbox) {
-        if (
-            Object.prototype.hasOwnProperty.call(
-                sandboxConfig,
-                'sandboxAttributes'
-            )
-        ) {
+        if (Object.prototype.hasOwnProperty.call(sandboxConfig, 'sandboxAttributes')) {
             sandbox = sandboxConfig.sandboxAttributes.join(' ');
         }
     }

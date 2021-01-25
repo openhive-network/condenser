@@ -5,6 +5,10 @@ import steem, { api, broadcast } from '@hiveio/hive-js';
 import { callBridge } from 'app/utils/steemApi';
 import { cloneableGenerator } from 'redux-saga/utils';
 import * as transactionActions from 'app/redux/TransactionReducer';
+import { DEBT_TICKER } from 'app/client_config';
+
+import { configure, shallow } from 'enzyme';
+import Adapter from 'enzyme-adapter-react-15';
 import {
     preBroadcast_comment,
     createPermlink,
@@ -12,10 +16,6 @@ import {
     transactionWatches,
     broadcastOperation,
 } from './TransactionSaga';
-import { DEBT_TICKER } from 'app/client_config';
-
-import { configure, shallow } from 'enzyme';
-import Adapter from 'enzyme-adapter-react-15';
 
 configure({ adapter: new Adapter() });
 
@@ -45,12 +45,7 @@ describe('TransactionSaga', () => {
     describe('watch user actions and trigger appropriate saga', () => {
         const gen = transactionWatches;
         it('should call the broadcastOperation saga with every transactionActions.BROADCAST_OPERATION action', () => {
-            expect(gen).toEqual([
-                takeEvery(
-                    transactionActions.BROADCAST_OPERATION,
-                    broadcastOperation
-                ),
-            ]);
+            expect(gen).toEqual([takeEvery(transactionActions.BROADCAST_OPERATION, broadcastOperation)]);
         });
     });
 
@@ -63,9 +58,7 @@ describe('TransactionSaga', () => {
             const testString =
                 'there is something interesting going on here that I do not fully understand it is seemingly complex but it is actually quite simple';
             const actual = createPatch(testString, testString + 'ILU');
-            expect(actual).toEqual(
-                '@@ -120,12 +120,15 @@\n quite simple\n+ILU\n'
-            );
+            expect(actual).toEqual('@@ -120,12 +120,15 @@\n quite simple\n+ILU\n');
         });
     });
 

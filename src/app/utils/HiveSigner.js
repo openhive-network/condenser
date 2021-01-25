@@ -5,9 +5,7 @@ import { encodeOps } from 'hive-uri';
 
 const isBrowser = () => typeof window !== 'undefined' && window;
 
-const HOST_URL = isBrowser()
-    ? window.location.protocol + '//' + window.location.host
-    : APP_URL;
+const HOST_URL = isBrowser() ? window.location.protocol + '//' + window.location.host : APP_URL;
 
 const HIVE_SIGNER_URL = 'https://hivesigner.com';
 
@@ -37,11 +35,7 @@ export function isLoggedInWithHiveSigner() {
     return !!login_with_hive_signer;
 }
 
-export const setHiveSignerAccessToken = (
-    username,
-    access_token,
-    expires_in
-) => {
+export const setHiveSignerAccessToken = (username, access_token, expires_in) => {
     // set access token for Hive Signer
     console.log(`HiveSigner: set access token for @${username}`);
     hiveSignerClient.setAccessToken(access_token);

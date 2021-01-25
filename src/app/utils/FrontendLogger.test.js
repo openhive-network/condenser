@@ -9,11 +9,7 @@ describe('formatEventReport', () => {
             message: 'i am a message',
         };
 
-        const logged = formatEventReport(
-            modernErrorEvent,
-            'location',
-            'version'
-        );
+        const logged = formatEventReport(modernErrorEvent, 'location', 'version');
 
         expect(logged.trace).toEqual('i am a stacktrace');
         expect(logged.message).toEqual('i am a message');

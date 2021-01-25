@@ -30,7 +30,5 @@ export function validateIframeUrl(url) {
         return false;
     }
 
-    return `https://w.soundcloud.com/player/?url=${
-        match[1]
-    }&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&visual=true`;
+    return `https://w.soundcloud.com/player/?url=${match[1]}&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&visual=true`;
 }

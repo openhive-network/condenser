@@ -1,4 +1,4 @@
-const getBadges = async payload => {
+const getBadges = async (payload) => {
     return new Promise((resolve, reject) => {
         const xhr = new XMLHttpRequest();
         xhr.open('GET', `https://hivebuzz.me/api/badges/${payload.account}`);
@@ -8,11 +8,7 @@ const getBadges = async payload => {
                     const res = JSON.parse(xhr.responseText);
                     const { error } = res;
                     if (error) {
-                        console.error(
-                            'Hivebuzz badges',
-                            error,
-                            xhr.responseText
-                        );
+                        console.error('Hivebuzz badges', error, xhr.responseText);
                         reject(error);
                     }
 
@@ -26,7 +22,7 @@ const getBadges = async payload => {
                 reject(xhr.status);
             }
         };
-        xhr.onerror = function(error) {
+        xhr.onerror = function (error) {
             console.error('Hivebuzz badges', error);
             reject(error);
         };

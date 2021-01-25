@@ -23,33 +23,28 @@ export class BeneficiarySelector extends React.Component {
     };
     constructor() {
         super();
-        this.shouldComponentUpdate = shouldComponentUpdate(
-            this,
-            'BeneficiarySelector'
-        );
+        this.shouldComponentUpdate = shouldComponentUpdate(this, 'BeneficiarySelector');
     }
 
     matchAutocompleteUser(item, value) {
         return item.toLowerCase().indexOf(value.toLowerCase()) > -1;
     }
 
-    handleAddBeneficiary = e => {
+    handleAddBeneficiary = (e) => {
         e.preventDefault();
         const beneficiaries = this.props.value;
         if (beneficiaries.length < 8) {
-            this.props.onChange(
-                beneficiaries.concat([{ username: '', percent: '' }])
-            );
+            this.props.onChange(beneficiaries.concat([{ username: '', percent: '' }]));
         }
     };
 
-    handleRemoveBeneficiary = idx => e => {
+    handleRemoveBeneficiary = (idx) => (e) => {
         e.preventDefault();
         const beneficiaries = this.props.value;
         this.props.onChange(beneficiaries.filter((s, bidx) => idx != bidx));
     };
 
-    handleBeneficiaryUserChange = idx => e => {
+    handleBeneficiaryUserChange = (idx) => (e) => {
         e.preventDefault();
         const beneficiaries = this.props.value;
         const newBeneficiaries = beneficiaries.map((beneficiary, bidx) => {
@@ -59,7 +54,7 @@ export class BeneficiarySelector extends React.Component {
         this.props.onChange(newBeneficiaries);
     };
 
-    handleBeneficiaryUserSelect = idx => val => {
+    handleBeneficiaryUserSelect = (idx) => (val) => {
         const beneficiaries = this.props.value;
         const newBeneficiaries = beneficiaries.map((beneficiary, bidx) => {
             if (idx != bidx) return beneficiary;
@@ -68,7 +63,7 @@ export class BeneficiarySelector extends React.Component {
         this.props.onChange(newBeneficiaries);
     };
 
-    handleBeneficiaryPercentChange = idx => e => {
+    handleBeneficiaryPercentChange = (idx) => (e) => {
         e.preventDefault();
         const beneficiaries = this.props.value;
         const newBeneficiaries = beneficiaries.map((beneficiary, bidx) => {
@@ -82,10 +77,7 @@ export class BeneficiarySelector extends React.Component {
         const { username, following, tabIndex } = this.props;
         const beneficiaries = this.props.value;
         const remainingPercent =
-            100 -
-            beneficiaries
-                .map(b => (b.percent ? parseInt(b.percent) : 0))
-                .reduce((sum, elt) => sum + elt, 0);
+            100 - beneficiaries.map((b) => (b.percent ? parseInt(b.percent) : 0)).reduce((sum, elt) => sum + elt, 0);
 
         return (
             <span>
@@ -100,20 +92,13 @@ export class BeneficiarySelector extends React.Component {
                                 disabled
                                 className="BeneficiarySelector__percentbox"
                             />
-                            <span className="BeneficiarySelector__percentrow">
-                                %
-                            </span>
+                            <span className="BeneficiarySelector__percentrow">%</span>
                         </div>
                     </div>
                     <div className="column small-5">
                         <div className="input-group">
                             <span className="input-group-label">@</span>
-                            <input
-                                className="input-group-field bold"
-                                type="text"
-                                disabled
-                                value={username}
-                            />
+                            <input className="input-group-field bold" type="text" disabled value={username} />
                         </div>
                     </div>
                 </div>
@@ -126,14 +111,10 @@ export class BeneficiarySelector extends React.Component {
                                     type="text"
                                     pattern="[0-9]*"
                                     value={beneficiary.percent}
-                                    onChange={this.handleBeneficiaryPercentChange(
-                                        idx
-                                    )}
+                                    onChange={this.handleBeneficiaryPercentChange(idx)}
                                     className="BeneficiarySelector__percentbox"
                                 />
-                                <span className="BeneficiarySelector__percentrow">
-                                    %
-                                </span>
+                                <span className="BeneficiarySelector__percentrow">%</span>
                             </div>
                         </div>
                         <div className="column small-5">
@@ -153,42 +134,23 @@ export class BeneficiarySelector extends React.Component {
                                         autoCapitalize: 'off',
                                         spellCheck: 'false',
                                     }}
-                                    renderMenu={items => (
-                                        <div
-                                            className="react-autocomplete-input"
-                                            children={items}
-                                        />
+                                    renderMenu={(items) => (
+                                        <div className="react-autocomplete-input" children={items} />
                                     )}
-                                    getItemValue={item => item}
+                                    getItemValue={(item) => item}
                                     items={this.props.following}
-                                    shouldItemRender={
-                                        this.matchAutocompleteUser
-                                    }
+                                    shouldItemRender={this.matchAutocompleteUser}
                                     renderItem={(item, isHighlighted) => (
-                                        <div
-                                            className={
-                                                isHighlighted ? 'active' : ''
-                                            }
-                                        >
-                                            {item}
-                                        </div>
+                                        <div className={isHighlighted ? 'active' : ''}>{item}</div>
                                     )}
                                     value={beneficiary.username}
-                                    onChange={this.handleBeneficiaryUserChange(
-                                        idx
-                                    )}
-                                    onSelect={this.handleBeneficiaryUserSelect(
-                                        idx
-                                    )}
+                                    onChange={this.handleBeneficiaryUserChange(idx)}
+                                    onSelect={this.handleBeneficiaryUserSelect(idx)}
                                 />
                             </div>
                         </div>
                         <div className="BeneficiarySelector__percentrow column small-5">
-                            <a
-                                id="remove"
-                                href="#"
-                                onClick={this.handleRemoveBeneficiary(idx)}
-                            >
+                            <a id="remove" href="#" onClick={this.handleRemoveBeneficiary(idx)}>
                                 {tt('g.remove')}
                             </a>
                         </div>
@@ -196,12 +158,7 @@ export class BeneficiarySelector extends React.Component {
                 ))}
                 <div className="row">
                     <div className="column">
-                        <a
-                            id="add"
-                            href="#"
-                            onClick={this.handleAddBeneficiary}
-                            hidden={beneficiaries.length >= 8}
-                        >
+                        <a id="add" href="#" onClick={this.handleAddBeneficiary} hidden={beneficiaries.length >= 8}>
                             {tt('beneficiary_selector_jsx.add')}
                         </a>
                     </div>
@@ -211,11 +168,7 @@ export class BeneficiarySelector extends React.Component {
     }
 }
 
-export function validateBeneficiaries(
-    username,
-    beneficiaries,
-    required = true
-) {
+export function validateBeneficiaries(username, beneficiaries, required = true) {
     if (beneficiaries.length > 8) {
         return tt('beneficiary_selector_jsx.exceeds_max_beneficiaries');
     }
@@ -232,16 +185,11 @@ export function validateBeneficiaries(
             return tt('beneficiary_selector_jsx.beneficiary_cannot_be_self');
         }
         if (beneficiaryNames.has(beneficiary.username)) {
-            return tt(
-                'beneficiary_selector_jsx.beneficiary_cannot_be_duplicate'
-            );
+            return tt('beneficiary_selector_jsx.beneficiary_cannot_be_duplicate');
         } else {
             beneficiaryNames = beneficiaryNames.add(beneficiary.username);
         }
-        if (
-            (required || beneficiary.percent) &&
-            !/^[1-9]\d{0,2}$/.test(beneficiary.percent)
-        ) {
+        if ((required || beneficiary.percent) && !/^[1-9]\d{0,2}$/.test(beneficiary.percent)) {
             return tt('beneficiary_selector_jsx.beneficiary_percent_invalid');
         }
         totalPercent += parseInt(beneficiary.percent);
@@ -258,11 +206,7 @@ export default connect((state, ownProps) => {
     const username = state.user.getIn(['current', 'username']);
     const follow = state.global.get('follow');
     if (follow) {
-        const followingData = follow.getIn([
-            'getFollowingAsync',
-            username,
-            'blog_result',
-        ]);
+        const followingData = follow.getIn(['getFollowingAsync', username, 'blog_result']);
         if (followingData) following = followingData.sort();
     }
     return {

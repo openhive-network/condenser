@@ -17,7 +17,7 @@ storiesOf('Elements', module)
     .addDecorator(withKnobs)
     .add('SvgImage', () => (
         <Grid>
-            {svgs.map(svg => (
+            {svgs.map((svg) => (
                 <div key={svg}>
                     <SvgImage
                         name={svg}

@@ -1,23 +1,17 @@
 import GDPRUserList from './utils/GDPRUserList';
 
-const reg = pattern => {
+const reg = (pattern) => {
     pattern = pattern
         .replace('<account>', '(@[\\w\\.\\d-]+)')
         .replace(
             '<account-tab>',
             '(blog|posts|comments|replies|payout|feed|followed|followers|settings|notifications|communities)'
         )
-        .replace(
-            '<sort>',
-            '(hot|trending|promoted|payout|payout_comments|muted|created)'
-        )
+        .replace('<sort>', '(hot|trending|promoted|payout|payout_comments|muted|created)')
         .replace('<tag>', '([\\w\\W\\d-]{1,32})')
         .replace('<permlink>', '([\\w\\d-]+)')
         .replace('/', '\\/')
-        .replace(
-            '<list_type>',
-            '(blacklisted|muted|followed_blacklists|followed_muted_lists)'
-        );
+        .replace('<list_type>', '(blacklisted|muted|followed_blacklists|followed_muted_lists)');
     return new RegExp('^\\/' + pattern + '$');
 };
 
@@ -99,10 +93,8 @@ export default function resolveRoute(path) {
     // -----------
 
     // developer
-    if (path === '/xss/test' && process.env.NODE_ENV === 'development')
-        return { page: 'XSSTest' };
-    if (path === '/benchmark' && process.env.OFFLINE_SSR_TEST)
-        return { page: 'Benchmark' };
+    if (path === '/xss/test' && process.env.NODE_ENV === 'development') return { page: 'XSSTest' };
+    if (path === '/benchmark' && process.env.OFFLINE_SSR_TEST) return { page: 'Benchmark' };
 
     return { page: 'NotFound' };
 }

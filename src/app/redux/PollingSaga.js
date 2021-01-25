@@ -24,14 +24,14 @@ export function* watchPollingTasks() {
     }
 }
 
-export const startPolling = payload => {
+export const startPolling = (payload) => {
     return {
         type: START_POLLING,
         payload,
     };
 };
 
-export const stopPolling = payload => {
+export const stopPolling = (payload) => {
     return {
         type: STOP_POLLING,
         payload,

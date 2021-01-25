@@ -84,7 +84,7 @@ class Author extends React.Component {
         }
     }
 
-    toggle = e => {
+    toggle = (e) => {
         if (!(e.metaKey || e.ctrlKey)) {
             e.preventDefault();
             e.stopPropagation();
@@ -141,21 +141,14 @@ class Author extends React.Component {
                     />
                 )}
                 {showAffiliation && AffiliationMap[author] ? (
-                    <span className="affiliation">
-                        {tt('g.affiliation_' + AffiliationMap[author])}
-                    </span>
+                    <span className="affiliation">{tt('g.affiliation_' + AffiliationMap[author])}</span>
                 ) : null}
             </span>
         );
 
         if (!(follow || mute)) {
             return (
-                <span
-                    className="author"
-                    itemProp="author"
-                    itemScope
-                    itemType="http://schema.org/Person"
-                >
+                <span className="author" itemProp="author" itemScope itemType="http://schema.org/Person">
                     <strong>
                         <Link to={'/@' + author}>{author}</Link>
                     </strong>{' '}
@@ -168,14 +161,10 @@ class Author extends React.Component {
 
         return (
             <span className="Author">
-                <span
-                    itemProp="author"
-                    itemScope
-                    itemType="http://schema.org/Person"
-                >
+                <span itemProp="author" itemScope itemType="http://schema.org/Person">
                     <strong>
                         <Link
-                            ref={link => {
+                            ref={(link) => {
                                 this.authorProfileLink = link;
                             }}
                             to={'/@' + author}

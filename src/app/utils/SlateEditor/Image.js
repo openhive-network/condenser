@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 
 export default connect(
     (state, ownProps) => ownProps,
-    dispatch => ({
+    (dispatch) => ({
         uploadImage: (file, dataUrl, filename, progress) => {
             dispatch({
                 type: 'user/UPLOAD_IMAGE',
@@ -65,7 +65,7 @@ export default connect(
             if (!file && !dataUrl) return;
             this.setState({ progress: {}, uploading: true }, () => {
                 const { uploadImage } = this.props;
-                uploadImage(file, dataUrl, filename, progress => {
+                uploadImage(file, dataUrl, filename, (progress) => {
                     this.setState({ progress, uploading: false });
                     if (progress.url) {
                         this.setImageSrc(progress.url, filename);
@@ -80,31 +80,17 @@ export default connect(
             const isFocused = state.selection.hasEdgeIn(node);
             const className = isFocused ? 'active' : null;
 
-            const prefix = $STM_Config.img_proxy_prefix
-                ? $STM_Config.img_proxy_prefix + '0x0/'
-                : '';
+            const prefix = $STM_Config.img_proxy_prefix ? $STM_Config.img_proxy_prefix + '0x0/' : '';
 
             const alt = node.data.get('alt');
             const src = node.data.get('src');
 
-            console.log(
-                '** rendering image... src:',
-                src ? src.substring(0, 30) + '...' : '(null)',
-                state
-            );
+            console.log('** rendering image... src:', src ? src.substring(0, 30) + '...' : '(null)', state);
 
-            if (!src)
-                return <small className="info">Loading Image&hellip;</small>;
+            if (!src) return <small className="info">Loading Image&hellip;</small>;
 
             if (/^https?:\/\//.test(src))
-                return (
-                    <img
-                        {...attributes}
-                        src={prefix + src}
-                        alt={alt}
-                        className={className}
-                    />
-                );
+                return <img {...attributes} src={prefix + src} alt={alt} className={className} />;
 
             const img = <img src={src} alt={alt} className={className} />;
 
@@ -124,9 +110,7 @@ export default connect(
                     {img}
                     <div className="error">
                         <small>
-                            Image was not Saved (<a onClick={this.load}>
-                                retry
-                            </a>)
+                            Image was not Saved (<a onClick={this.load}>retry</a>)
                             <br />
                             {error}
                         </small>

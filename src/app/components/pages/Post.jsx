@@ -17,11 +17,7 @@ import LoadingIndicator from 'app/components/elements/LoadingIndicator';
 function isEmptyPost(post) {
     // check if the post doesn't exist
     // !dis may be enough but keep 'created' & 'body' test for potential compat
-    return (
-        !post ||
-        (post.get('created') === '1970-01-01T00:00:00' &&
-            post.get('body') === '')
-    );
+    return !post || (post.get('created') === '1970-01-01T00:00:00' && post.get('body') === '');
 }
 
 class Post extends React.Component {
@@ -43,7 +39,7 @@ class Post extends React.Component {
         };
     }
 
-    toggleNegativeReplies = e => {
+    toggleNegativeReplies = (e) => {
         this.setState({
             showNegativeComments: !this.state.showNegativeComments,
         });
@@ -88,9 +84,7 @@ class Post extends React.Component {
                         <div className="column">
                             <div className="PostFull">
                                 <p onClick={this.showAnywayClick}>
-                                    {tt(
-                                        'promote_post_jsx.this_post_was_hidden_due_to_low_ratings'
-                                    )}.{' '}
+                                    {tt('promote_post_jsx.this_post_was_hidden_due_to_low_ratings')}.{' '}
                                     <button
                                         style={{ marginBottom: 0 }}
                                         className="button hollow tiny float-right"
@@ -118,12 +112,9 @@ class Post extends React.Component {
             replies = replies.slice(0, commentLimit);
         }
         let commentCount = 0;
-        const positiveComments = replies.map(reply => {
+        const positiveComments = replies.map((reply) => {
             commentCount++;
-            const showAd =
-                commentCount % 5 === 0 &&
-                commentCount !== replies.length &&
-                commentCount !== commentLimit;
+            const showAd = commentCount % 5 === 0 && commentCount !== replies.length && commentCount !== commentLimit;
 
             return (
                 <div key={post + reply}>
@@ -137,11 +128,7 @@ class Post extends React.Component {
 
                     {this.props.gptEnabled && showAd ? (
                         <div className="Post_footer__ad">
-                            <GptAd
-                                tags={gptTags}
-                                type="Freestar"
-                                id="bsa-zone_1566494240874-7_123456"
-                            />
+                            <GptAd tags={gptTags} type="Freestar" id="bsa-zone_1566494240874-7_123456" />
                         </div>
                     ) : null}
                 </div>
@@ -153,13 +140,9 @@ class Post extends React.Component {
                 <p>
                     {showNegativeComments
                         ? tt('post_jsx.now_showing_comments_with_low_ratings')
-                        : tt(
-                              'post_jsx.comments_were_hidden_due_to_low_ratings'
-                          )}.{' '}
-                    <button
-                        className="button hollow tiny float-right"
-                        onClick={e => this.toggleNegativeReplies(e)}
-                    >
+                        : tt('post_jsx.comments_were_hidden_due_to_low_ratings')}
+                    .{' '}
+                    <button className="button hollow tiny float-right" onClick={(e) => this.toggleNegativeReplies(e)}>
                         {showNegativeComments ? tt('g.hide') : tt('g.show')}
                     </button>
                 </p>
@@ -189,37 +172,27 @@ class Post extends React.Component {
                 <div className="row">
                     <div className="column">{postBody}</div>
                 </div>
-                {false &&
-                    !isLoggedIn() && (
-                        <div className="row">
-                            <div className="column">
-                                <div className="Post__promo">
-                                    {tt(
-                                        'g.next_7_strings_single_block.authors_get_paid_when_people_like_you_upvote_their_post'
-                                    )}.
-                                    <br />
-                                    {tt(
-                                        'g.next_7_strings_single_block.if_you_enjoyed_what_you_read_earn_amount'
-                                    )}
-                                    <br />
-                                    <button
-                                        type="button"
-                                        className="button e-btn"
-                                        onClick={showSignUp}
-                                    >
-                                        {tt('loginform_jsx.sign_up_get_hive')}
-                                    </button>
-                                </div>
+                {false && !isLoggedIn() && (
+                    <div className="row">
+                        <div className="column">
+                            <div className="Post__promo">
+                                {tt(
+                                    'g.next_7_strings_single_block.authors_get_paid_when_people_like_you_upvote_their_post'
+                                )}
+                                .
+                                <br />
+                                {tt('g.next_7_strings_single_block.if_you_enjoyed_what_you_read_earn_amount')}
+                                <br />
+                                <button type="button" className="button e-btn" onClick={showSignUp}>
+                                    {tt('loginform_jsx.sign_up_get_hive')}
+                                </button>
                             </div>
                         </div>
-                    )}
+                    </div>
+                )}
                 {this.props.gptEnabled && commentCount >= 5 ? (
                     <div className="Post_footer__ad">
-                        <GptAd
-                            tags={gptTags}
-                            type="Freestar"
-                            id="bsa-zone_1566494147292-7_123456"
-                        />
+                        <GptAd tags={gptTags} type="Freestar" id="bsa-zone_1566494147292-7_123456" />
                     </div>
                 ) : null}
                 <div id="#comments" className="Post_comments row hfeed">
@@ -228,12 +201,7 @@ class Post extends React.Component {
                             {positiveComments.length ? (
                                 <div className="Post__comments_sort_order float-right">
                                     {tt('post_jsx.sort_order')}: &nbsp;
-                                    <DropdownMenu
-                                        items={sort_menu}
-                                        el="li"
-                                        selected={sort_label}
-                                        position="left"
-                                    />
+                                    <DropdownMenu items={sort_menu} el="li" selected={sort_label} position="left" />
                                 </div>
                             ) : null}
                             {positiveComments}
@@ -243,11 +211,7 @@ class Post extends React.Component {
                 </div>
                 {this.props.gptEnabled ? (
                     <div className="Post_footer__ad">
-                        <GptAd
-                            tags={gptTags}
-                            type="Freestar"
-                            id="bsa-zone_1566494371533-0_123456"
-                        />
+                        <GptAd tags={gptTags} type="Freestar" id="bsa-zone_1566494371533-0_123456" />
                     </div>
                 ) : null}
             </div>

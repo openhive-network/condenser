@@ -13,13 +13,13 @@ const store = createStore(rootReducer);
 storiesOf('Elements', module)
     .addDecorator(withKnobs)
     .addDecorator(Center)
-    .addDecorator(getStory => <Provider store={store}>{getStory()}</Provider>)
+    .addDecorator((getStory) => <Provider store={store}>{getStory()}</Provider>)
     .add('Voting', () => (
         <IntlProvider locale="en">
             <Voting
                 post={'cool Post'}
                 post_obj={{
-                    get: arg => {
+                    get: (arg) => {
                         switch (arg) {
                             case 'is_paidout':
                                 return true;

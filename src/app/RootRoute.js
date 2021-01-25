@@ -42,10 +42,7 @@ export default {
             //require.ensure([], (require) => {
             cb(null, [require('app/components/pages/Support')]);
             //});
-        } else if (
-            route.page === 'XSSTest' &&
-            process.env.NODE_ENV === 'development'
-        ) {
+        } else if (route.page === 'XSSTest' && process.env.NODE_ENV === 'development') {
             //require.ensure([], (require) => {
             cb(null, [require('app/components/pages/XSS')]);
             //});
@@ -71,9 +68,7 @@ export default {
                 cb(null, [require('app/components/pages/SubmitPost')]);
                 // });
             } else {
-                cb(null, [
-                    require('app/components/pages/SubmitPostServerRender'),
-                ]);
+                cb(null, [require('app/components/pages/SubmitPostServerRender')]);
             }
         } else if (route.page === 'UserProfile') {
             //require.ensure([], (require) => {
@@ -103,9 +98,7 @@ export default {
             cb(null, [require('app/components/pages/ListManagement')]);
         } else {
             //require.ensure([], (require) => {
-            cb(process.env.BROWSER ? null : Error(404), [
-                require('app/components/pages/NotFound'),
-            ]);
+            cb(process.env.BROWSER ? null : Error(404), [require('app/components/pages/NotFound')]);
             //});
         }
     },

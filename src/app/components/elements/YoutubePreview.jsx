@@ -41,13 +41,8 @@ export default class YoutubePreview extends React.Component {
             // mqdefault.jpg (medium quality version, 320px × 180px)
             // hqdefault.jpg (high quality version, 480px × 360px
             // sddefault.jpg (standard definition version, 640px × 480px)
-            const thumbnail =
-                width <= 320
-                    ? 'mqdefault.jpg'
-                    : width <= 480 ? 'hqdefault.jpg' : '0.jpg';
-            const previewLink = `https://img.youtube.com/vi/${youTubeId}/${
-                thumbnail
-            }`;
+            const thumbnail = width <= 320 ? 'mqdefault.jpg' : width <= 480 ? 'hqdefault.jpg' : '0.jpg';
+            const previewLink = `https://img.youtube.com/vi/${youTubeId}/${thumbnail}`;
 
             return (
                 <div
@@ -62,19 +57,11 @@ export default class YoutubePreview extends React.Component {
                 </div>
             );
         }
-        const autoPlaySrc = `https://www.youtube.com/embed/${
-            youTubeId
-        }?autoplay=1&autohide=1&${dataParams}&start=${startTime}`;
+        const autoPlaySrc = `https://www.youtube.com/embed/${youTubeId}?autoplay=1&autohide=1&${dataParams}&start=${startTime}`;
 
         return (
             <div className="videoWrapper">
-                <iframe
-                    width={width}
-                    height={height}
-                    src={autoPlaySrc}
-                    frameBorder="0"
-                    allowFullScreen="true"
-                />
+                <iframe width={width} height={height} src={autoPlaySrc} frameBorder="0" allowFullScreen="true" />
             </div>
         );
     }

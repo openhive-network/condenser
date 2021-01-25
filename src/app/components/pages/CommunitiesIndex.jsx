@@ -21,31 +21,17 @@ export default class CommunitiesIndex extends React.Component {
     }
 
     componentWillMount = () => {
-        this.props.performSearch(
-            this.props.username,
-            this.state.searchQuery,
-            this.state.searchOrder
-        );
+        this.props.performSearch(this.props.username, this.state.searchQuery, this.state.searchOrder);
     };
     componentDidUpdate = (prevProps, prevState) => {
         if (prevProps.username !== this.props.username) {
-            this.props.performSearch(
-                this.props.username,
-                this.state.searchQuery,
-                this.state.searchOrder
-            );
+            this.props.performSearch(this.props.username, this.state.searchQuery, this.state.searchOrder);
         }
     };
 
     render() {
-        const {
-            communities,
-            communities_idx,
-            username,
-            walletUrl,
-            performSearch,
-        } = this.props;
-        const ordered = communities_idx.map(name => communities.get(name));
+        const { communities, communities_idx, username, walletUrl, performSearch } = this.props;
+        const ordered = communities_idx.map((name) => communities.get(name));
 
         const sortOptions = [
             {
@@ -65,34 +51,26 @@ export default class CommunitiesIndex extends React.Component {
         if (communities_idx.size === 0) {
             return (
                 <center>
-                    <LoadingIndicator
-                        style={{ marginBottom: '2rem' }}
-                        type="circle"
-                    />
+                    <LoadingIndicator style={{ marginBottom: '2rem' }} type="circle" />
                 </center>
             );
         }
 
-        const role = comm =>
-            comm.context &&
-            comm.context.role !== 'guest' && (
-                <span className="user_role">{comm.context.role}</span>
-            );
+        const role = (comm) =>
+            comm.context && comm.context.role !== 'guest' && <span className="user_role">{comm.context.role}</span>;
 
-        const communityAdmins = admins => {
+        const communityAdmins = (admins) => {
             if (!admins || admins.length === 0) return;
 
             return (
                 <div>
-                    {admins.length === 1
-                        ? `${tt('g.administrator')}: `
-                        : `${tt('g.administrators')}: `}
+                    {admins.length === 1 ? `${tt('g.administrator')}: ` : `${tt('g.administrators')}: `}
                     <UserNames names={admins} />
                 </div>
             );
         };
 
-        const row = comm => {
+        const row = (comm) => {
             const admins = communityAdmins(comm.admins);
             return (
                 <tr key={comm.name}>
@@ -104,8 +82,7 @@ export default class CommunitiesIndex extends React.Component {
                         <br />
                         {comm.about}
                         <small>
-                            {comm.subscribers} subscribers &bull;{' '}
-                            {comm.num_authors} posters &bull; {comm.num_pending}{' '}
+                            {comm.subscribers} subscribers &bull; {comm.num_authors} posters &bull; {comm.num_pending}{' '}
                             posts
                             {admins}
                         </small>
@@ -118,17 +95,11 @@ export default class CommunitiesIndex extends React.Component {
         };
 
         return (
-            <PostsIndexLayout
-                category={null}
-                enableAds={false}
-                blogmode={false}
-            >
+            <PostsIndexLayout category={null} enableAds={false} blogmode={false}>
                 <div className="CommunitiesIndex c-sidebar__module">
                     {username && (
                         <div style={{ float: 'right' }}>
-                            <a href={`${walletUrl}/@${username}/communities`}>
-                                Create a Community
-                            </a>
+                            <a href={`${walletUrl}/@${username}/communities`}>Create a Community</a>
                         </div>
                     )}
 
@@ -140,15 +111,11 @@ export default class CommunitiesIndex extends React.Component {
                         <div className="small-8 medium-7 large-8 column">
                             <ElasticSearchInput
                                 expanded={true}
-                                handleSubmit={q => {
+                                handleSubmit={(q) => {
                                     this.setState({
                                         searchQuery: q,
                                     });
-                                    performSearch(
-                                        username,
-                                        q,
-                                        this.state.searchOrder
-                                    );
+                                    performSearch(username, q, this.state.searchOrder);
                                 }}
                                 redirect={false}
                             />
@@ -157,22 +124,18 @@ export default class CommunitiesIndex extends React.Component {
                             <NativeSelect
                                 options={sortOptions}
                                 currentlySelected={this.state.searchOrder}
-                                onChange={opt => {
+                                onChange={(opt) => {
                                     this.setState({
                                         searchOrder: opt.value,
                                     });
-                                    performSearch(
-                                        username,
-                                        this.state.searchQuery,
-                                        opt.value
-                                    );
+                                    performSearch(username, this.state.searchQuery, opt.value);
                                 }}
                             />
                         </div>
                     </div>
                     <hr />
                     <table>
-                        <tbody>{ordered.map(comm => row(comm.toJS()))}</tbody>
+                        <tbody>{ordered.map((comm) => row(comm.toJS()))}</tbody>
                     </table>
                 </div>
             </PostsIndexLayout>
@@ -183,7 +146,7 @@ export default class CommunitiesIndex extends React.Component {
 module.exports = {
     path: 'communities(/:username)',
     component: connect(
-        state => {
+        (state) => {
             // Get current sort and query from the url.
             return {
                 walletUrl: state.app.get('walletUrl'),
@@ -192,7 +155,7 @@ module.exports = {
                 communities_idx: state.global.get('community_idx', List()),
             };
         },
-        dispatch => {
+        (dispatch) => {
             return {
                 performSearch: (observer, query, sort = 'rank') => {
                     dispatch(

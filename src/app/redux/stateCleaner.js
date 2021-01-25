@@ -2,12 +2,12 @@ import GDPRUserList from '../utils/GDPRUserList';
 
 const accountsToRemove = GDPRUserList;
 
-const gdprFilterAccounts = stateAccounts => {
+const gdprFilterAccounts = (stateAccounts) => {
     if (stateAccounts === undefined) {
         return [];
     }
     return Object.keys(stateAccounts)
-        .filter(name => !accountsToRemove.includes(name))
+        .filter((name) => !accountsToRemove.includes(name))
         .reduce(
             (acc, cur) => ({
                 ...acc,
@@ -17,16 +17,16 @@ const gdprFilterAccounts = stateAccounts => {
         );
 };
 
-const gdprFilterContent = stateContent => {
+const gdprFilterContent = (stateContent) => {
     if (stateContent === undefined) {
         return [];
     }
-    const contentToRemove = Object.keys(stateContent).filter(key =>
+    const contentToRemove = Object.keys(stateContent).filter((key) =>
         accountsToRemove.includes(stateContent[key].author)
     );
 
     const contentToKeep = Object.keys(stateContent).filter(
-        key => !accountsToRemove.includes(stateContent[key].author)
+        (key) => !accountsToRemove.includes(stateContent[key].author)
     );
 
     // First, remove content authored by GDPR users.
@@ -44,9 +44,7 @@ const gdprFilterContent = stateContent => {
             ...acc,
             [cur]: {
                 ...removedByAuthor[cur],
-                replies: removedByAuthor[cur].replies.filter(
-                    url => !contentToRemove.includes(url)
-                ),
+                replies: removedByAuthor[cur].replies.filter((url) => !contentToRemove.includes(url)),
             },
         }),
         {}

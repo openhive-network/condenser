@@ -27,91 +27,45 @@ class PostsIndexLayout extends React.Component {
 
     componentDidUpdate(prevProps) {
         const { subscriptions, getSubscriptions, username } = this.props;
-        if (!subscriptions && username && username != prevProps.username)
-            getSubscriptions(username);
+        if (!subscriptions && username && username != prevProps.username) getSubscriptions(username);
     }
 
     render() {
-        const {
-            topics,
-            subscriptions,
-            enableAds,
-            community,
-            username,
-            blogmode,
-            isBrowser,
-            children,
-        } = this.props;
+        const { topics, subscriptions, enableAds, community, username, blogmode, isBrowser, children } = this.props;
 
         return (
-            <div
-                className={
-                    'PostsIndex row ' +
-                    (blogmode ? 'layout-block' : 'layout-list')
-                }
-            >
+            <div className={'PostsIndex row ' + (blogmode ? 'layout-block' : 'layout-list')}>
                 <article className="articles">
                     {community && (
                         <span className="hide-for-mq-large articles__header-select">
-                            <CommunityPaneMobile
-                                community={community}
-                                username={username}
-                            />
+                            <CommunityPaneMobile community={community} username={username} />
                         </span>
                     )}
                     {children}
                 </article>
 
                 <aside className="c-sidebar c-sidebar--right">
-                    {community && (
-                        <CommunityPane
-                            community={community}
-                            username={username}
-                        />
-                    )}
-                    {isBrowser &&
-                        !community &&
-                        !username && <SidebarNewUsers />}
-                    {isBrowser &&
-                        !community &&
-                        username && (
-                            <SidebarLinks username={username} topics={topics} />
-                        )}
+                    {community && <CommunityPane community={community} username={username} />}
+                    {isBrowser && !community && !username && <SidebarNewUsers />}
+                    {isBrowser && !community && username && <SidebarLinks username={username} topics={topics} />}
                     {false && !community && <Notices />}
                     {!community && <SteemMarket />}
                     {enableAds && (
                         <div className="sidebar-ad">
-                            <GptAd
-                                type="Freestar"
-                                id="bsa-zone_1566495004689-0_123456"
-                            />
+                            <GptAd type="Freestar" id="bsa-zone_1566495004689-0_123456" />
                         </div>
                     )}
                 </aside>
 
                 <aside className="c-sidebar c-sidebar--left">
-                    <Topics
-                        compact={false}
-                        username={username}
-                        subscriptions={subscriptions}
-                        topics={topics}
-                    />
+                    <Topics compact={false} username={username} subscriptions={subscriptions} topics={topics} />
                     {enableAds && (
                         <div>
                             <div className="sidebar-ad">
-                                <GptAd
-                                    type="Freestar"
-                                    slotName="bsa-zone_1566494461953-7_123456"
-                                />
+                                <GptAd type="Freestar" slotName="bsa-zone_1566494461953-7_123456" />
                             </div>
-                            <div
-                                className="sidebar-ad"
-                                style={{ marginTop: 20 }}
-                            >
-                                <GptAd
-                                    type="Freestar"
-                                    slotName="bsa-zone_1566494856923-9_123456"
-                                />
+                            <div className="sidebar-ad" style={{ marginTop: 20 }}>
+                                <GptAd type="Freestar" slotName="bsa-zone_1566494856923-9_123456" />
                             </div>
                         </div>
                     )}
@@ -123,24 +77,18 @@ class PostsIndexLayout extends React.Component {
 
 export default connect(
     (state, props) => {
-        const username =
-            state.user.getIn(['current', 'username']) ||
-            state.offchain.get('account');
+        const username = state.user.getIn(['current', 'username']) || state.offchain.get('account');
         return {
             blogmode: props.blogmode,
             enableAds: props.enableAds,
             community: state.global.getIn(['community', props.category], null),
-            subscriptions: state.global.getIn(
-                ['subscriptions', username],
-                null
-            ),
+            subscriptions: state.global.getIn(['subscriptions', username], null),
             topics: state.global.getIn(['topics'], List()),
             isBrowser: process.env.BROWSER,
             username,
         };
     },
-    dispatch => ({
-        getSubscriptions: account =>
-            dispatch(fetchDataSagaActions.getSubscriptions(account)),
+    (dispatch) => ({
+        getSubscriptions: (account) => dispatch(fetchDataSagaActions.getSubscriptions(account)),
     })
 )(PostsIndexLayout);

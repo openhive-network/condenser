@@ -12,13 +12,13 @@ class Coin extends Component {
 
     componentDidMount() {
         const node = ReactDOM.findDOMNode(this.refs.coin);
-        node.querySelectorAll('circle').forEach(circle => {
+        node.querySelectorAll('circle').forEach((circle) => {
             circle.setAttribute('r', '8');
             circle.style.fillOpacity = 0;
             circle.style.cursor = 'pointer';
             circle.addEventListener('mouseover', this.onPointMouseMove);
         });
-        node.querySelectorAll('polyline').forEach(circle => {
+        node.querySelectorAll('polyline').forEach((circle) => {
             circle.style.pointerEvents = 'none';
         });
         node.addEventListener('mouseout', this.onPointMouseOut);
@@ -26,7 +26,7 @@ class Coin extends Component {
 
     componentWillUnmount() {
         const node = ReactDOM.findDOMNode(this.refs.coin);
-        node.querySelectorAll('circle').forEach(circle => {
+        node.querySelectorAll('circle').forEach((circle) => {
             circle.removeEventListener('mouseover', this.onPointMouseMove);
         });
         node.removeEventListener('mouseout', this.onPointMouseOut);
@@ -39,9 +39,7 @@ class Coin extends Component {
         const symbol = coin.get('symbol');
         const timepoints = coin.get('timepoints');
         const priceUsd = timepoints.last().get('price_usd');
-        const pricesUsd = timepoints
-            .map(point => parseFloat(point.get('price_usd')))
-            .toJS();
+        const pricesUsd = timepoints.map((point) => parseFloat(point.get('price_usd'))).toJS();
         return (
             <div ref="coin" className="coin">
                 <div className="chart">
@@ -49,7 +47,7 @@ class Coin extends Component {
                         <SparklinesLine
                             color={color}
                             style={{ strokeWidth: 3.0 }}
-                            onMouseMove={e => {
+                            onMouseMove={(e) => {
                                 console.log(e);
                             }}
                         />
@@ -58,9 +56,7 @@ class Coin extends Component {
                 </div>
                 <div className="coin-label">
                     <span className="symbol">{symbol}</span>{' '}
-                    <span className="price">
-                        {parseFloat(priceUsd).toFixed(2)}
-                    </span>
+                    <span className="price">{parseFloat(priceUsd).toFixed(2)}</span>
                 </div>
             </div>
         );
@@ -106,12 +102,8 @@ class SteemMarket extends Component {
                     <div className="steem-market">
                         <Coin coin={steem} color="#09d6a8" />
                         <Coin coin={sbd} color="#09d6a8" />
-                        {topCoins.map(coin => (
-                            <Coin
-                                key={coin.get('name')}
-                                coin={coin}
-                                color="#788187"
-                            />
+                        {topCoins.map((coin) => (
+                            <Coin key={coin.get('name')} coin={coin} color="#788187" />
                         ))}
                     </div>
                 </div>
@@ -130,5 +122,5 @@ export default connect(
         };
     },
     // mapDispatchToProps
-    dispatch => ({})
+    (dispatch) => ({})
 )(SteemMarket);

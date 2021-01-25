@@ -13,9 +13,7 @@ describe('Memo', () => {
     });
 
     it('should render a plain ol memo', () => {
-        const wrapper = shallow(
-            <Memo fromNegativeRepUser={false} text={'hi dude'} />
-        );
+        const wrapper = shallow(<Memo fromNegativeRepUser={false} text={'hi dude'} />);
         expect(wrapper.html()).toEqual('<span class="Memo">hi dude</span>');
     });
 });

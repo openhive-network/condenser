@@ -26,12 +26,6 @@ export function isLoggedInWithKeychain() {
         return false;
     }
     const data = localStorage.getItem('autopost2');
-    const [
-        username,
-        password,
-        memoWif,
-        login_owner_pubkey,
-        login_with_keychain,
-    ] = extractLoginData(data);
+    const [username, password, memoWif, login_owner_pubkey, login_with_keychain] = extractLoginData(data);
     return !!login_with_keychain;
 }

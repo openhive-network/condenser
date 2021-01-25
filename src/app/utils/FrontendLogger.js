@@ -11,11 +11,7 @@ import { serverApiRecordEvent } from 'app/utils/ServerApiClient';
  */
 export default function frontendLogger(event) {
     if (window.$STM_csrf) {
-        const report = formatEventReport(
-            event,
-            window.location.href,
-            process.env.VERSION
-        );
+        const report = formatEventReport(event, window.location.href, process.env.VERSION);
         serverApiRecordEvent('client_error', report);
     }
 }
@@ -31,9 +27,7 @@ export default function frontendLogger(event) {
  */
 export function formatEventReport(event, href, version) {
     const trace =
-        typeof event.error === 'object' &&
-        event.error !== null &&
-        typeof event.error.stack === 'string'
+        typeof event.error === 'object' && event.error !== null && typeof event.error.stack === 'string'
             ? event.error.stack
             : false;
     return {

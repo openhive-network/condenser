@@ -35,7 +35,7 @@ export default class Reblog extends React.Component {
         }
     }
 
-    reblog = e => {
+    reblog = (e) => {
         e.preventDefault();
         if (this.state.active) return;
         this.setState({ loading: true });
@@ -75,14 +75,8 @@ export default class Reblog extends React.Component {
         const { author, permlink } = this.props;
 
         return (
-            <span
-                className={'Reblog__button Reblog__button-' + state + loading}
-            >
-                <a
-                    href="#"
-                    onClick={this.reblog}
-                    title={`${tt('g.reblog')} @${author}/${permlink}`}
-                >
+            <span className={'Reblog__button Reblog__button-' + state + loading}>
+                <a href="#" onClick={this.reblog} title={`${tt('g.reblog')} @${author}/${permlink}`}>
                     <Icon name="reblog" />
                 </a>
             </span>
@@ -91,19 +85,16 @@ export default class Reblog extends React.Component {
 }
 module.exports = connect(
     (state, ownProps) => {
-        const account =
-            state.user.getIn(['current', 'username']) ||
-            state.offchain.get('account');
+        const account = state.user.getIn(['current', 'username']) || state.offchain.get('account');
         return { ...ownProps, account };
     },
-    dispatch => ({
+    (dispatch) => ({
         reblog: (account, author, permlink, successCallback, errorCallback) => {
             const json = ['reblog', { account, author, permlink }];
             dispatch(
                 transactionActions.broadcastOperation({
                     type: 'custom_json',
-                    confirm:
-                        'This post will be added to your blog and shared with your followers.',
+                    confirm: 'This post will be added to your blog and shared with your followers.',
                     operation: {
                         id: 'follow',
                         required_posting_auths: [account],

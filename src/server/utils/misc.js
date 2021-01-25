@@ -2,15 +2,12 @@ import path from 'path';
 import fs from 'fs';
 
 function getRemoteIp(req) {
-    const remote_address =
-        req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-    const ip_match = remote_address
-        ? remote_address.match(/(\d+\.\d+\.\d+\.\d+)/)
-        : null;
+    const remote_address = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+    const ip_match = remote_address ? remote_address.match(/(\d+\.\d+\.\d+\.\d+)/) : null;
     return ip_match ? ip_match[1] : remote_address;
 }
 
-var ip_last_hit = new Map();
+const ip_last_hit = new Map();
 function rateLimitReq(ctx, req) {
     const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
     const now = Date.now();
@@ -45,12 +42,7 @@ function checkCSRF(ctx, csrf) {
     } catch (e) {
         ctx.status = 403;
         ctx.body = 'invalid csrf token';
-        console.log(
-            '-- invalid csrf token -->',
-            ctx.request.method,
-            ctx.request.url,
-            ctx.session.uid
-        );
+        console.log('-- invalid csrf token -->', ctx.request.method, ctx.request.url, ctx.session.uid);
         return false;
     }
     return true;
@@ -58,9 +50,7 @@ function checkCSRF(ctx, csrf) {
 
 function getSupportedLocales() {
     const locales = [];
-    const files = fs.readdirSync(
-        path.join(__dirname, '../../..', 'src/app/locales')
-    );
+    const files = fs.readdirSync(path.join(__dirname, '../../..', 'src/app/locales'));
     for (const filename of files) {
         const match_res = filename.match(/(\w+)\.json?$/);
         if (match_res) locales.push(match_res[1]);

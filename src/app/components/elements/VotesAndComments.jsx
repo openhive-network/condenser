@@ -19,22 +19,13 @@ class VotesAndComments extends React.Component {
 
     constructor(props) {
         super(props);
-        this.shouldComponentUpdate = shouldComponentUpdate(
-            this,
-            'VotesAndComments'
-        );
+        this.shouldComponentUpdate = shouldComponentUpdate(this, 'VotesAndComments');
     }
 
     render() {
         const { comments, commentsLink, totalVotes } = this.props;
-        let comments_tooltip = tt(
-            'votesandcomments_jsx.no_responses_yet_click_to_respond'
-        );
-        if (comments > 0)
-            comments_tooltip = tt(
-                'votesandcomments_jsx.response_count_tooltip',
-                { count: comments }
-            );
+        let comments_tooltip = tt('votesandcomments_jsx.no_responses_yet_click_to_respond');
+        if (comments > 0) comments_tooltip = tt('votesandcomments_jsx.response_count_tooltip', { count: comments });
 
         return (
             <span className="VotesAndComments">
@@ -44,20 +35,13 @@ class VotesAndComments extends React.Component {
                         count: totalVotes,
                     })}
                 >
-                    <Icon size="1x" name="chevron-up-circle" />&nbsp;{
-                        totalVotes
-                    }
+                    <Icon size="1x" name="chevron-up-circle" />
+                    &nbsp;{totalVotes}
                 </span>
-                <span
-                    className={
-                        'VotesAndComments__comments' +
-                        (comments === 0 ? ' no-comments' : '')
-                    }
-                >
+                <span className={'VotesAndComments__comments' + (comments === 0 ? ' no-comments' : '')}>
                     <Link to={commentsLink} title={comments_tooltip}>
-                        <Icon name={comments > 1 ? 'chatboxes' : 'chatbox'} />&nbsp;{
-                            comments
-                        }
+                        <Icon name={comments > 1 ? 'chatboxes' : 'chatbox'} />
+                        &nbsp;{comments}
                     </Link>
                 </span>
             </span>

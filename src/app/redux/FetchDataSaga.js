@@ -1,23 +1,13 @@
-import {
-    call,
-    put,
-    select,
-    fork,
-    takeLatest,
-    takeEvery,
-} from 'redux-saga/effects';
+import { call, put, select, fork, takeLatest, takeEvery } from 'redux-saga/effects';
 import { api } from '@hiveio/hive-js';
 import { loadFollows } from 'app/redux/FollowSaga';
+import { fromJS, Map, Set } from 'immutable';
+import { getStateAsync, callBridge } from 'app/utils/steemApi';
+import { fetchCrossPosts, augmentContentWithCrossPost } from 'app/utils/CrossPosts';
 import * as globalActions from './GlobalReducer';
 import * as appActions from './AppReducer';
 import * as transactionActions from './TransactionReducer';
 import constants from './constants';
-import { fromJS, Map, Set } from 'immutable';
-import { getStateAsync, callBridge } from 'app/utils/steemApi';
-import {
-    fetchCrossPosts,
-    augmentContentWithCrossPost,
-} from 'app/utils/CrossPosts';
 
 const REQUEST_DATA = 'fetchDataSaga/REQUEST_DATA';
 const FETCH_STATE = 'fetchDataSaga/FETCH_STATE';
@@ -26,8 +16,7 @@ const GET_COMMUNITY = 'fetchDataSaga/GET_COMMUNITY';
 const LIST_COMMUNITIES = 'fetchDataSaga/LIST_COMMUNITIES';
 const GET_SUBSCRIPTIONS = 'fetchDataSaga/GET_SUBSCRIPTIONS';
 const GET_ACCOUNT_NOTIFICATIONS = 'fetchDataSaga/GET_ACCOUNT_NOTIFICATIONS';
-const GET_UNREAD_ACCOUNT_NOTIFICATIONS =
-    'fetchDataSaga/GET_UNREAD_ACCOUNT_NOTIFICATIONS';
+const GET_UNREAD_ACCOUNT_NOTIFICATIONS = 'fetchDataSaga/GET_UNREAD_ACCOUNT_NOTIFICATIONS';
 const MARK_NOTIFICATIONS_AS_READ = 'fetchDataSaga/MARK_NOTIFICATIONS_AS_READ';
 const GET_REWARDS_DATA = 'fetchDataSaga/GET_REWARDS_DATA';
 
@@ -41,10 +30,7 @@ export const fetchDataWatches = [
     takeLatest(GET_SUBSCRIPTIONS, getSubscriptions),
     takeEvery(LIST_COMMUNITIES, listCommunities),
     takeEvery(GET_ACCOUNT_NOTIFICATIONS, getAccountNotifications),
-    takeEvery(
-        GET_UNREAD_ACCOUNT_NOTIFICATIONS,
-        getUnreadAccountNotificationsSaga
-    ),
+    takeEvery(GET_UNREAD_ACCOUNT_NOTIFICATIONS, getUnreadAccountNotificationsSaga),
     takeEvery(GET_REWARDS_DATA, getRewardsDataSaga),
     takeEvery(MARK_NOTIFICATIONS_AS_READ, markNotificationsAsReadSaga),
 ];
@@ -68,21 +54,14 @@ export function* fetchState(location_change_action) {
 
     // `ignore_fetch` case should only trigger on initial page load. No need to call
     // fetchState immediately after loading fresh state from the server. Details: #593
-    const server_location = yield select(state =>
-        state.offchain.get('server_location')
-    );
+    const server_location = yield select((state) => state.offchain.get('server_location'));
     const ignore_fetch = pathname === server_location && is_initial_state;
 
     if (ignore_fetch) {
         return;
     }
     is_initial_state = false;
-    if (
-        process.env.BROWSER &&
-        window &&
-        window.optimize &&
-        window.optimize.isInitialized
-    ) {
+    if (process.env.BROWSER && window && window.optimize && window.optimize.isInitialized) {
         window.optimize.refreshAll({ refresh: false });
     }
     const url = pathname;
@@ -91,9 +70,7 @@ export function* fetchState(location_change_action) {
     try {
         let username = null;
         if (process.env.BROWSER) {
-            [username] = yield select(state => [
-                state.user.getIn(['current', 'username']),
-            ]);
+            [username] = yield select((state) => [state.user.getIn(['current', 'username'])]);
         }
         const state = yield call(getStateAsync, url, username, false);
         yield put(globalActions.receiveState(state));
@@ -111,26 +88,18 @@ function* syncSpecialPosts() {
     if (!process.env.BROWSER) return null;
 
     // Get special posts from the store.
-    const specialPosts = yield select(state =>
-        state.offchain.get('special_posts')
-    );
+    const specialPosts = yield select((state) => state.offchain.get('special_posts'));
 
     // Mark seen featured posts.
-    const seenFeaturedPosts = specialPosts.get('featured_posts').map(post => {
+    const seenFeaturedPosts = specialPosts.get('featured_posts').map((post) => {
         const id = `${post.get('author')}/${post.get('permlink')}`;
-        return post.set(
-            'seen',
-            localStorage.getItem(`featured-post-seen:${id}`) === 'true'
-        );
+        return post.set('seen', localStorage.getItem(`featured-post-seen:${id}`) === 'true');
     });
 
     // Mark seen promoted posts.
-    const seenPromotedPosts = specialPosts.get('promoted_posts').map(post => {
+    const seenPromotedPosts = specialPosts.get('promoted_posts').map((post) => {
         const id = `${post.get('author')}/${post.get('permlink')}`;
-        return post.set(
-            'seen',
-            localStorage.getItem(`promoted-post-seen:${id}`) === 'true'
-        );
+        return post.set('seen', localStorage.getItem(`promoted-post-seen:${id}`) === 'true');
     });
 
     // Look up seen post URLs.
@@ -142,13 +111,13 @@ function* syncSpecialPosts() {
     );
 
     // Mark all featured posts as seen.
-    specialPosts.get('featured_posts').forEach(post => {
+    specialPosts.get('featured_posts').forEach((post) => {
         const id = `${post.get('author')}/${post.get('permlink')}`;
         localStorage.setItem(`featured-post-seen:${id}`, 'true');
     });
 
     // Mark all promoted posts as seen.
-    specialPosts.get('promoted_posts').forEach(post => {
+    specialPosts.get('promoted_posts').forEach((post) => {
         const id = `${post.get('author')}/${post.get('permlink')}`;
         localStorage.setItem(`promoted-post-seen:${id}`, 'true');
     });
@@ -193,7 +162,7 @@ export function* listCommunities(action) {
 export function* getCommunity(action) {
     if (!action.payload) throw 'no community specified';
 
-    const currentUser = yield select(state => state.user.get('current'));
+    const currentUser = yield select((state) => state.user.get('current'));
     const currentUsername = currentUser && currentUser.get('username');
 
     // TODO: If no current user is logged in, skip the observer param.
@@ -245,17 +214,10 @@ export function* getAccountNotifications(action) {
     if (!action.payload) throw 'no account specified';
     yield put(globalActions.notificationsLoading(true));
     try {
-        const notifications = yield call(
-            callBridge,
-            'account_notifications',
-            action.payload
-        );
+        const notifications = yield call(callBridge, 'account_notifications', action.payload);
 
         if (notifications && notifications.error) {
-            console.error(
-                '~~ Saga getAccountNotifications error ~~>',
-                notifications.error
-            );
+            console.error('~~ Saga getAccountNotifications error ~~>', notifications.error);
             yield put(appActions.steemApiError(notifications.error.message));
         } else {
             const limit = action.payload.limit ? action.payload.limit : 100;
@@ -285,19 +247,10 @@ export function* getUnreadAccountNotificationsSaga(action) {
     if (!action.payload) throw 'no account specified';
     yield put(globalActions.notificationsLoading(true));
     try {
-        const unreadNotifications = yield call(
-            callBridge,
-            'unread_notifications',
-            action.payload
-        );
+        const unreadNotifications = yield call(callBridge, 'unread_notifications', action.payload);
         if (unreadNotifications && unreadNotifications.error) {
-            console.error(
-                '~~ Saga getUnreadAccountNotifications error ~~>',
-                unreadNotifications.error
-            );
-            yield put(
-                appActions.steemApiError(unreadNotifications.error.message)
-            );
+            console.error('~~ Saga getUnreadAccountNotifications error ~~>', unreadNotifications.error);
+            yield put(appActions.steemApiError(unreadNotifications.error.message));
         } else {
             yield put(
                 globalActions.receiveUnreadNotifications({
@@ -330,9 +283,7 @@ export function* markNotificationsAsReadSaga(action) {
                     successCallback(username, timeNow);
                 },
                 errorCallback: () => {
-                    console.log(
-                        'There was an error marking notifications as read!'
-                    );
+                    console.log('There was an error marking notifications as read!');
                     globalActions.notificationsLoading(false);
                 },
             })
@@ -396,16 +347,8 @@ export function* fetchData(action) {
                         const contentKey = keys[ki];
                         let post = content[contentKey];
 
-                        if (
-                            Object.prototype.hasOwnProperty.call(
-                                post,
-                                'cross_post_key'
-                            )
-                        ) {
-                            post = augmentContentWithCrossPost(
-                                post,
-                                crossPosts[post.cross_post_key]
-                            );
+                        if (Object.prototype.hasOwnProperty.call(post, 'cross_post_key')) {
+                            post = augmentContentWithCrossPost(post, crossPosts[post.cross_post_key]);
                         }
 
                         data.push(post);
@@ -428,14 +371,9 @@ export function* fetchData(action) {
 
             // Still return all data but only count ones matching the filter.
             // Rely on UI to actually hide the posts.
-            fetched += postFilter
-                ? data.filter(postFilter).length
-                : data.length;
+            fetched += postFilter ? data.filter(postFilter).length : data.length;
 
-            fetchDone =
-                endOfData ||
-                fetchLimitReached ||
-                fetched >= constants.FETCH_DATA_BATCH_SIZE;
+            fetchDone = endOfData || fetchLimitReached || fetched >= constants.FETCH_DATA_BATCH_SIZE;
 
             yield put(
                 globalActions.receiveData({
@@ -460,9 +398,7 @@ export function* fetchData(action) {
     @arg {string} url
     @arg {object} body (for JSON.stringify)
 */
-function* fetchJson({
-    payload: { id, url, body, successCallback, skipLoading = false },
-}) {
+function* fetchJson({ payload: { id, url, body, successCallback, skipLoading = false } }) {
     try {
         const payload = {
             method: body ? 'POST' : 'GET',
@@ -472,9 +408,7 @@ function* fetchJson({
             },
             body: body ? JSON.stringify(body) : undefined,
         };
-        let result = yield skipLoading
-            ? fetch(url, payload)
-            : call(fetch, url, payload);
+        let result = yield skipLoading ? fetch(url, payload) : call(fetch, url, payload);
         result = yield result.json();
         if (successCallback) result = successCallback(result);
         yield put(globalActions.fetchJsonResult({ id, result }));
@@ -488,10 +422,7 @@ export function* getRewardsDataSaga(action) {
     try {
         const rewards = yield call(callBridge, 'get_payout_stats', {});
         if (rewards && rewards.error) {
-            console.error(
-                '~~ Saga getRewardsDataSaga error ~~>',
-                rewards.error
-            );
+            console.error('~~ Saga getRewardsDataSaga error ~~>', rewards.error);
             yield put(appActions.steemApiError(rewards.error.message));
         } else {
             yield put(globalActions.receiveRewards({ rewards }));
@@ -505,54 +436,54 @@ export function* getRewardsDataSaga(action) {
 
 // Action creators
 export const actions = {
-    listCommunities: payload => ({
+    listCommunities: (payload) => ({
         type: LIST_COMMUNITIES,
         payload,
     }),
 
-    getCommunity: payload => {
+    getCommunity: (payload) => {
         return {
             type: GET_COMMUNITY,
             payload,
         };
     },
 
-    getSubscriptions: payload => ({
+    getSubscriptions: (payload) => ({
         type: GET_SUBSCRIPTIONS,
         payload,
     }),
 
-    getAccountNotifications: payload => ({
+    getAccountNotifications: (payload) => ({
         type: GET_ACCOUNT_NOTIFICATIONS,
         payload,
     }),
 
-    getUnreadAccountNotifications: payload => ({
+    getUnreadAccountNotifications: (payload) => ({
         type: GET_UNREAD_ACCOUNT_NOTIFICATIONS,
         payload,
     }),
 
-    markNotificationsAsRead: payload => ({
+    markNotificationsAsRead: (payload) => ({
         type: MARK_NOTIFICATIONS_AS_READ,
         payload,
     }),
 
-    requestData: payload => ({
+    requestData: (payload) => ({
         type: REQUEST_DATA,
         payload,
     }),
 
-    getPostHeader: payload => ({
+    getPostHeader: (payload) => ({
         type: GET_POST_HEADER,
         payload,
     }),
 
-    fetchState: payload => ({
+    fetchState: (payload) => ({
         type: FETCH_STATE,
         payload,
     }),
 
-    getRewardsData: payload => ({
+    getRewardsData: (payload) => ({
         type: GET_REWARDS_DATA,
         payload,
     }),

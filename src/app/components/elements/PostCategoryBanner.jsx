@@ -23,16 +23,12 @@ class PostCategoryBanner extends React.Component {
     render() {
         const { username, community, disabledCommunity } = this.props;
         const url = community ? '/trending/' + community.get('name') : null;
-        const label = community ? (
-            <Link to={url}>{community.get('title')}</Link>
-        ) : (
-            `@${username}'s blog`
-        );
-        const onClick = e => {
+        const label = community ? <Link to={url}>{community.get('title')}</Link> : `@${username}'s blog`;
+        const onClick = (e) => {
             e.preventDefault();
             this.props.onCancel();
         };
-        const onUndo = e => {
+        const onUndo = (e) => {
             e.preventDefault();
             this.props.onUndo(disabledCommunity);
         };
@@ -78,15 +74,12 @@ export default connect(
         const username = state.user.getIn(['current', 'username'], null);
         return {
             ...ownProps,
-            community: state.global.getIn(
-                ['community', ownProps.communityName],
-                null
-            ),
+            community: state.global.getIn(['community', ownProps.communityName], null),
             username,
         };
     },
-    dispatch => ({
-        getCommunity: communityName => {
+    (dispatch) => ({
+        getCommunity: (communityName) => {
             return dispatch(fetchDataSagaActions.getCommunity(communityName));
         },
     })

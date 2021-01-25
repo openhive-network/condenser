@@ -39,7 +39,7 @@ const mockActions = {
     },
 };
 
-const key = mockPayloads.addNotification.key;
+const { key } = mockPayloads.addNotification;
 const mockNotification = OrderedMap({
     [key]: {
         action: 'missing translation: en.g.dismiss',
@@ -55,11 +55,9 @@ describe('App reducer', () => {
     });
     it('should return correct state for a LOCATION_CHANGE action', () => {
         const initial = reducer();
-        const actual = reducer(initial, mockActions['LOCATION_CHANGE']);
+        const actual = reducer(initial, mockActions.LOCATION_CHANGE);
         const out = actual.get('location');
-        expect(out.pathname).toEqual(
-            mockActions['LOCATION_CHANGE'].payload.pathname
-        );
+        expect(out.pathname).toEqual(mockActions.LOCATION_CHANGE.payload.pathname);
     });
     it('should return correct state for a STEEM_API_ERROR action', () => {
         const initial = reducer();
@@ -80,48 +78,36 @@ describe('App reducer', () => {
     });
     it('should return correct state for a ADD_NOTIFICATION action', () => {
         const initial = reducer();
-        const actual = reducer(
-            initial,
-            addNotification(mockPayloads.addNotification)
-        );
+        const actual = reducer(initial, addNotification(mockPayloads.addNotification));
         const out = actual.getIn(['notifications', key]);
         expect(out).toEqual(mockNotification.get(key));
     });
     it('should return correct state for a REMOVE_NOTIFICATION action', () => {
         const initial = reducer();
-        const initialWithNotification = initial.set(
-            'notifications',
-            mockNotification
-        );
-        const actual = reducer(
-            initialWithNotification,
-            removeNotification(mockPayloads.removeNotification)
-        );
+        const initialWithNotification = initial.set('notifications', mockNotification);
+        const actual = reducer(initialWithNotification, removeNotification(mockPayloads.removeNotification));
         const out = actual.get('notifications');
         const expected = OrderedMap();
         expect(out).toEqual(expected);
     });
     it('should return correct state for a SET_USER_PREFERENCES action', () => {
         const initial = reducer();
-        let actual = reducer(
-            initial,
-            setUserPreferences(mockPayloads.setUserPreferences)
-        );
-        let out = actual.get('user_preferences');
-        let expected = Map({ cat: 'mymy', dog: 'polly' });
+        const actual = reducer(initial, setUserPreferences(mockPayloads.setUserPreferences));
+        const out = actual.get('user_preferences');
+        const expected = Map({ cat: 'mymy', dog: 'polly' });
         expect(out).toEqual(expected);
     });
     it('should return correct state for a TOGGLE_NIGHTMODE action', () => {
         const initial = reducer();
         const before = initial.getIn(['user_preferences', 'nightmode']);
-        let actual = reducer(initial, toggleNightmode());
+        const actual = reducer(initial, toggleNightmode());
         const after = actual.getIn(['user_preferences', 'nightmode']);
         expect(after).toEqual(!before);
     });
     it('should return correct state for a TOGGLE_BLOGMODE action', () => {
         const initial = reducer();
         const before = initial.getIn(['user_preferences', 'blogmode']);
-        let actual = reducer(initial, toggleBlogmode());
+        const actual = reducer(initial, toggleBlogmode());
         const after = actual.getIn(['user_preferences', 'blogmode']);
         expect(after).toEqual(!before);
     });
@@ -144,12 +130,8 @@ describe('App reducer', () => {
         );
 
         // Assert
-        expect(selectors.getFeatureFlag(withMoreFlags, 'swimming')).toEqual(
-            false
-        );
+        expect(selectors.getFeatureFlag(withMoreFlags, 'swimming')).toEqual(false);
         expect(selectors.getFeatureFlag(withMoreFlags, 'flying')).toEqual(true);
-        expect(selectors.getFeatureFlag(withMoreFlags, 'dancing')).toEqual(
-            false
-        );
+        expect(selectors.getFeatureFlag(withMoreFlags, 'dancing')).toEqual(false);
     });
 });

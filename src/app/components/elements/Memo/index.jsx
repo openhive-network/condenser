@@ -38,20 +38,14 @@ export class Memo extends React.Component {
         }
     }
 
-    onRevealMemo = e => {
+    onRevealMemo = (e) => {
         e.preventDefault();
         this.setState({ revealMemo: true });
     };
 
     render() {
         const { decodeMemo } = this;
-        const {
-            memo_private,
-            text,
-            myAccount,
-            fromAccount,
-            fromNegativeRepUser,
-        } = this.props;
+        const { memo_private, text, myAccount, fromAccount, fromNegativeRepUser } = this.props;
         const isEncoded = /^#/.test(text);
 
         const isFromBadActor = BadActorList.indexOf(fromAccount) > -1;
@@ -70,9 +64,7 @@ export class Memo extends React.Component {
         if (!isEncoded) {
             renderText = text;
         } else if (memo_private) {
-            renderText = myAccount
-                ? decodeMemo(memo_private, text)
-                : tt('g.login_to_see_memo');
+            renderText = myAccount ? decodeMemo(memo_private, text) : tt('g.login_to_see_memo');
         }
 
         return <span className={classes}>{renderText}</span>;
@@ -81,15 +73,9 @@ export class Memo extends React.Component {
 
 export default connect((state, ownProps) => {
     const currentUser = state.user.get('current');
-    const myAccount =
-        currentUser && ownProps.username === currentUser.get('username');
-    const memo_private =
-        myAccount && currentUser
-            ? currentUser.getIn(['private_keys', 'memo_private'])
-            : null;
+    const myAccount = currentUser && ownProps.username === currentUser.get('username');
+    const memo_private = myAccount && currentUser ? currentUser.getIn(['private_keys', 'memo_private']) : null;
     const fromNegativeRepUser =
-        repLog10(
-            state.global.getIn(['accounts', ownProps.fromAccount, 'reputation'])
-        ) < MINIMUM_REPUTATION;
+        repLog10(state.global.getIn(['accounts', ownProps.fromAccount, 'reputation'])) < MINIMUM_REPUTATION;
     return { ...ownProps, memo_private, myAccount, fromNegativeRepUser };
 })(Memo);

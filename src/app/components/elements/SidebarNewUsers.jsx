@@ -14,7 +14,8 @@ const SidebarNewUsers = ({ walletUrl }) => {
             return (
                 <li key={ix} className={'c-sidebar__item'}>
                     <a href={i.link} target="_blank" rel="noopener noreferrer">
-                        {i.label}&nbsp;<Icon name="extlink" />
+                        {i.label}&nbsp;
+                        <Icon name="extlink" />
                     </a>
                 </li>
             );

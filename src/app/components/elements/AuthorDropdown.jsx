@@ -24,12 +24,7 @@ class AuthorDropdown extends Component {
 
         if (simple) {
             return (
-                <span
-                    className="author"
-                    itemProp="author"
-                    itemScope
-                    itemType="http://schema.org/Person"
-                >
+                <span className="author" itemProp="author" itemScope itemType="http://schema.org/Person">
                     <Link to={'/@' + author}>
                         <strong>{author}</strong>
                     </Link>{' '}
@@ -38,13 +33,9 @@ class AuthorDropdown extends Component {
             );
         }
 
-        const { name, about } = profile
-            ? profile.getIn(['metadata', 'profile']).toJS()
-            : {};
+        const { name, about } = profile ? profile.getIn(['metadata', 'profile']).toJS() : {};
 
-        const { following, followers, sp, rank } = profile
-            ? profile.getIn(['stats']).toJS()
-            : {};
+        const { following, followers, sp, rank } = profile ? profile.getIn(['stats']).toJS() : {};
 
         const { created, active } = profile ? profile.toJS() : {};
 
@@ -52,9 +43,7 @@ class AuthorDropdown extends Component {
         let unit;
         if (sp > 10000) {
             spv = numberWithCommas((sp / 1000.0).toFixed(0));
-            unit = (
-                <small style={{ fontWeight: 'bold', color: '#444' }}>K</small>
-            );
+            unit = <small style={{ fontWeight: 'bold', color: '#444' }}>K</small>;
         } else {
             spv = numberWithCommas(sp);
         }
@@ -106,27 +95,23 @@ class AuthorDropdown extends Component {
                             </div>
                             <div className="columns small-4">
                                 {spv}
-                                {unit} HP<br />
-                                <small>
-                                    {rank > 0
-                                        ? `#${numberWithCommas(rank)}`
-                                        : ''}
-                                </small>
+                                {unit} HP
+                                <br />
+                                <small>{rank > 0 ? `#${numberWithCommas(rank)}` : ''}</small>
                             </div>
                         </div>
                     )}
                     {<div className="Author__bio">{about}</div>}
                     {profile && (
                         <div style={{ fontSize: '0.8em', textAlign: 'center' }}>
-                            <DateJoinWrapper date={created} /> &bull; last seen{' '}
-                            <TimeAgoWrapper date={active} />
+                            <DateJoinWrapper date={created} /> &bull; last seen <TimeAgoWrapper date={active} />
                         </div>
                     )}
                     {blacklists && (
                         <div>
                             <br />
                             <strong>Blacklists</strong>
-                            {blacklists.map(item => (
+                            {blacklists.map((item) => (
                                 <div key={item}>❗️ {item}</div>
                             ))}
                         </div>
@@ -152,11 +137,9 @@ export default connect(
             profile: state.userProfiles.getIn(['profiles', author]),
         };
     },
-    dispatch => ({
+    (dispatch) => ({
         fetchProfile: (account, observer = null) => {
-            dispatch(
-                UserProfilesSagaActions.fetchProfile({ account, observer })
-            );
+            dispatch(UserProfilesSagaActions.fetchProfile({ account, observer }));
         },
     })
 )(AuthorDropdown);

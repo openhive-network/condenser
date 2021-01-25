@@ -12,7 +12,7 @@ class SubscribeButton extends React.Component {
         this.state = { loading: false };
     }
 
-    onClick = e => {
+    onClick = (e) => {
         e.preventDefault();
         const { subscribed, username } = this.props;
         const community = this.props.community.get('name');
@@ -49,9 +49,7 @@ class SubscribeButton extends React.Component {
                     display: this.props.display || 'inline-block',
                 }}
             >
-                <span>
-                    {loading ? loader : subscribed ? 'Joined' : 'Subscribe'}
-                </span>
+                <span>{loading ? loader : subscribed ? 'Joined' : 'Subscribe'}</span>
             </a>
         );
     }
@@ -68,27 +66,15 @@ export default connect(
         return {
             ...ownProps,
             username: state.user.getIn(['current', 'username']),
-            subscribed: state.global.getIn(
-                ['community', ownProps.community, 'context', 'subscribed'],
-                false
-            ),
-            community: state.global.getIn(
-                ['community', ownProps.community],
-                {}
-            ),
+            subscribed: state.global.getIn(['community', ownProps.community, 'context', 'subscribed'], false),
+            community: state.global.getIn(['community', ownProps.community], {}),
         };
     },
-    dispatch => ({
+    (dispatch) => ({
         stateSet: (key, value) => {
             dispatch(globalActions.set({ key, value }));
         },
-        toggleSubscribe: (
-            subscribeToCommunity,
-            community,
-            account,
-            successCallback,
-            errorCallback
-        ) => {
+        toggleSubscribe: (subscribeToCommunity, community, account, successCallback, errorCallback) => {
             let action = 'unsubscribe';
             if (subscribeToCommunity) action = 'subscribe';
             const payload = [

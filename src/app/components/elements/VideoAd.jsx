@@ -38,9 +38,7 @@ VideoAd.defaultProps = {};
 
 export default connect(
     (state, props) => {
-        const enabled =
-            !!state.app.getIn(['googleAds', 'videoAdsEnabled']) &&
-            !!process.env.BROWSER;
+        const enabled = !!state.app.getIn(['googleAds', 'videoAdsEnabled']) && !!process.env.BROWSER;
 
         return {
             enabled,
@@ -48,5 +46,5 @@ export default connect(
             ...props,
         };
     },
-    dispatch => ({})
+    (dispatch) => ({})
 )(VideoAd);

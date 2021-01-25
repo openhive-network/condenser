@@ -3,10 +3,7 @@ import React, { Component } from 'react';
 class ServerError extends Component {
     render() {
         return (
-            <div
-                className="float-center"
-                style={{ width: '640px', textAlign: 'center' }}
-            >
+            <div className="float-center" style={{ width: '640px', textAlign: 'center' }}>
                 <img width="640px" height="480px" src="/images/500.jpg" />
                 <div
                     style={{

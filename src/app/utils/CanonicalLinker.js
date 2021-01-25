@@ -1,19 +1,13 @@
 import Apps from '@hiveio/hivescript/apps.json';
 
 function read_md_app(metadata) {
-    return metadata &&
-        metadata.app &&
-        typeof metadata.app === 'string' &&
-        metadata.app.split('/').length === 2
+    return metadata && metadata.app && typeof metadata.app === 'string' && metadata.app.split('/').length === 2
         ? metadata.app.split('/')[0]
         : null;
 }
 
 function read_md_canonical(metadata) {
-    const url =
-        metadata.canonical_url && typeof metadata.canonical_url === 'string'
-            ? metadata.canonical_url
-            : null;
+    const url = metadata.canonical_url && typeof metadata.canonical_url === 'string' ? metadata.canonical_url : null;
 
     const saneUrl = new RegExp(/^https?:\/\//);
     return saneUrl.test(url) ? url : null;
@@ -41,7 +35,7 @@ function allowed_app(app) {
         'ecency',
         'steempeak',
         'travelfeed',
-        'leofinance'
+        'leofinance',
     ];
     return whitelist.includes(app);
 }
@@ -60,6 +54,6 @@ export function makeCanonicalLink(post, metadata) {
         }
     }
 
-    if (!scheme) scheme = Apps['hiveblog'].url_scheme;
+    if (!scheme) scheme = Apps.hiveblog.url_scheme;
     return build_scheme(scheme, post);
 }

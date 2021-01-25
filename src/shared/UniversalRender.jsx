@@ -5,13 +5,7 @@ import Iso from 'iso';
 import React from 'react';
 import { render } from 'react-dom';
 import { renderToString } from 'react-dom/server';
-import {
-    Router,
-    RouterContext,
-    match,
-    applyRouterMiddleware,
-    browserHistory,
-} from 'react-router';
+import { Router, RouterContext, match, applyRouterMiddleware, browserHistory } from 'react-router';
 import { Provider } from 'react-redux';
 import { api } from '@hiveio/hive-js';
 
@@ -40,7 +34,7 @@ if (process.env.OFFLINE_SSR_TEST) {
     get_content_perf = require(uri + testDataDir + '/get_content');
 }
 
-const calcOffsetRoot = startEl => {
+const calcOffsetRoot = (startEl) => {
     let offset = 0;
     let el = startEl;
     while (el) {
@@ -88,8 +82,7 @@ const SCROLL_DIRECTION_DOWN = 'down';
  * If an element with this id is present, the page does not want us to detect navigation history direction (clicking links/forward button or back button)
  * @type {string}
  */
-const DISABLE_ROUTER_HISTORY_NAV_DIRECTION_EL_ID =
-    'disable_router_nav_history_direction_check';
+const DISABLE_ROUTER_HISTORY_NAV_DIRECTION_EL_ID = 'disable_router_nav_history_direction_check';
 
 let scrollTopTimeout = null;
 
@@ -117,15 +110,13 @@ const scrollTop = (el, topOffset, prevDocumentInfo, triesRemaining) => {
     //NOR has the document changed in a meaningful way since we last looked at it
     if (prevDocumentInfo.direction === SCROLL_DIRECTION_DOWN) {
         doScroll =
-            prevDocumentInfo.scrollTop <=
-                documentInfo.scrollTop + SCROLL_FUDGE_PIXELS &&
+            prevDocumentInfo.scrollTop <= documentInfo.scrollTop + SCROLL_FUDGE_PIXELS &&
             (documentInfo.scrollTop < documentInfo.scrollTarget ||
                 prevDocumentInfo.scrollTarget < documentInfo.scrollTarget ||
                 prevDocumentInfo.scrollHeight < documentInfo.scrollHeight);
     } else if (prevDocumentInfo.direction === SCROLL_DIRECTION_UP) {
         doScroll =
-            prevDocumentInfo.scrollTop >=
-                documentInfo.scrollTop - SCROLL_FUDGE_PIXELS &&
+            prevDocumentInfo.scrollTop >= documentInfo.scrollTop - SCROLL_FUDGE_PIXELS &&
             (documentInfo.scrollTop > documentInfo.scrollTarget ||
                 prevDocumentInfo.scrollTarget > documentInfo.scrollTarget ||
                 prevDocumentInfo.scrollHeight > documentInfo.scrollHeight);
@@ -135,8 +126,7 @@ const scrollTop = (el, topOffset, prevDocumentInfo, triesRemaining) => {
         window.scrollTo(0, documentInfo.scrollTarget);
         if (triesRemaining > 0) {
             scrollTopTimeout = setTimeout(
-                () =>
-                    scrollTop(el, topOffset, documentInfo, triesRemaining - 1),
+                () => scrollTop(el, topOffset, documentInfo, triesRemaining - 1),
                 SCROLL_TOP_DELAY_MS
             );
         }
@@ -181,9 +171,7 @@ class OffsetScrollBehavior extends ScrollBehavior {
                 scrollTarget: calcOffsetRoot(el) + topOffset,
             };
             documentInfo.direction =
-                documentInfo.scrollTop < documentInfo.scrollTarget
-                    ? SCROLL_DIRECTION_DOWN
-                    : SCROLL_DIRECTION_UP;
+                documentInfo.scrollTop < documentInfo.scrollTarget ? SCROLL_DIRECTION_DOWN : SCROLL_DIRECTION_UP;
             scrollTop(el, topOffset, documentInfo, SCROLL_TOP_TRIES); //this function does the actual work of scrolling.
         } else {
             super.scrollToTarget(element, newTarget);
@@ -192,7 +180,7 @@ class OffsetScrollBehavior extends ScrollBehavior {
 }
 //END: SCROLL CODE
 
-const bindMiddleware = middleware => {
+const bindMiddleware = (middleware) => {
     if (process.env.BROWSER && process.env.NODE_ENV === 'development') {
         const { composeWithDevTools } = require('redux-devtools-extension');
         return composeWithDevTools(applyMiddleware(...middleware));
@@ -201,12 +189,10 @@ const bindMiddleware = middleware => {
 };
 
 const runRouter = (location, routes) => {
-    return new Promise(resolve =>
-        match({ routes, location }, (...args) => resolve(args))
-    );
+    return new Promise((resolve) => match({ routes, location }, (...args) => resolve(args)));
 };
 
-const onRouterError = error => {
+const onRouterError = (error) => {
     console.error('onRouterError', error);
 };
 
@@ -220,14 +206,7 @@ const onRouterError = error => {
  * @param {RequestTimer} requestTimer
  * @returns promise
  */
-export async function serverRender(
-    location,
-    initialState,
-    ErrorPage,
-    userPreferences,
-    offchain,
-    requestTimer
-) {
+export async function serverRender(location, initialState, ErrorPage, userPreferences, offchain, requestTimer) {
     let error, redirect, renderProps;
 
     try {
@@ -237,9 +216,7 @@ export async function serverRender(
         return {
             title: 'Routing error - Hive',
             statusCode: 500,
-            body: renderToString(
-                ErrorPage ? <ErrorPage /> : <span>Routing error</span>
-            ),
+            body: renderToString(ErrorPage ? <ErrorPage /> : <span>Routing error</span>),
         };
     }
 
@@ -262,10 +239,7 @@ export async function serverRender(
 
         // If a user profile URL is requested but no profile information is
         // included in the API response, return User Not Found.
-        if (
-            url.match(routeRegex.UserProfile) &&
-            Object.getOwnPropertyNames(onchain.profiles).length === 0
-        ) {
+        if (url.match(routeRegex.UserProfile) && Object.getOwnPropertyNames(onchain.profiles).length === 0) {
             // protect for invalid account
             return {
                 title: 'User Not Found - Hive',
@@ -281,10 +255,7 @@ export async function serverRender(
             }
         }
         // Are we loading an un-category-aliased post?
-        if (
-            !url.match(routeRegex.UserProfile) &&
-            url.match(routeRegex.PostNoCategory)
-        ) {
+        if (!url.match(routeRegex.UserProfile) && url.match(routeRegex.PostNoCategory)) {
             let header;
             if (process.env.OFFLINE_SSR_TEST) {
                 header = get_content_perf;
@@ -308,11 +279,11 @@ export async function serverRender(
 
         // Insert the special posts into the list of posts, so there is no
         // jumping of content.
-        offchain.special_posts.featured_posts.forEach(post => {
+        offchain.special_posts.featured_posts.forEach((post) => {
             onchain.content[`${post.author}/${post.permlink}`] = post;
         });
 
-        offchain.special_posts.promoted_posts.forEach(post => {
+        offchain.special_posts.promoted_posts.forEach((post) => {
             onchain.content[`${post.author}/${post.permlink}`] = post;
         });
 
@@ -388,11 +359,7 @@ export async function serverRender(
  */
 export function clientRender(initialState) {
     const sagaMiddleware = createSagaMiddleware();
-    const store = createStore(
-        rootReducer,
-        initialState,
-        bindMiddleware([sagaMiddleware])
-    );
+    const store = createStore(rootReducer, initialState, bindMiddleware([sagaMiddleware]));
     sagaMiddleware.run(rootSaga);
     const history = syncHistoryWithStore(browserHistory, store);
 
@@ -400,15 +367,13 @@ export function clientRender(initialState) {
      * When to scroll - on hash link navigation determine if the page should scroll to that element (forward nav, or ignore nav direction)
      */
     const scroll = useScroll({
-        createScrollBehavior: config => new OffsetScrollBehavior(config), //information assembler for has scrolling.
+        createScrollBehavior: (config) => new OffsetScrollBehavior(config), //information assembler for has scrolling.
         shouldUpdateScroll: (prevLocation, { location }) => {
             // eslint-disable-line no-shadow
             //if there is a hash, we may want to scroll to it
             if (location.hash) {
                 //if disableNavDirectionCheck exists, we want to always navigate to the hash (the page is telling us that's desired behavior based on the element's existence
-                const disableNavDirectionCheck = document.getElementById(
-                    DISABLE_ROUTER_HISTORY_NAV_DIRECTION_EL_ID
-                );
+                const disableNavDirectionCheck = document.getElementById(DISABLE_ROUTER_HISTORY_NAV_DIRECTION_EL_ID);
                 //we want to navigate to the corresponding id=<hash> element on 'PUSH' navigation (prev null + POP is a new window url nav ~= 'PUSH')
                 if (
                     disableNavDirectionCheck ||
@@ -423,11 +388,7 @@ export function clientRender(initialState) {
     });
 
     if (process.env.NODE_ENV === 'production') {
-        console.log(
-            '%c%s',
-            'color: red; background: yellow; font-size: 24px;',
-            'WARNING!'
-        );
+        console.log('%c%s', 'color: red; background: yellow; font-size: 24px;', 'WARNING!');
         console.log(
             '%c%s',
             'color: black; font-size: 16px;',

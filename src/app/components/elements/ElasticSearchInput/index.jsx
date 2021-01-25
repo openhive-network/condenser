@@ -29,7 +29,7 @@ class ElasticSearchInput extends React.Component {
         this.setState({ value: event.target.value });
     }
 
-    onSearchSubmit = e => {
+    onSearchSubmit = (e) => {
         e.preventDefault();
         const { handleSubmit, redirect } = this.props;
         handleSubmit && handleSubmit(this.state.value);
@@ -37,9 +37,7 @@ class ElasticSearchInput extends React.Component {
     };
 
     render() {
-        const formClass = this.props.expanded
-            ? 'search-input--expanded'
-            : 'search-input';
+        const formClass = this.props.expanded ? 'search-input--expanded' : 'search-input';
         return (
             <span>
                 <form className={formClass} onSubmit={this.onSearchSubmit}>

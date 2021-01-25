@@ -5,19 +5,10 @@
     @arg {object} initialValues required for checkboxes {save: false, ...}
     @arg {function} validation - values => ({ username: ! values.username ? 'Required' : null, ... })
 */
-export default function reactForm({
-    name,
-    instance,
-    fields,
-    initialValues,
-    validation = () => {},
-}) {
-    if (typeof instance !== 'object')
-        throw new TypeError('instance is a required object');
-    if (!Array.isArray(fields))
-        throw new TypeError('fields is a required array');
-    if (typeof initialValues !== 'object')
-        throw new TypeError('initialValues is a required object');
+export default function reactForm({ name, instance, fields, initialValues, validation = () => {} }) {
+    if (typeof instance !== 'object') throw new TypeError('instance is a required object');
+    if (!Array.isArray(fields)) throw new TypeError('fields is a required array');
+    if (typeof initialValues !== 'object') throw new TypeError('initialValues is a required object');
 
     // Give API users access to this.props, this.state, this.etc..
     validation = validation.bind(instance);
@@ -25,7 +16,7 @@ export default function reactForm({
     const formState = (instance.state = instance.state || {});
     formState[name] = {
         // validate: () => setFormState(instance, fields, validation),
-        handleSubmit: submitCallback => event => {
+        handleSubmit: (submitCallback) => (event) => {
             event.preventDefault();
             const { valid } = setFormState(name, instance, fields, validation);
             if (!valid) return;
@@ -42,8 +33,7 @@ export default function reactForm({
 
             instance.setState({ [name]: fs }, () => {
                 // TODO, support promise ret
-                const ret =
-                    submitCallback({ data, event, updateInitialValues }) || {};
+                const ret = submitCallback({ data, event, updateInitialValues }) || {};
                 // Look for field level errors
                 for (const fieldName of Object.keys(ret)) {
                     const error = ret[fieldName];
@@ -103,7 +93,7 @@ export default function reactForm({
             }
         }
 
-        fs.props.onChange = e => {
+        fs.props.onChange = (e) => {
             const value = e && e.target ? e.target.value : e; // API may pass value directly
             const v = { ...(instance.state[fieldName] || {}) };
             const initialValue = initialValues[fieldName];
@@ -194,9 +184,6 @@ function n(field) {
     return name;
 }
 
-const hasValue = v =>
-    v == null
-        ? false
-        : (typeof v === 'string' ? v.trim() : v) === '' ? false : true;
-const toString = v => (hasValue(v) ? v : '');
-const toBoolean = v => (hasValue(v) ? JSON.parse(v) : '');
+const hasValue = (v) => (v == null ? false : (typeof v === 'string' ? v.trim() : v) === '' ? false : true);
+const toString = (v) => (hasValue(v) ? v : '');
+const toBoolean = (v) => (hasValue(v) ? JSON.parse(v) : '');

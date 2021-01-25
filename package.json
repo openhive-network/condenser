@@ -12,8 +12,8 @@
     "test": "jest",
     "eslint": "LIST=`git diff-index --name-only HEAD | grep .*\\.js | grep -v json`; if [ \"$LIST\" ]; then eslint $LIST; fi",
     "ci:test": "jest --coverage",
-    "ci:eslint": "eslint src/",
-    "fmt": "prettier --config .prettierrc --write 'src/**/*.js*'",
+    "ci:eslint": "eslint --fix src/",
+    "fmt": "prettier --config .prettierrc --write 'src/**/*.+(js|jsx)'",
     "precommit": "lint-staged",
     "production": "NODE_ENV=production node lib/server/index.js",
     "start": "NODE_ENV=development babel-node ./webpack/dev-server.js",
@@ -198,12 +198,12 @@
     "json-loader": "0.5.7",
     "koa-webpack-dev-middleware": "1.4.6",
     "koa-webpack-hot-middleware": "1.0.3",
-    "lint-staged": "6.0.0",
+    "lint-staged": "10.5.3",
     "mock-local-storage": "1.0.5",
     "node-sass": "4.13.1",
     "node-watch": "0.5.5",
     "picturefill": "3.0.2",
-    "prettier": "1.8.2",
+    "prettier": "2.2.1",
     "raw-loader": "4.0.2",
     "react-addons-perf": "15.4.2",
     "react-test-renderer": "15.6.2",
@@ -225,7 +225,7 @@
     "npm": ">=5.4.2"
   },
   "lint-staged": {
-    "src/**/*.js*": [
+    "src/**/*.+(js|jsx)": [
       "prettier --write",
       "git add"
     ]

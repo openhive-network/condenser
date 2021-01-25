@@ -15,10 +15,8 @@ const CAPPED_SIZE = '768x0/';
 const DOUBLE_CAPPED_SIZE = '1536x0/';
 
 export const imageProxy = () => $STM_Config.img_proxy_prefix;
-export const defaultSrcSet = url =>
-    `${url} 1x, ${url.replace(CAPPED_SIZE, DOUBLE_CAPPED_SIZE)} 2x`;
-export const isDefaultImageSize = url =>
-    url.startsWith(`${imageProxy()}${CAPPED_SIZE}`);
+export const defaultSrcSet = (url) => `${url} 1x, ${url.replace(CAPPED_SIZE, DOUBLE_CAPPED_SIZE)} 2x`;
+export const isDefaultImageSize = (url) => url.startsWith(`${imageProxy()}${CAPPED_SIZE}`);
 export const defaultWidth = () => Number.parseInt(CAPPED_SIZE.split('x')[0]);
 
 /**
@@ -39,9 +37,7 @@ export function proxifyImageUrl(url, dimensions = false) {
     if (dimensions && $STM_Config && $STM_Config.img_proxy_prefix) {
         let dims = dimensions + '/';
         if (typeof dimensions !== 'string') {
-            dims = proxyList
-                ? proxyList.shift().match(/([0-9]+x[0-9]+)\//g)[0]
-                : NATURAL_SIZE;
+            dims = proxyList ? proxyList.shift().match(/([0-9]+x[0-9]+)\//g)[0] : NATURAL_SIZE;
         }
 
         // NOTE: This forces the dimensions to be `CAPPED_SIZE` to save on
@@ -50,10 +46,7 @@ export function proxifyImageUrl(url, dimensions = false) {
             dims = CAPPED_SIZE;
         }
 
-        if (
-            (NATURAL_SIZE !== dims && CAPPED_SIZE !== dims) ||
-            !rProxyDomain.test(respUrl)
-        ) {
+        if ((NATURAL_SIZE !== dims && CAPPED_SIZE !== dims) || !rProxyDomain.test(respUrl)) {
             return $STM_Config.img_proxy_prefix + dims + respUrl;
         }
     }

@@ -2,10 +2,7 @@ import { api } from '@hiveio/hive-js';
 import Big from 'big.js';
 import { ifHive } from 'app/utils/Community';
 import stateCleaner from 'app/redux/stateCleaner';
-import {
-    fetchCrossPosts,
-    augmentContentWithCrossPost,
-} from 'app/utils/CrossPosts';
+import { fetchCrossPosts, augmentContentWithCrossPost } from 'app/utils/CrossPosts';
 
 export async function callBridge(method, params) {
     // [JES] Hivemind throws an exception if you call for my/[trending/payouts/new/etc] with a null observer
@@ -29,14 +26,10 @@ export async function callBridge(method, params) {
     )
         params.observer = $STM_Config.default_observer;
 
-    console.log(
-        'call bridge',
-        method,
-        params && JSON.stringify(params).substring(0, 200)
-    );
+    console.log('call bridge', method, params && JSON.stringify(params).substring(0, 200));
 
-    return new Promise(function(resolve, reject) {
-        api.call('bridge.' + method, params, function(err, data) {
+    return new Promise((resolve, reject) => {
+        api.call('bridge.' + method, params, (err, data) => {
             if (err) {
                 // [JES] This is also due to a change in hivemind that we've requested a change for.
                 // The condenser uses this call to make sure the permlink it generates is unique by asking
@@ -59,24 +52,17 @@ export async function callBridge(method, params) {
 export function getHivePowerForUser(account) {
     return new Promise(async (resolve, reject) => {
         try {
-            const fullAccounts = await api.callAsync(
-                'database_api.find_accounts',
-                { accounts: [account] }
-            );
+            const fullAccounts = await api.callAsync('database_api.find_accounts', { accounts: [account] });
 
             api.getDynamicGlobalProperties((error, result) => {
                 if (error) return reject(error);
 
                 try {
-                    const {
-                        total_vesting_fund_hive,
-                        total_vesting_shares,
-                    } = result;
+                    const { total_vesting_fund_hive, total_vesting_shares } = result;
                     const totalHive = total_vesting_fund_hive.split(' ')[0];
                     const totalVests = total_vesting_shares.split(' ')[0];
 
-                    const post_voting_power =
-                        fullAccounts['accounts'][0]['post_voting_power'];
+                    const { post_voting_power } = fullAccounts.accounts[0];
                     /**
                      * old implementation instead of getting hive/vests dynamically
                      * This magic number is coming from
@@ -84,9 +70,7 @@ export function getHivePowerForUser(account) {
                      */
                     //    const MAGIC_NUMBER = 0.0005037;
 
-                    const hiveDividedByVests = new Big(totalHive)
-                        .div(new Big(totalVests))
-                        .toFixed(7);
+                    const hiveDividedByVests = new Big(totalHive).div(new Big(totalVests)).toFixed(7);
 
                     const hive_power = new Big(post_voting_power.amount)
                         .times(new Big(hiveDividedByVests))
@@ -110,7 +94,7 @@ export async function getStateAsync(url, observer, ssr = false) {
     const { page, tag, sort, key } = parsePath(url);
 
     console.log('GSA', url, observer, ssr);
-    let state = {
+    const state = {
         accounts: {},
         community: {},
         content: {},
@@ -121,11 +105,11 @@ export async function getStateAsync(url, observer, ssr = false) {
     // load `content` and `discussion_idx`
     if (page == 'posts' || page == 'account') {
         const posts = await loadPosts(sort, tag, observer);
-        state['content'] = posts['content'];
-        state['discussion_idx'] = posts['discussion_idx'];
+        state.content = posts.content;
+        state.discussion_idx = posts.discussion_idx;
     } else if (page == 'thread') {
         const posts = await loadThread(key[0], key[1]);
-        state['content'] = posts['content'];
+        state.content = posts.content;
     } else {
         // no-op
     }
@@ -133,25 +117,22 @@ export async function getStateAsync(url, observer, ssr = false) {
     // append `community` key
     if (tag && ifHive(tag)) {
         try {
-            state['community'][tag] = await callBridge('get_community', {
+            state.community[tag] = await callBridge('get_community', {
                 name: tag,
-                observer: observer,
+                observer,
             });
         } catch (e) {}
     }
 
     // for SSR, load profile on any profile page or discussion thread author
-    const account =
-        tag && tag[0] == '@'
-            ? tag.slice(1)
-            : page == 'thread' ? key[0].slice(1) : null;
+    const account = tag && tag[0] == '@' ? tag.slice(1) : page == 'thread' ? key[0].slice(1) : null;
     if (ssr && account) {
         // TODO: move to global reducer?
         const profile = await callBridge('get_profile', { account });
         const hive_power = await getHivePowerForUser(account);
 
-        if (profile && profile['name']) {
-            state['profiles'][account] = {
+        if (profile && profile.name) {
+            state.profiles[account] = {
                 ...profile,
                 stats: {
                     ...profile.stats,
@@ -163,7 +144,7 @@ export async function getStateAsync(url, observer, ssr = false) {
 
     if (ssr) {
         // append `topics` key
-        state['topics'] = await callBridge('get_trending_topics', {
+        state.topics = await callBridge('get_trending_topics', {
             limit: 12,
         });
     }
@@ -177,18 +158,14 @@ async function loadThread(account, permlink) {
     const content = await callBridge('get_discussion', { author, permlink });
 
     if (content) {
-        const {
-            content: preppedContent,
-            keys,
-            crossPosts,
-        } = await fetchCrossPosts([Object.values(content)[0]], author);
+        const { content: preppedContent, keys, crossPosts } = await fetchCrossPosts(
+            [Object.values(content)[0]],
+            author
+        );
         if (crossPosts) {
             const crossPostKey = content[keys[0]].cross_post_key;
             content[keys[0]] = preppedContent[keys[0]];
-            content[keys[0]] = augmentContentWithCrossPost(
-                content[keys[0]],
-                crossPosts[crossPostKey]
-            );
+            content[keys[0]] = augmentContentWithCrossPost(content[keys[0]], crossPosts[crossPostKey]);
         }
     }
 
@@ -208,10 +185,7 @@ async function loadPosts(sort, tag, observer) {
         posts = await callBridge('get_ranked_posts', params);
     }
 
-    const { content, keys, crossPosts } = await fetchCrossPosts(
-        posts,
-        observer
-    );
+    const { content, keys, crossPosts } = await fetchCrossPosts(posts, observer);
 
     if (Object.keys(crossPosts).length > 0) {
         for (let ki = 0; ki < keys.length; ki += 1) {
@@ -219,10 +193,7 @@ async function loadPosts(sort, tag, observer) {
             let post = content[contentKey];
 
             if (Object.prototype.hasOwnProperty.call(post, 'cross_post_key')) {
-                post = augmentContentWithCrossPost(
-                    post,
-                    crossPosts[post.cross_post_key]
-                );
+                post = augmentContentWithCrossPost(post, crossPosts[post.cross_post_key]);
             }
         }
     }
@@ -240,31 +211,15 @@ function parsePath(url) {
 
     // strip off leading and trailing slashes
     if (url.length > 0 && url[0] == '/') url = url.substring(1, url.length);
-    if (url.length > 0 && url[url.length - 1] == '/')
-        url = url.substring(0, url.length - 1);
+    if (url.length > 0 && url[url.length - 1] == '/') url = url.substring(0, url.length - 1);
 
     // blank URL defaults to `trending`
     if (url === '') url = 'trending';
 
     const part = url.split('/');
     const parts = part.length;
-    const sorts = [
-        'trending',
-        'promoted',
-        'hot',
-        'created',
-        'payout',
-        'payout_comments',
-        'muted',
-    ];
-    const acct_tabs = [
-        'blog',
-        'feed',
-        'posts',
-        'comments',
-        'replies',
-        'payout',
-    ];
+    const sorts = ['trending', 'promoted', 'hot', 'created', 'payout', 'payout_comments', 'muted'];
+    const acct_tabs = ['blog', 'feed', 'posts', 'comments', 'replies', 'payout'];
 
     let page = null;
     let tag = null;
@@ -299,5 +254,10 @@ function parsePath(url) {
         // no-op URL
     }
 
-    return { page, tag, sort, key };
+    return {
+        page,
+        tag,
+        sort,
+        key,
+    };
 }

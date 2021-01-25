@@ -14,7 +14,7 @@ beforeEach(() => {
 describe('Header', () => {
     it('contains class .header', () => {
         global.$STM_Config = { read_only_mode: false };
-        const header = shallow(<_Header_ pathname={'whatever'} />);
+        const header = shallow(<_Header_ pathname="whatever" />);
         console.log(header.closest('header.header'));
         expect(header.closest('header.header').length).toBe(1);
     });

@@ -13,7 +13,7 @@ const defaultSearchState = Map({
 });
 
 export default function reducer(state = defaultSearchState, action) {
-    const payload = action.payload;
+    const { payload } = action;
 
     switch (action.type) {
         // Has a saga watcher.
@@ -32,7 +32,7 @@ export default function reducer(state = defaultSearchState, action) {
             const { hits, results, scroll_id, append } = payload;
 
             const posts = List(
-                results.map(post => {
+                results.map((post) => {
                     post.created = post.created_at;
                     post.author_reputation = post.author_rep;
                     post.stats = { total_votes: post.total_votes };
@@ -42,15 +42,11 @@ export default function reducer(state = defaultSearchState, action) {
 
             let newState = {};
             if (!append) {
-                newState = state
-                    .set('result', posts)
-                    .set('scrollId', scroll_id);
+                newState = state.set('result', posts).set('scrollId', scroll_id);
             } else {
                 // If append is true. need to process results and append them to previous result
                 const updatedResults = state.get('result').concat(posts);
-                newState = state
-                    .setIn(['result'], new List(updatedResults))
-                    .setIn(['scrollId'], scroll_id);
+                newState = state.setIn(['result'], new List(updatedResults)).setIn(['scrollId'], scroll_id);
             }
             return newState;
         }
@@ -59,20 +55,20 @@ export default function reducer(state = defaultSearchState, action) {
     }
 }
 
-export const search = payload => ({
+export const search = (payload) => ({
     type: SEARCH_DISPATCH,
     payload,
 });
-export const searchPending = payload => ({
+export const searchPending = (payload) => ({
     type: SEARCH_PENDING,
     payload,
 });
-export const searchError = payload => ({
+export const searchError = (payload) => ({
     type: SEARCH_PENDING,
     payload,
 });
 
-export const searchResult = payload => ({
+export const searchResult = (payload) => ({
     type: SEARCH_RESULT,
     payload,
 });

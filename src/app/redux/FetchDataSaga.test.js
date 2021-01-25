@@ -1,23 +1,23 @@
 import { call, put } from 'redux-saga/effects';
 import { api } from '@hiveio/hive-js';
 import { callBridge } from 'app/utils/steemApi';
+import { fetchCrossPosts } from 'app/utils/CrossPosts';
 import * as appActions from './AppReducer';
 import * as globalActions from './GlobalReducer';
 import constants from './constants';
 
 import { fetchData } from './FetchDataSaga';
-import { fetchCrossPosts } from 'app/utils/CrossPosts';
 
 describe('FetchDataSaga', () => {
     describe('should fetch multiple and filter', () => {
-        let payload = {
+        const payload = {
             order: 'blog',
             category: '@bob',
             author: 'alice',
             permlink: 'hair',
-            postFilter: value => value.author === 'bob',
+            postFilter: (value) => value.author === 'bob',
         };
-        let action = {
+        const action = {
             category: '',
             payload,
         };
@@ -79,10 +79,7 @@ describe('FetchDataSaga', () => {
             expect(actual).toEqual(
                 put(
                     globalActions.receiveData({
-                        data: [
-                            { author: 'alice' },
-                            { author: 'bob', permlink: 'post1' },
-                        ],
+                        data: [{ author: 'alice' }, { author: 'bob', permlink: 'post1' }],
                         order: 'blog',
                         category: '@bob',
                         author: 'alice',
@@ -142,14 +139,14 @@ describe('FetchDataSaga', () => {
         });
     });
     describe('should not fetch more batches than max batch size', () => {
-        let payload = {
+        const payload = {
             order: 'blog',
             author: 'alice',
             permlink: 'hair',
             category: '@bob',
-            postFilter: value => value.author === 'bob',
+            postFilter: (value) => value.author === 'bob',
         };
-        let action = {
+        const action = {
             category: '',
             payload,
         };

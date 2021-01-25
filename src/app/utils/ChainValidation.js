@@ -21,29 +21,19 @@ export function validate_account_name(value) {
     for (i = 0, len = ref.length; i < len; i++) {
         label = ref[i];
         if (!/^[a-z]/.test(label)) {
-            return tt(
-                'chainvalidation_js.each_account_segment_should_start_with_a_letter'
-            );
+            return tt('chainvalidation_js.each_account_segment_should_start_with_a_letter');
         }
         if (!/^[a-z0-9-]*$/.test(label)) {
-            return tt(
-                'chainvalidation_js.each_account_segment_should_have_only_letters_digits_or_dashes'
-            );
+            return tt('chainvalidation_js.each_account_segment_should_have_only_letters_digits_or_dashes');
         }
         if (/--/.test(label)) {
-            return tt(
-                'chainvalidation_js.each_account_segment_should_have_only_one_dash_in_a_row'
-            );
+            return tt('chainvalidation_js.each_account_segment_should_have_only_one_dash_in_a_row');
         }
         if (!/[a-z0-9]$/.test(label)) {
-            return tt(
-                'chainvalidation_js.each_account_segment_should_end_with_a_letter_or_digit'
-            );
+            return tt('chainvalidation_js.each_account_segment_should_end_with_a_letter_or_digit');
         }
         if (!(label.length >= 3)) {
-            return tt(
-                'chainvalidation_js.each_account_segment_should_be_longer'
-            );
+            return tt('chainvalidation_js.each_account_segment_should_be_longer');
         }
     }
     return null;

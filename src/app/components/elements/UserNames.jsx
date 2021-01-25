@@ -57,7 +57,7 @@ class UserNames extends Component {
                     <DropdownMenu
                         key="_others"
                         selected={and_names.length + ' others'}
-                        items={and_names.map(name => {
+                        items={and_names.map((name) => {
                             return { value: name, link: '/@' + name };
                         })}
                         el="div"

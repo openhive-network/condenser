@@ -2,53 +2,36 @@ import { fromJS } from 'immutable';
 import { call, put, select, takeEvery, takeLatest } from 'redux-saga/effects';
 import tt from 'counterpart';
 import { api } from '@hiveio/hive-js';
+import { setUserPreferences } from 'app/utils/ServerApiClient';
+import { callBridge } from 'app/utils/steemApi';
 import * as globalActions from './GlobalReducer';
 import * as appActions from './AppReducer';
 import * as transactionActions from './TransactionReducer';
-import { setUserPreferences } from 'app/utils/ServerApiClient';
-import { callBridge } from 'app/utils/steemApi';
 
-const wait = ms =>
-    new Promise(resolve => {
+const wait = (ms) =>
+    new Promise((resolve) => {
         setTimeout(() => resolve(), ms);
     });
 
 export const sharedWatches = [
     takeLatest(
-        [
-            appActions.SET_USER_PREFERENCES,
-            appActions.TOGGLE_NIGHTMODE,
-            appActions.TOGGLE_BLOGMODE,
-        ],
+        [appActions.SET_USER_PREFERENCES, appActions.TOGGLE_NIGHTMODE, appActions.TOGGLE_BLOGMODE],
         saveUserPreferences
     ),
     takeEvery('transaction/ERROR', showTransactionErrorNotification),
 ];
 
 export function* getAccount(username, force = false) {
-    let account = yield select(state =>
-        state.global.get('accounts').get(username)
-    );
+    let account = yield select((state) => state.global.get('accounts').get(username));
 
     // hive never serves `owner` prop (among others)
-    let isLite = !!account && !account.get('owner');
+    const isLite = !!account && !account.get('owner');
 
     if (!account || force || isLite) {
-        console.log(
-            'getAccount: loading',
-            username,
-            'force?',
-            force,
-            'lite?',
-            isLite
-        );
+        console.log('getAccount: loading', username, 'force?', force, 'lite?', isLite);
 
         [account] = yield call([api, api.getAccountsAsync], [username]);
-        const accountWitness = yield call(
-            [api, api.callAsync],
-            'condenser_api.get_witness_by_account',
-            [username]
-        );
+        const accountWitness = yield call([api, api.callAsync], 'condenser_api.get_witness_by_account', [username]);
 
         if (account) {
             if (accountWitness) {
@@ -63,7 +46,7 @@ export function* getAccount(username, force = false) {
 }
 
 function* showTransactionErrorNotification() {
-    const errors = yield select(state => state.transaction.get('errors'));
+    const errors = yield select((state) => state.transaction.get('errors'));
     for (const [key, message] of errors) {
         // Do not display a notification for the bandwidthError key.
         if (key !== 'bandwidthError') {
@@ -78,7 +61,7 @@ export function* getContent({ author, permlink, resolve, reject }) {
     while (!content) {
         console.log('getContent', author, permlink);
         content = yield call([api, api.getContentAsync], author, permlink);
-        if (content['author'] == '') {
+        if (content.author == '') {
             // retry if content not found. #1870
             content = null;
             yield call(wait, 3000);
@@ -86,8 +69,8 @@ export function* getContent({ author, permlink, resolve, reject }) {
     }
 
     function dbg(content) {
-        const cop = Object.assign({}, content);
-        delete cop['active_votes'];
+        const cop = { ...content };
+        delete cop.active_votes;
         return JSON.stringify(cop);
     }
 
@@ -113,6 +96,6 @@ function* saveUserPreferences({ payload }) {
         yield setUserPreferences(payload);
     }
 
-    const prefs = yield select(state => state.app.get('user_preferences'));
+    const prefs = yield select((state) => state.app.get('user_preferences'));
     yield setUserPreferences(prefs.toJS());
 }

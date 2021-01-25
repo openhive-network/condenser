@@ -11,8 +11,7 @@ import { getSupportedLocales } from './utils/misc';
 
 const path = require('path');
 const ROOT = path.join(__dirname, '../..');
-const DB_RECONNECT_TIMEOUT =
-    process.env.NODE_ENV === 'development' ? 1000 * 60 * 60 : 1000 * 60 * 10;
+const DB_RECONNECT_TIMEOUT = process.env.NODE_ENV === 'development' ? 1000 * 60 * 60 : 1000 * 60 * 10;
 
 const supportedLocales = getSupportedLocales();
 
@@ -26,18 +25,14 @@ async function appRender(ctx, locales = false, resolvedAssets = false) {
             try {
                 userPreferences = JSON.parse(ctx.session.user_prefs);
             } catch (err) {
-                console.error(
-                    'cannot parse user preferences:',
-                    ctx.session.uid,
-                    err
-                );
+                console.error('cannot parse user preferences:', ctx.session.uid, err);
             }
         }
         if (!userPreferences.locale) {
             let locale = ctx.getLocaleFromHeader();
             if (locale) locale = locale.substring(0, 2);
             const supportedLocales = locales ? locales : getSupportedLocales();
-            const localeIsSupported = supportedLocales.find(l => l === locale);
+            const localeIsSupported = supportedLocales.find((l) => l === locale);
             if (!localeIsSupported) locale = 'en';
             userPreferences.locale = locale;
         }
@@ -82,13 +77,7 @@ async function appRender(ctx, locales = false, resolvedAssets = false) {
             },
         };
 
-        const {
-            body,
-            title,
-            statusCode,
-            meta,
-            redirectUrl,
-        } = await serverRender(
+        const { body, title, statusCode, meta, redirectUrl } = await serverRender(
             ctx.request.url,
             initial_state,
             ErrorPage,
@@ -129,8 +118,7 @@ async function appRender(ctx, locales = false, resolvedAssets = false) {
             cookieConsentApiKey: cookieConsent.api_key,
         };
         ctx.status = statusCode;
-        ctx.body =
-            '<!DOCTYPE html>' + renderToString(<ServerHTML {...props} />);
+        ctx.body = '<!DOCTYPE html>' + renderToString(<ServerHTML {...props} />);
     } catch (err) {
         // Render 500 error page from server
         console.error('AppRender error', err, redirect);

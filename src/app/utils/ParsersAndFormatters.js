@@ -30,9 +30,7 @@ export function formatDecimal(value, decPlaces = 2, truncate0s = true) {
               .slice(2)
         : '';
     return [
-        sign +
-            (j ? i.substr(0, j) + thouSeparator : '') +
-            i.substr(j).replace(/(\d{3})(?=\d)/g, '$1' + thouSeparator),
+        sign + (j ? i.substr(0, j) + thouSeparator : '') + i.substr(j).replace(/(\d{3})(?=\d)/g, '$1' + thouSeparator),
         decPart,
     ];
 }
@@ -53,7 +51,7 @@ function log10(str) {
     return n + (log - parseInt(log));
 }
 
-export const repLog10 = rep2 => {
+export const repLog10 = (rep2) => {
     if (rep2 == null) return rep2;
     let rep = String(rep2);
     const neg = rep.charAt(0) === '-';
@@ -75,9 +73,7 @@ export function countDecimals(amount) {
         .match(/[\d\.]+/g)
         .join(''); // just dots and digits
     const parts = amount.split('.');
-    return parts.length > 2
-        ? undefined
-        : parts.length === 1 ? 0 : parts[1].length;
+    return parts.length > 2 ? undefined : parts.length === 1 ? 0 : parts[1].length;
 }
 
 // this function searches for right translation of provided error (usually from back-end)
@@ -97,17 +93,11 @@ export function translateError(string) {
         case 'Account name should start with a letter.':
             return tt('g.account_name_should_start_with_a_letter');
         case 'Account name should have only letters, digits, periods or dashes.':
-            return tt(
-                'g.account_name_should_have_only_letters_digits_or_dashes'
-            );
+            return tt('g.account_name_should_have_only_letters_digits_or_dashes');
         case 'Only one Steem account allowed per IP address every 10 minutes':
-            return tt(
-                'g.only_one_APP_NAME_account_allowed_per_ip_address_every_10_minutes'
-            );
+            return tt('g.only_one_APP_NAME_account_allowed_per_ip_address_every_10_minutes');
         case 'Cannot increase reward of post within the last minute before payout':
-            return tt(
-                'g.cannot_increase_reward_of_post_within_the_last_minute_before_payout'
-            );
+            return tt('g.cannot_increase_reward_of_post_within_the_last_minute_before_payout');
         default:
             return string;
     }

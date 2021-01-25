@@ -40,9 +40,7 @@ export function validateIframeUrl(url) {
         return false;
     }
 
-    return `https://www.mixcloud.com/widget/iframe/?hide_cover=1&feed=${
-        match[1]
-    }`;
+    return `https://www.mixcloud.com/widget/iframe/?hide_cover=1&feed=${match[1]}`;
 }
 
 //////
@@ -94,10 +92,7 @@ export function embedNode(child, links /*images*/) {
         const mixcloud = extractMetadata(data);
         if (!mixcloud) return child;
 
-        child.data = data.replace(
-            mixcloud.url,
-            `~~~ embed:${mixcloud.id} mixcloud ~~~`
-        );
+        child.data = data.replace(mixcloud.url, `~~~ embed:${mixcloud.id} mixcloud ~~~`);
 
         if (links) links.add(mixcloud.canonical);
         // if(images) images.add(mixcloud.thumbnail) // not available
@@ -118,18 +113,11 @@ export function embedNode(child, links /*images*/) {
 export function genIframeMd(idx, id) {
     const width = '100%';
     const height = 120;
-    const url = `https://www.mixcloud.com/widget/iframe/?hide_cover=1&feed=${
-        id
-    }`;
+    const url = `https://www.mixcloud.com/widget/iframe/?hide_cover=1&feed=${id}`;
 
     let sandbox = sandboxConfig.useSandbox;
     if (sandbox) {
-        if (
-            Object.prototype.hasOwnProperty.call(
-                sandboxConfig,
-                'sandboxAttributes'
-            )
-        ) {
+        if (Object.prototype.hasOwnProperty.call(sandboxConfig, 'sandboxAttributes')) {
             sandbox = sandboxConfig.sandboxAttributes.join(' ');
         }
     }

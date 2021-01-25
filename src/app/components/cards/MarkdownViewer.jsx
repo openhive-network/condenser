@@ -54,9 +54,7 @@ class MarkdownViewer extends Component {
 
     shouldComponentUpdate(np, ns) {
         return (
-            np.text !== this.props.text ||
-            np.large !== this.props.large ||
-            ns.allowNoImage !== this.state.allowNoImage
+            np.text !== this.props.text || np.large !== this.props.large || ns.allowNoImage !== this.state.allowNoImage
         );
     }
 
@@ -83,10 +81,7 @@ class MarkdownViewer extends Component {
         }
 
         // Strip out HTML comments. "JS-DOS" bug.
-        text = text.replace(
-            /<!--([\s\S]+?)(-->|$)/g,
-            '(html comment removed: $1)'
-        );
+        text = text.replace(/<!--([\s\S]+?)(-->|$)/g, '(html comment removed: $1)');
 
         let renderer = remarkableToSpec;
         if (this.props.breaks === true) {
@@ -101,8 +96,7 @@ class MarkdownViewer extends Component {
         }
 
         // Embed videos, link mentions and hashtags, etc...
-        if (renderedText)
-            renderedText = HtmlReady(renderedText, { hideImages }).html;
+        if (renderedText) renderedText = HtmlReady(renderedText, { hideImages }).html;
 
         // Complete removal of javascript and other dangerous tags..
         // The must remain as close as possible to dangerouslySetInnerHTML
@@ -122,10 +116,7 @@ class MarkdownViewer extends Component {
 
         if (/<\s*script/gi.test(cleanText)) {
             // Not meant to be complete checking, just a secondary trap and red flag (code can change)
-            console.error(
-                'Refusing to render script tag in post text',
-                cleanText
-            );
+            console.error('Refusing to render script tag in post text', cleanText);
             return <div />;
         }
 
@@ -159,12 +150,7 @@ class MarkdownViewer extends Component {
                 }
             }
 
-            sections.push(
-                <div
-                    key={checksum(section)}
-                    dangerouslySetInnerHTML={{ __html: section }}
-                />
-            );
+            sections.push(<div key={checksum(section)} dangerouslySetInnerHTML={{ __html: section }} />);
 
             idx += 1;
         }
@@ -178,24 +164,18 @@ class MarkdownViewer extends Component {
         return (
             <div className={'MarkdownViewer ' + cn}>
                 {sections}
-                {noImageActive &&
-                    allowNoImage && (
-                        <div
-                            key={'hidden-content'}
-                            onClick={this.onAllowNoImage}
-                            className="MarkdownViewer__negative_group"
-                        >
-                            {tt(
-                                'markdownviewer_jsx.images_were_hidden_due_to_low_ratings'
-                            )}
-                            <button
-                                style={{ marginBottom: 0 }}
-                                className="button hollow tiny float-right"
-                            >
-                                {tt('g.show')}
-                            </button>
-                        </div>
-                    )}
+                {noImageActive && allowNoImage && (
+                    <div
+                        key={'hidden-content'}
+                        onClick={this.onAllowNoImage}
+                        className="MarkdownViewer__negative_group"
+                    >
+                        {tt('markdownviewer_jsx.images_were_hidden_due_to_low_ratings')}
+                        <button style={{ marginBottom: 0 }} className="button hollow tiny float-right">
+                            {tt('g.show')}
+                        </button>
+                    </div>
+                )}
             </div>
         );
     }

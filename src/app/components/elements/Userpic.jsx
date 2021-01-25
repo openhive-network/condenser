@@ -29,10 +29,7 @@ export default connect((state, ownProps) => {
 
     let hide = false;
     if (hideIfDefault) {
-        const url = state.userProfiles.getIn(
-            ['profiles', account, 'metadata', 'profile', 'profile_image'],
-            null
-        );
+        const url = state.userProfiles.getIn(['profiles', account, 'metadata', 'profile', 'profile_image'], null);
         hide = !url || !/^(https?:)\/\//.test(url);
     }
 

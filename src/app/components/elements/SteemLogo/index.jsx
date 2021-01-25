@@ -2,9 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 const SteemLogo = ({ nightmodeEnabled }) => {
-    const logo = nightmodeEnabled
-        ? '/images/hive-blog-logo-nightmode.svg'
-        : '/images/hive-blog-logo.svg';
+    const logo = nightmodeEnabled ? '/images/hive-blog-logo-nightmode.svg' : '/images/hive-blog-logo.svg';
 
     return (
         <span className="logo">

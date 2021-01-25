@@ -12,21 +12,9 @@ describe('ProxifyUrl', () => {
             '100x200',
             'https://steemitimages.com/100x200/https://example.com/img.png'
         );
-        testCase(
-            'https://example.com/img.png',
-            '0x0',
-            'https://steemitimages.com/768x0/https://example.com/img.png'
-        );
-        testCase(
-            'https://example.com/img.png',
-            true,
-            'https://steemitimages.com/768x0/https://example.com/img.png'
-        );
-        testCase(
-            'https://example.com/img.png',
-            false,
-            'https://example.com/img.png'
-        );
+        testCase('https://example.com/img.png', '0x0', 'https://steemitimages.com/768x0/https://example.com/img.png');
+        testCase('https://example.com/img.png', true, 'https://steemitimages.com/768x0/https://example.com/img.png');
+        testCase('https://example.com/img.png', false, 'https://example.com/img.png');
     });
     it('naked steemit hosted URL', () => {
         testCase(
@@ -63,11 +51,7 @@ describe('ProxifyUrl', () => {
             '100x200',
             'https://steemitimages.com/100x200/https://peopledotcom.files.wordpress.com/2017/09/grumpy-harvey-cat.jpg?w=2000'
         );
-        testCase(
-            'https://steemitimages.com/0x0/https://example.com/img.png',
-            false,
-            'https://example.com/img.png'
-        );
+        testCase('https://steemitimages.com/0x0/https://example.com/img.png', false, 'https://example.com/img.png');
     });
     it('double-proxied URL', () => {
         testCase(
@@ -148,8 +132,6 @@ const testCase = (inputUrl, outputDims, expectedUrl) => {
     assert.equal(
         outputUrl,
         expectedUrl,
-        `(${inputUrl}, ${outputDims}) should return ${
-            expectedUrl
-        }. output was ${outputUrl}`
+        `(${inputUrl}, ${outputDims}) should return ${expectedUrl}. output was ${outputUrl}`
     );
 };

@@ -53,33 +53,21 @@ class ReactMutationObserver extends React.Component {
         }
 
         if (typeof MutationObserver !== 'undefined') {
-            this.observer = new MutationObserver(mutations => {
-                mutations.forEach(function(mutation) {
-                    if (
-                        mutation.type === 'childList' &&
-                        typeof me.onChildListChanged === 'function'
-                    ) {
+            this.observer = new MutationObserver((mutations) => {
+                mutations.forEach(function (mutation) {
+                    if (mutation.type === 'childList' && typeof me.onChildListChanged === 'function') {
                         me.onChildListChanged(mutation, me.disconnect);
                     }
 
-                    if (
-                        mutation.type === 'attributes' &&
-                        typeof me.onAttributesChanged === 'function'
-                    ) {
+                    if (mutation.type === 'attributes' && typeof me.onAttributesChanged === 'function') {
                         me.onAttributesChanged(mutation, me.disconnect);
                     }
 
-                    if (
-                        mutation.type === 'subtree' &&
-                        typeof me.onSubtreeChanged === 'function'
-                    ) {
+                    if (mutation.type === 'subtree' && typeof me.onSubtreeChanged === 'function') {
                         me.onSubtreeChanged(mutation, me.disconnect);
                     }
 
-                    if (
-                        mutation.type === 'characterData' &&
-                        typeof me.onCharacterDataChanged === 'function'
-                    ) {
+                    if (mutation.type === 'characterData' && typeof me.onCharacterDataChanged === 'function') {
                         me.onCharacterDataChanged(mutation, me.disconnect);
                     }
                 });
@@ -94,10 +82,7 @@ class ReactMutationObserver extends React.Component {
     }
 
     initObserver(componentElement) {
-        if (
-            typeof MutationObserver !== 'undefined' &&
-            componentElement !== null
-        ) {
+        if (typeof MutationObserver !== 'undefined' && componentElement !== null) {
             this.observer.observe(componentElement, this.observerConfig);
         }
     }

@@ -46,36 +46,22 @@ class Header extends React.Component {
     }
 
     componentWillMount() {
-        const {
-            loggedIn,
-            current_account_name,
-            startNotificationsPolling,
-        } = this.props;
+        const { loggedIn, current_account_name, startNotificationsPolling } = this.props;
         if (loggedIn) {
             startNotificationsPolling(current_account_name);
         }
     }
 
     componentDidMount() {
-        if (
-            !this.props.gptEnabled ||
-            !process.env.BROWSER ||
-            !window.googletag ||
-            !window.googletag.pubads
-        ) {
+        if (!this.props.gptEnabled || !process.env.BROWSER || !window.googletag || !window.googletag.pubads) {
             return null;
         }
 
-        window.addEventListener('gptadshown', e => this.gptAdRendered(e));
+        window.addEventListener('gptadshown', (e) => this.gptAdRendered(e));
     }
 
     componentWillUnmount() {
-        if (
-            !this.props.gptEnabled ||
-            !process.env.BROWSER ||
-            !window.googletag ||
-            !window.googletag.pubads
-        ) {
+        if (!this.props.gptEnabled || !process.env.BROWSER || !window.googletag || !window.googletag.pubads) {
             return null;
         }
     }
@@ -86,16 +72,9 @@ class Header extends React.Component {
     componentWillReceiveProps(nextProps) {
         if (nextProps.pathname !== this.props.pathname) {
             const route = resolveRoute(nextProps.pathname);
-            if (
-                route &&
-                route.page === 'PostsIndex' &&
-                route.params &&
-                route.params.length > 0
-            ) {
-                const sort_order =
-                    route.params[0] !== 'home' ? route.params[0] : null;
-                if (sort_order)
-                    window.last_sort_order = this.last_sort_order = sort_order;
+            if (route && route.page === 'PostsIndex' && route.params && route.params.length > 0) {
+                const sort_order = route.params[0] !== 'home' ? route.params[0] : null;
+                if (sort_order) window.last_sort_order = this.last_sort_order = sort_order;
             }
         }
     }
@@ -159,10 +138,7 @@ class Header extends React.Component {
                 if (prefix == 'muted') prefix = 'Muted';
                 page_title = prefix;
                 if (topic !== '') {
-                    let name = this.props.community.getIn(
-                        [topic, 'title'],
-                        '#' + topic
-                    );
+                    let name = this.props.community.getIn([topic, 'title'], '#' + topic);
                     if (name == '#my') name = 'My Communities';
                     page_title = `${name} / ${page_title}`;
                 } else {
@@ -188,9 +164,7 @@ class Header extends React.Component {
             page_title = 'Community Roles';
         } else if (route.page === 'UserProfile') {
             const user_name = route.params[0].slice(1);
-            const user_title = display_name
-                ? `${display_name} (@${user_name})`
-                : user_name;
+            const user_title = display_name ? `${display_name} (@${user_name})` : user_name;
             page_title = user_title;
             if (route.params[1] === 'followers') {
                 page_title = tt('header_jsx.people_following', {
@@ -225,14 +199,10 @@ class Header extends React.Component {
 
         // Format first letter of all titles and lowercase user name
         if (route.page !== 'UserProfile') {
-            page_title =
-                page_title.charAt(0).toUpperCase() + page_title.slice(1);
+            page_title = page_title.charAt(0).toUpperCase() + page_title.slice(1);
         }
 
-        if (
-            process.env.BROWSER &&
-            (route.page !== 'Post' && route.page !== 'PostNoCategory')
-        )
+        if (process.env.BROWSER && route.page !== 'Post' && route.page !== 'PostNoCategory')
             document.title = page_title + ' — ' + APP_NAME;
 
         //const _feed = current_account_name && `/@${current_account_name}/feed`;
@@ -240,16 +210,13 @@ class Header extends React.Component {
         const logo_link = '/';
 
         //TopRightHeader Stuff
-        const defaultNavigate = e => {
+        const defaultNavigate = (e) => {
             if (e.metaKey || e.ctrlKey) {
                 // prevent breaking anchor tags
             } else {
                 e.preventDefault();
             }
-            const a =
-                e.target.nodeName.toLowerCase() === 'a'
-                    ? e.target
-                    : e.target.parentNode;
+            const a = e.target.nodeName.toLowerCase() === 'a' ? e.target : e.target.parentNode;
             browserHistory.push(a.pathname + a.search + a.hash);
         };
 
@@ -268,10 +235,7 @@ class Header extends React.Component {
         const notifs_link = `/@${username}/notifications`;
         const wallet_link = `${walletUrl}/@${username}`;
         const notif_label =
-            tt('g.notifications') +
-            (unreadNotificationCount > 0
-                ? ` (${unreadNotificationCount})`
-                : '');
+            tt('g.notifications') + (unreadNotificationCount > 0 ? ` (${unreadNotificationCount})` : '');
 
         const user_menu = [
             { link: account_link, icon: 'profile', value: tt('g.profile') },
@@ -304,16 +268,9 @@ class Header extends React.Component {
         };
         return (
             <ReactMutationObserver onChildListChanged={headerMutated}>
-                <Headroom
-                    onUnpin={e => this.headroomOnUnpin(e)}
-                    onUnfix={e => this.headroomOnUnfix(e)}
-                >
+                <Headroom onUnpin={(e) => this.headroomOnUnpin(e)} onUnfix={(e) => this.headroomOnUnfix(e)}>
                     <header className="Header">
-                        {showAnnouncement && (
-                            <Announcement
-                                onClose={e => this.hideAnnouncement(e)}
-                            />
-                        )}
+                        {showAnnouncement && <Announcement onClose={(e) => this.hideAnnouncement(e)} />}
                         {/*<div className="beta-disclaimer">
                             Viewing <strong>Steemit.com beta</strong>. Note that
                             availability of features or service may change at
@@ -321,19 +278,13 @@ class Header extends React.Component {
                         </div>*/}
                         {/* If announcement is shown, ad will not render unless it's in a parent div! */}
                         <div style={showAd ? {} : { display: 'none' }}>
-                            <GptAd
-                                tags={gptTags}
-                                type="Freestar"
-                                id="bsa-zone_1566493796250-1_123456"
-                            />
+                            <GptAd tags={gptTags} type="Freestar" id="bsa-zone_1566493796250-1_123456" />
                         </div>
 
                         <nav className="row Header__nav">
                             <div className="small-6 medium-4 large-3 columns Header__logotype">
                                 <Link to={logo_link}>
-                                    <SteemLogo
-                                        nightmodeEnabled={nightmodeEnabled}
-                                    />
+                                    <SteemLogo nightmodeEnabled={nightmodeEnabled} />
                                 </Link>
                             </div>
 
@@ -343,29 +294,17 @@ class Header extends React.Component {
                                         <Link to={'/'}>Posts</Link>
                                     </li>
                                     <li className={`nav__block-list-item`}>
-                                        <Link
-                                            to={`${walletUrl}/proposals`}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                        >
+                                        <Link to={`${walletUrl}/proposals`} target="_blank" rel="noopener noreferrer">
                                             Proposals
                                         </Link>
                                     </li>
                                     <li className={`nav__block-list-item`}>
-                                        <Link
-                                            to={`${walletUrl}/~witnesses`}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                        >
+                                        <Link to={`${walletUrl}/~witnesses`} target="_blank" rel="noopener noreferrer">
                                             Witnesses
                                         </Link>
                                     </li>
                                     <li className={`nav__block-list-item`}>
-                                        <Link
-                                            to="https://hive.io/eco/"
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                        >
+                                        <Link to="https://hive.io/eco/" target="_blank" rel="noopener noreferrer">
                                             Our dApps
                                         </Link>
                                     </li>
@@ -376,17 +315,10 @@ class Header extends React.Component {
                                 {/*NOT LOGGED IN SIGN IN AND SIGN UP LINKS*/}
                                 {!loggedIn && (
                                     <span className="Header__user-signup show-for-medium">
-                                        <a
-                                            className="Header__login-link"
-                                            href="/login.html"
-                                            onClick={showLogin}
-                                        >
+                                        <a className="Header__login-link" href="/login.html" onClick={showLogin}>
                                             {tt('g.login')}
                                         </a>
-                                        <a
-                                            className="Header__signup-link"
-                                            href={SIGNUP_URL}
-                                        >
+                                        <a className="Header__signup-link" href={SIGNUP_URL}>
                                             {tt('g.sign_up')}
                                         </a>
                                     </span>
@@ -416,27 +348,15 @@ class Header extends React.Component {
                                         <li className={'Header__userpic '}>
                                             <Userpic account={username} />
                                         </li>
-                                        {!notificationActionPending &&
-                                            unreadNotificationCount > 0 && (
-                                                <div
-                                                    className={
-                                                        'Header__notification'
-                                                    }
-                                                >
-                                                    <span>
-                                                        {
-                                                            unreadNotificationCount
-                                                        }
-                                                    </span>
-                                                </div>
-                                            )}
+                                        {!notificationActionPending && unreadNotificationCount > 0 && (
+                                            <div className={'Header__notification'}>
+                                                <span>{unreadNotificationCount}</span>
+                                            </div>
+                                        )}
                                     </DropdownMenu>
                                 )}
                                 {/*HAMBURGER*/}
-                                <span
-                                    onClick={showSidePanel}
-                                    className="toggle-menu Header__hamburger"
-                                >
+                                <span onClick={showSidePanel} className="toggle-menu Header__hamburger">
                                     <span className="hamburger" />
                                 </span>
                             </div>
@@ -465,34 +385,19 @@ const mapStateToProps = (state, ownProps) => {
     const route = resolveRoute(ownProps.pathname);
     if (route.page === 'UserProfile') {
         display_name = state.userProfiles.getIn(
-            [
-                'profiles',
-                route.params[0].slice(1),
-                'metadata',
-                'profile',
-                'name',
-            ],
+            ['profiles', route.params[0].slice(1), 'metadata', 'profile', 'name'],
             null
         );
     }
 
     const username = state.user.getIn(['current', 'username']);
     const loggedIn = !!username;
-    const current_account_name = username
-        ? username
-        : state.offchain.get('account');
+    const current_account_name = username ? username : state.offchain.get('account');
 
     const gptEnabled = state.app.getIn(['googleAds', 'gptEnabled']);
     const content = state.global.get('content'); // TODO: needed for SSR?
     let unreadNotificationCount = 0;
-    if (
-        loggedIn &&
-        state.global.getIn([
-            'notifications',
-            current_account_name,
-            'unreadNotifications',
-        ])
-    ) {
+    if (loggedIn && state.global.getIn(['notifications', current_account_name, 'unreadNotifications'])) {
         unreadNotificationCount = state.global.getIn([
             'notifications',
             current_account_name,
@@ -513,24 +418,21 @@ const mapStateToProps = (state, ownProps) => {
         gptEnabled,
         content,
         unreadNotificationCount,
-        notificationActionPending: state.global.getIn([
-            'notifications',
-            'loading',
-        ]),
+        notificationActionPending: state.global.getIn(['notifications', 'loading']),
         ...ownProps,
     };
 };
 
-const mapDispatchToProps = dispatch => ({
-    showLogin: e => {
+const mapDispatchToProps = (dispatch) => ({
+    showLogin: (e) => {
         if (e) e.preventDefault();
         dispatch(userActions.showLogin({ type: 'basic' }));
     },
-    logout: e => {
+    logout: (e) => {
         if (e) e.preventDefault();
         dispatch(userActions.logout({ type: 'default' }));
     },
-    toggleNightmode: e => {
+    toggleNightmode: (e) => {
         if (e) e.preventDefault();
         dispatch(appActions.toggleNightmode());
     },
@@ -540,16 +442,14 @@ const mapDispatchToProps = dispatch => ({
     hideSidePanel: () => {
         dispatch(userActions.hideSidePanel());
     },
-    getUnreadAccountNotifications: username => {
+    getUnreadAccountNotifications: (username) => {
         const query = {
             account: username,
         };
-        return dispatch(
-            fetchDataSagaActions.getUnreadAccountNotifications(query)
-        );
+        return dispatch(fetchDataSagaActions.getUnreadAccountNotifications(query));
     },
     hideAnnouncement: () => dispatch(userActions.hideAnnouncement()),
-    startNotificationsPolling: username => {
+    startNotificationsPolling: (username) => {
         const query = {
             account: username,
         };
