@@ -1,7 +1,6 @@
 import assert from 'assert';
 import secureRandom from 'secure-random';
-import links, * as linksRe from 'app/utils/Links';
-import { PARAM_VIEW_MODE, VIEW_MODE_WHISTLE } from '../../shared/constants';
+import * as linksRe from 'app/utils/Links';
 import youtubeRegex from 'app/components/elements/EmbeddedPlayers/youtube';
 import threespeakRegex from 'app/components/elements/EmbeddedPlayers/threespeak';
 import twitterRegex from 'app/components/elements/EmbeddedPlayers/twitter';
@@ -9,6 +8,7 @@ import spotifyRegex from 'app/components/elements/EmbeddedPlayers/spotify';
 import mixcloudRegex from 'app/components/elements/EmbeddedPlayers/mixcloud';
 import archiveorg from 'app/components/elements/EmbeddedPlayers/archiveorg';
 import bandcamp from 'app/components/elements/EmbeddedPlayers/bandcamp';
+import { PARAM_VIEW_MODE, VIEW_MODE_WHISTLE } from '../../shared/constants';
 
 describe('Links', () => {
     it('all', () => {
@@ -55,10 +55,9 @@ describe('Links', () => {
         match(linksRe.local(), locals);
         matchNot(linksRe.remote(), locals);
 
-        const remotes = ['https://steemit.com/', 'http://abc.co'];
+        const remotes = ['https://peakd.com/', 'http://abc.co'];
         match(linksRe.remote(), remotes);
         matchNot(linksRe.local(), remotes);
-        // match(linksRe({external: false}), largeData + 'https://steemit.com2/next', 'https://steemit.com2/next')
     });
     it('by image', () => {
         match(linksRe.image(), 'https://example.com/a.jpeg');
@@ -315,7 +314,7 @@ describe('Performance', () => {
     it('threespeakImageLink', () => {
         match(
             threespeakRegex.htmlReplacement,
-            '<a href="https://3speak.co/watch?v=artemislives/tvxkobat" rel="noopener" title="This link will take you away from steemit.com" class="steem-keychain-checked"><img src="https://images.hive.blog/768x0/https://img.3speakcontent.online/tvxkobat/post.png"></a>'
+            '<a href="https://3speak.co/watch?v=artemislives/tvxkobat" rel="noopener" title="This link will take you away from this site" class="steem-keychain-checked"><img src="https://images.hive.blog/768x0/https://img.3speakcontent.online/tvxkobat/post.png"></a>'
         );
     });
     it('twitter', () => {
