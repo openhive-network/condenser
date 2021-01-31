@@ -33,7 +33,8 @@ const SidePanel = ({
             return (
                 <li key={ix} className={cn}>
                     <a href={i.link} target="_blank" rel="noopener noreferrer">
-                        {i.label}&nbsp;<Icon name="extlink" />
+                        {i.label}&nbsp;
+                        <Icon name="extlink" />
                     </a>
                 </li>
             );
@@ -103,24 +104,6 @@ const SidePanel = ({
                 label: tt('navigation.chat'),
                 link: 'https://openhive.chat/home',
             },
-            /*
-            {
-                label: tt('navigation.advertise'),
-                link: 'https://selfserve.steemit.com',
-            },
-            {
-                label: tt('navigation.jobs'),
-                link:
-                    'https://recruiting.paylocity.com/recruiting/jobs/List/3288/Steemit-Inc',
-            },
-            {
-                label: tt('navigation.app_center'),
-                link: 'https://steemprojects.com/',
-            },
-            {
-                label: tt('navigation.business_center'),
-                link: 'https://steemeconomy.com/',
-            },*/
         ],
 
         organizational: [
@@ -214,8 +197,8 @@ export default connect(
             ...ownProps,
         };
     },
-    dispatch => ({
-        toggleNightmode: e => {
+    (dispatch) => ({
+        toggleNightmode: (e) => {
             if (e) e.preventDefault();
             dispatch(appActions.toggleNightmode());
         },
