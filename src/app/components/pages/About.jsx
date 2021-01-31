@@ -26,7 +26,7 @@ class About extends React.Component {
                             <div className="AboutMission__square AboutMission__square--2" />
                             <h2 className="AboutMission__heading">Vision</h2>
                             <p className="AboutMission__text">
-                                Our vision is that steemit.com is a vibrant
+                                Our vision is that hive.blog is a vibrant
                                 communities web app, expanding the boundaries of
                                 community coordination and online discussion by
                                 incorporating cryptocurrency as incentives. The
@@ -65,7 +65,7 @@ class About extends React.Component {
                             </h3>
                             <p className="AboutMission__text">
                                 Sustainability means building real business from
-                                steemit.com by way of advertisements and
+                                hive.blog by way of advertisements and
                                 programatically selling cryptocurrency assets
                                 that Steemit, Inc. holds. Steemit, Inc., for
                                 instance, has held lots of STEEM since 2016. The
@@ -74,14 +74,13 @@ class About extends React.Component {
                                 only sell programmatically, because we value the
                                 potential of Steem. Advertising is also an
                                 important part of our business for aligning
-                                steemit.com with all its participants, such as
+                                hive.blog with all its participants, such as
                                 bloggers, content consumers, community builders
                                 and our company’s shareholders, who all benefit
                                 from increased stickiness and usage of
-                                steemit.com. Both of these revenue
-                                sources–capital gains from currency sales and
-                                advertising revenue–are valuable to our
-                                sustainability.
+                                hive.blog. Both of these revenue sources–capital
+                                gains from currency sales and advertising
+                                revenue–are valuable to our sustainability.
                             </p>
                             <h3 className="AboutMission__subheading">Health</h3>
                             <p className="AboutMission__text">
@@ -98,7 +97,7 @@ class About extends React.Component {
                                 predictably with much testing. We greatly prefer
                                 to move carefully and not break things,
                                 especially when those things are near
-                                steemit.com’s wallet functionality or when
+                                hive.blog’s wallet functionality or when
                                 proposing Steem hardforking upgrades, rather
                                 than move fast while introducing breaking
                                 changes.
@@ -108,16 +107,16 @@ class About extends React.Component {
                             </h3>
                             <p className="AboutMission__text">
                                 Security means providing tools to our users of
-                                steemit.com that mitigate risk when it comes to
+                                hive.blog that mitigate risk when it comes to
                                 cryptocurrency interactions. This principle has
                                 led us to preferred use of client-side signing
-                                for cryptocurrency use on steemit.com, which
-                                means all transactions are pushed by the user
-                                while Steemit, Inc. never has access to, nor
-                                sees the user’s private keys; this keeps the
-                                risk of cryptocurrency manageable for the user
-                                because they can be assured they are the only
-                                person responsible for their private key usage.
+                                for cryptocurrency use on hive.blog, which means
+                                all transactions are pushed by the user while
+                                Steemit, Inc. never has access to, nor sees the
+                                user’s private keys; this keeps the risk of
+                                cryptocurrency manageable for the user because
+                                they can be assured they are the only person
+                                responsible for their private key usage.
                                 Security also comes from open-sourcing most of
                                 our software. By open-sourcing, we’ve found
                                 community engagement occurs to help audit and
@@ -144,7 +143,7 @@ class About extends React.Component {
                                 Priorities
                             </h2>
                             <p className="AboutMission__text">
-                                We strive to make steemit.com great for
+                                We strive to make hive.blog great for
                                 communities and financial inclusion. This
                                 includes focusing on the following:
                             </p>
@@ -177,7 +176,7 @@ class About extends React.Component {
                                                 developments
                                             </li>
                                             <li className="AboutMission__list-item">
-                                                Communication of steemit.com
+                                                Communication of hive.blog
                                                 developments
                                             </li>
                                             <li className="AboutMission__list-item">
@@ -222,9 +221,9 @@ class About extends React.Component {
                                             (economic) nodes
                                         </li>
                                         <li className="AboutMission__list-item">
-                                            Lower costs of running steemit.com
-                                            by lowering costs of hive nodes or
-                                            new social plugins architecture
+                                            Lower costs of running hive.blog by
+                                            lowering costs of hive nodes or new
+                                            social plugins architecture
                                         </li>
                                     </ul>
                                     <li className="AboutMission__list-item">
@@ -280,7 +279,7 @@ class About extends React.Component {
                             <p className="AboutMission__text">
                                 Steemit Inc. (The “Company”), is a private
                                 company that helps develop the open-source
-                                software that powers steemit.com, including
+                                software that powers hive.blog, including
                                 steemd. The Company may own various digital
                                 assets, including, without limitation,
                                 quantities of cryptocurrencies such as STEEM.
