@@ -10,7 +10,11 @@ import Icon from 'app/components/elements/Icon';
 import Reblog from 'app/components/elements/Reblog';
 import resolveRoute from 'app/ResolveRoute';
 import Voting from 'app/components/elements/Voting';
-import { extractBodySummary, extractImageLink } from 'app/utils/ExtractContent';
+import {
+    getPostSummary,
+    extractBodySummary,
+    extractImageLink,
+} from 'app/utils/ExtractContent';
 import VotesAndComments from 'app/components/elements/VotesAndComments';
 import Author from 'app/components/elements/Author';
 import Tag from 'app/components/elements/Tag';
@@ -26,7 +30,7 @@ const CURATOR_VESTS_THRESHOLD = 1.0 * 1000.0 * 1000.0;
 // TODO: document why ` ` => `%20` is needed, and/or move to base fucntion
 const proxify = (url, size) => proxifyImageUrl(url, size).replace(/ /g, '%20');
 
-const vote_weights = post => {
+const vote_weights = (post) => {
     const rshares = post.get('net_rshares');
     const dn = post.getIn(['stats', 'flag_weight']);
     const up = Math.max(String(parseInt(rshares / 2, 10)).length - 10, 0);
@@ -109,9 +113,7 @@ class PostSummary extends React.Component {
                         <UserNames names={[crossPostedBy]} />{' '}
                         {tt('postsummary_jsx.crossposted')}{' '}
                         <Link
-                            to={`${crossPostCategory}/@${crossPostAuthor}/${
-                                crossPostPermlink
-                            }`}
+                            to={`${crossPostCategory}/@${crossPostAuthor}/${crossPostPermlink}`}
                         >
                             @{crossPostAuthor}/{crossPostPermlink}
                         </Link>
@@ -136,7 +138,11 @@ class PostSummary extends React.Component {
         if (crossPostedBy) {
             summary = extractBodySummary(post.get('cross_post_body'), isReply);
         } else {
-            summary = extractBodySummary(post.get('body'), isReply);
+            summary = getPostSummary(
+                post.get('json_metadata'),
+                post.get('body'),
+                isReply
+            );
         }
 
         const content_body = (
@@ -227,7 +233,7 @@ class PostSummary extends React.Component {
 
         let dots;
         if (net_vests >= CURATOR_VESTS_THRESHOLD) {
-            const _dots = cnt => {
+            const _dots = (cnt) => {
                 return cnt > 0 ? '•'.repeat(cnt) : null;
             };
             const { up, dn } = vote_weights(post);
@@ -276,12 +282,8 @@ class PostSummary extends React.Component {
                     >
                         <div className="PostSummary__nsfw-warning">
                             {summary_header}
-                            <span className="nsfw-flag">
-                                nsfw
-                            </span>&nbsp;&nbsp;<span
-                                role="button"
-                                onClick={this.onRevealNsfw}
-                            >
+                            <span className="nsfw-flag">nsfw</span>&nbsp;&nbsp;
+                            <span role="button" onClick={this.onRevealNsfw}>
                                 <a>{tt('postsummary_jsx.reveal_it')}</a>
                             </span>{' '}
                             {tt('g.or') + ' '}
@@ -292,7 +294,8 @@ class PostSummary extends React.Component {
                                         {tt(
                                             'postsummary_jsx.display_preferences'
                                         )}
-                                    </Link>.
+                                    </Link>
+                                    .
                                 </span>
                             ) : (
                                 <span>
@@ -303,7 +306,8 @@ class PostSummary extends React.Component {
                                     </a>{' '}
                                     {tt(
                                         'postsummary_jsx.to_save_your_preferences'
-                                    )}.
+                                    )}
+                                    .
                                 </span>
                             )}
                             {summary_footer}
@@ -325,6 +329,10 @@ class PostSummary extends React.Component {
             );
         }
 
+        if (!image_link) {
+            image_link = `https://images.hive.blog/u/${author}/avatar`;
+        }
+
         let thumb = null;
         if (!gray && image_link && !ImageUserBlockList.includes(author)) {
             // on mobile, we always use blog layout style -- there's no toggler
@@ -332,16 +340,17 @@ class PostSummary extends React.Component {
             // if blogmode is false, output an image with a srcset
             // which has the 256x512 for whatever the large breakpoint is where the list layout is used
             // and the 640 for lower than that
-            const blogImg = proxify(image_link, '640x480');
-
             if (this.props.blogmode) {
-                thumb = <img className="articles__feature-img" src={blogImg} />;
+                image_link = proxify(image_link, '640x480');
+                thumb = (
+                    <img className="articles__feature-img" src={image_link} />
+                );
             } else {
                 const listImg = proxify(image_link, '256x512');
                 thumb = (
                     <picture className="articles__feature-img">
                         <source srcSet={listImg} media="(min-width: 1000px)" />
-                        <img srcSet={blogImg} />
+                        <img srcSet={image_link} />
                     </picture>
                 );
             }

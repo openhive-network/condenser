@@ -66,7 +66,7 @@ class Header extends React.Component {
             return null;
         }
 
-        window.addEventListener('gptadshown', e => this.gptAdRendered(e));
+        window.addEventListener('gptadshown', (e) => this.gptAdRendered(e));
     }
 
     componentWillUnmount() {
@@ -231,7 +231,8 @@ class Header extends React.Component {
 
         if (
             process.env.BROWSER &&
-            (route.page !== 'Post' && route.page !== 'PostNoCategory')
+            route.page !== 'Post' &&
+            route.page !== 'PostNoCategory'
         )
             document.title = page_title + ' — ' + APP_NAME;
 
@@ -240,7 +241,7 @@ class Header extends React.Component {
         const logo_link = '/';
 
         //TopRightHeader Stuff
-        const defaultNavigate = e => {
+        const defaultNavigate = (e) => {
             if (e.metaKey || e.ctrlKey) {
                 // prevent breaking anchor tags
             } else {
@@ -305,17 +306,17 @@ class Header extends React.Component {
         return (
             <ReactMutationObserver onChildListChanged={headerMutated}>
                 <Headroom
-                    onUnpin={e => this.headroomOnUnpin(e)}
-                    onUnfix={e => this.headroomOnUnfix(e)}
+                    onUnpin={(e) => this.headroomOnUnpin(e)}
+                    onUnfix={(e) => this.headroomOnUnfix(e)}
                 >
                     <header className="Header">
                         {showAnnouncement && (
                             <Announcement
-                                onClose={e => this.hideAnnouncement(e)}
+                                onClose={(e) => this.hideAnnouncement(e)}
                             />
                         )}
                         {/*<div className="beta-disclaimer">
-                            Viewing <strong>Steemit.com beta</strong>. Note that
+                            Viewing <strong>Hive.blog beta</strong>. Note that
                             availability of features or service may change at
                             any time.
                         </div>*/}
@@ -521,16 +522,16 @@ const mapStateToProps = (state, ownProps) => {
     };
 };
 
-const mapDispatchToProps = dispatch => ({
-    showLogin: e => {
+const mapDispatchToProps = (dispatch) => ({
+    showLogin: (e) => {
         if (e) e.preventDefault();
         dispatch(userActions.showLogin({ type: 'basic' }));
     },
-    logout: e => {
+    logout: (e) => {
         if (e) e.preventDefault();
         dispatch(userActions.logout({ type: 'default' }));
     },
-    toggleNightmode: e => {
+    toggleNightmode: (e) => {
         if (e) e.preventDefault();
         dispatch(appActions.toggleNightmode());
     },
@@ -540,7 +541,7 @@ const mapDispatchToProps = dispatch => ({
     hideSidePanel: () => {
         dispatch(userActions.hideSidePanel());
     },
-    getUnreadAccountNotifications: username => {
+    getUnreadAccountNotifications: (username) => {
         const query = {
             account: username,
         };
@@ -549,7 +550,7 @@ const mapDispatchToProps = dispatch => ({
         );
     },
     hideAnnouncement: () => dispatch(userActions.hideAnnouncement()),
-    startNotificationsPolling: username => {
+    startNotificationsPolling: (username) => {
         const query = {
             account: username,
         };
