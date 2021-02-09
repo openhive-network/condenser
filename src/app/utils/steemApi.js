@@ -25,6 +25,7 @@ export async function callBridge(method, params) {
         method !== 'unread_notifications' &&
         method !== 'list_all_subscriptions' &&
         method !== 'get_post_header' &&
+        method !== 'list_subscribers' &&
         (params.observer === null || params.observer === undefined)
     )
         params.observer = $STM_Config.default_observer;
