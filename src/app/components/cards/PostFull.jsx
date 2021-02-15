@@ -42,11 +42,13 @@ function TimeAuthorCategory({ post }) {
 }
 
 function TimeAuthorCategoryLarge({ post }) {
-    const crossPostedBy = post.get('cross_posted_by');
+    const jsonMetadata = post.get('json_metadata');
+    const authoredBy = jsonMetadata.get('author');
     let author = post.get('author');
     let created = post.get('created');
     let updated = post.get('updated');
 
+    const crossPostedBy = post.get('cross_posted_by');
     if (crossPostedBy) {
         author = post.get('cross_post_author');
         created = post.get('cross_post_created');
@@ -65,6 +67,12 @@ function TimeAuthorCategoryLarge({ post }) {
                     createDate={created}
                     updateDate={updated}
                 />
+                {authoredBy && (
+                    <div className="PostFull__authored_by">
+                        {tt('postfull_jsx.authored_by')}{' '}
+                        <a href={`/@${authoredBy}`}>@{authoredBy}</a>
+                    </div>
+                )}
             </div>
         </span>
     );
