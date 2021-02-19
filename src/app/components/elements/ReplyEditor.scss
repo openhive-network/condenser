@@ -53,6 +53,10 @@
   }
 }
 
+input.ReplyEditor__altAuthor {
+    width: 300px;
+}
+
 @media screen and (max-width: 63.9375em) {
   .ReplyEditor .side-by-side {
     height: auto;
