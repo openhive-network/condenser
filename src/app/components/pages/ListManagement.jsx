@@ -37,17 +37,11 @@ class ListManagement extends React.Component {
             warning_message: '',
         };
         this.handle_filter_change = this.handle_filter_change.bind(this);
-        this.validate_accounts_to_add = this.validate_accounts_to_add.bind(
-            this
-        );
-        this.broadcastFollowOperation = this.broadcastFollowOperation.bind(
-            this
-        );
+        this.validate_accounts_to_add = this.validate_accounts_to_add.bind(this);
+        this.broadcastFollowOperation = this.broadcastFollowOperation.bind(this);
         this.handle_page_select = this.handle_page_select.bind(this);
         this.get_accounts_from_api = this.get_accounts_from_api.bind(this);
-        this.is_user_following_any_lists = this.is_user_following_any_lists.bind(
-            this
-        );
+        this.is_user_following_any_lists = this.is_user_following_any_lists.bind(this);
         this.toggle_help = this.toggle_help.bind(this);
         this.dismiss_intro = this.dismiss_intro.bind(this);
         this.follow_hive_blog_lists = this.follow_hive_blog_lists.bind(this);
@@ -62,13 +56,7 @@ class ListManagement extends React.Component {
     }
 
     componentWillMount() {
-        const {
-            profile,
-            accountname,
-            fetchProfile,
-            username,
-            list_type,
-        } = this.props;
+        const { profile, accountname, fetchProfile, username, list_type } = this.props;
         if (!profile) fetchProfile(accountname, username);
     }
 
@@ -77,12 +65,8 @@ class ListManagement extends React.Component {
     }
 
     componentDidUpdate(prevProps) {
-        if (
-            prevProps.accountname !== this.props.accountname ||
-            prevProps.username !== this.props.username
-        ) {
-            if (!this.props.profile)
-                fetchProfile(this.props.accountname, this.props.username);
+        if (prevProps.accountname !== this.props.accountname || prevProps.username !== this.props.username) {
+            if (!this.props.profile) fetchProfile(this.props.accountname, this.props.username);
         }
 
         if (prevProps.list_type !== this.props.list_type) {
@@ -100,17 +84,11 @@ class ListManagement extends React.Component {
                     this.setState({ first_time_user: !result });
                 },
                 async error => {
-                    console.log(
-                        'bridge_api.does_user_follow_any_lists returned an error: ',
-                        error.toString()
-                    );
+                    console.log('bridge_api.does_user_follow_any_lists returned an error: ', error.toString());
                 }
             )
             .catch(error => {
-                console.log(
-                    'bridge_api.does_user_follow_any_lists returned an error: ',
-                    error.toString()
-                );
+                console.log('bridge_api.does_user_follow_any_lists returned an error: ', error.toString());
             });
     }
 
@@ -141,10 +119,7 @@ class ListManagement extends React.Component {
         })
             .then(
                 async result => {
-                    if (
-                        this.state.updates_are_pending &&
-                        result.length != this.state.all_listed_accounts.length
-                    ) {
+                    if (this.state.updates_are_pending && result.length != this.state.all_listed_accounts.length) {
                         //updates came through, so set pending to false
                         this.setState({
                             updates_are_pending: false,
@@ -170,25 +145,20 @@ class ListManagement extends React.Component {
         let loaded_accounts = this.state.all_listed_accounts;
         if (!loaded_accounts || loaded_accounts.length == 0) return [];
         for (var account of loaded_accounts) {
-            if (account.name.includes(this.state.account_filter))
-                matches.push(account);
+            if (account.name.includes(this.state.account_filter)) matches.push(account);
         }
         return matches;
     }
 
     get_accounts_to_display() {
         let accounts = [];
-        if (this.state.account_filter === '')
-            accounts = this.state.all_listed_accounts;
+        if (this.state.account_filter === '') accounts = this.state.all_listed_accounts;
         else accounts = this.get_filtered_accounts();
 
         if (!accounts || accounts.length == 0) return [];
 
         let result = [];
-        let end_index = Math.min(
-            accounts.length,
-            this.state.start_index + this.state.entries_per_page
-        );
+        let end_index = Math.min(accounts.length, this.state.start_index + this.state.entries_per_page);
         for (var i = this.state.start_index; i < end_index; i++) {
             result.push(accounts[i]);
         }
@@ -198,8 +168,7 @@ class ListManagement extends React.Component {
 
     get_list_length() {
         if (!this.state.all_listed_accounts) return 0;
-        if (this.state.account_filter === '')
-            return this.state.all_listed_accounts.length;
+        if (this.state.account_filter === '') return this.state.all_listed_accounts.length;
         else return this.get_filtered_accounts().length;
     }
 
@@ -207,23 +176,17 @@ class ListManagement extends React.Component {
         let new_index = this.state.start_index;
         switch (direction) {
             case 'next':
-                new_index =
-                    this.state.start_index + this.state.entries_per_page;
+                new_index = this.state.start_index + this.state.entries_per_page;
                 break;
             case 'previous':
-                new_index =
-                    this.state.start_index - this.state.entries_per_page;
+                new_index = this.state.start_index - this.state.entries_per_page;
                 break;
             case 'first':
                 new_index = 0;
                 break;
             case 'last':
                 new_index =
-                    (Math.ceil(
-                        this.get_list_length() / this.state.entries_per_page
-                    ) -
-                        1) *
-                    this.state.entries_per_page;
+                    (Math.ceil(this.get_list_length() / this.state.entries_per_page) - 1) * this.state.entries_per_page;
                 break;
             default:
                 new_index = 0;
@@ -245,8 +208,7 @@ class ListManagement extends React.Component {
         let accounts = [];
         let validated_accounts = [];
         let all_users = text.split(',');
-        if (this.state.error_message !== '')
-            this.setState({ error_message: '' });
+        if (this.state.error_message !== '') this.setState({ error_message: '' });
         if (all_users.length > 100)
             this.setState({
                 warning_message:
@@ -271,15 +233,11 @@ class ListManagement extends React.Component {
                     bad_accounts.push(check_user);
                     continue;
                 }
-                if (!result_string.includes(check_user))
-                    bad_accounts.push(check_user);
+                if (!result_string.includes(check_user)) bad_accounts.push(check_user);
                 else validated_accounts.push(check_user);
 
                 if (error) {
-                    console.log(
-                        'hiveio/hive-js returned an error when fetching accounts: ',
-                        error
-                    );
+                    console.log('hiveio/hive-js returned an error when fetching accounts: ', error);
                 }
             }
 
@@ -352,8 +310,7 @@ class ListManagement extends React.Component {
     }
 
     generate_table_rows() {
-        let show_button =
-            this.props.username === this.props.accountname ? 'inline' : 'none';
+        let show_button = this.props.username === this.props.accountname ? 'inline' : 'none';
         let listed_accounts = this.get_accounts_to_display();
         let items = [];
         let button_text = '';
@@ -367,23 +324,18 @@ class ListManagement extends React.Component {
                 button_text = tt('list_management_jsx.button_unmute');
                 break;
             case 'followed_blacklists':
-                button_text = tt(
-                    'list_management_jsx.button_unfollow_blacklist'
-                );
+                button_text = tt('list_management_jsx.button_unfollow_blacklist');
                 include_blacklist_description = true;
                 break;
             case 'followed_muted_lists':
-                button_text = tt(
-                    'list_management_jsx.button_unfollow_muted_list'
-                );
+                button_text = tt('list_management_jsx.button_unfollow_muted_list');
                 include_mute_list_description = true;
                 break;
             default:
                 button_text = '???';
                 break;
         }
-        if (this.state.is_busy)
-            button_text = tt('list_management_jsx.button_busy');
+        if (this.state.is_busy) button_text = tt('list_management_jsx.button_busy');
 
         if (listed_accounts.length == 0) {
             let item = (
@@ -393,9 +345,7 @@ class ListManagement extends React.Component {
                             <b>
                                 {this.state.account_filter === ''
                                     ? tt('list_management_jsx.empty_list')
-                                    : tt(
-                                          'list_management_jsx.no_results_found'
-                                      )}
+                                    : tt('list_management_jsx.no_results_found')}
                             </b>
                         </center>
                     </td>
@@ -414,18 +364,14 @@ class ListManagement extends React.Component {
                         </Link>
                         {include_blacklist_description && (
                             <div style={{ display: 'inline' }}>
-                                &nbsp;&nbsp;{account.blacklist_description ==
-                                null
-                                    ? ''
-                                    : account.blacklist_description}
+                                &nbsp;&nbsp;{account.blacklist_description == null ? '' : account.blacklist_description}
                             </div>
                         )}
                         {include_mute_list_description && (
                             <div style={{ display: 'inline' }}>
-                                &nbsp;&nbsp;{account.mute_list_description ==
-                                null
+                                &nbsp;&nbsp;{account.muted_list_description == null
                                     ? ''
-                                    : account.mute_list_description}
+                                    : account.muted_list_description}
                             </div>
                         )}
                     </td>
@@ -436,10 +382,7 @@ class ListManagement extends React.Component {
                                 whiteSpace: 'nowrap',
                             }}
                             className="button slim hollow secondary"
-                            onClick={this.handle_unlist.bind(
-                                this,
-                                account.name
-                            )}
+                            onClick={this.handle_unlist.bind(this, account.name)}
                         >
                             {button_text}
                         </span>
@@ -551,16 +494,12 @@ class ListManagement extends React.Component {
             .get('metadata')
             .get('profile')
             .get('blacklist_description');
-        if (!blacklist_description)
-            blacklist_description =
-                "User hasn't added a description to their blacklist yet";
+        if (!blacklist_description) blacklist_description = "User hasn't added a description to their blacklist yet";
         let mute_list_description = this.props.profile
             .get('metadata')
             .get('profile')
             .get('muted_list_description');
-        if (!mute_list_description)
-            mute_list_description =
-                "User hasn't added a description to their mute list yet";
+        if (!mute_list_description) mute_list_description = "User hasn't added a description to their mute list yet";
 
         let list_rows = this.generate_table_rows();
         let list_length = this.get_list_length();
@@ -575,59 +514,37 @@ class ListManagement extends React.Component {
         let reset_all_button_text = tt('list_management_jsx.reset_all_lists');
         switch (this.props.list_type) {
             case 'blacklisted':
-                header_text =
-                    tt('list_management_jsx.blacklisted_header') +
-                    this.props.accountname;
+                header_text = tt('list_management_jsx.blacklisted_header') + this.props.accountname;
                 add_to_text = tt('list_management_jsx.add_to_blacklist');
                 button_text = tt('list_management_jsx.button_blacklist');
                 description_text = 'List Description: ';
                 reset_button_text = tt('list_management_jsx.reset_blacklist');
                 break;
             case 'muted':
-                header_text =
-                    tt('list_management_jsx.muted_header') +
-                    this.props.accountname;
+                header_text = tt('list_management_jsx.muted_header') + this.props.accountname;
                 add_to_text = tt('list_management_jsx.add_to_muted_list');
                 button_text = tt('list_management_jsx.button_mute');
                 description_text = 'List Description: ';
                 reset_button_text = tt('list_management_jsx.reset_muted_list');
                 break;
             case 'followed_blacklists':
-                header_text = tt(
-                    'list_management_jsx.followed_blacklists_header'
-                );
+                header_text = tt('list_management_jsx.followed_blacklists_header');
                 add_to_text = tt('list_management_jsx.follow_blacklists');
-                button_text = tt(
-                    'list_management_jsx.button_follow_blacklists'
-                );
-                reset_button_text = tt(
-                    'list_management_jsx.reset_followed_blacklists'
-                );
+                button_text = tt('list_management_jsx.button_follow_blacklists');
+                reset_button_text = tt('list_management_jsx.reset_followed_blacklists');
                 break;
             case 'followed_muted_lists':
-                header_text = tt(
-                    'list_management_jsx.followed_muted_lists_header'
-                );
+                header_text = tt('list_management_jsx.followed_muted_lists_header');
                 add_to_text = tt('list_management_jsx.follow_muted_lists');
-                button_text = tt(
-                    'list_management_jsx.button_follow_muted_lists'
-                );
-                reset_button_text = tt(
-                    'list_management_jsx.reset_followed_muted_list'
-                );
+                button_text = tt('list_management_jsx.button_follow_muted_lists');
+                reset_button_text = tt('list_management_jsx.reset_followed_muted_list');
                 break;
         }
 
-        if (this.state.is_busy)
-            button_text = tt('list_management_jsx.button_busy');
+        if (this.state.is_busy) button_text = tt('list_management_jsx.button_busy');
 
-        let current_page_number =
-            Math.floor(this.state.start_index / this.state.entries_per_page) +
-            1;
-        let total_pages = Math.max(
-            Math.ceil(list_length / this.state.entries_per_page),
-            1
-        );
+        let current_page_number = Math.floor(this.state.start_index / this.state.entries_per_page) + 1;
+        let total_pages = Math.max(Math.ceil(list_length / this.state.entries_per_page), 1);
 
         return (
             <div>
@@ -645,14 +562,12 @@ class ListManagement extends React.Component {
                         {' '}
                         <h5>
                             <u>{tt('list_management_jsx.what_is_this')}</u>{' '}
-                            {!this.state.first_time_user &&
-                                !this.state.expand_welcome_panel}
+                            {!this.state.first_time_user && !this.state.expand_welcome_panel}
                         </h5>
                     </span>
                 </center>
 
-                {((this.state.first_time_user && viewing_own_page) ||
-                    this.state.expand_welcome_panel) && (
+                {((this.state.first_time_user && viewing_own_page) || this.state.expand_welcome_panel) && (
                     <div>
                         <center>
                             <table style={{ width: '35%', border: 2 }}>
@@ -664,11 +579,7 @@ class ListManagement extends React.Component {
                                             <center>
                                                 {this.state.first_time_user &&
                                                     viewing_own_page && (
-                                                        <h5>
-                                                            {tt(
-                                                                'list_management_jsx.welcome_header'
-                                                            )}
-                                                        </h5>
+                                                        <h5>{tt('list_management_jsx.welcome_header')}</h5>
                                                     )}
                                             </center>
                                         </td>
@@ -677,33 +588,13 @@ class ListManagement extends React.Component {
                                     <tr>
                                         <td>
                                             <center>
-                                                {tt(
-                                                    'list_management_jsx.info1'
-                                                )}{' '}
-                                                {tt(
-                                                    'list_management_jsx.info2'
-                                                )}{' '}
-                                                <Link
-                                                    to={
-                                                        '/@' +
-                                                        this.props.username +
-                                                        '/settings'
-                                                    }
-                                                >
-                                                    {tt(
-                                                        'list_management_jsx.info3'
-                                                    )}
+                                                {tt('list_management_jsx.info1')} {tt('list_management_jsx.info2')}{' '}
+                                                <Link to={'/@' + this.props.username + '/settings'}>
+                                                    {tt('list_management_jsx.info3')}
                                                 </Link>
-                                                {tt(
-                                                    'list_management_jsx.info4'
-                                                )}{' '}
-                                                {tt(
-                                                    'list_management_jsx.info5'
-                                                )}
+                                                {tt('list_management_jsx.info4')} {tt('list_management_jsx.info5')}
                                                 <p />
-                                                {tt(
-                                                    'list_management_jsx.info6'
-                                                )}
+                                                {tt('list_management_jsx.info6')}
                                             </center>
                                         </td>
                                     </tr>
@@ -719,9 +610,7 @@ class ListManagement extends React.Component {
                                                 this.dismiss_intro();
                                             }}
                                         >
-                                            {tt(
-                                                'list_management_jsx.acknowledge'
-                                            )}
+                                            {tt('list_management_jsx.acknowledge')}
                                         </span>
                                     </div>
                                 )}
@@ -735,15 +624,10 @@ class ListManagement extends React.Component {
                         <h5>
                             <b>{header_text}</b>
                         </h5>
-                        {(this.props.list_type === 'blacklisted' ||
-                            this.props.list_type === 'muted') && (
+                        {(this.props.list_type === 'blacklisted' || this.props.list_type === 'muted') && (
                             <h6>
-                                {tt(
-                                    'list_management_jsx.list_description_placement'
-                                )}{' '}
-                                {this.props.list_type === 'blacklisted'
-                                    ? blacklist_description
-                                    : mute_list_description}
+                                {tt('list_management_jsx.list_description_placement')}{' '}
+                                {this.props.list_type === 'blacklisted' ? blacklist_description : mute_list_description}
                             </h6>
                         )}
 
@@ -820,15 +704,9 @@ class ListManagement extends React.Component {
                                 <p />
                                 <p />
                                 <h5>
-                                    <b>
-                                        {tt(
-                                            'list_management_jsx.add_users_to_list'
-                                        )}
-                                    </b>
+                                    <b>{tt('list_management_jsx.add_users_to_list')}</b>
                                 </h5>
-                                <h6>
-                                    {tt('list_management_jsx.multi_add_notes')}
-                                </h6>
+                                <h6>{tt('list_management_jsx.multi_add_notes')}</h6>
                                 <center>
                                     <table style={{ width: '35%' }}>
                                         <thead />
@@ -843,19 +721,13 @@ class ListManagement extends React.Component {
                                                         <input
                                                             style={{
                                                                 width: '60%',
-                                                                whiteSpace:
-                                                                    'nowrap',
+                                                                whiteSpace: 'nowrap',
                                                             }}
                                                             type="text"
                                                             name="multiadd"
-                                                            ref={el =>
-                                                                (this.multiadd = el)
-                                                            }
+                                                            ref={el => (this.multiadd = el)}
                                                             onChange={e => {
-                                                                this.validate_accounts_to_add(
-                                                                    e.target
-                                                                        .value
-                                                                );
+                                                                this.validate_accounts_to_add(e.target.value);
                                                             }}
                                                         />
                                                     </center>
@@ -870,15 +742,10 @@ class ListManagement extends React.Component {
                                                     }}
                                                 >
                                                     <center>
-                                                        {this.state
-                                                            .validated_accounts
-                                                            .length > 0 && (
+                                                        {this.state.validated_accounts.length > 0 && (
                                                             <span
                                                                 className="button slim hollow secondary"
-                                                                onClick={
-                                                                    this
-                                                                        .broadcastFollowOperation
-                                                                }
+                                                                onClick={this.broadcastFollowOperation}
                                                             >
                                                                 {button_text}
                                                             </span>
@@ -889,16 +756,11 @@ class ListManagement extends React.Component {
                                         </tbody>
                                     </table>
 
-                                    {this.state.unmatched_accounts.length >
-                                        0 && (
+                                    {this.state.unmatched_accounts.length > 0 && (
                                         <div style={{ color: 'red' }}>
                                             <b>
-                                                {tt(
-                                                    'list_management_jsx.unknown_accounts'
-                                                )}{' '}
-                                                {this.state.unmatched_accounts.join(
-                                                    ', '
-                                                )}
+                                                {tt('list_management_jsx.unknown_accounts')}{' '}
+                                                {this.state.unmatched_accounts.join(', ')}
                                             </b>
                                         </div>
                                     )}
@@ -913,20 +775,13 @@ class ListManagement extends React.Component {
                             <thead />
                             <tbody>
                                 <tr>
-                                    <td
-                                        colSpan="2"
-                                        style={{ textAlign: 'right' }}
-                                    >
+                                    <td colSpan="2" style={{ textAlign: 'right' }}>
                                         <center>
                                             <input
                                                 type="text"
-                                                ref={el =>
-                                                    (this.searchbox = el)
-                                                }
+                                                ref={el => (this.searchbox = el)}
                                                 style={{ width: '350px' }}
-                                                onChange={
-                                                    this.handle_filter_change
-                                                }
+                                                onChange={this.handle_filter_change}
                                             />
                                         </center>
                                     </td>
@@ -942,27 +797,19 @@ class ListManagement extends React.Component {
                             className="button slim hollow secondary"
                             onClick={this.handle_reset_list.bind(this, false)}
                         >
-                            {this.state.is_busy
-                                ? tt('list_management_jsx.button_busy')
-                                : reset_button_text}
+                            {this.state.is_busy ? tt('list_management_jsx.button_busy') : reset_button_text}
                         </span>
                         <span
                             className="button slim hollow secondary"
                             // onClick={this.handle_reset_list.bind(this, true)}
                             disabled="true"
                         >
-                            {this.state.is_busy
-                                ? tt('list_management_jsx.button_busy')
-                                : reset_all_button_text}
+                            {this.state.is_busy ? tt('list_management_jsx.button_busy') : reset_all_button_text}
                         </span>
 
                         {this.state.updates_are_pending && (
                             <div style={{ color: 'red' }}>
-                                <b>
-                                    {tt(
-                                        'list_management_jsx.updates_are_pending'
-                                    )}
-                                </b>
+                                <b>{tt('list_management_jsx.updates_are_pending')}</b>
                             </div>
                         )}
                         {this.state.error_message !== '' && (
@@ -998,10 +845,7 @@ module.exports = {
             };
         },
         dispatch => ({
-            fetchProfile: (account, observer) =>
-                dispatch(
-                    UserProfilesSagaActions.fetchProfile({ account, observer })
-                ),
+            fetchProfile: (account, observer) => dispatch(UserProfilesSagaActions.fetchProfile({ account, observer })),
             updateList: (follower, following, type, callback) => {
                 const what = type ? [type] : [];
                 const json = ['follow', { follower, following, what }];
@@ -1020,9 +864,7 @@ module.exports = {
                 );
             },
             fetchListedAccounts: (observer, list_type) => {
-                dispatch(
-                    UserProfilesSagaActions.fetchLists({ observer, list_type })
-                );
+                dispatch(UserProfilesSagaActions.fetchLists({ observer, list_type }));
             },
             //TODO: add sagas for fetching various listed users
         })
