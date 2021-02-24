@@ -256,7 +256,7 @@ class ListManagement extends React.Component {
     dismiss_intro() {
         //Subscribes them to blacklist and mute list of the hive.blog account
         this.setState({ expand_welcome_panel: false, first_time_user: false });
-        this.handle_reset_list(true);
+        this.handle_reset_list();
     }
 
     broadcastFollowOperation() {
@@ -399,7 +399,7 @@ class ListManagement extends React.Component {
         this.setState({ account_filter: event.target.value, start_index: 0 });
     }
 
-    handle_reset_list(reset_all) {
+    handle_reset_list() {
         if (this.state.is_busy) {
             console.log(tt('list_management_jsx.busy'));
             return;
@@ -423,16 +423,18 @@ class ListManagement extends React.Component {
                 return;
         }
 
-        if (reset_all) what = 'reset_all_lists';
-
         let follower = this.props.username;
         let following = 'all'; //there is an 'all' account, but it appears unused so i'm stealing their identity for this
         this.setState({ is_busy: true });
-        this.props.updateList(follower, following, what, () => {
-            setTimeout(() => {
-                this.follow_hive_blog_lists();
-            }, 5000);
-        });
+        if (what !== '') {
+            this.props.updateList(follower, following, what, () => {
+                setTimeout(() => {
+                    this.follow_hive_blog_lists();
+                }, 5000);
+            });
+        } else {
+            this.follow_hive_blog_lists();
+        }
     }
 
     follow_hive_blog_lists() {
@@ -441,11 +443,10 @@ class ListManagement extends React.Component {
         let what = 'follow_muted';
         this.props.updateList(follower, following, what, () => {
             setTimeout(() => {
-                //[JES] Uncomment after hivemind follow bug gets fixed
-                //let what = 'follow_blacklist';
-                //this.props.updateList(follower, following, what, () => {});
+                let what = 'follow_blacklist';
+                this.props.updateList(follower, following, what, () => {});
                 this.setState({ is_busy: false, updates_are_pending: false });
-                //this.get_accounts_from_api();
+                this.get_accounts_from_api();
             }, 1000);
         });
     }
@@ -793,10 +794,7 @@ class ListManagement extends React.Component {
                         <h5>
                             <b>{tt('list_management_jsx.reset_header')}</b>
                         </h5>
-                        <span
-                            className="button slim hollow secondary"
-                            onClick={this.handle_reset_list.bind(this, false)}
-                        >
+                        <span className="button slim hollow secondary" onClick={this.handle_reset_list.bind(this)}>
                             {this.state.is_busy ? tt('list_management_jsx.button_busy') : reset_button_text}
                         </span>
                         <span
