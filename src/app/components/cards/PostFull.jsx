@@ -34,8 +34,7 @@ function TimeAuthorCategory({ post }) {
     return (
         <span className="PostFull__time_author_category vcard">
             <Icon name="clock" className="space-right" />
-            <TimeAgoWrapper date={post.get('created')} /> {tt('g.in')}{' '}
-            <Tag post={post} /> {tt('g.by')}{' '}
+            <TimeAgoWrapper date={post.get('created')} /> {tt('g.in')} <Tag post={post} /> {tt('g.by')}{' '}
             <Author post={post} showAffiliation />
         </span>
     );
@@ -62,17 +61,13 @@ function TimeAuthorCategoryLarge({ post }) {
                 <Author post={post} showAffiliation resolveCrossPost />
                 {tt('g.in')} <Tag post={post} />
                 {' • '}
-                <TimeAgoWrapper date={created} />{' '}
-                <ContentEditedWrapper
-                    createDate={created}
-                    updateDate={updated}
-                />
-                {authoredBy && (
-                    <div className="PostFull__authored_by">
-                        {tt('postfull_jsx.authored_by')}{' '}
-                        <a href={`/@${authoredBy}`}>@{authoredBy}</a>
-                    </div>
-                )}
+                <TimeAgoWrapper date={created} /> <ContentEditedWrapper createDate={created} updateDate={updated} />
+                {authoredBy &&
+                    authoredBy !== author && (
+                        <div className="PostFull__authored_by">
+                            {tt('postfull_jsx.authored_by')} <a href={`/@${authoredBy}`}>@{authoredBy}</a>
+                        </div>
+                    )}
             </div>
         </span>
     );
@@ -159,22 +154,11 @@ class PostFull extends React.Component {
         const winTop = screen.height / 2 - winWidth / 2;
         const winLeft = screen.width / 2 - winHeight / 2;
         const s = this.share_params;
-        const q =
-            'text=' +
-            encodeURIComponent(s.title) +
-            '&url=' +
-            encodeURIComponent(s.url);
+        const q = 'text=' + encodeURIComponent(s.title) + '&url=' + encodeURIComponent(s.url);
         window.open(
             'http://twitter.com/share?' + q,
             'Share',
-            'top=' +
-                winTop +
-                ',left=' +
-                winLeft +
-                ',toolbar=0,status=0,width=' +
-                winWidth +
-                ',height=' +
-                winHeight
+            'top=' + winTop + ',left=' + winLeft + ',toolbar=0,status=0,width=' + winWidth + ',height=' + winHeight
         );
     }
 
@@ -182,11 +166,7 @@ class PostFull extends React.Component {
         serverApiRecordEvent('RedditShare', this.share_params.link);
         e.preventDefault();
         const s = this.share_params;
-        const q =
-            'title=' +
-            encodeURIComponent(s.title) +
-            '&url=' +
-            encodeURIComponent(s.url);
+        const q = 'title=' + encodeURIComponent(s.title) + '&url=' + encodeURIComponent(s.url);
         window.open('https://www.reddit.com/submit?' + q, 'Share');
     }
 
@@ -199,22 +179,11 @@ class PostFull extends React.Component {
         const winLeft = screen.width / 2 - winHeight / 2;
         const s = this.share_params;
         const q =
-            'title=' +
-            encodeURIComponent(s.title) +
-            '&url=' +
-            encodeURIComponent(s.url) +
-            '&source=Steemit&mini=true';
+            'title=' + encodeURIComponent(s.title) + '&url=' + encodeURIComponent(s.url) + '&source=Steemit&mini=true';
         window.open(
             'https://www.linkedin.com/shareArticle?' + q,
             'Share',
-            'top=' +
-                winTop +
-                ',left=' +
-                winLeft +
-                ',toolbar=0,status=0,width=' +
-                winWidth +
-                ',height=' +
-                winHeight
+            'top=' + winTop + ',left=' + winLeft + ',toolbar=0,status=0,width=' + winWidth + ',height=' + winHeight
         );
     }
 
@@ -241,25 +210,13 @@ class PostFull extends React.Component {
 
         const account = post.get('author');
         const permlink = post.get('permlink');
-        this.props.togglePinnedPost(
-            !isPinned,
-            username,
-            community,
-            account,
-            permlink
-        );
+        this.props.togglePinnedPost(!isPinned, username, community, account, permlink);
     };
 
     render() {
         const {
             props: { username, post, community, viewer_role },
-            state: {
-                PostFullReplyEditor,
-                PostFullEditEditor,
-                formId,
-                showReply,
-                showEdit,
-            },
+            state: { PostFullReplyEditor, PostFullEditEditor, formId, showReply, showEdit },
             onShowReply,
             onShowEdit,
             onDeletePost,
@@ -288,19 +245,9 @@ class PostFull extends React.Component {
                         <span className="articles__crosspost-icon">
                             <Icon name="cross-post" />
                         </span>
-                        <UserNames names={[author]} />{' '}
-                        {tt('postsummary_jsx.crossposted')}{' '}
-                        <Link
-                            to={`/${crossPostCategory}/@${crossPostAuthor}/${
-                                crossPostPermlink
-                            }`}
-                        >
-                            this post
-                        </Link>{' '}
-                        {tt('g.in')}{' '}
-                        <Link to={`/created/${community}`}>
-                            {community_title}
-                        </Link>{' '}
+                        <UserNames names={[author]} /> {tt('postsummary_jsx.crossposted')}{' '}
+                        <Link to={`/${crossPostCategory}/@${crossPostAuthor}/${crossPostPermlink}`}>this post</Link>{' '}
+                        {tt('g.in')} <Link to={`/created/${community}`}>{community_title}</Link>{' '}
                         <TimeAgoWrapper date={post.get('created')} />
                     </p>
                     <hr />
@@ -308,18 +255,13 @@ class PostFull extends React.Component {
             );
         }
 
-        if (process.env.BROWSER && title)
-            document.title = title + ' — ' + APP_NAME;
+        if (process.env.BROWSER && title) document.title = title + ' — ' + APP_NAME;
 
-        let content_body = crossPostedBy
-            ? post.get('cross_post_body')
-            : post.get('body');
+        let content_body = crossPostedBy ? post.get('cross_post_body') : post.get('body');
         const bDMCAStop = DMCAList.includes(link);
         const bIllegalContentUser = userIllegalContent.includes(author);
         if (bDMCAStop) {
-            content_body = tt(
-                'postfull_jsx.this_post_is_not_available_due_to_a_copyright_claim'
-            );
+            content_body = tt('postfull_jsx.this_post_is_not_available_due_to_a_copyright_claim');
         }
         // detect illegal users
         if (bIllegalContentUser) {
@@ -337,8 +279,7 @@ class PostFull extends React.Component {
             author,
             permlink,
             parent_author,
-            parent_permlink:
-                post.get('depth') == 0 ? post.get('category') : parent_permlink,
+            parent_permlink: post.get('depth') == 0 ? post.get('category') : parent_permlink,
             category,
             title,
             body: post.get('body'),
@@ -375,9 +316,7 @@ class PostFull extends React.Component {
             },
         ];
 
-        const Editor = this.state.showReply
-            ? PostFullReplyEditor
-            : PostFullEditEditor;
+        const Editor = this.state.showReply ? PostFullReplyEditor : PostFullEditEditor;
         let renderedEditor = null;
         if (showReply || showEdit) {
             const editJson = showReply ? null : post.get('json_metadata');
@@ -429,23 +368,15 @@ class PostFull extends React.Component {
             const prnturl = `/${category}/@${parent_author}/${parent_permlink}`;
             post_header = (
                 <div className="callout">
-                    <div>
-                        {tt(
-                            'postfull_jsx.you_are_viewing_a_single_comments_thread_from'
-                        )}:
-                    </div>
+                    <div>{tt('postfull_jsx.you_are_viewing_a_single_comments_thread_from')}:</div>
                     <h4>{post.get('title')}</h4>
                     <ul>
                         <li>
-                            <Link to={rooturl}>
-                                {tt('postfull_jsx.view_the_full_context')}
-                            </Link>
+                            <Link to={rooturl}>{tt('postfull_jsx.view_the_full_context')}</Link>
                         </li>
                         {post.get('depth') > 1 && (
                             <li>
-                                <Link to={prnturl}>
-                                    {tt('postfull_jsx.view_the_direct_parent')}
-                                </Link>
+                                <Link to={prnturl}>{tt('postfull_jsx.view_the_direct_parent')}</Link>
                             </li>
                         )}
                     </ul>
@@ -456,11 +387,9 @@ class PostFull extends React.Component {
         const allowReply = Role.canComment(community, viewer_role);
         const canReblog = !isReply;
         const canPromote = false && !post.get('is_paidout') && !isReply;
-        const canPin =
-            post.get('depth') == 0 && Role.atLeast(viewer_role, 'mod');
+        const canPin = post.get('depth') == 0 && Role.atLeast(viewer_role, 'mod');
         const canMute = username && Role.atLeast(viewer_role, 'mod');
-        const canFlag =
-            username && community && Role.atLeast(viewer_role, 'guest');
+        const canFlag = username && community && Role.atLeast(viewer_role, 'guest');
         const canReply = allowReply && post.get('depth') < 255;
         const canEdit = username === author && !showEdit;
         const canDelete = username === author && allowDelete(post);
@@ -487,11 +416,7 @@ class PostFull extends React.Component {
 
         return (
             <div>
-                <article
-                    className="PostFull hentry"
-                    itemScope
-                    itemType="http://schema.org/Blog"
-                >
+                <article className="PostFull hentry" itemScope itemType="http://schema.org/Blog">
                     {canFlag && <FlagButton post={post} />}
                     {showEdit ? (
                         renderedEditor
@@ -501,9 +426,7 @@ class PostFull extends React.Component {
                                 {post_header}
                                 <TimeAuthorCategoryLarge post={post} />
                             </div>
-                            <div className="PostFull__body entry-content">
-                                {contentBody}
-                            </div>
+                            <div className="PostFull__body entry-content">{contentBody}</div>
                         </span>
                     )}
 
@@ -523,34 +446,18 @@ class PostFull extends React.Component {
                             <Voting post={post} />
                         </div>
                         <div className="RightShare__Menu small-11 medium-12 large-3 columns">
-                            {canReblog && (
-                                <Reblog author={author} permlink={permlink} />
-                            )}
+                            {canReblog && <Reblog author={author} permlink={permlink} />}
                             <span className="PostFull__reply">
                                 {/* all */}
-                                {canReply && (
-                                    <a onClick={onShowReply}>{tt('g.reply')}</a>
-                                )}{' '}
-                                {/* mods */}
+                                {canReply && <a onClick={onShowReply}>{tt('g.reply')}</a>} {/* mods */}
                                 {canPin && (
-                                    <a
-                                        onClick={() =>
-                                            this.onTogglePin(isPinned)
-                                        }
-                                    >
+                                    <a onClick={() => this.onTogglePin(isPinned)}>
                                         {isPinned ? tt('g.unpin') : tt('g.pin')}
                                     </a>
                                 )}{' '}
-                                {canMute && <MuteButton post={post} />}{' '}
-                                {/* owner */}
-                                {canEdit && (
-                                    <a onClick={onShowEdit}>{tt('g.edit')}</a>
-                                )}{' '}
-                                {canDelete && (
-                                    <a onClick={onDeletePost}>
-                                        {tt('g.delete')}
-                                    </a>
-                                )}
+                                {canMute && <MuteButton post={post} />} {/* owner */}
+                                {canEdit && <a onClick={onShowEdit}>{tt('g.edit')}</a>}{' '}
+                                {canDelete && <a onClick={onDeletePost}>{tt('g.delete')}</a>}
                             </span>
                             <span className="PostFull__responses">
                                 <Link
@@ -559,10 +466,7 @@ class PostFull extends React.Component {
                                         count: post.get('children'),
                                     })}
                                 >
-                                    <Icon
-                                        name="chatboxes"
-                                        className="space-right"
-                                    />
+                                    <Icon name="chatboxes" className="space-right" />
                                     {post.get('children')}
                                 </Link>
                             </span>
@@ -579,21 +483,15 @@ class PostFull extends React.Component {
                             <div className="PostFull__crosspost-footer columns large-12">
                                 <Link
                                     className="button"
-                                    to={`/${crossPostCategory}/@${
-                                        crossPostAuthor
-                                    }/${crossPostPermlink}`}
+                                    to={`/${crossPostCategory}/@${crossPostAuthor}/${crossPostPermlink}`}
                                 >
-                                    Browse to the original post by @{
-                                        crossPostAuthor
-                                    }
+                                    Browse to the original post by @{crossPostAuthor}
                                 </Link>
                             </div>
                         )}
                     </div>
                     <div className="row comment-editor">
-                        <div className="column large-12 medium-10 small-12">
-                            {showReply && renderedEditor}
-                        </div>
+                        <div className="column large-12 medium-10 small-12">{showReply && renderedEditor}</div>
                     </div>
                 </article>
             </div>
@@ -614,10 +512,7 @@ export default connect(
             postref,
             community,
             username: state.user.getIn(['current', 'username']),
-            viewer_role: state.global.getIn(
-                ['community', community, 'context', 'role'],
-                'guest'
-            ),
+            viewer_role: state.global.getIn(['community', community, 'context', 'role'], 'guest'),
         };
     },
     dispatch => ({
@@ -649,15 +544,7 @@ export default connect(
                 })
             );
         },
-        togglePinnedPost: (
-            pinPost,
-            username,
-            community,
-            account,
-            permlink,
-            successCallback,
-            errorCallback
-        ) => {
+        togglePinnedPost: (pinPost, username, community, account, permlink, successCallback, errorCallback) => {
             let action = 'unpinPost';
             if (pinPost) action = 'pinPost';
 
@@ -688,11 +575,7 @@ export default connect(
 
 const saveOnShow = (formId, type) => {
     if (process.env.BROWSER) {
-        if (type)
-            localStorage.setItem(
-                'showEditor-' + formId,
-                JSON.stringify({ type }, null, 0)
-            );
+        if (type) localStorage.setItem('showEditor-' + formId, JSON.stringify({ type }, null, 0));
         else {
             localStorage.removeItem('showEditor-' + formId);
             localStorage.removeItem('replyEditorData-' + formId + '-reply');
