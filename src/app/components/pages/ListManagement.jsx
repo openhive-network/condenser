@@ -168,7 +168,7 @@ class ListManagement extends React.Component {
 
     get_list_length() {
         if (!this.state.all_listed_accounts) return 0;
-        if (this.state.account_filter === '') return this.get_accounts_to_display().length;
+        if (this.state.account_filter === '') return this.state.all_listed_accounts.length;
         else return this.get_filtered_accounts().length;
     }
 
