@@ -160,7 +160,7 @@ class ListManagement extends React.Component {
         let result = [];
         let end_index = Math.min(accounts.length, this.state.start_index + this.state.entries_per_page);
         for (var i = this.state.start_index; i < end_index; i++) {
-            result.push(accounts[i]);
+            if (accounts[i] !== null && accounts[i].name && accounts[i].name !== 'null') result.push(accounts[i]);
         }
 
         return result;
@@ -168,8 +168,21 @@ class ListManagement extends React.Component {
 
     get_list_length() {
         if (!this.state.all_listed_accounts) return 0;
-        if (this.state.account_filter === '') return this.state.all_listed_accounts.length;
-        else return this.get_filtered_accounts().length;
+        let count = 0;
+        if (this.state.account_filter === '') {
+            count = this.state.all_listed_accounts.length;
+        } else {
+            count = this.get_filtered_accounts().length;
+        }
+
+        for (var account of this.state.all_listed_accounts) {
+            if (account && account.name === 'null') {
+                count--;
+                break;
+            }
+        }
+
+        return count;
     }
 
     handle_page_select(direction) {
