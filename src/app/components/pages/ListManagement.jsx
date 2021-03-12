@@ -168,8 +168,21 @@ class ListManagement extends React.Component {
 
     get_list_length() {
         if (!this.state.all_listed_accounts) return 0;
-        if (this.state.account_filter === '') return this.get_accounts_to_display().length;
-        else return this.get_filtered_accounts().length;
+        let count = 0;
+        if (this.state.account_filter === '') {
+            count = this.state.all_listed_accounts.length;
+        } else {
+            count = this.get_filtered_accounts().length;
+        }
+
+        for (var account of this.state.all_listed_accounts) {
+            if (account && account.name === 'null') {
+                count--;
+                break;
+            }
+        }
+
+        return count;
     }
 
     handle_page_select(direction) {
@@ -439,7 +452,7 @@ class ListManagement extends React.Component {
 
     follow_hive_blog_lists() {
         let follower = this.props.username;
-        let following = 'hive.blog';
+        let following = ['hive.blog', 'plentyofphish'];
         let what = 'follow_muted';
         this.props.updateList(follower, following, what, () => {
             setTimeout(() => {
