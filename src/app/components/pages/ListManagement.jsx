@@ -452,7 +452,7 @@ class ListManagement extends React.Component {
 
     follow_hive_blog_lists() {
         let follower = this.props.username;
-        let following = 'hive.blog';
+        let following = ['hive.blog', 'plentyofphish'];
         let what = 'follow_muted';
         this.props.updateList(follower, following, what, () => {
             setTimeout(() => {
