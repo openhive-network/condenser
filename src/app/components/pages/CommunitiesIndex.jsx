@@ -139,9 +139,9 @@ export default class CommunitiesIndex extends React.Component {
                             />
                         </div>
                     </div>
-                    {ordered && (
+                    <hr />
+                    {ordered.size > 0 && (
                         <div>
-                            <hr />
                             <table>
                                 <tbody>
                                     {ordered.map(comm => {
@@ -151,6 +151,7 @@ export default class CommunitiesIndex extends React.Component {
                             </table>
                         </div>
                     )}
+                    {ordered.size === 0 && <div>{tt('g.community_search_no_result')}</div>}
                     {communities === null && (
                         <center>
                             <LoadingIndicator style={{ marginBottom: '2rem' }} type="circle" />
