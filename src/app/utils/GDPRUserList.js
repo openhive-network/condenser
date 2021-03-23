@@ -24,6 +24,8 @@ ardaia
 jemand
 chiefadu
 nikapelex
+itsben
+bazik33
 `
     .trim()
     .split('\n');
