@@ -61,9 +61,7 @@ const transformAccount = account =>
  */
 
 const mergeAccounts = (state, account) => {
-    return state.updateIn(['accounts', account.get('name')], Map(), a =>
-        a.mergeDeep(account)
-    );
+    return state.updateIn(['accounts', account.get('name')], Map(), a => a.mergeDeep(account));
 };
 
 export default function reducer(state = defaultState, action = {}) {
@@ -72,9 +70,7 @@ export default function reducer(state = defaultState, action = {}) {
     switch (action.type) {
         case SET_COLLAPSED: {
             return state.withMutations(map => {
-                map.updateIn(['content', payload.post], value =>
-                    value.merge(Map({ collapsed: payload.collapsed }))
-                );
+                map.updateIn(['content', payload.post], value => value.merge(Map({ collapsed: payload.collapsed })));
             });
         }
 
@@ -92,15 +88,10 @@ export default function reducer(state = defaultState, action = {}) {
                     flag_weight: 0,
                 },
             };
-            return state.updateIn(['content', key], Map(), c =>
-                c.mergeDeep(update)
-            );
+            return state.updateIn(['content', key], Map(), c => c.mergeDeep(update));
 
         case RECEIVE_STATE: {
-            console.log(
-                'Merging state',
-                state.mergeDeep(fromJS(payload)).toJS()
-            );
+            console.log('Merging state', state.mergeDeep(fromJS(payload)).toJS());
             return state.mergeDeep(fromJS(payload));
         }
 
@@ -109,9 +100,7 @@ export default function reducer(state = defaultState, action = {}) {
             return state.updateIn(['notifications', payload.name], Map(), n =>
                 n.withMutations(nmut =>
                     nmut
-                        .update('notifications', List(), a =>
-                            a.concat(fromJS(payload.notifications))
-                        )
+                        .update('notifications', List(), a => a.concat(fromJS(payload.notifications)))
                         .set('isLastPage', payload.isLastPage)
                 )
             );
@@ -141,20 +130,22 @@ export default function reducer(state = defaultState, action = {}) {
         }
 
         case RECEIVE_POST_HEADER: {
-            return state.update('headers', Map(), a =>
-                a.mergeDeep(fromJS(payload))
-            );
+            return state.update('headers', Map(), a => a.mergeDeep(fromJS(payload)));
         }
 
         case RECEIVE_COMMUNITIES: {
-            const map = Map(payload.map(c => [c.name, fromJS(c)]));
-            const idx = List(payload.map(c => c.name));
-            if (map.length <= 0) {
-                debugger;
+            let map = null;
+            let idx = null;
+
+            if (payload !== null) {
+                map = Map(payload.map(c => [c.name, fromJS(c)]));
+                idx = List(payload.map(c => c.name));
+                if (map.length <= 0) {
+                    debugger;
+                }
             }
-            return state
-                .setIn(['community'], map)
-                .setIn(['community_idx'], idx);
+
+            return state.setIn(['community'], map).setIn(['community_idx'], idx);
         }
 
         case RECEIVE_COMMUNITY: {
@@ -166,10 +157,7 @@ export default function reducer(state = defaultState, action = {}) {
         }
 
         case RECEIVE_SUBSCRIPTIONS: {
-            return state.setIn(
-                ['subscriptions', payload.username],
-                fromJS(payload.subscriptions)
-            );
+            return state.setIn(['subscriptions', payload.username], fromJS(payload.subscriptions));
         }
         case RECEIVE_REWARDS: {
             return state.set('rewards', fromJS(payload.rewards));
@@ -177,17 +165,11 @@ export default function reducer(state = defaultState, action = {}) {
 
         // Interleave special posts into the map of posts.
         case SYNC_SPECIAL_POSTS: {
-            return payload.featuredPosts
-                .concat(payload.promotedPosts)
-                .reduce((acc, specialPost) => {
-                    const author = specialPost.get('author');
-                    const permlink = specialPost.get('permlink');
-                    return acc.updateIn(
-                        ['content', `${author}/${permlink}`],
-                        Map(),
-                        p => p.mergeDeep(specialPost)
-                    );
-                }, state);
+            return payload.featuredPosts.concat(payload.promotedPosts).reduce((acc, specialPost) => {
+                const author = specialPost.get('author');
+                const permlink = specialPost.get('permlink');
+                return acc.updateIn(['content', `${author}/${permlink}`], Map(), p => p.mergeDeep(specialPost));
+            }, state);
         }
 
         case RECEIVE_CONTENT: {
@@ -196,9 +178,7 @@ export default function reducer(state = defaultState, action = {}) {
             console.log('received content...', payload.content);
 
             // merge content object into map
-            let new_state = state.updateIn(['content', key], Map(), c =>
-                c.mergeDeep(content)
-            );
+            let new_state = state.updateIn(['content', key], Map(), c => c.mergeDeep(content));
 
             // merge vote info taking pending votes into account
             let votes_key = ['content', key, 'active_votes'];
@@ -219,12 +199,7 @@ export default function reducer(state = defaultState, action = {}) {
         }
 
         case LINK_REPLY: {
-            const {
-                author,
-                permlink,
-                parent_author = '',
-                parent_permlink = '',
-            } = payload;
+            const { author, permlink, parent_author = '', parent_permlink = '' } = payload;
             const parent_key = postKey(parent_author, parent_permlink);
             if (!parent_key) return state;
             const key = author + '/' + permlink;
@@ -234,15 +209,8 @@ export default function reducer(state = defaultState, action = {}) {
                 List(),
                 l => (l.findIndex(i => i === key) === -1 ? l.push(key) : l)
             );
-            const children = updatedState.getIn(
-                ['content', parent_key, 'replies'],
-                List()
-            ).size;
-            updatedState = updatedState.updateIn(
-                ['content', parent_key, 'children'],
-                0,
-                () => children
-            );
+            const children = updatedState.getIn(['content', parent_key, 'replies'], List()).size;
+            updatedState = updatedState.updateIn(['content', parent_key, 'children'], 0, () => children);
             return updatedState;
         }
 
@@ -250,16 +218,11 @@ export default function reducer(state = defaultState, action = {}) {
             const { author, permlink } = payload;
             const key = author + '/' + permlink;
             const content = state.getIn(['content', key]);
-            const parent_key = postKey(
-                content.get('parent_author'),
-                content.get('parent_permlink')
-            );
+            const parent_key = postKey(content.get('parent_author'), content.get('parent_permlink'));
             let updatedState = state.deleteIn(['content', key]);
             if (parent_key) {
-                updatedState = updatedState.updateIn(
-                    ['content', parent_key, 'replies'],
-                    List(),
-                    r => r.filter(i => i !== key)
+                updatedState = updatedState.updateIn(['content', parent_key, 'replies'], List(), r =>
+                    r.filter(i => i !== key)
                 );
             }
             return updatedState;
@@ -281,12 +244,9 @@ export default function reducer(state = defaultState, action = {}) {
 
         case FETCHING_DATA: {
             const { order, category } = payload;
-            const new_state = state.updateIn(
-                ['status', category || '', order],
-                () => {
-                    return { fetching: true };
-                }
-            );
+            const new_state = state.updateIn(['status', category || '', order], () => {
+                return { fetching: true };
+            });
             return new_state;
         }
 
@@ -316,15 +276,12 @@ export default function reducer(state = defaultState, action = {}) {
             });
 
             // update status
-            new_state = new_state.updateIn(
-                ['status', category || '', order],
-                () => {
-                    if (endOfData) {
-                        return { fetching, last_fetch: new Date() };
-                    }
-                    return { fetching };
+            new_state = new_state.updateIn(['status', category || '', order], () => {
+                if (endOfData) {
+                    return { fetching, last_fetch: new Date() };
                 }
-            );
+                return { fetching };
+            });
             return new_state;
         }
 
@@ -335,9 +292,7 @@ export default function reducer(state = defaultState, action = {}) {
         }
 
         case REMOVE: {
-            const key = Array.isArray(payload.key)
-                ? payload.key
-                : [payload.key];
+            const key = Array.isArray(payload.key) ? payload.key : [payload.key];
             return state.removeIn(key);
         }
 
@@ -357,9 +312,7 @@ export default function reducer(state = defaultState, action = {}) {
 
         case SHOW_DIALOG: {
             const { name, params = {} } = payload;
-            return state.update('active_dialogs', Map(), d =>
-                d.set(name, fromJS({ params }))
-            );
+            return state.update('active_dialogs', Map(), d => d.set(name, fromJS({ params })));
         }
 
         case HIDE_DIALOG: {

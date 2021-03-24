@@ -15,6 +15,16 @@
         }
     }
 
+    table tbody {
+        border: none;
+    }
+
+    table tr {
+        @include themify($themes) {
+            border: themed('border');
+        }
+    }
+
     table th {
         width: 600px;
 
