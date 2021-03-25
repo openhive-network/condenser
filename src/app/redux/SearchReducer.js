@@ -31,6 +31,8 @@ export default function reducer(state = defaultSearchState, action) {
         case SEARCH_RESULT: {
             const { hits, results, scroll_id, append } = payload;
 
+            if (results === null || results === undefined) return state;
+
             const posts = List(
                 results.map(post => {
                     post.created = post.created_at;
@@ -42,15 +44,11 @@ export default function reducer(state = defaultSearchState, action) {
 
             let newState = {};
             if (!append) {
-                newState = state
-                    .set('result', posts)
-                    .set('scrollId', scroll_id);
+                newState = state.set('result', posts).set('scrollId', scroll_id);
             } else {
                 // If append is true. need to process results and append them to previous result
                 const updatedResults = state.get('result').concat(posts);
-                newState = state
-                    .setIn(['result'], new List(updatedResults))
-                    .setIn(['scrollId'], scroll_id);
+                newState = state.setIn(['result'], new List(updatedResults)).setIn(['scrollId'], scroll_id);
             }
             return newState;
         }

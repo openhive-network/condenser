@@ -16,8 +16,7 @@ class SearchIndex extends React.Component {
             q: PropTypes.string,
             s: PropTypes.string,
         }).isRequired,
-        scrollId: PropTypes.oneOfType([PropTypes.string, PropTypes.bool])
-            .isRequired,
+        scrollId: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]).isRequired,
         result: PropTypes.arrayOf(
             PropTypes.shape({
                 app: PropTypes.string,
@@ -71,12 +70,7 @@ class SearchIndex extends React.Component {
         const { result, loading, params, performSearch } = this.props;
 
         const searchResults = (
-            <PostsList
-                ref="list"
-                posts={fromJS(result)}
-                loading={loading}
-                loadMore={this.fetchMoreResults}
-            />
+            <PostsList ref="list" posts={fromJS(result)} loading={loading} loadMore={this.fetchMoreResults} />
         );
 
         return (
@@ -94,11 +88,7 @@ class SearchIndex extends React.Component {
                             />
                         </div>
                     </div>
-                    {!loading && result.length === 0 ? (
-                        <Callout>{'Nothing was found.'}</Callout>
-                    ) : (
-                        searchResults
-                    )}
+                    {!loading && result.length === 0 ? <Callout>{'Nothing was found.'}</Callout> : searchResults}
                 </article>
             </div>
         );
@@ -112,7 +102,7 @@ module.exports = {
             const params = ownProps.location.query;
             return {
                 loading: state.search.get('pending'),
-                result: state.search.get('result').toJS(),
+                result: state.search.get('result').toJS() || {},
                 scrollId: state.search.get('scrollId'),
                 isBrowser: process.env.BROWSER,
                 params,
