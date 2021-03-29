@@ -869,5 +869,11 @@
         "next": "Next",
         "last": "Last",
         "users_on_list": "Users On List: %(user_count)s"
+    },
+    "searchinput": {
+        "sortBy": "Sort by:",
+        "newest": "Newest",
+        "popularity": "Popularity",
+        "relevance": "Relevance"
     }
 }
