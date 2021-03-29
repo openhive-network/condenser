@@ -6,7 +6,7 @@ export const searchWatches = [takeEvery('search/SEARCH_DISPATCH', search)];
 
 export function* search(action) {
     const { q, s, scroll_id } = action.payload;
-    const append = action.payload.scroll_id ? true : false;
+    const append = !!scroll_id;
     yield put(reducer.searchPending({ pending: true }));
     try {
         const requestParams = {
@@ -17,10 +17,13 @@ export function* search(action) {
             },
         };
         const searchResponse = yield call(conductSearch, requestParams);
-        const searchJSON = yield call([searchResponse, searchResponse.json]);
-        yield put(reducer.searchResult({ ...searchJSON, append }));
+        if (searchResponse.status >= 200 && searchResponse.status < 300) {
+            const searchJSON = yield call([searchResponse, searchResponse.json]);
+            yield put(reducer.searchResult({ ...searchJSON, append }));
+        } else {
+            yield put(reducer.searchError({ error: new Error('There was an error') }));
+        }
     } catch (error) {
-        console.log('Search error', error);
         yield put(reducer.searchError({ error }));
     }
     yield put(reducer.searchPending({ pending: false }));
