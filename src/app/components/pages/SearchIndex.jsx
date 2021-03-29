@@ -16,8 +16,8 @@ class SearchIndex extends React.Component {
             q: PropTypes.string,
             s: PropTypes.string,
         }).isRequired,
-        scrollId: PropTypes.oneOfType([PropTypes.string, PropTypes.bool])
-            .isRequired,
+        scrollId: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]).isRequired,
+        error: PropTypes.object.isRequired,
         result: PropTypes.arrayOf(
             PropTypes.shape({
                 app: PropTypes.string,
@@ -43,14 +43,13 @@ class SearchIndex extends React.Component {
 
     constructor(props) {
         super(props);
-        this.state = {};
         this.fetchMoreResults = this.fetchMoreResults.bind(this);
     }
 
     componentDidMount() {
         const { performSearch, params } = this.props;
         if (!params.s) {
-            params.s = undefined;
+            params.s = 'newest';
         }
         if (params.q) {
             performSearch(params);
@@ -68,37 +67,35 @@ class SearchIndex extends React.Component {
     }
 
     render() {
-        const { result, loading, params, performSearch } = this.props;
+        const { result, loading, params, performSearch, error } = this.props;
 
         const searchResults = (
-            <PostsList
-                ref="list"
-                posts={fromJS(result)}
-                loading={loading}
-                loadMore={this.fetchMoreResults}
-            />
+            <PostsList ref="list" posts={fromJS(result)} loading={loading} loadMore={this.fetchMoreResults} />
         );
 
         return (
-            <div className={'PostsIndex row ' + 'layout-list'}>
+            <div className="PostsIndex row layout-list">
                 <article className="articles">
                     <div className="articles__header row">
                         <div className="small-12 medium-12 large-12 column">
                             <ElasticSearchInput
                                 initValue={params.q}
-                                expanded={true}
-                                handleSubmit={q => {
-                                    performSearch({ q, s: undefined });
+                                expanded
+                                handleSubmit={(q, s) => {
+                                    performSearch({ q, s });
                                 }}
-                                redirect={true}
+                                redirect
+                                loading={loading}
                             />
                         </div>
                     </div>
-                    {!loading && result.length === 0 ? (
-                        <Callout>{'Nothing was found.'}</Callout>
-                    ) : (
-                        searchResults
-                    )}
+                    {!loading && !error && result.length === 0 ? <Callout>Nothing was found.</Callout> : searchResults}
+                    {!loading &&
+                        error && (
+                            <Callout title="There was an error" type="alert">
+                                {error.message}
+                            </Callout>
+                        )}
                 </article>
             </div>
         );
@@ -112,7 +109,8 @@ module.exports = {
             const params = ownProps.location.query;
             return {
                 loading: state.search.get('pending'),
-                result: state.search.get('result').toJS(),
+                result: state.search.get('result').toJS() || {},
+                error: state.search.get('error') || {},
                 scrollId: state.search.get('scrollId'),
                 isBrowser: process.env.BROWSER,
                 params,
