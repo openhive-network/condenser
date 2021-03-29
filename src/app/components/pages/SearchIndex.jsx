@@ -1,12 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import tt from 'counterpart';
+import _ from 'lodash';
 import { search } from 'app/redux/SearchReducer';
 import Callout from 'app/components/elements/Callout';
 import ElasticSearchInput from 'app/components/elements/ElasticSearchInput';
 import PostsList from 'app/components/cards/PostsList';
-import { List, Map, fromJS } from 'immutable';
+import { fromJS } from 'immutable';
 
 class SearchIndex extends React.Component {
     static propTypes = {
@@ -68,6 +68,7 @@ class SearchIndex extends React.Component {
 
     render() {
         const { result, loading, params, performSearch, error } = this.props;
+        const errorMessage = _.get(error, 'message', undefined);
 
         const searchResults = (
             <PostsList ref="list" posts={fromJS(result)} loading={loading} loadMore={this.fetchMoreResults} />
@@ -89,11 +90,15 @@ class SearchIndex extends React.Component {
                             />
                         </div>
                     </div>
-                    {!loading && !error && result.length === 0 ? <Callout>Nothing was found.</Callout> : searchResults}
+                    {!loading && !errorMessage && result.length === 0 ? (
+                        <Callout>Nothing was found.</Callout>
+                    ) : (
+                        searchResults
+                    )}
                     {!loading &&
-                        error && (
+                        errorMessage && (
                             <Callout title="There was an error" type="alert">
-                                {error.message}
+                                {errorMessage}
                             </Callout>
                         )}
                 </article>
