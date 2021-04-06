@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import { Map } from 'immutable';
 import Author from 'app/components/elements/Author';
@@ -6,7 +6,7 @@ import ReplyEditor from 'app/components/elements/ReplyEditor';
 import MuteButton from 'app/components/elements/MuteButton';
 import FlagButton from 'app/components/elements/FlagButton';
 import MarkdownViewer from 'app/components/cards/MarkdownViewer';
-import shouldComponentUpdate from 'app/utils/shouldComponentUpdate';
+// import shouldComponentUpdate from 'app/utils/shouldComponentUpdate';
 import Voting from 'app/components/elements/Voting';
 import { connect } from 'react-redux';
 import { Link } from 'react-router';
@@ -56,7 +56,7 @@ function commentUrl(post, rootRef) {
     return `/${post.category}/${root}@${post.author}/${post.permlink}`;
 }
 
-class CommentImpl extends React.Component {
+class CommentImpl extends PureComponent {
     static propTypes = {
         // html props
         cont: PropTypes.object.isRequired,

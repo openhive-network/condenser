@@ -68,6 +68,7 @@ const scss_loaders = [
 ];
 
 module.exports = {
+    mode: 'development',
     entry: {
         app: ['core-js/stable', './src/app/Main.js'],
         vendor: [

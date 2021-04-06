@@ -1,11 +1,12 @@
 import React from 'react';
 import tt from 'counterpart';
+import PropTypes from 'prop-types';
 
 class PostTemplateSelector extends React.Component {
     static propTypes = {
-        username: React.PropTypes.string.isRequired,
-        templates: React.PropTypes.array.isRequired,
-        onChange: React.PropTypes.func.isRequired,
+        username: PropTypes.string.isRequired,
+        templates: PropTypes.array.isRequired,
+        onChange: PropTypes.func.isRequired,
     };
 
     constructor() {

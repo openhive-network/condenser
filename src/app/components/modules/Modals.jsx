@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import CloseButton from 'app/components/elements/CloseButton';
@@ -11,11 +11,11 @@ import * as appActions from 'app/redux/AppReducer';
 import * as transactionActions from 'app/redux/TransactionReducer';
 import LoginForm from 'app/components/modules/LoginForm';
 import ConfirmTransactionForm from 'app/components/modules/ConfirmTransactionForm';
-import shouldComponentUpdate from 'app/utils/shouldComponentUpdate';
+// import shouldComponentUpdate from 'app/utils/shouldComponentUpdate';
 import TermsAgree from 'app/components/modules/TermsAgree';
 import PostAdvancedSettings from 'app/components/modules/PostAdvancedSettings';
 
-class Modals extends React.Component {
+class Modals extends PureComponent {
     static defaultProps = {
         username: '',
         notifications: undefined,
@@ -53,7 +53,7 @@ class Modals extends React.Component {
 
     constructor() {
         super();
-        this.shouldComponentUpdate = shouldComponentUpdate(this, 'Modals');
+        // this.shouldComponentUpdate = shouldComponentUpdate(this, 'Modals');
     }
 
     render() {

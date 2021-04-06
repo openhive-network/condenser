@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import shouldComponentUpdate from 'app/utils/shouldComponentUpdate';
+// import shouldComponentUpdate from 'app/utils/shouldComponentUpdate';
 import tt from 'counterpart';
 import classnames from 'classnames';
 import { memo } from '@hiveio/hive-js';
@@ -10,7 +10,7 @@ import { repLog10 } from 'app/utils/ParsersAndFormatters';
 
 const MINIMUM_REPUTATION = 15;
 
-export class Memo extends React.Component {
+export class Memo extends PureComponent {
     static propTypes = {
         text: PropTypes.string,
         username: PropTypes.string,
@@ -23,7 +23,7 @@ export class Memo extends React.Component {
 
     constructor() {
         super();
-        this.shouldComponentUpdate = shouldComponentUpdate(this, 'Memo');
+        // this.shouldComponentUpdate = shouldComponentUpdate(this, 'Memo');
         this.state = {
             revealMemo: false,
         };

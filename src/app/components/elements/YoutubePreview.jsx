@@ -1,7 +1,7 @@
 /* eslint react/prop-types: 0 */
 import React from 'react';
 import PropTypes from 'prop-types';
-import shouldComponentUpdate from 'app/utils/shouldComponentUpdate';
+// import shouldComponentUpdate from 'app/utils/shouldComponentUpdate';
 
 const { string, number } = PropTypes;
 
@@ -27,7 +27,7 @@ export default class YoutubePreview extends React.Component {
         this.state = {};
     }
 
-    shouldComponentUpdate = shouldComponentUpdate(this, 'YoutubePreview');
+    // shouldComponentUpdate = shouldComponentUpdate(this, 'YoutubePreview');
 
     onPlay = () => {
         this.setState({ play: true });

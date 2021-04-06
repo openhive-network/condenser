@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import Slider from 'react-rangeslider';
@@ -13,7 +13,7 @@ import {
 } from 'app/client_config';
 import FormattedAsset from 'app/components/elements/FormattedAsset';
 import { pricePerHive } from 'app/utils/StateFunctions';
-import shouldComponentUpdate from 'app/utils/shouldComponentUpdate';
+// import shouldComponentUpdate from 'app/utils/shouldComponentUpdate';
 import {
     formatDecimal,
     parsePayoutAmount,
@@ -56,7 +56,7 @@ function abs(value) {
     return Math.abs(parseInt(value));
 }
 
-class Voting extends React.Component {
+class Voting extends PureComponent {
     static propTypes = {
         // HTML properties
         showList: PropTypes.bool,
@@ -212,7 +212,7 @@ class Voting extends React.Component {
                 showWeightDir: up ? 'up' : 'down',
             });
         };
-        this.shouldComponentUpdate = shouldComponentUpdate(this, 'Voting');
+        // this.shouldComponentUpdate = shouldComponentUpdate(this, 'Voting');
     }
 
     render() {

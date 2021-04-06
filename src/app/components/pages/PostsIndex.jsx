@@ -1,12 +1,12 @@
 /* eslint react/prop-types: 0 */
-import React from 'react';
+import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Link } from 'react-router';
 import tt from 'counterpart';
 import { List } from 'immutable';
 import { actions as fetchDataSagaActions } from 'app/redux/FetchDataSaga';
-import shouldComponentUpdate from 'app/utils/shouldComponentUpdate';
+// import shouldComponentUpdate from 'app/utils/shouldComponentUpdate';
 import PostsList from 'app/components/cards/PostsList';
 import { isFetchingOrRecentlyUpdated } from 'app/utils/StateFunctions';
 import Callout from 'app/components/elements/Callout';
@@ -43,7 +43,7 @@ const noCommunitiesText = (
     </div>
 );
 
-class PostsIndex extends React.Component {
+class PostsIndex extends PureComponent {
     static propTypes = {
         posts: PropTypes.object,
         status: PropTypes.object,
@@ -59,7 +59,7 @@ class PostsIndex extends React.Component {
         super();
         this.state = {};
         this.loadMore = this.loadMore.bind(this);
-        this.shouldComponentUpdate = shouldComponentUpdate(this, 'PostsIndex');
+        // this.shouldComponentUpdate = shouldComponentUpdate(this, 'PostsIndex');
     }
 
     componentWillMount() {
