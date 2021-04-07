@@ -13,6 +13,7 @@ import Reputation from 'app/components/elements/Reputation';
 import AffiliationMap from 'app/utils/AffiliationMap';
 import UserTitle from 'app/components/elements/UserTitle';
 import AuthorDropdown from '../AuthorDropdown';
+import Sanitizer from 'app/utils/Sanitizer';
 
 const { string, bool, number } = PropTypes;
 
@@ -141,21 +142,14 @@ class Author extends React.Component {
                     />
                 )}
                 {showAffiliation && AffiliationMap[author] ? (
-                    <span className="affiliation">
-                        {tt('g.affiliation_' + AffiliationMap[author])}
-                    </span>
+                    <span className="affiliation">{tt('g.affiliation_' + AffiliationMap[author])}</span>
                 ) : null}
             </span>
         );
 
         if (!(follow || mute)) {
             return (
-                <span
-                    className="author"
-                    itemProp="author"
-                    itemScope
-                    itemType="http://schema.org/Person"
-                >
+                <span className="author" itemProp="author" itemScope itemType="http://schema.org/Person">
                     <strong>
                         <Link to={'/@' + author}>{author}</Link>
                     </strong>{' '}
@@ -168,11 +162,7 @@ class Author extends React.Component {
 
         return (
             <span className="Author">
-                <span
-                    itemProp="author"
-                    itemScope
-                    itemType="http://schema.org/Person"
-                >
+                <span itemProp="author" itemScope itemType="http://schema.org/Person">
                     <strong>
                         <Link
                             ref={link => {
@@ -227,10 +217,10 @@ export default connect((state, props) => {
         username: state.user.getIn(['current', 'username']),
         authorRep,
         author,
-        community: post.get('community'), // UserTitle
-        permlink: post.get('permlink'), // UserTitle
-        role: post.get('author_role'), // UserTitle
-        title: post.get('author_title'), // UserTitle
+        community: post.get('community'),
+        permlink: post.get('permlink'),
+        role: Sanitizer.getTextOnly(post.get('author_role')),
+        title: Sanitizer.getTextOnly(post.get('author_title')),
         blacklists: blacklists.length > 0 ? blacklists : null,
         crossPostedBy: post.get('cross_posted_by'),
         crossPostAuthor: post.get('cross_post_author'),
