@@ -194,30 +194,6 @@ class ReplyEditor extends React.Component {
         }
     }
 
-    checkTagsCommunity(tagsInput) {
-        let community = null;
-        if (tagsInput) {
-            const primary = tagsInput.split(' ')[0];
-            if (primary.substring(0, 5) == 'hive-') {
-                community = primary;
-                this.setState({ disabledCommunity: null });
-            }
-        }
-        this.setState({ community });
-    }
-
-    shiftTagInput() {
-        const { tags } = this.state;
-        const items = tags.value.split(' ');
-        this.setState({ disabledCommunity: items.shift() });
-        tags.props.onChange(items.join(' '));
-    }
-
-    unshiftTagInput(tag) {
-        const { tags } = this.state;
-        tags.props.onChange(tag + ' ' + tags.value);
-    }
-
     componentDidMount() {
         setTimeout(() => {
             if (this.refs.rte) this.refs.rte._focus();
@@ -330,6 +306,32 @@ class ReplyEditor extends React.Component {
             }
         }
     }
+
+    checkTagsCommunity(tagsInput) {
+        let community = null;
+        if (tagsInput) {
+            const primary = tagsInput.split(' ')[0];
+            if (primary.substring(0, 5) === 'hive-') {
+                community = primary;
+            }
+        }
+        this.setState({ community });
+    }
+
+    onPostDestinationChange = category => {
+        const { tags } = this.state;
+        const currentTags = tags.value.split(' ');
+
+        if (/^hive-[0-9]*$/.test(category) && /^hive-[0-9]*$/.test(currentTags[0])) {
+            currentTags[0] = category;
+        } else {
+            currentTags.unshift(category);
+        }
+
+        tags.props.onChange(currentTags.join(' '));
+
+        console.log('Post tags:', tags.value);
+    };
 
     initForm(props) {
         const { isStory, type, fields } = props;
@@ -579,7 +581,7 @@ class ReplyEditor extends React.Component {
             body: this.props.body,
         };
         const { onCancel } = this;
-        const { title, tags, summary, altAuthor, body, community, disabledCommunity, enableSideBySide } = this.state;
+        const { title, tags, summary, altAuthor, body, community, enableSideBySide } = this.state;
         const {
             reply,
             username,
@@ -688,7 +690,6 @@ class ReplyEditor extends React.Component {
         }
 
         // TODO: remove all references to these vframe classes. Removed from css and no longer needed.
-        const vframe_class = isStory ? 'vframe' : '';
         const vframe_section_class = isStory ? 'vframe__section' : '';
         const vframe_section_shrink_class = isStory ? 'vframe__section--shrink' : '';
 
@@ -726,17 +727,6 @@ class ReplyEditor extends React.Component {
                         'large-6': enableSideBySide,
                     })}
                 >
-                    {isStory &&
-                        !isEdit &&
-                        username && (
-                            <PostCategoryBanner
-                                communityName={community}
-                                disabledCommunity={disabledCommunity}
-                                username={username}
-                                onCancel={this.shiftTagInput.bind(this)}
-                                onUndo={this.unshiftTagInput.bind(this)}
-                            />
-                        )}
                     <div ref="draft" className="ReplyEditor__draft ReplyEditor__draft-hide">
                         {tt('reply_editor.draft_saved')}
                     </div>
@@ -764,6 +754,12 @@ class ReplyEditor extends React.Component {
                         }}
                     >
                         <div className={vframe_section_shrink_class}>
+                            <a href="#" onClick={toggleSideBySide}>
+                                {(enableSideBySide && tt('reply_editor.disable_sidebyside')) ||
+                                    tt('reply_editor.enable_sidebyside')}
+                            </a>
+                        </div>
+                        <div className={vframe_section_shrink_class}>
                             {isStory && (
                                 <span>
                                     <input
@@ -774,7 +770,7 @@ class ReplyEditor extends React.Component {
                                         placeholder={tt('reply_editor.title')}
                                         autoComplete="off"
                                         ref="titleRef"
-                                        tabIndex={1}
+                                        tabIndex={0}
                                         {...title.props}
                                     />
                                     {titleError}
@@ -831,7 +827,7 @@ class ReplyEditor extends React.Component {
                                             rows={isStory ? 10 : 3}
                                             placeholder={isStory ? tt('g.write_your_story') : tt('g.reply')}
                                             autoComplete="off"
-                                            tabIndex={2}
+                                            tabIndex={0}
                                         />
                                     </Dropzone>
                                     <p className="drag-and-drop">
@@ -867,7 +863,7 @@ class ReplyEditor extends React.Component {
                                         placeholder={tt('reply_editor.summary')}
                                         autoComplete="off"
                                         ref="summaryRef"
-                                        tabIndex={3}
+                                        tabIndex={0}
                                         {...summary.props}
                                     />
                                 </span>
@@ -883,7 +879,7 @@ class ReplyEditor extends React.Component {
                                         onChange={tags.props.onChange}
                                         disabled={loading}
                                         isEdit={isEdit}
-                                        tabIndex={4}
+                                        tabIndex={0}
                                     />
                                     {(tags.touched || tags.value) && <div className="error">{tags.error} </div>}
                                 </span>
@@ -901,7 +897,7 @@ class ReplyEditor extends React.Component {
                                         placeholder={tt('reply_editor.alt_author')}
                                         autoComplete="off"
                                         ref="altAuthorref"
-                                        tabIndex={5}
+                                        tabIndex={0}
                                         {...altAuthor.props}
                                     />
                                 </span>
@@ -911,18 +907,12 @@ class ReplyEditor extends React.Component {
 
                         {isStory && (
                             <div>
-                                <div className={vframe_section_shrink_class}>
-                                    <a href="#" onClick={toggleSideBySide}>
-                                        {(enableSideBySide && tt('reply_editor.disable_sidebyside')) ||
-                                            tt('reply_editor.enable_sidebyside')}
-                                    </a>
-                                </div>
                                 {Array.from(rtags.images).length > 0 && (
                                     <div className="ReplyEditor__options__cover_image_selector">
-                                        <h6>
+                                        <h5>
                                             {tt('reply_editor.select_cover_image')}
                                             :
-                                        </h6>
+                                        </h5>
                                         <div className="ReplyEditor__options__image_selector">
                                             {Array.from(rtags.images).map(image => {
                                                 return (
@@ -950,7 +940,7 @@ class ReplyEditor extends React.Component {
                             {isStory &&
                                 !isEdit && (
                                     <div className="ReplyEditor__options">
-                                        <h6>{tt('reply_editor.post_options')}:</h6>
+                                        <h5>{tt('reply_editor.post_options')}:</h5>
                                         <div>
                                             {this.props.maxAcceptedPayout !== null &&
                                                 this.props.maxAcceptedPayout !== 0 && (
@@ -988,12 +978,25 @@ class ReplyEditor extends React.Component {
                                     </div>
                                 )}
                         </div>
+
                         <div className={vframe_section_shrink_class}>
                             {postError && <div className="error">{postError}</div>}
                         </div>
-                        <div className={vframe_section_shrink_class}>
+
+                        <div
+                            className={classnames(vframe_section_shrink_class, 'ReplyEditor--submit-buttons-container')}
+                        >
+                            {isStory &&
+                                !isEdit &&
+                                username && (
+                                    <PostCategoryBanner
+                                        category={community}
+                                        username={username}
+                                        onChange={this.onPostDestinationChange}
+                                    />
+                                )}
                             {!loading && (
-                                <button type="submit" className="button" disabled={disabled} tabIndex={6}>
+                                <button type="submit" className="button" disabled={disabled} tabIndex={0}>
                                     {isEdit ? tt('reply_editor.update_post') : postLabel}
                                 </button>
                             )}
@@ -1009,7 +1012,7 @@ class ReplyEditor extends React.Component {
                                     <button
                                         type="button"
                                         className="secondary hollow button no-border"
-                                        tabIndex={7}
+                                        tabIndex={0}
                                         onClick={onCancel}
                                     >
                                         {tt('g.cancel')}
@@ -1019,7 +1022,7 @@ class ReplyEditor extends React.Component {
                                 !this.props.onCancel && (
                                     <button
                                         className="button hollow no-border"
-                                        tabIndex={8}
+                                        tabIndex={0}
                                         disabled={submitting}
                                         onClick={onCancel}
                                     >
