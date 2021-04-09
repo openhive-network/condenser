@@ -192,3 +192,12 @@ input.ReplyEditor__altAuthor {
         }
     }
 }
+
+.ReplyEditor--submit-buttons-container {
+    display: flex;
+    flex-direction: row;
+
+    @media screen and (max-width: 63.9375em) {
+        flex-direction: column;
+    }
+}
