@@ -342,8 +342,10 @@ class ReplyEditor extends React.Component {
             initialValues: props.initialValues,
             validation: values => {
                 const markdownRegex = /(?:\*[\w\s]*\*|\#[\w\s]*\#|_[\w\s]*_|~[\w\s]*~|\]\s*\(|\]\s*\[)/;
+                const htmlTagRegex = /<\/?[\w\s="/.':;#-\/\?]+>/gi;
                 const altAuthorAllowedCharactersRegex = /^[\w.\d-]+$/;
                 let bodyValidation = null;
+
                 if (!values.body) {
                     bodyValidation = tt('g.required');
                 }
@@ -358,14 +360,18 @@ class ReplyEditor extends React.Component {
                             ? tt('g.required')
                             : values.title.length > 255
                               ? tt('reply_editor.shorten_title')
-                              : markdownRegex.test(values.title) ? tt('reply_editor.markdown_not_supported') : null),
+                              : markdownRegex.test(values.title)
+                                ? tt('reply_editor.markdown_not_supported')
+                                : htmlTagRegex.test(values.title) ? tt('reply_editor.html_not_supported') : null),
                     tags: isStory && validateTagInput(values.tags, !isEdit),
                     body: bodyValidation,
                     summary:
                         isStory &&
                         (values.summary.length > 140
                             ? tt('reply_editor.shorten_summary')
-                            : markdownRegex.test(values.summary) ? tt('reply_editor.markdown_not_supported') : null),
+                            : markdownRegex.test(values.summary)
+                              ? tt('reply_editor.markdown_not_supported')
+                              : htmlTagRegex.test(values.summary) ? tt('reply_editor.html_not_supported') : null),
                     altAuthor:
                         isStory &&
                         (values.altAuthor.length > 50
