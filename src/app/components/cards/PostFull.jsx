@@ -1,6 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router';
+import hljs from 'highlight.js';
+import 'highlight.js/styles/tomorrow.css';
 import TimeAgoWrapper from 'app/components/elements/TimeAgoWrapper';
 import Icon from 'app/components/elements/Icon';
 import { connect } from 'react-redux';
@@ -133,6 +135,10 @@ class PostFull extends React.Component {
                 }
             }
         }
+    }
+
+    componentDidMount() {
+        hljs.highlightAll();
     }
 
     fbShare(e) {

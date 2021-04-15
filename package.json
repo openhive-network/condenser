@@ -76,6 +76,7 @@
     "diff-match-patch": "1.0.4",
     "disk-stat": "1.0.4",
     "foundation-sites": "git+https://gitlab.syncad.com/hive/foundation-sites.git#544fb8a26efcf45e9ba9ccaa77b04d0ae35b9722",
+    "highlight.js": "^10.7.2",
     "hivesigner": "3.2.1",
     "humanize-number": "0.0.2",
     "intl": "1.2.5",
