@@ -135,9 +135,7 @@ class PostFull extends React.Component {
                 }
             }
         }
-    }
 
-    componentDidMount() {
         hljs.highlightAll();
     }
 
