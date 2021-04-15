@@ -130,7 +130,9 @@ class PostFull extends React.Component {
             }
         }
 
-        hljs.highlightAll();
+        if (process.env.BROWSER) {
+            hljs.highlightAll();
+        }
 
         this.state = {
             formId: _formId,
