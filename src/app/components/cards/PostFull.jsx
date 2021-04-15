@@ -3,6 +3,8 @@ import PropTypes from 'prop-types';
 import { SRLWrapper } from "simple-react-lightbox";
 import { Link } from 'react-router';
 import classnames from 'classnames';
+import hljs from 'highlight.js';
+import 'highlight.js/styles/tomorrow.css';
 import TimeAgoWrapper from 'app/components/elements/TimeAgoWrapper';
 import Icon from 'app/components/elements/Icon';
 import { connect } from 'react-redux';
@@ -165,6 +167,10 @@ class PostFull extends React.Component {
             } = this;
             deletePost(post.get('author'), post.get('permlink'));
         };
+    }
+
+    componentDidMount() {
+        hljs.highlightAll();
     }
 
     fbShare(e) {
