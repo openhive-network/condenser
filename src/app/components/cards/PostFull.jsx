@@ -136,7 +136,9 @@ class PostFull extends React.Component {
             }
         }
 
-        hljs.highlightAll();
+        if (process.env.BROWSER) {
+            hljs.highlightAll();
+        }
     }
 
     fbShare(e) {
