@@ -237,7 +237,12 @@ function* usernamePasswordLogin2({
     } catch (error) {
         defaultBeneficiaries = [];
     }
-    yield put(userActions.setUser({ defaultBeneficiaries }));
+    yield put(
+        userActions.setUser({
+            defaultBeneficiaries,
+            show_login_modal: true,
+        })
+    );
 
     // return if already logged in using steem keychain
     if (login_with_keychain) {
