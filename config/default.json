@@ -39,7 +39,7 @@
   "steemd_connection_server": "https://api.hive.blog",
   "steemd_use_appbase": false,
   "chain_id": "0000000000000000000000000000000000000000000000000000000000000000",
-  "alternative_api_endpoints": "https://api.hive.blog",
+  "alternative_api_endpoints": "https://api.hive.blog https://api.ha.deathwing.me",
   "default_observer":"hive.blog",
   "failover_threshold": 3,
   "address_prefix": "STM",
