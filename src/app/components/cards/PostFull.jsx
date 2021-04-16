@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router';
-import 'highlight.js/styles/tomorrow.css';
 import TimeAgoWrapper from 'app/components/elements/TimeAgoWrapper';
 import Icon from 'app/components/elements/Icon';
 import { connect } from 'react-redux';
