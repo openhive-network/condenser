@@ -146,10 +146,16 @@ function traverseForCodeHighlight(node, depth = 0) {
 }
 
 export function highlightCodes(html) {
-    const doc = DOMParser.parseFromString(html, 'text/html');
-    traverseForCodeHighlight(doc);
+    if (html.match(/<code>.*?<\/code>/s)) {
+        const doc = DOMParser.parseFromString(html, 'text/html');
+        traverseForCodeHighlight(doc);
+        return {
+            html: doc ? XMLSerializer.serializeToString(doc) : '',
+        };
+    }
+
     return {
-        html: doc ? XMLSerializer.serializeToString(doc) : '',
+        html: null,
     };
 }
 
