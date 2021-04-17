@@ -16,8 +16,8 @@ services:
             SDC_IMAGE_PROXY_PREFIX: https://images.hive.blog/
             SDC_UPLOAD_IMAGE_URL: https://images.hive.blog
             SDC_ALT_API_ENDPOINTS: "https://api.hive.blog https://anyx.io https://api.openhive.network https://api.hivekings.com"
-            SDC_HELMET_CONNECTSRC: "'self' https://hivean.com https://images.hive.blog https://anyx.io https://api.hive.blog https://api.openhive.network https://api.hivekings.com https://hivebuzz.me https://peakd.com https://hivesigner.com"
-            SDC_HELMET_STYLESRC: "'self' 'unsafe-inline' fonts.googleapis.com platform.twitter.com embed.redditmedia.com"
+            SDC_HELMET_CONNECTSRC: "'self' https://hivean.com https://images.hive.blog https://anyx.io https://api.hive.blog https://api.openhive.network https://api.hivekings.com https://hivebuzz.me https://peakd.com https://hivesigner.com https://gist.github.com"
+            SDC_HELMET_STYLESRC: "'self' 'unsafe-inline' fonts.googleapis.com platform.twitter.com embed.redditmedia.com github.githubassets.com"
             ESTEEM_ELASTIC_SEARCH_API_KEY: "169EALKZ7LENMA1S5EBT55DGQCWX8JE6YCJRNR05TVCFJYUICRFEXRMY8YSS"
             WALLET_URL: https://wallet.hivean.com
         networks:
