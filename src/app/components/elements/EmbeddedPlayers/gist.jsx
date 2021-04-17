@@ -91,7 +91,7 @@ export function genIframeMd(idx, gistId, w, h, metadata) {
     if (typeof window !== 'undefined') {
         const fullId = Buffer.from(metadata, 'base64').toString();
 
-        return <EmbeddedGist gist={fullId} />;
+        return <EmbeddedGist key={fullId} gist={fullId} />;
     }
 
     return null;
