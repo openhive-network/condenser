@@ -121,7 +121,10 @@ class MarkdownViewer extends Component {
         }
 
         // Needs to be done here so that the tags added by HighlightJS won't be filtered of by the sanitizer
-        cleanText = highlightCodes(cleanText).html;
+        const higlightedText = highlightCodes(cleanText).html;
+        if (higlightedText) {
+            cleanText = higlightedText;
+        }
 
         const noImageActive = cleanText.indexOf(noImageText) !== -1;
 
