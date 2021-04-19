@@ -333,6 +333,7 @@
         "title": "Title of your story",
         "update_post": "Update Post",
         "markdown_not_supported": "Markdown is not supported here",
+        "html_not_supported": "HTML is not supported here",
         "advanced_settings": "Advanced settings",
         "beneficiaries_set": "%(count)s set",
         "tags_input": "Enter your tags separated by a space",
