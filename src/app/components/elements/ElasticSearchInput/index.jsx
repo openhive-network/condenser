@@ -9,17 +9,20 @@ class ElasticSearchInput extends React.Component {
         handleSubmit: PropTypes.func,
         expanded: PropTypes.bool,
         initValue: PropTypes.string,
+        loading: PropTypes.bool,
     };
     static defaultProps = {
         handleSubmit: null,
         expanded: true,
         initValue: '',
+        loading: true,
     };
 
     constructor(props) {
         super(props);
         this.state = {
             value: this.props.initValue ? this.props.initValue : '',
+            sortOrder: 'newest',
         };
         this.handleChange = this.handleChange.bind(this);
         this.onSearchSubmit = this.onSearchSubmit.bind(this);
@@ -29,19 +32,37 @@ class ElasticSearchInput extends React.Component {
         this.setState({ value: event.target.value });
     }
 
-    onSearchSubmit = e => {
-        e.preventDefault();
+    doSearch(searchQuery, sortOrder) {
         const { handleSubmit, redirect } = this.props;
-        handleSubmit && handleSubmit(this.state.value);
-        redirect && browserHistory.push(`/search?q=${this.state.value}`);
+        if (handleSubmit) {
+            handleSubmit(searchQuery, sortOrder);
+        }
+        if (redirect) {
+            browserHistory.push(`/search?q=${searchQuery}&s=${sortOrder}`);
+        }
+    }
+
+    onSearchSubmit = event => {
+        event.preventDefault();
+        const { value: searchQuery, sortOrder } = this.state;
+        this.doSearch(searchQuery, sortOrder);
+    };
+
+    onSortOrderChange = event => {
+        const sortOrder = event.target.value;
+        const { value: searchQuery } = this.state;
+        this.setState({ value: searchQuery, sortOrder });
+
+        this.doSearch(searchQuery, sortOrder);
     };
 
     render() {
-        const formClass = this.props.expanded
-            ? 'search-input--expanded'
-            : 'search-input';
+        const { loading, expanded } = this.props;
+        const { value: searchQuery, sortOrder } = this.state;
+        const formClass = expanded ? 'search-input--expanded' : 'search-input';
+
         return (
-            <span>
+            <div>
                 <form className={formClass} onSubmit={this.onSearchSubmit}>
                     <svg
                         className="search-input__icon"
@@ -65,10 +86,24 @@ class ElasticSearchInput extends React.Component {
                         type="search"
                         placeholder={tt('g.search')}
                         onChange={this.handleChange}
-                        value={this.state.value}
+                        value={searchQuery}
                     />
                 </form>
-            </span>
+
+                {expanded &&
+                    !loading && (
+                        <div className="search-sort-order">
+                            <div className="search-sort-order--title">{tt('searchinput.sortBy')}</div>
+                            <div className="search-sort-order--select">
+                                <select onChange={this.onSortOrderChange} defaultValue={sortOrder}>
+                                    <option value="newest">{tt('searchinput.newest')}</option>
+                                    <option value="popularity">{tt('searchinput.popularity')}</option>
+                                    <option value="relevance">{tt('searchinput.relevance')}</option>
+                                </select>
+                            </div>
+                        </div>
+                    )}
+            </div>
         );
     }
 }
