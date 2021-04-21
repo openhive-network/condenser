@@ -140,11 +140,9 @@ class PostsList extends React.Component {
 
         return (
             <div id="posts_list" className="PostsList">
-                {!loading && (
-                    <ul className="PostsList__summaries hfeed" itemScope itemType="http://schema.org/blogPosts">
-                        {renderSummary(posts)}
-                    </ul>
-                )}
+                <ul className="PostsList__summaries hfeed" itemScope itemType="http://schema.org/blogPosts">
+                    {renderSummary(posts)}
+                </ul>
                 {loading && (
                     <center>
                         <LoadingIndicator style={{ marginBottom: '2rem' }} type="circle" />
