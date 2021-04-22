@@ -7,10 +7,7 @@ import { accountAuthLookup } from 'app/redux/AuthSaga';
 import { getAccount } from 'app/redux/SagaShared';
 import * as userActions from 'app/redux/UserReducer';
 import { receiveFeatureFlags } from 'app/redux/AppReducer';
-import {
-    hasCompatibleKeychain,
-    isLoggedInWithKeychain,
-} from 'app/utils/HiveKeychain';
+import { hasCompatibleKeychain, isLoggedInWithKeychain } from 'app/utils/HiveKeychain';
 import { packLoginData, extractLoginData } from 'app/utils/UserUtil';
 import { browserHistory } from 'react-router';
 import {
@@ -23,17 +20,10 @@ import {
 import { loadFollows } from 'app/redux/FollowSaga';
 import { translate } from 'app/Translator';
 import DMCAUserList from 'app/utils/DMCAUserList';
-import {
-    setHiveSignerAccessToken,
-    isLoggedInWithHiveSigner,
-    hiveSignerClient,
-} from 'app/utils/HiveSigner';
+import { setHiveSignerAccessToken, isLoggedInWithHiveSigner, hiveSignerClient } from 'app/utils/HiveSigner';
 
 export const userWatches = [
-    takeLatest(
-        'user/lookupPreviousOwnerAuthority',
-        lookupPreviousOwnerAuthority
-    ),
+    takeLatest('user/lookupPreviousOwnerAuthority', lookupPreviousOwnerAuthority),
     takeLatest(userActions.CHECK_KEY_TYPE, checkKeyType),
     takeLatest(userActions.USERNAME_PASSWORD_LOGIN, usernamePasswordLogin),
     takeLatest(userActions.SAVE_LOGIN, saveLogin_localStorage),
@@ -106,8 +96,7 @@ function* usernamePasswordLogin(action) {
     // show the announcement.
     if (
         typeof sessionStorage === 'undefined' ||
-        (typeof sessionStorage !== 'undefined' &&
-            sessionStorage.getItem('hideAnnouncement') !== 'true')
+        (typeof sessionStorage !== 'undefined' && sessionStorage.getItem('hideAnnouncement') !== 'true')
     ) {
         // Uncomment to re-enable announcment
         // TODO: use config to enable/disable
@@ -125,10 +114,7 @@ function* usernamePasswordLogin(action) {
     }
 }
 
-const clean = value =>
-    value == null || value === '' || /null|undefined/.test(value)
-        ? undefined
-        : value;
+const clean = value => (value == null || value === '' || /null|undefined/.test(value) ? undefined : value);
 
 function* usernamePasswordLogin2({
     username,
@@ -145,23 +131,11 @@ function* usernamePasswordLogin2({
     const user = yield select(state => state.user);
     const loginType = user.get('login_type');
     const justLoggedIn = loginType === 'basic';
-    console.log(
-        'Login type:',
-        loginType,
-        'Just logged in?',
-        justLoggedIn,
-        'username:',
-        username
-    );
+    console.log('Login type:', loginType, 'Just logged in?', justLoggedIn, 'username:', username);
 
     // login, using saved password
     let feedURL = false;
-    let autopost,
-        memoWif,
-        login_owner_pubkey,
-        login_wif_owner_pubkey,
-        login_with_keychain,
-        login_with_hivesigner;
+    let autopost, memoWif, login_owner_pubkey, login_wif_owner_pubkey, login_with_keychain, login_with_hivesigner;
     if (!username && !password) {
         const data = localStorage.getItem('autopost2');
         if (data) {
@@ -183,20 +157,9 @@ function* usernamePasswordLogin2({
         }
     }
     // no saved password
-    if (
-        !username ||
-        !(
-            password ||
-            useKeychain ||
-            login_with_keychain ||
-            useHiveSigner ||
-            login_with_hivesigner
-        )
-    ) {
+    if (!username || !(password || useKeychain || login_with_keychain || useHiveSigner || login_with_hivesigner)) {
         console.log('No saved password');
-        const offchain_account = yield select(state =>
-            state.offchain.get('account')
-        );
+        const offchain_account = yield select(state => state.offchain.get('account'));
         if (offchain_account) serverApiLogout();
         return;
     }
@@ -208,8 +171,7 @@ function* usernamePasswordLogin2({
     }
 
     const pathname = yield select(state => state.global.get('pathname'));
-    const isRole = (role, fn) =>
-        !userProvidedRole || role === userProvidedRole ? fn() : undefined;
+    const isRole = (role, fn) => (!userProvidedRole || role === userProvidedRole ? fn() : undefined);
 
     const account = yield call(getAccount, username);
     if (!account) {
@@ -220,9 +182,7 @@ function* usernamePasswordLogin2({
     //dmca user block
     if (username && DMCAUserList.includes(username)) {
         console.log('DMCA list');
-        yield put(
-            userActions.loginError({ error: translate('terms_violation') })
-        );
+        yield put(userActions.loginError({ error: translate('terms_violation') }));
         return;
     }
     //check for defaultBeneficiaries
@@ -237,7 +197,12 @@ function* usernamePasswordLogin2({
     } catch (error) {
         defaultBeneficiaries = [];
     }
-    yield put(userActions.setUser({ defaultBeneficiaries }));
+    yield put(
+        userActions.setUser({
+            defaultBeneficiaries,
+            show_login_modal: true,
+        })
+    );
 
     // return if already logged in using steem keychain
     if (login_with_keychain) {
@@ -283,26 +248,16 @@ function* usernamePasswordLogin2({
             });
         } catch (e) {
             // Password (non wif)
-            login_owner_pubkey = PrivateKey.fromSeed(
-                username + 'owner' + password
-            )
+            login_owner_pubkey = PrivateKey.fromSeed(username + 'owner' + password)
                 .toPublicKey()
                 .toString();
             private_keys = fromJS({
-                posting_private: isRole('posting', () =>
-                    PrivateKey.fromSeed(username + 'posting' + password)
-                ),
-                active_private: isRole('active', () =>
-                    PrivateKey.fromSeed(username + 'active' + password)
-                ),
+                posting_private: isRole('posting', () => PrivateKey.fromSeed(username + 'posting' + password)),
+                active_private: isRole('active', () => PrivateKey.fromSeed(username + 'active' + password)),
                 memo_private: PrivateKey.fromSeed(username + 'memo' + password),
             });
         }
-        if (memoWif)
-            private_keys = private_keys.set(
-                'memo_private',
-                PrivateKey.fromWif(memoWif)
-            );
+        if (memoWif) private_keys = private_keys.set('memo_private', PrivateKey.fromWif(memoWif));
 
         yield call(accountAuthLookup, {
             payload: {
@@ -311,16 +266,12 @@ function* usernamePasswordLogin2({
                 login_owner_pubkey,
             },
         });
-        let authority = yield select(state =>
-            state.user.getIn(['authority', username])
-        );
+        let authority = yield select(state => state.user.getIn(['authority', username]));
 
         const hasActiveAuth = authority.get('active') === 'full';
         if (hasActiveAuth) {
             console.log('Rejecting due to detected active auth');
-            yield put(
-                userActions.loginError({ error: 'active_login_blocked' })
-            );
+            yield put(userActions.loginError({ error: 'active_login_blocked' }));
             return;
         }
 
@@ -334,31 +285,20 @@ function* usernamePasswordLogin2({
         const accountName = account.get('name');
         authority = authority.set('active', 'none');
         yield put(userActions.setAuthority({ accountName, auth: authority }));
-        const fullAuths = authority.reduce(
-            (r, auth, type) => (auth === 'full' ? r.add(type) : r),
-            Set()
-        );
+        const fullAuths = authority.reduce((r, auth, type) => (auth === 'full' ? r.add(type) : r), Set());
         if (!fullAuths.size) {
             console.log('No full auths');
             yield put(userActions.hideLoginWarning());
             localStorage.removeItem('autopost2');
             const owner_pub_key = account.getIn(['owner', 'key_auths', 0, 0]);
-            if (
-                login_owner_pubkey === owner_pub_key ||
-                login_wif_owner_pubkey === owner_pub_key
-            ) {
-                yield put(
-                    userActions.loginError({ error: 'owner_login_blocked' })
-                );
+            if (login_owner_pubkey === owner_pub_key || login_wif_owner_pubkey === owner_pub_key) {
+                yield put(userActions.loginError({ error: 'owner_login_blocked' }));
                 return;
             } else if (hasActiveAuth) {
-                yield put(
-                    userActions.loginError({ error: 'active_login_blocked' })
-                );
+                yield put(userActions.loginError({ error: 'active_login_blocked' }));
                 return;
             } else {
-                const generated_type =
-                    password[0] === 'P' && password.length > 40;
+                const generated_type = password[0] === 'P' && password.length > 40;
                 serverApiRecordEvent(
                     'login_attempt',
                     JSON.stringify({
@@ -368,16 +308,12 @@ function* usernamePasswordLogin2({
                         generated_type,
                     })
                 );
-                yield put(
-                    userActions.loginError({ error: 'Incorrect Password' })
-                );
+                yield put(userActions.loginError({ error: 'Incorrect Password' }));
                 return;
             }
         }
-        if (authority.get('posting') !== 'full')
-            private_keys = private_keys.remove('posting_private');
-        if (authority.get('active') !== 'full')
-            private_keys = private_keys.remove('active_private');
+        if (authority.get('posting') !== 'full') private_keys = private_keys.remove('posting_private');
+        if (authority.get('active') !== 'full') private_keys = private_keys.remove('active_private');
 
         const owner_pubkey = account.getIn(['owner', 'key_auths', 0, 0]);
         const active_pubkey = account.getIn(['active', 'key_auths', 0, 0]);
@@ -390,18 +326,11 @@ function* usernamePasswordLogin2({
                   .toString()
             : null;
 
-        if (
-            account.get('memo_key') !== memo_pubkey ||
-            memo_pubkey === owner_pubkey ||
-            memo_pubkey === active_pubkey
-        )
+        if (account.get('memo_key') !== memo_pubkey || memo_pubkey === owner_pubkey || memo_pubkey === active_pubkey)
             // provided password did not yield memo key, or matched active/owner
             private_keys = private_keys.remove('memo_private');
 
-        if (
-            posting_pubkey === owner_pubkey ||
-            posting_pubkey === active_pubkey
-        ) {
+        if (posting_pubkey === owner_pubkey || posting_pubkey === active_pubkey) {
             yield put(
                 userActions.loginError({
                     error:
@@ -449,21 +378,14 @@ function* usernamePasswordLogin2({
 
             if (useKeychain) {
                 const response = yield new Promise(resolve => {
-                    window.hive_keychain.requestSignBuffer(
-                        username,
-                        buf,
-                        'Posting',
-                        response => {
-                            resolve(response);
-                        }
-                    );
+                    window.hive_keychain.requestSignBuffer(username, buf, 'Posting', response => {
+                        resolve(response);
+                    });
                 });
                 if (response.success) {
                     signatures['posting'] = response.result;
                 } else {
-                    yield put(
-                        userActions.loginError({ error: response.message })
-                    );
+                    yield put(userActions.loginError({ error: response.message }));
                     return;
                 }
                 feedURL = '/@' + username + '/feed';
@@ -479,11 +401,7 @@ function* usernamePasswordLogin2({
                     // redirect url
                     feedURL = '/@' + username + '/feed';
                     // set access setHiveSignerAccessToken
-                    setHiveSignerAccessToken(
-                        username,
-                        access_token,
-                        expires_in
-                    );
+                    setHiveSignerAccessToken(username, access_token, expires_in);
                     // set user data
                     yield put(
                         userActions.setUser({
@@ -522,9 +440,7 @@ function* usernamePasswordLogin2({
         yield fork(
             getFeatureFlags,
             username,
-            useKeychain || useHiveSigner
-                ? null
-                : private_keys.get('posting_private').toString()
+            useKeychain || useHiveSigner ? null : private_keys.get('posting_private').toString()
         );
     }
     // TOS acceptance
@@ -625,24 +541,18 @@ function* saveLogin_localStorage() {
         console.error('No posting key to save?');
         return;
     }
-    const account = yield select(state =>
-        state.global.getIn(['accounts', username])
-    );
+    const account = yield select(state => state.global.getIn(['accounts', username]));
     if (!account) {
         console.error('Missing global.accounts[' + username + ']');
         return;
     }
-    const postingPubkey = posting_private
-        ? posting_private.toPublicKey().toString()
-        : 'none';
+    const postingPubkey = posting_private ? posting_private.toPublicKey().toString() : 'none';
     try {
         account.getIn(['active', 'key_auths']).forEach(auth => {
-            if (auth.get(0) === postingPubkey)
-                throw 'Login will not be saved, posting key is the same as active key';
+            if (auth.get(0) === postingPubkey) throw 'Login will not be saved, posting key is the same as active key';
         });
         account.getIn(['owner', 'key_auths']).forEach(auth => {
-            if (auth.get(0) === postingPubkey)
-                throw 'Login will not be saved, posting key is the same as owner key';
+            if (auth.get(0) === postingPubkey) throw 'Login will not be saved, posting key is the same as owner key';
         });
     } catch (e) {
         console.error('login_auth_err', e);
@@ -651,9 +561,7 @@ function* saveLogin_localStorage() {
 
     const memoKey = private_keys ? private_keys.get('memo_private') : null;
     const memoWif = memoKey && memoKey.toWif();
-    const postingPrivateWif = posting_private
-        ? posting_private.toWif()
-        : 'none';
+    const postingPrivateWif = posting_private ? posting_private.toWif() : 'none';
     const data = packLoginData(
         username,
         postingPrivateWif,
@@ -704,16 +612,12 @@ function* lookupPreviousOwnerAuthority({ payload: {} }) {
     if (!login_owner_pubkey) return;
 
     const username = current.get('username');
-    const key_auths = yield select(state =>
-        state.global.getIn(['accounts', username, 'owner', 'key_auths'])
-    );
+    const key_auths = yield select(state => state.global.getIn(['accounts', username, 'owner', 'key_auths']));
     if (key_auths && key_auths.find(key => key.get(0) === login_owner_pubkey)) {
         return;
     }
     // Owner history since this index was installed July 14
-    let owner_history = fromJS(
-        yield call([api, api.getOwnerHistoryAsync], username)
-    );
+    let owner_history = fromJS(yield call([api, api.getOwnerHistoryAsync], username));
     if (owner_history.count() === 0) return;
     owner_history = owner_history.sort((b, a) => {
         // Sort decending
@@ -726,11 +630,7 @@ function* lookupPreviousOwnerAuthority({ payload: {} }) {
         const weight_threshold = auth.get('weight_threshold');
         const key3 = auth
             .get('key_auths')
-            .find(
-                key2 =>
-                    key2.get(0) === login_owner_pubkey &&
-                    key2.get(1) >= weight_threshold
-            );
+            .find(key2 => key2.get(0) === login_owner_pubkey && key2.get(1) >= weight_threshold);
         return key3 ? auth : null;
     });
     if (!previous_owner_authority) {
@@ -740,9 +640,7 @@ function* lookupPreviousOwnerAuthority({ payload: {} }) {
     yield put(userActions.setUser({ previous_owner_authority }));
 }
 
-function* uploadImage({
-    payload: { file, dataUrl, filename = 'image.txt', progress },
-}) {
+function* uploadImage({ payload: { file, dataUrl, filename = 'image.txt', progress } }) {
     const _progress = progress;
     progress = msg => {
         _progress(msg);
@@ -804,20 +702,13 @@ function* uploadImage({
     let postUrl;
     if (hiveSignerLogin) {
         // verify user with access_token for HiveSigner login
-        postUrl = `${$STM_Config.upload_image}/hs/${
-            hiveSignerClient.accessToken
-        }`;
+        postUrl = `${$STM_Config.upload_image}/hs/${hiveSignerClient.accessToken}`;
     } else {
         if (keychainLogin) {
             const response = yield new Promise(resolve => {
-                window.hive_keychain.requestSignBuffer(
-                    username,
-                    JSON.stringify(buf),
-                    'Posting',
-                    response => {
-                        resolve(response);
-                    }
-                );
+                window.hive_keychain.requestSignBuffer(username, JSON.stringify(buf), 'Posting', response => {
+                    resolve(response);
+                });
             });
             if (response.success) {
                 sig = response.result;

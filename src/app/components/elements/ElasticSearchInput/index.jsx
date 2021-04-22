@@ -93,12 +93,12 @@ class ElasticSearchInput extends React.Component {
                 {expanded &&
                     !loading && (
                         <div className="search-sort-order">
-                            <div className="search-sort-order--title">Sort by:</div>
+                            <div className="search-sort-order--title">{tt('searchinput.sortBy')}</div>
                             <div className="search-sort-order--select">
                                 <select onChange={this.onSortOrderChange} defaultValue={sortOrder}>
-                                    <option value="newest">Newest</option>
-                                    <option value="popularity">Popularity</option>
-                                    <option value="relevance">Relevance</option>
+                                    <option value="newest">{tt('searchinput.newest')}</option>
+                                    <option value="popularity">{tt('searchinput.popularity')}</option>
+                                    <option value="relevance">{tt('searchinput.relevance')}</option>
                                 </select>
                             </div>
                         </div>
