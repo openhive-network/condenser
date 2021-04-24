@@ -20,7 +20,9 @@ const supportedProviders = {
     bandcamp,
     dapplr,
     dtube,
+    gist,
     mixcloud,
+    reddit,
     soundcloud,
     spotify,
     threespeak,
@@ -29,8 +31,6 @@ const supportedProviders = {
     twitter,
     vimeo,
     youtube,
-    reddit,
-    gist,
 };
 
 export default supportedProviders;
