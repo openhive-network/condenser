@@ -7,7 +7,7 @@ import EmbeddedGist from './EmbeddedGist';
  */
 // <script src="https://gist.github.com/huysbs/647a50197b95c4027550a2cc558af6aa.js"></script>
 const regex = {
-    main: /(https:\/\/gist\.github\.com\/((.*?)\/(.*?))\.js)/i,
+    main: /(https?:\/\/gist\.github\.com\/((.*?)\/(.*)))/i,
     sanitize: /(https:\/\/gist\.github\.com\/((.*?)\/(.*?))\.js)/i,
     htmlReplacement: /<script src="(https:\/\/gist\.github\.com\/((.*?)\/(.*?))\.js)"><\/script>/i,
 };
@@ -59,6 +59,7 @@ export function extractMetadata(data) {
     if (!data) return null;
 
     const match = data.match(regex.main);
+    console.log('extractMetadata', match);
     if (match) {
         const url = match[1];
         const fullId = match[2];
@@ -88,8 +89,10 @@ export function extractMetadata(data) {
  * @returns {*}
  */
 export function genIframeMd(idx, gistId, w, h, metadata) {
+    console.log('genIframeMd', idx, gistId);
     if (typeof window !== 'undefined') {
         const fullId = Buffer.from(metadata, 'base64').toString();
+        console.log('geniframemd fullId', fullId);
 
         return <EmbeddedGist key={fullId} gist={fullId} />;
     }
@@ -106,6 +109,7 @@ export function embedNode(child) {
     try {
         const { data } = child;
         const gist = extractMetadata(data);
+        console.log('embedNode', gist);
 
         if (gist) {
             child.data = data.replace(
