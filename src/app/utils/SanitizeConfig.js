@@ -1,12 +1,5 @@
-import {
-    isDefaultImageSize,
-    defaultSrcSet,
-    defaultWidth,
-} from 'app/utils/ProxifyUrl';
-import {
-    getPhishingWarningMessage,
-    getExternalLinkWarningMessage,
-} from 'shared/HtmlReady'; // the only allowable title attributes for div and a tags
+import { isDefaultImageSize, defaultSrcSet, defaultWidth } from 'app/utils/ProxifyUrl';
+import { getPhishingWarningMessage, getExternalLinkWarningMessage } from 'shared/HtmlReady'; // the only allowable title attributes for div and a tags
 
 import { validateIframeUrl as validateEmbbeddedPlayerIframeUrl } from 'app/components/elements/EmbeddedPlayers';
 
@@ -21,12 +14,7 @@ export const allowedTags = `
     .split(/,\s*/);
 
 // Medium insert plugin uses: div, figure, figcaption, iframe
-export default ({
-    large = true,
-    highQualityPost = true,
-    noImage = false,
-    sanitizeErrors = [],
-}) => ({
+export default ({ large = true, highQualityPost = true, noImage = false, sanitizeErrors = [] }) => ({
     allowedTags,
     // figure, figcaption,
 
@@ -42,6 +30,7 @@ export default ({
             'webkitallowfullscreen',
             'mozallowfullscreen',
             'sandbox',
+            'class',
         ],
 
         // class attribute is strictly whitelisted (below)
@@ -67,12 +56,8 @@ export default ({
                 sandboxAttributes,
                 width,
                 height,
-            } = validateEmbbeddedPlayerIframeUrl(
-                srcAtty,
-                large,
-                widthAtty,
-                heightAtty
-            );
+                providerId,
+            } = validateEmbbeddedPlayerIframeUrl(srcAtty, large, widthAtty, heightAtty);
 
             if (validUrl !== false) {
                 const iframe = {
@@ -85,6 +70,7 @@ export default ({
                         src: validUrl,
                         width,
                         height,
+                        class: `${providerId}-iframe`,
                     },
                 };
                 if (useSandbox) {
@@ -97,11 +83,7 @@ export default ({
                 return iframe;
             }
 
-            console.log(
-                'Blocked, did not match iframe "src" white list urls:',
-                tagName,
-                attribs
-            );
+            console.log('Blocked, did not match iframe "src" white list urls:', tagName, attribs);
 
             sanitizeErrors.push('Invalid iframe URL: ' + srcAtty);
             return { tagName: 'div', text: `(Unsupported ${srcAtty})` };
@@ -111,14 +93,8 @@ export default ({
             //See https://github.com/punkave/sanitize-html/issues/117
             let { src, alt } = attribs;
             if (!/^(https?:)?\/\//i.test(src)) {
-                console.log(
-                    'Blocked, image tag src does not appear to be a url',
-                    tagName,
-                    attribs
-                );
-                sanitizeErrors.push(
-                    'An image in this post did not save properly.'
-                );
+                console.log('Blocked, image tag src does not appear to be a url', tagName, attribs);
+                sanitizeErrors.push('An image in this post did not save properly.');
                 return { tagName: 'img', attribs: { src: 'brokenimg.jpg' } };
             }
 
@@ -145,11 +121,7 @@ export default ({
             ];
             const validClass = classWhitelist.find(e => attribs.class == e);
             if (validClass) attys.class = validClass;
-            if (
-                validClass === 'phishy' &&
-                attribs.title === getPhishingWarningMessage()
-            )
-                attys.title = attribs.title;
+            if (validClass === 'phishy' && attribs.title === getPhishingWarningMessage()) attys.title = attribs.title;
             return {
                 tagName,
                 attribs: attys,
@@ -157,8 +129,7 @@ export default ({
         },
         td: (tagName, attribs) => {
             const attys = {};
-            if (attribs.style === 'text-align:right')
-                attys.style = 'text-align:right';
+            if (attribs.style === 'text-align:right') attys.style = 'text-align:right';
             return {
                 tagName,
                 attribs: attys,
@@ -170,9 +141,7 @@ export default ({
             href = href.trim();
             const attys = { href };
             // If it's not a (relative or absolute) hive URL...
-            if (
-                !href.match(`^(\/(?!\/)|https:\/\/${$STM_Config.site_domain})`)
-            ) {
+            if (!href.match(`^(\/(?!\/)|https:\/\/${$STM_Config.site_domain})`)) {
                 // attys.target = '_blank' // pending iframe impl https://mathiasbynens.github.io/rel-noopener/
                 attys.rel = highQualityPost ? 'noopener' : 'nofollow noopener';
                 attys.title = getExternalLinkWarningMessage();
