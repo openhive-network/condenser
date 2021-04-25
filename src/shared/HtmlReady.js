@@ -205,7 +205,10 @@ function iframe(state, child) {
     if (!mutate) return;
 
     const tag = child.parentNode.tagName ? child.parentNode.tagName.toLowerCase() : child.parentNode.tagName;
-    if (tag == 'div' && child.parentNode.getAttribute('class') == 'videoWrapper') return;
+    if (tag === 'div' && child.parentNode.classList.contains('videoWrapper')) {
+        return;
+    }
+
     const html = XMLSerializer.serializeToString(child);
     child.parentNode.replaceChild(DOMParser.parseFromString(`<div class="videoWrapper">${html}</div>`), child);
 }
