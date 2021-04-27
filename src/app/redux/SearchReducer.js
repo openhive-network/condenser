@@ -36,14 +36,19 @@ export default function reducer(state = defaultSearchState, action) {
             if (results === null || results === undefined) return state;
 
             const posts = List(
-                results.map(post => {
-                    post.created = post.created_at;
-                    post.author_rep = parseFloat(post.author_rep);
-                    post.author_reputation = post.author_rep;
-                    post.stats = { total_votes: post.total_votes };
+                results
+                    .filter(post => {
+                        // Don't include comments in search results
+                        return post.depth === 0;
+                    })
+                    .map(post => {
+                        post.created = post.created_at;
+                        post.author_rep = parseFloat(post.author_rep);
+                        post.author_reputation = post.author_rep;
+                        post.stats = { total_votes: post.total_votes };
 
-                    return fromJS(post);
-                })
+                        return fromJS(post);
+                    })
             );
 
             let newState = {};

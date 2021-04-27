@@ -96,7 +96,6 @@ export default function reducer(state = defaultState, action = {}) {
                 const communities = Object.keys(payload.community);
                 for (let ci = 0; ci < communities.length; ci += 1) {
                     const community = payload.community[communities[ci]];
-                    console.log('debug community', community);
                     community.title = Sanitizer.getTextOnly(community.title);
                     community.description = Sanitizer.getTextOnly(community.description);
                     community.flag_text = Sanitizer.getTextOnly(community.flag_text);
