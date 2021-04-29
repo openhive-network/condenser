@@ -7,6 +7,7 @@ import * as mixcloud from 'app/components/elements/EmbeddedPlayers/mixcloud';
 import * as soundcloud from 'app/components/elements/EmbeddedPlayers/soundcloud';
 import * as spotify from 'app/components/elements/EmbeddedPlayers/spotify';
 import * as threespeak from 'app/components/elements/EmbeddedPlayers/threespeak';
+import * as truvvl from 'app/components/elements/EmbeddedPlayers/truvvl';
 import * as twitch from 'app/components/elements/EmbeddedPlayers/twitch';
 import * as twitter from 'app/components/elements/EmbeddedPlayers/twitter';
 import * as vimeo from 'app/components/elements/EmbeddedPlayers/vimeo';
@@ -19,16 +20,17 @@ const supportedProviders = {
     bandcamp,
     dapplr,
     dtube,
+    gist,
     mixcloud,
+    reddit,
     soundcloud,
     spotify,
     threespeak,
+    truvvl,
     twitch,
     twitter,
     vimeo,
     youtube,
-    reddit,
-    gist,
 };
 
 export default supportedProviders;
@@ -39,7 +41,7 @@ function callProviderMethod(provider, methodName, ...parms) {
         return method(...parms);
     }
 
-    return null;
+    return false;
 }
 
 // Set only those attributes in `sandboxAttributes`, that are minimally
@@ -77,8 +79,8 @@ export function validateIframeUrl(url, large = true, width = null, height = null
 
     const providersKeys = Object.keys(supportedProviders);
     for (let pi = 0; pi < providersKeys.length; pi += 1) {
-        const providerName = providersKeys[pi];
-        const provider = supportedProviders[providerName];
+        const providerId = providersKeys[pi];
+        const provider = supportedProviders[providerId];
 
         const validUrl = callProviderMethod(provider, 'validateIframeUrl', url);
 
@@ -91,7 +93,7 @@ export function validateIframeUrl(url, large = true, width = null, height = null
         if (validUrl !== false) {
             const sandboxConfig = getProviderSandboxConfig(provider);
             return {
-                providerId: provider.id,
+                providerId,
                 sandboxAttributes: sandboxConfig.sandboxAttributes || [],
                 useSandbox: sandboxConfig.useSandbox,
                 width: iframeDimensions.width.toString(),
