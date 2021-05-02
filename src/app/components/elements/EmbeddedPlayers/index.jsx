@@ -36,6 +36,7 @@ const supportedProviders = {
 export default supportedProviders;
 
 function callProviderMethod(provider, methodName, ...parms) {
+    console.log(provider, methodName, ...parms)
     const method = _.get(provider, methodName, null);
     if (method && typeof method === 'function') {
         return method(...parms);
@@ -86,6 +87,7 @@ export function validateIframeUrl(url, large = true, width = null, height = null
 
         let iframeDimensions;
         iframeDimensions = callProviderMethod(provider, 'getIframeDimensions', large, url, width, height);
+        console.log(iframeDimensions)
         if (iframeDimensions === null) {
             iframeDimensions = getIframeDimensions(large);
         }
