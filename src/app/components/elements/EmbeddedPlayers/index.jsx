@@ -91,7 +91,7 @@ export function validateIframeUrl(url, large = true, width = null, height = null
         let iframeDimensions;
         iframeDimensions = callProviderMethod(provider, 'getIframeDimensions', large, url, width, height);
         console.log('The first dims = ', iframeDimensions)
-        if (iframeDimensions === null) {
+        if (!iframeDimensions) {
             iframeDimensions = getIframeDimensions(large);
         }
         console.log('The second dims = ', iframeDimensions)
