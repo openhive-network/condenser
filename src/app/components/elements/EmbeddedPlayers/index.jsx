@@ -92,6 +92,7 @@ export function validateIframeUrl(url, large = true, width = null, height = null
 
         if (validUrl !== false) {
             const sandboxConfig = getProviderSandboxConfig(provider);
+            console.log(iframeDimensions.width, iframeDimensions.height)
             return {
                 providerId,
                 sandboxAttributes: sandboxConfig.sandboxAttributes || [],
