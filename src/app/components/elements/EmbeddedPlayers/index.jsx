@@ -37,7 +37,7 @@ export default supportedProviders;
 
 function callProviderMethod(provider, methodName, ...parms) {
     const method = _.get(provider, methodName, null);
-    if (methodName === 'getIframeDimensions') {
+    if (methodName === 'getIframeDimensions' && method) {
         console.log(method, typeof method)
         console.log("returned = ", method(...parms))
     }
@@ -90,14 +90,15 @@ export function validateIframeUrl(url, large = true, width = null, height = null
 
         let iframeDimensions;
         iframeDimensions = callProviderMethod(provider, 'getIframeDimensions', large, url, width, height);
-        console.log(iframeDimensions)
+        console.log('The first dims = ', iframeDimensions)
         if (iframeDimensions === null) {
             iframeDimensions = getIframeDimensions(large);
         }
+        console.log('The second dims = ', iframeDimensions)
 
         if (validUrl !== false) {
             const sandboxConfig = getProviderSandboxConfig(provider);
-            console.log(iframeDimensions.width, iframeDimensions.height)
+            console.log('width & h = ', iframeDimensions.width, iframeDimensions.height)
             return {
                 providerId,
                 sandboxAttributes: sandboxConfig.sandboxAttributes || [],
