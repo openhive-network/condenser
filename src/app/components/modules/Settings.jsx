@@ -411,7 +411,7 @@ class Settings extends React.Component {
         }
 
         endpoints.push(value);
-        cookies.set('user_api_endpoints', endpoints, { expires: new Date.parse('2030-01-01T00:00:00.000Z') });
+        cookies.set('user_api_endpoints', endpoints, { path: '/', maxAge: 1000000000 });
         this.setState({ cookies: cookies }, () => {
             this.synchronizeLists();
         });
