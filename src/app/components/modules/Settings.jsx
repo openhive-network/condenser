@@ -14,14 +14,7 @@ import * as api from '@hiveio/hive-js';
 import Cookies from 'universal-cookie';
 
 //TODO?: Maybe move this to a config file somewhere?
-const KNOWN_API_NODES = [
-    'api.hive.blog',
-    'anyx.io',
-    'api.openhive.network',
-    'rpc.ausbit.dev',
-    'api.hivekings.com',
-    'beta.openhive.network',
-];
+const KNOWN_API_NODES = ['api.hive.blog', 'rpc.ausbit.dev', 'anyx.io', 'api.ha.deathwing.me', 'api.deathwing.me'];
 
 class Settings extends React.Component {
     constructor(props) {
