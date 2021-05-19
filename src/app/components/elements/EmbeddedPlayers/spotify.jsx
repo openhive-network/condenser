@@ -8,8 +8,8 @@ import React from 'react';
  * @type {{htmlReplacement: RegExp, main: RegExp, sanitize: RegExp}}
  */
 const regex = {
-    main: /(?:https?:\/\/(?:(?:open.spotify.com\/(playlist|show|episode)\/(.*))))/i,
-    sanitize: /^https:\/\/open\.spotify\.com\/(embed|embed-podcast)\/(playlist|show|episode)\/(.*)/i,
+    main: /(?:https?:\/\/(?:(?:open.spotify.com\/(playlist|show|episode|album)\/(.*))))/i,
+    sanitize: /^https:\/\/open\.spotify\.com\/(embed|embed-podcast)\/(playlist|show|episode|album)\/(.*)/i,
 };
 
 export default regex;
@@ -27,12 +27,7 @@ export function getIframeDimensions() {
  */
 export const sandboxConfig = {
     useSandbox: true,
-    sandboxAttributes: [
-        'allow-scripts',
-        'allow-same-origin',
-        'allow-popups',
-        'allow-forms',
-    ],
+    sandboxAttributes: ['allow-scripts', 'allow-same-origin', 'allow-popups', 'allow-forms'],
 };
 
 /**
@@ -64,7 +59,12 @@ function extractMetadata(data) {
     if (!m || m.length < 2) return null;
 
     const startTime = m.input.match(/t=(\d+)s?/);
-    const embed = m[1] === 'playlist' ? 'embed' : 'embed-podcast';
+    let embed;
+    if (m[1] === 'playlist' || m[1] === 'album') {
+        embed = 'embed';
+    } else if (m[1] === 'album') {
+        embed = 'embed-podcast';
+    }
 
     return {
         id: `${embed}/${m[1]}/${m[2]}`,
@@ -86,10 +86,7 @@ export function embedNode(child, links /*images*/) {
         const spotify = extractMetadata(data);
         if (!spotify) return child;
 
-        child.data = data.replace(
-            spotify.url,
-            `~~~ embed:${spotify.id} spotify ~~~`
-        );
+        child.data = data.replace(spotify.url, `~~~ embed:${spotify.id} spotify ~~~`);
 
         if (links) links.add(spotify.canonical);
         // if(images) images.add(spotify.thumbnail) // not available
@@ -112,12 +109,7 @@ export function genIframeMd(idx, id, width, height) {
 
     let sandbox = sandboxConfig.useSandbox;
     if (sandbox) {
-        if (
-            Object.prototype.hasOwnProperty.call(
-                sandboxConfig,
-                'sandboxAttributes'
-            )
-        ) {
+        if (Object.prototype.hasOwnProperty.call(sandboxConfig, 'sandboxAttributes')) {
             sandbox = sandboxConfig.sandboxAttributes.join(' ');
         }
     }

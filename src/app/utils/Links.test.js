@@ -252,9 +252,11 @@ describe('Performance', () => {
         match(spotifyRegex.main, 'https://open.spotify.com/playlist/37i9dQZF1DWSDCcNkUu5tr?si=WPhzYzqATGSIa0d3kbNgBg');
         match(spotifyRegex.main, 'https://open.spotify.com/show/37i9dQZF1DWSDCcNkUu5tr?si=WPhzYzqATGSIa0d3kbNgBg');
         match(spotifyRegex.main, 'https://open.spotify.com/episode/37i9dQZF1DWSDCcNkUu5tr?si=WPhzYzqATGSIa0d3kbNgBg');
+        match(spotifyRegex.main, 'https://open.spotify.com/album/7f6Vo2c0GMRcvkdgsLaPld?si=RChe9-s5TxaoHGNxG5mAHw');
         match(spotifyRegex.sanitize, 'https://open.spotify.com/embed/playlist/37i9dQZF1DWSDCcNkUu5tr');
         match(spotifyRegex.sanitize, 'https://open.spotify.com/embed-podcast/show/37i9dQZF1DWSDCcNkUu5tr');
         match(spotifyRegex.sanitize, 'https://open.spotify.com/embed-podcast/episode/37i9dQZF1DWSDCcNkUu5tr');
+        match(spotifyRegex.sanitize, 'https://open.spotify.com/embed/album/7f6Vo2c0GMRcvkdgsLaPld');
     });
     it('mixcloud', () => {
         match(
