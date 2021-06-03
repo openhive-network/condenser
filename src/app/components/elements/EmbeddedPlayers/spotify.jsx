@@ -2,14 +2,11 @@ import React from 'react';
 
 /**
  * Regular expressions for detecting and validating provider URLs
- * https://open.spotify.com/show/6C1Q7ITJKvZVosOdC9M1RM?si=dKAVgQw4Squbnnt5R68bdg
- * https://open.spotify.com/episode/7iVhSqisUmWEEHmEG67gxS?si=eNP1iEsmRBCed0SFo4n_QA
- * https://open.spotify.com/playlist/5UV4uC6N0lZ7q9ui3yIbqn?si=v-oAN2mOT5i4bFk0NrRjqw
  * @type {{htmlReplacement: RegExp, main: RegExp, sanitize: RegExp}}
  */
 const regex = {
-    main: /(?:https?:\/\/(?:(?:open.spotify.com\/(playlist|show|episode)\/(.*))))/i,
-    sanitize: /^https:\/\/open\.spotify\.com\/(embed|embed-podcast)\/(playlist|show|episode)\/(.*)/i,
+    main: /(?:https?:\/\/(?:(?:open.spotify.com\/(playlist|show|episode|album|track|artist)\/(.*))))/i,
+    sanitize: /^https:\/\/open\.spotify\.com\/(embed|embed-podcast)\/(playlist|show|episode|album|track|artist)\/(.*)/i,
 };
 
 export default regex;
@@ -27,19 +24,11 @@ export function getIframeDimensions() {
  */
 export const sandboxConfig = {
     useSandbox: true,
-    sandboxAttributes: [
-        'allow-scripts',
-        'allow-same-origin',
-        'allow-popups',
-        'allow-forms',
-    ],
+    sandboxAttributes: ['allow-scripts', 'allow-same-origin', 'allow-popups', 'allow-forms'],
 };
 
 /**
  * Check if the iframe code in the post editor is to an allowed URL
- * <iframe src="https://open.spotify.com/embed/playlist/37i9dQZF1DWSDCcNkUu5tr" width="300" height="380" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>
- * <iframe src="https://open.spotify.com/embed-podcast/show/6C1Q7ITJKvZVosOdC9M1RM" width="100%" height="232" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>
- * <iframe src="https://open.spotify.com/embed-podcast/episode/49EzBVgb4exGi2AIRKmTGK" width="100%" height="232" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>
  * @param url
  * @returns {boolean|*}
  */
@@ -64,7 +53,12 @@ function extractMetadata(data) {
     if (!m || m.length < 2) return null;
 
     const startTime = m.input.match(/t=(\d+)s?/);
-    const embed = m[1] === 'playlist' ? 'embed' : 'embed-podcast';
+    let embed;
+    if (m[1] === 'show' || m[1] === 'episode') {
+        embed = 'embed-podcast';
+    } else {
+        embed = 'embed';
+    }
 
     return {
         id: `${embed}/${m[1]}/${m[2]}`,
@@ -86,10 +80,7 @@ export function embedNode(child, links /*images*/) {
         const spotify = extractMetadata(data);
         if (!spotify) return child;
 
-        child.data = data.replace(
-            spotify.url,
-            `~~~ embed:${spotify.id} spotify ~~~`
-        );
+        child.data = data.replace(spotify.url, `~~~ embed:${spotify.id} spotify ~~~`);
 
         if (links) links.add(spotify.canonical);
         // if(images) images.add(spotify.thumbnail) // not available
@@ -112,12 +103,7 @@ export function genIframeMd(idx, id, width, height) {
 
     let sandbox = sandboxConfig.useSandbox;
     if (sandbox) {
-        if (
-            Object.prototype.hasOwnProperty.call(
-                sandboxConfig,
-                'sandboxAttributes'
-            )
-        ) {
+        if (Object.prototype.hasOwnProperty.call(sandboxConfig, 'sandboxAttributes')) {
             sandbox = sandboxConfig.sandboxAttributes.join(' ');
         }
     }
