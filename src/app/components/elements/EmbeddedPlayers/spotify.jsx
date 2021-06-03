@@ -2,14 +2,11 @@ import React from 'react';
 
 /**
  * Regular expressions for detecting and validating provider URLs
- * https://open.spotify.com/show/6C1Q7ITJKvZVosOdC9M1RM?si=dKAVgQw4Squbnnt5R68bdg
- * https://open.spotify.com/episode/7iVhSqisUmWEEHmEG67gxS?si=eNP1iEsmRBCed0SFo4n_QA
- * https://open.spotify.com/playlist/5UV4uC6N0lZ7q9ui3yIbqn?si=v-oAN2mOT5i4bFk0NrRjqw
  * @type {{htmlReplacement: RegExp, main: RegExp, sanitize: RegExp}}
  */
 const regex = {
-    main: /(?:https?:\/\/(?:(?:open.spotify.com\/(playlist|show|episode|album)\/(.*))))/i,
-    sanitize: /^https:\/\/open\.spotify\.com\/(embed|embed-podcast)\/(playlist|show|episode|album)\/(.*)/i,
+    main: /(?:https?:\/\/(?:(?:open.spotify.com\/(playlist|show|episode|album|track|artist)\/(.*))))/i,
+    sanitize: /^https:\/\/open\.spotify\.com\/(embed|embed-podcast)\/(playlist|show|episode|album|track|artist)\/(.*)/i,
 };
 
 export default regex;
@@ -32,9 +29,6 @@ export const sandboxConfig = {
 
 /**
  * Check if the iframe code in the post editor is to an allowed URL
- * <iframe src="https://open.spotify.com/embed/playlist/37i9dQZF1DWSDCcNkUu5tr" width="300" height="380" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>
- * <iframe src="https://open.spotify.com/embed-podcast/show/6C1Q7ITJKvZVosOdC9M1RM" width="100%" height="232" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>
- * <iframe src="https://open.spotify.com/embed-podcast/episode/49EzBVgb4exGi2AIRKmTGK" width="100%" height="232" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>
  * @param url
  * @returns {boolean|*}
  */
@@ -60,10 +54,10 @@ function extractMetadata(data) {
 
     const startTime = m.input.match(/t=(\d+)s?/);
     let embed;
-    if (m[1] === 'playlist' || m[1] === 'album') {
-        embed = 'embed';
-    } else if (m[1] === 'album') {
+    if (m[1] === 'show' || m[1] === 'episode') {
         embed = 'embed-podcast';
+    } else {
+        embed = 'embed';
     }
 
     return {
