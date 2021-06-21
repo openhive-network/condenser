@@ -26,6 +26,7 @@ import Remarkable from 'remarkable';
 import Dropzone from 'react-dropzone';
 import tt from 'counterpart';
 import { loadUserTemplates, saveUserTemplates } from 'app/utils/UserTemplates';
+import BadActorList from 'app/utils/BadActorList';
 
 const remarkable = new Remarkable({ html: true, linkify: false, breaks: true });
 
@@ -170,9 +171,15 @@ class ReplyEditor extends React.Component {
 
                 if (label && name && weight) {
                     if (
-                        (label === 'referrer' && weight <= $STM_Config.referral.max_fee_referrer) ||
-                        (label === 'creator' && weight <= $STM_Config.referral.max_fee_creator) ||
-                        (label === 'provider' && weight <= $STM_Config.referral.max_fee_provider)
+                        (label === 'referrer' &&
+                            weight <= $STM_Config.referral.max_fee_referrer &&
+                            !BadActorList.includes(name)) ||
+                        (label === 'creator' &&
+                            weight <= $STM_Config.referral.max_fee_creator &&
+                            !BadActorList.includes(name)) ||
+                        (label === 'provider' &&
+                            weight <= $STM_Config.referral.max_fee_provider &&
+                            !BadActorList.includes(name))
                     ) {
                         if (qualifiedBeneficiaries.find(beneficiary => beneficiary.username === name)) {
                             qualifiedBeneficiaries.find(

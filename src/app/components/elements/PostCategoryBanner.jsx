@@ -30,6 +30,8 @@ class PostCategoryBanner extends React.Component {
             onChange(destination);
         };
 
+        console.log('postDestination', postDestination);
+
         return (
             <div className="PostCategoryBanner">
                 <div className="postTo">
@@ -37,7 +39,7 @@ class PostCategoryBanner extends React.Component {
                         Posting to:{' '}
                         <select
                             className="PostCategoryBanner--community-selector"
-                            value={postDestination}
+                            value={postDestination || ''}
                             onChange={onCommunitySelected}
                         >
                             <option value="blog">My blog</option>

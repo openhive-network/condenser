@@ -252,9 +252,18 @@ describe('Performance', () => {
         match(spotifyRegex.main, 'https://open.spotify.com/playlist/37i9dQZF1DWSDCcNkUu5tr?si=WPhzYzqATGSIa0d3kbNgBg');
         match(spotifyRegex.main, 'https://open.spotify.com/show/37i9dQZF1DWSDCcNkUu5tr?si=WPhzYzqATGSIa0d3kbNgBg');
         match(spotifyRegex.main, 'https://open.spotify.com/episode/37i9dQZF1DWSDCcNkUu5tr?si=WPhzYzqATGSIa0d3kbNgBg');
+        match(spotifyRegex.main, 'https://open.spotify.com/album/7f6Vo2c0GMRcvkdgsLaPld?si=RChe9-s5TxaoHGNxG5mAHw');
+        match(spotifyRegex.main, 'https://open.spotify.com/track/7ngO2TJ9Gg9VCzNSJF2O4N');
+        match(spotifyRegex.main, 'https://open.spotify.com/artist/70eAfg5WeShjPxtD9Yi6P9');
         match(spotifyRegex.sanitize, 'https://open.spotify.com/embed/playlist/37i9dQZF1DWSDCcNkUu5tr');
         match(spotifyRegex.sanitize, 'https://open.spotify.com/embed-podcast/show/37i9dQZF1DWSDCcNkUu5tr');
         match(spotifyRegex.sanitize, 'https://open.spotify.com/embed-podcast/episode/37i9dQZF1DWSDCcNkUu5tr');
+        match(spotifyRegex.sanitize, 'https://open.spotify.com/embed/album/7f6Vo2c0GMRcvkdgsLaPld');
+        match(spotifyRegex.sanitize, 'https://open.spotify.com/embed/track/6V4oUHrin3AlMarW8MsnIK?si=03e929f5a0ad4893');
+        match(
+            spotifyRegex.sanitize,
+            'https://open.spotify.com/embed/artist/70eAfg5WeShjPxtD9Yi6P9?si=VDDO-Ju9TOqTw_pS5piraA'
+        );
     });
     it('mixcloud', () => {
         match(
