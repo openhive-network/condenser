@@ -99,6 +99,11 @@
     background: themed('moduleBackgroundColor');
     padding: 3px 5px;
   }
+  svg {
+    @include themify($themes) {
+      fill: themed('textColorSecondary');
+    }
+  }
 }
 
 .Comment__header-user {
