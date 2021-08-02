@@ -30,8 +30,6 @@ class PostCategoryBanner extends React.Component {
             onChange(destination);
         };
 
-        console.log('postDestination', postDestination);
-
         return (
             <div className="PostCategoryBanner">
                 <div className="postTo">

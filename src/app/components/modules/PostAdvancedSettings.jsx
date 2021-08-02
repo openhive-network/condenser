@@ -4,9 +4,7 @@ import reactForm from 'app/utils/ReactForm';
 import { SUBMIT_FORM_ID } from 'shared/constants';
 import tt from 'counterpart';
 import { fromJS } from 'immutable';
-import BeneficiarySelector, {
-    validateBeneficiaries,
-} from 'app/components/cards/BeneficiarySelector';
+import BeneficiarySelector, { validateBeneficiaries } from 'app/components/cards/BeneficiarySelector';
 import PostTemplateSelector from 'app/components/cards/PostTemplateSelector';
 import { loadUserTemplates, saveUserTemplates } from 'app/utils/UserTemplates';
 
@@ -37,11 +35,7 @@ class PostAdvancedSettings extends Component {
             initialValues: props.initialValues,
             validation: values => {
                 return {
-                    beneficiaries: validateBeneficiaries(
-                        props.username,
-                        values.beneficiaries,
-                        false
-                    ),
+                    beneficiaries: validateBeneficiaries(props.username, values.beneficiaries, false),
                 };
             },
         });
@@ -107,47 +101,39 @@ class PostAdvancedSettings extends Component {
         if (maxAcceptedPayoutType === 'no_max') {
             this.setState({
                 maxAcceptedPayout: null,
-                payoutType:
-                    maxAcceptedPayout === 0 ? defaultPayoutType : payoutType,
+                payoutType: maxAcceptedPayout === 0 ? defaultPayoutType : payoutType,
             });
         } else if (maxAcceptedPayoutType === '0') {
             this.setState({ maxAcceptedPayout: 0, payoutType: '0%' });
         } else {
             this.setState({
                 maxAcceptedPayout: 100,
-                payoutType:
-                    maxAcceptedPayout === 0 ? defaultPayoutType : payoutType,
+                payoutType: maxAcceptedPayout === 0 ? defaultPayoutType : payoutType,
             });
         }
     };
 
     handleMaxAcceptedPayoutCustom = event => {
-        const customValue = event.target.value;
+        const customValue = parseInt(event.target.value);
 
-        if (customValue > 0) {
-            this.setState({ maxAcceptedPayout: parseInt(customValue) });
-        } else if (customValue) {
+        if (customValue) {
+            this.setState({ maxAcceptedPayout: customValue });
+        } else {
+            this.setState({ maxAcceptedPayout: null });
+        }
+    };
+
+    validateMaxAcceptedPayoutCustom = event => {
+        const customValue = parseInt(event.target.value);
+        if (!customValue || customValue < 1) {
             this.setState({ maxAcceptedPayout: 100 });
         }
     };
 
     render() {
-        const {
-            formId,
-            username,
-            defaultPayoutType,
-            initialPayoutType,
-            initialMaxAcceptedPayout,
-        } = this.props;
-        const {
-            beneficiaries,
-            payoutType,
-            postTemplateName,
-            maxAcceptedPayout,
-            maxAcceptedPayoutType,
-        } = this.state;
-        const loadingTemplate =
-            postTemplateName && postTemplateName.indexOf('create_') === -1;
+        const { formId, username, defaultPayoutType, initialPayoutType, initialMaxAcceptedPayout } = this.props;
+        const { beneficiaries, payoutType, postTemplateName, maxAcceptedPayout, maxAcceptedPayoutType } = this.state;
+        const loadingTemplate = postTemplateName && postTemplateName.indexOf('create_') === -1;
         const { submitting, valid, handleSubmit } = this.state.advancedSettings;
         const userTemplates = loadUserTemplates(username);
         const disabled =
@@ -173,38 +159,20 @@ class PostAdvancedSettings extends Component {
         const form = (
             <form
                 onSubmit={handleSubmit(({ data }) => {
-                    const err = validateBeneficiaries(
-                        this.props.username,
-                        data.beneficiaries,
-                        true
-                    );
+                    const err = validateBeneficiaries(this.props.username, data.beneficiaries, true);
                     if (!err) {
                         this.props.setPayoutType(formId, payoutType);
                         this.props.setBeneficiaries(formId, data.beneficiaries);
-                        this.props.setPostTemplateName(
-                            formId,
-                            postTemplateName
-                        );
-                        this.props.setMaxAcceptedPayout(
-                            formId,
-                            maxAcceptedPayout
-                        );
+                        this.props.setPostTemplateName(formId, postTemplateName);
+                        this.props.setMaxAcceptedPayout(formId, maxAcceptedPayout);
                         this.props.hideAdvancedSettings();
                     }
                 })}
             >
                 <div className="row">
                     <div className="column">
-                        <h4>
-                            {tt(
-                                'post_advanced_settings_jsx.max_accepted_payout'
-                            )}
-                        </h4>
-                        <p>
-                            {tt(
-                                'post_advanced_settings_jsx.max_accepted_payout_description'
-                            )}
-                        </p>
+                        <h4>{tt('post_advanced_settings_jsx.max_accepted_payout')}</h4>
+                        <p>{tt('post_advanced_settings_jsx.max_accepted_payout_description')}</p>
                     </div>
                 </div>
                 <div className="row">
@@ -214,17 +182,9 @@ class PostAdvancedSettings extends Component {
                                 defaultValue={defaultMaxAcceptedPayoutType}
                                 onChange={this.handleMaxAcceptedPayoutSelect}
                             >
-                                <option value="no_max">
-                                    {tt('post_advanced_settings_jsx.unlimited')}
-                                </option>
-                                <option value="0">
-                                    {tt('reply_editor.decline_payout')}
-                                </option>
-                                <option value="custom">
-                                    {tt(
-                                        'post_advanced_settings_jsx.custom_value'
-                                    )}
-                                </option>
+                                <option value="no_max">{tt('post_advanced_settings_jsx.unlimited')}</option>
+                                <option value="0">{tt('reply_editor.decline_payout')}</option>
+                                <option value="custom">{tt('post_advanced_settings_jsx.custom_value')}</option>
                             </select>
                         </div>
                         {defaultMaxAcceptedPayoutType === 'custom' && (
@@ -232,11 +192,10 @@ class PostAdvancedSettings extends Component {
                                 <input
                                     id="custom_max_accepted_payout"
                                     type="number"
-                                    min="1"
+                                    min="0"
                                     step="1"
-                                    onChange={
-                                        this.handleMaxAcceptedPayoutCustom
-                                    }
+                                    onChange={this.handleMaxAcceptedPayoutCustom}
+                                    onBlur={this.validateMaxAcceptedPayoutCustom}
                                     value={maxAcceptedPayout || ''}
                                 />
                             </div>
@@ -246,30 +205,15 @@ class PostAdvancedSettings extends Component {
                 <br />
                 <div className="row">
                     <div className="column">
-                        <h4>
-                            {tt(
-                                'post_advanced_settings_jsx.payout_option_header'
-                            )}
-                        </h4>
-                        <p>
-                            {tt(
-                                'post_advanced_settings_jsx.payout_option_description'
-                            )}
-                        </p>
+                        <h4>{tt('post_advanced_settings_jsx.payout_option_header')}</h4>
+                        <p>{tt('post_advanced_settings_jsx.payout_option_description')}</p>
                     </div>
                 </div>
                 <div className="row">
                     <div className="small-12 medium-6 large-12 columns">
-                        <select
-                            value={payoutType}
-                            onChange={this.handlePayoutChange}
-                        >
-                            <option value="50%">
-                                {tt('reply_editor.default_50_50')}
-                            </option>
-                            <option value="100%">
-                                {tt('reply_editor.power_up_100')}
-                            </option>
+                        <select value={payoutType} onChange={this.handlePayoutChange}>
+                            <option value="50%">{tt('reply_editor.default_50_50')}</option>
+                            <option value="100%">{tt('reply_editor.power_up_100')}</option>
                         </select>
                     </div>
                 </div>
@@ -287,17 +231,13 @@ class PostAdvancedSettings extends Component {
                 <div className="row">
                     <div className="column">
                         <a href={'/@' + username + '/settings'}>
-                            {tt(
-                                'post_advanced_settings_jsx.update_default_in_settings'
-                            )}
+                            {tt('post_advanced_settings_jsx.update_default_in_settings')}
                         </a>
                     </div>
                 </div>
                 <br />
                 <div className="row">
-                    <h4 className="column">
-                        {tt('beneficiary_selector_jsx.header')}
-                    </h4>
+                    <h4 className="column">{tt('beneficiary_selector_jsx.header')}</h4>
                 </div>
                 <BeneficiarySelector {...beneficiaries.props} tabIndex={1} />
                 <PostTemplateSelector
@@ -306,22 +246,13 @@ class PostAdvancedSettings extends Component {
                     templates={userTemplates}
                 />
                 <div className="error">
-                    {(beneficiaries.touched || beneficiaries.value) &&
-                        beneficiaries.error}&nbsp;
+                    {(beneficiaries.touched || beneficiaries.value) && beneficiaries.error}&nbsp;
                 </div>
                 <div className="row">
                     <div className="column">
                         <span>
-                            <button
-                                type="submit"
-                                className="button"
-                                disabled={disabled}
-                                tabIndex={2}
-                            >
-                                {loadingTemplate &&
-                                    tt(
-                                        'post_advanced_settings_jsx.load_template'
-                                    )}
+                            <button type="submit" className="button" disabled={disabled} tabIndex={2}>
+                                {loadingTemplate && tt('post_advanced_settings_jsx.load_template')}
                                 {!loadingTemplate && tt('g.save')}
                             </button>
                             {loadingTemplate && (
@@ -329,18 +260,12 @@ class PostAdvancedSettings extends Component {
                                     className="button"
                                     tabIndex={2}
                                     onClick={event => {
-                                        this.handleDeleteTemplate(
-                                            event,
-                                            postTemplateName
-                                        );
+                                        this.handleDeleteTemplate(event, postTemplateName);
                                     }}
                                 >
                                     {postTemplateName &&
-                                        postTemplateName.indexOf('create_') ===
-                                            -1 &&
-                                        tt(
-                                            'post_advanced_settings_jsx.delete_template'
-                                        )}
+                                        postTemplateName.indexOf('create_') === -1 &&
+                                        tt('post_advanced_settings_jsx.delete_template')}
                                 </button>
                             )}
                         </span>
@@ -351,9 +276,7 @@ class PostAdvancedSettings extends Component {
         return (
             <div className="post_advanced_settings">
                 <div className="row">
-                    <h3 className="column">
-                        {tt('reply_editor.advanced_settings')}
-                    </h3>
+                    <h3 className="column">{tt('reply_editor.advanced_settings')}</h3>
                 </div>
                 <hr />
                 {form}
@@ -369,30 +292,12 @@ export default connect(
         const username = state.user.getIn(['current', 'username']);
         const isStory = formId === SUBMIT_FORM_ID;
         const defaultPayoutType = state.app.getIn(
-            [
-                'user_preferences',
-                isStory ? 'defaultBlogPayout' : 'defaultCommentPayout',
-            ],
+            ['user_preferences', isStory ? 'defaultBlogPayout' : 'defaultCommentPayout'],
             '50%'
         );
-        const initialPayoutType = state.user.getIn([
-            'current',
-            'post',
-            formId,
-            'payoutType',
-        ]);
-        const initialMaxAcceptedPayout = state.user.getIn([
-            'current',
-            'post',
-            formId,
-            'maxAcceptedPayout',
-        ]);
-        let beneficiaries = state.user.getIn([
-            'current',
-            'post',
-            formId,
-            'beneficiaries',
-        ]);
+        const initialPayoutType = state.user.getIn(['current', 'post', formId, 'payoutType']);
+        const initialMaxAcceptedPayout = state.user.getIn(['current', 'post', formId, 'maxAcceptedPayout']);
+        let beneficiaries = state.user.getIn(['current', 'post', formId, 'beneficiaries']);
         beneficiaries = beneficiaries ? beneficiaries.toJS() : [];
         return {
             ...ownProps,
@@ -407,8 +312,7 @@ export default connect(
 
     // mapDispatchToProps
     dispatch => ({
-        hideAdvancedSettings: () =>
-            dispatch(userActions.hidePostAdvancedSettings()),
+        hideAdvancedSettings: () => dispatch(userActions.hidePostAdvancedSettings()),
         setPayoutType: (formId, payoutType) =>
             dispatch(
                 userActions.set({
@@ -427,9 +331,7 @@ export default connect(
             dispatch(
                 userActions.set({
                     key: ['current', 'post', formId, 'postTemplateName'],
-                    value: create
-                        ? `create_${postTemplateName}`
-                        : postTemplateName,
+                    value: create ? `create_${postTemplateName}` : postTemplateName,
                 })
             ),
         setMaxAcceptedPayout: (formId, maxAcceptedPayout) => {
