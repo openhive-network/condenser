@@ -192,10 +192,10 @@ describe('Performance', () => {
         match(threespeakRegex.main, 'https://3speak.tv/embed?v=artemislives/tvxkobat');
     });
     it('threespeakId', () => {
-        match(threespeakRegex.main, 'https://3speak.co/watch?v=artemislives/tvxkobat', 'artemislives/tvxkobat', 1);
+        match(threespeakRegex.main, 'https://3speak.tv/watch?v=artemislives/tvxkobat', 'artemislives/tvxkobat', 1);
         match(
             threespeakRegex.main,
-            'https://3speak.co/watch?v=artemislives/tvxkobat&jwsource=cl',
+            'https://3speak.tv/watch?v=artemislives/tvxkobat&jwsource=cl',
             'artemislives/tvxkobat',
             1
         );
@@ -213,7 +213,7 @@ describe('Performance', () => {
     it('threespeakImageLink', () => {
         match(
             threespeakRegex.htmlReplacement,
-            '<a href="https://3speak.co/watch?v=artemislives/tvxkobat" rel="noopener" title="This link will take you away from this site" class="steem-keychain-checked"><img src="https://images.hive.blog/768x0/https://img.3speakcontent.online/tvxkobat/post.png"></a>'
+            '<a href="https://3speak.tv/watch?v=artemislives/tvxkobat" rel="noopener" title="This link will take you away from this site" class="steem-keychain-checked"><img src="https://images.hive.blog/768x0/https://img.3speakcontent.online/tvxkobat/post.png"></a>'
         );
     });
     it('twitter', () => {
@@ -266,10 +266,7 @@ describe('Performance', () => {
         );
     });
     it('mixcloud', () => {
-        match(
-            mixcloudRegex.main,
-            'https://www.mixcloud.com/MagneticMagazine/ambient-meditations-vol-21-anane/'
-        );
+        match(mixcloudRegex.main, 'https://www.mixcloud.com/MagneticMagazine/ambient-meditations-vol-21-anane/');
         match(
             mixcloudRegex.sanitize,
             'https://www.mixcloud.com/widget/iframe/?hide_cover=1&feed=%2FMagneticMagazine%2Fambient-meditations-vol-21-anane%2F'

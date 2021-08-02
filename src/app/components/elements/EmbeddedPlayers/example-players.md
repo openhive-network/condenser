@@ -70,10 +70,10 @@ https://open.spotify.com/artist/70eAfg5WeShjPxtD9Yi6P9?si=VDDO-Ju9TOqTw_pS5piraA
 
 
 ## threespeak direct html iframe markup
-<iframe src="https://3speak.co/embed?v=threespeak/iaarkpvf"></iframe>
+<iframe src="https://3speak.tv/embed?v=threespeak/iaarkpvf"></iframe>
 
 ## threespeak iframe embedded from link
-https://3speak.co/watsch?v=threespeak/iaarkpvf
+https://3speak.tv/watsch?v=threespeak/iaarkpvf
 
 ## truvvl direct html iframe markup
 <iframe src="https://embed.truvvl.com/@tvt3st/prague-to-sarajevo-cool-places-in-europe-europe-prague-zagreb-bosnia-20210420t103208397z"></iframe>

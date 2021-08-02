@@ -158,7 +158,7 @@ async function loadThread(account, permlink, observer) {
     const author = account.slice(1);
     const content = await callBridge('get_discussion', { author, permlink, observer });
 
-    if (content) {
+    if (Object.values(content).length > 0) {
         const { content: preppedContent, keys, crossPosts } = await fetchCrossPosts(
             [Object.values(content)[0]],
             author

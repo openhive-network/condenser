@@ -3,7 +3,7 @@
   "google_analytics_id": false,
   "helmet": {
     "directives": {
-      "childSrc": "'self' 3speak.online emb.d.tube player.twitch.tv www.youtube.com staticxx.facebook.com w.soundcloud.com player.vimeo.com",
+      "childSrc": "'self' 3speak.tv emb.d.tube player.twitch.tv www.youtube.com staticxx.facebook.com w.soundcloud.com player.vimeo.com",
       "connectSrc": "https://images.hive.blog 'self' hive.blog https://api.hive.blog api.blocktrades.us https://anyx.io https://hivesigner.com https://hivebuzz.me https://peakd.com https://api.deathwing.me https://www.reddit.com https://gist.github.com https://rpc.ausbit.dev https://api.ha.deathwing.me",
       "defaultSrc": "tpc.googlesyndication.com 'self' img.3speakcontent.online emb.d.tube www.youtube.com staticxx.facebook.com player.vimeo.com *.streamrail.com",
       "fontSrc": "data: fonts.gstatic.com cdn.embedly.com",
@@ -37,8 +37,8 @@
   "upload_image": false,
   "steemd_connection_client": "https://api.hive.blog",
   "steemd_connection_server": "https://api.hive.blog",
-  "steemd_use_appbase": false,
-  "chain_id": "0000000000000000000000000000000000000000000000000000000000000000",
+  "steemd_use_appbase": true,
+  "chain_id": "beeab0de00000000000000000000000000000000000000000000000000000000",
   "alternative_api_endpoints": "https://api.hive.blog https://anyx.io https://api.openhive.network https://api.hivekings.com",
   "default_observer":"hive.blog",
   "failover_threshold": 3,
