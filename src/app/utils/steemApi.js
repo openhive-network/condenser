@@ -158,15 +158,18 @@ async function loadThread(account, permlink, observer) {
     const author = account.slice(1);
     const content = await callBridge('get_discussion', { author, permlink, observer });
 
-    if (content) {
+    if (Object.values(content).length > 0) {
         const { content: preppedContent, keys, crossPosts } = await fetchCrossPosts(
             [Object.values(content)[0]],
             author
         );
-        if (crossPosts) {
+        if (crossPosts && content[keys[0]] && content[keys[0]].cross_post_key) {
             const crossPostKey = content[keys[0]].cross_post_key;
-            content[keys[0]] = preppedContent[keys[0]];
-            content[keys[0]] = augmentContentWithCrossPost(content[keys[0]], crossPosts[crossPostKey]);
+            if (crossPostKey)
+            {
+                content[keys[0]] = preppedContent[keys[0]];
+                content[keys[0]] = augmentContentWithCrossPost(content[keys[0]], crossPosts[crossPostKey]);
+            }
         }
     }
 
