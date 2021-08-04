@@ -1197,10 +1197,10 @@
     lodash "^4.17.13"
     to-fast-properties "^2.0.0"
 
-"@hiveio/hive-js@^2.0.2":
-  version "2.0.2"
-  resolved "https://registry.yarnpkg.com/@hiveio/hive-js/-/hive-js-2.0.2.tgz#ec6c85275ed61f57b9cf12d3ea9e47f043724428"
-  integrity sha512-mnwtRJ67VAwDMBzefjaJQNEoL2gYO8OEoJ2UF04SOcVEzfsybTGQ1rvZgeSrwi3R9jRB4xo3uTOZl+/KlEJo4A==
+"@hiveio/hive-js@^2.0.3":
+  version "2.0.3"
+  resolved "https://registry.yarnpkg.com/@hiveio/hive-js/-/hive-js-2.0.3.tgz#385f21939c05f9a3642fa6920b5a12415abdb938"
+  integrity sha512-VxKFVczobysLzQGZydXnjwPTp179R+S1LQ6nZUu3snRaGjwJM+eVDW4tBhsSR81ixA2RahMlGLsDlqYHa2/www==
   dependencies:
     "@steemit/rpc-auth" "^1.1.1"
     bigi "^1.4.2"
