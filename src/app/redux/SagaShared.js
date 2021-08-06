@@ -61,11 +61,8 @@ export function* getContent({ author, permlink, resolve, reject }) {
     while (!content) {
         console.log('getContent', author, permlink);
         content = yield call([api, api.getContentAsync], author, permlink);
-        console.log('Raw content: ', content);
         try {
             var converted = JSON.parse(content);
-            console.log('type of converted: ', typeof converted);
-            console.log('loaded content as json: ', converted);
             if (converted.result && converted.result.length === 0) {
                 content = null;
             }
