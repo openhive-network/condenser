@@ -15,40 +15,23 @@ const wait = ms =>
 
 export const sharedWatches = [
     takeLatest(
-        [
-            appActions.SET_USER_PREFERENCES,
-            appActions.TOGGLE_NIGHTMODE,
-            appActions.TOGGLE_BLOGMODE,
-        ],
+        [appActions.SET_USER_PREFERENCES, appActions.TOGGLE_NIGHTMODE, appActions.TOGGLE_BLOGMODE],
         saveUserPreferences
     ),
     takeEvery('transaction/ERROR', showTransactionErrorNotification),
 ];
 
 export function* getAccount(username, force = false) {
-    let account = yield select(state =>
-        state.global.get('accounts').get(username)
-    );
+    let account = yield select(state => state.global.get('accounts').get(username));
 
     // hive never serves `owner` prop (among others)
     let isLite = !!account && !account.get('owner');
 
     if (!account || force || isLite) {
-        console.log(
-            'getAccount: loading',
-            username,
-            'force?',
-            force,
-            'lite?',
-            isLite
-        );
+        console.log('getAccount: loading', username, 'force?', force, 'lite?', isLite);
 
         [account] = yield call([api, api.getAccountsAsync], [username]);
-        const accountWitness = yield call(
-            [api, api.callAsync],
-            'condenser_api.get_witness_by_account',
-            [username]
-        );
+        const accountWitness = yield call([api, api.callAsync], 'condenser_api.get_witness_by_account', [username]);
 
         if (account) {
             if (accountWitness) {
@@ -78,7 +61,14 @@ export function* getContent({ author, permlink, resolve, reject }) {
     while (!content) {
         console.log('getContent', author, permlink);
         content = yield call([api, api.getContentAsync], author, permlink);
-        if (content['author'] == '') {
+        try {
+            var converted = JSON.parse(content);
+            if (converted.result && converted.result.length === 0) {
+                content = null;
+            }
+        } catch (exception) {}
+
+        if (content !== null && content['author'] == '') {
             // retry if content not found. #1870
             content = null;
             yield call(wait, 3000);
