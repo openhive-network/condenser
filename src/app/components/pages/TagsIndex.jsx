@@ -1,28 +1,33 @@
 import React from 'react';
-import PropTypes from 'prop-types';
+import { api } from '@hiveio/hive-js';
+import { fromJS } from 'immutable';
 import { Link } from 'react-router';
-import { connect } from 'react-redux';
-import { browserHistory } from 'react-router';
 import { numberWithCommas } from 'app/utils/StateFunctions';
 import tt from 'counterpart';
-import { Map } from 'immutable';
 
 export default class TagsIndex extends React.Component {
-    static propTypes = {
-        tagsAll: PropTypes.object.isRequired,
-    };
-
     constructor(props) {
         super(props);
-        this.state = { order: props.order || 'name' };
+        this.state = {
+            order: props.order || 'name',
+            tags: [],
+        };
         this.onChangeSort = this.onChangeSort.bind(this);
     }
 
     shouldComponentUpdate(nextProps, nextState) {
-        const res =
-            this.props.tagsAll !== nextProps.tagsAll ||
-            this.state !== nextState;
+        const res = this.state !== nextState;
+
         return res;
+    }
+
+    async componentDidMount() {
+        try {
+            const res = await api.callAsync('condenser_api.get_trending_tags', []);
+            this.setState({ tags: fromJS(res) });
+        } catch (e) {
+            console.error('Error fetching trending tags', e.message);
+        }
     }
 
     onChangeSort = (e, order) => {
@@ -35,27 +40,20 @@ export default class TagsIndex extends React.Component {
             case 'name':
                 return a.get('name').localeCompare(b.get('name'));
             case 'posts':
-                return parseInt(a.get('top_posts')) <=
-                    parseInt(b.get('top_posts'))
-                    ? 1
-                    : -1;
+                return parseInt(a.get('top_posts')) <= parseInt(b.get('top_posts')) ? 1 : -1;
             case 'comments':
-                return parseInt(a.get('comments')) <=
-                    parseInt(b.get('comments'))
-                    ? 1
-                    : -1;
+                return parseInt(a.get('comments')) <= parseInt(b.get('comments')) ? 1 : -1;
             case 'payouts':
-                return parseInt(a.get('total_payouts')) <=
-                    parseInt(b.get('total_payouts'))
-                    ? 1
-                    : -1;
+                return parseInt(a.get('total_payouts')) <= parseInt(b.get('total_payouts')) ? 1 : -1;
         }
     };
 
     render() {
-        const { tagsAll } = this.props;
-        const { order } = this.state;
-        let tags = tagsAll;
+        const { order, tags } = this.state;
+
+        if (!tags || tags.length === 0) {
+            return null;
+        }
 
         const rows = tags
             .filter(
@@ -75,12 +73,8 @@ export default class TagsIndex extends React.Component {
                                 {name}
                             </Link>
                         </td>
-                        <td>
-                            {numberWithCommas(tag.get('top_posts').toString())}
-                        </td>
-                        <td>
-                            {numberWithCommas(tag.get('comments').toString())}
-                        </td>
+                        <td>{numberWithCommas(tag.get('top_posts').toString())}</td>
+                        <td>{numberWithCommas(tag.get('comments').toString())}</td>
                         <td>{numberWithCommas(tag.get('total_payouts'))}</td>
                     </tr>
                 );
@@ -98,10 +92,7 @@ export default class TagsIndex extends React.Component {
                     {order === col[0] ? (
                         <strong>{col[1]}</strong>
                     ) : (
-                        <Link
-                            to="#"
-                            onClick={e => this.onChangeSort(e, col[0])}
-                        >
+                        <Link to="#" onClick={e => this.onChangeSort(e, col[0])}>
                             {col[1]}
                         </Link>
                     )}
@@ -128,7 +119,5 @@ export default class TagsIndex extends React.Component {
 
 module.exports = {
     path: 'tags(/:order)',
-    component: connect(state => ({
-        tagsAll: state.global.get('tags', Map()),
-    }))(TagsIndex),
+    component: TagsIndex,
 };

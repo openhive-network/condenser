@@ -10,6 +10,8 @@ export async function fetchCrossPosts(posts, observer) {
 
     for (let idx = 0; idx < posts.length; idx += 1) {
         const post = posts[idx];
+        if (!post || !post.body)
+            continue;
         const crossPostMatches = crossPostRegex.exec(post.body);
 
         if (crossPostMatches) {

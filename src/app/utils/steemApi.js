@@ -163,10 +163,13 @@ async function loadThread(account, permlink, observer) {
             [Object.values(content)[0]],
             author
         );
-        if (crossPosts) {
+        if (crossPosts && content[keys[0]] && content[keys[0]].cross_post_key) {
             const crossPostKey = content[keys[0]].cross_post_key;
-            content[keys[0]] = preppedContent[keys[0]];
-            content[keys[0]] = augmentContentWithCrossPost(content[keys[0]], crossPosts[crossPostKey]);
+            if (crossPostKey)
+            {
+                content[keys[0]] = preppedContent[keys[0]];
+                content[keys[0]] = augmentContentWithCrossPost(content[keys[0]], crossPosts[crossPostKey]);
+            }
         }
     }
 
