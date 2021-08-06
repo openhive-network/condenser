@@ -6,18 +6,11 @@ import tt from 'counterpart';
 import CloseButton from 'app/components/elements/CloseButton';
 import * as transactionActions from 'app/redux/TransactionReducer';
 import Icon from 'app/components/elements/Icon';
-import {
-    DEBT_TOKEN_SHORT,
-    LIQUID_TOKEN_UPPERCASE,
-    INVEST_TOKEN_SHORT,
-} from 'app/client_config';
+import { DEBT_TOKEN_SHORT, LIQUID_TOKEN_UPPERCASE, INVEST_TOKEN_SHORT } from 'app/client_config';
 import FormattedAsset from 'app/components/elements/FormattedAsset';
 import { pricePerHive } from 'app/utils/StateFunctions';
 import shouldComponentUpdate from 'app/utils/shouldComponentUpdate';
-import {
-    formatDecimal,
-    parsePayoutAmount,
-} from 'app/utils/ParsersAndFormatters';
+import { formatDecimal, parsePayoutAmount } from 'app/utils/ParsersAndFormatters';
 import DropdownMenu from 'app/components/elements/DropdownMenu';
 import TimeAgoWrapper from 'app/components/elements/TimeAgoWrapper';
 import Dropdown from 'app/components/elements/Dropdown';
@@ -25,10 +18,7 @@ import { List } from 'immutable';
 
 const ABOUT_FLAG = (
     <div>
-        <p>
-            Downvoting a post can decrease pending rewards and make it less
-            visible. Common reasons:
-        </p>
+        <p>Downvoting a post can decrease pending rewards and make it less visible. Common reasons:</p>
         <ul>
             <li>Disagreement on rewards</li>
             <li>Fraud or plagiarism</li>
@@ -101,13 +91,7 @@ class Voting extends React.Component {
             if (this.props.voting) return;
             this.setState({ votingUp: up, votingDown: !up });
             if (this.state.showWeight) this.setState({ showWeight: false });
-            const {
-                myVote,
-                author,
-                permlink,
-                username,
-                is_comment,
-            } = this.props;
+            const { myVote, author, permlink, username, is_comment } = this.props;
 
             let weight;
             if (myVote > 0 || myVote < 0) {
@@ -115,17 +99,13 @@ class Voting extends React.Component {
                 weight = 0;
             } else if (this.props.enable_slider) {
                 // if slider is enabled, read its value
-                weight = up
-                    ? this.state.sliderWeight.up
-                    : -this.state.sliderWeight.down;
+                weight = up ? this.state.sliderWeight.up : -this.state.sliderWeight.down;
             } else {
                 // otherwise, use max power
                 weight = up ? MAX_WEIGHT : -MAX_WEIGHT;
             }
 
-            const rshares = Math.floor(
-                0.05 * this.props.net_vests * 1e6 * (weight / 10000.0)
-            );
+            const rshares = Math.floor(0.05 * this.props.net_vests * 1e6 * (weight / 10000.0));
             const isFlag = up ? null : true;
             this.props.vote(weight, {
                 author,
@@ -155,15 +135,9 @@ class Voting extends React.Component {
 
         this.storeSliderWeight = up => () => {
             const { username, is_comment } = this.props;
-            const weight = up
-                ? this.state.sliderWeight.up
-                : this.state.sliderWeight.down;
+            const weight = up ? this.state.sliderWeight.up : this.state.sliderWeight.down;
             localStorage.setItem(
-                'voteWeight' +
-                    (up ? '' : 'Down') +
-                    '-' +
-                    username +
-                    (is_comment ? '-comment' : ''),
+                'voteWeight' + (up ? '' : 'Down') + '-' + username + (is_comment ? '-comment' : ''),
                 weight
             );
         };
@@ -171,21 +145,10 @@ class Voting extends React.Component {
             const { username, enable_slider, is_comment } = this.props;
             if (enable_slider) {
                 const sliderWeightUp = Number(
-                    localStorage.getItem(
-                        'voteWeight' +
-                            '-' +
-                            username +
-                            (is_comment ? '-comment' : '')
-                    )
+                    localStorage.getItem('voteWeight' + '-' + username + (is_comment ? '-comment' : ''))
                 );
                 const sliderWeightDown = Number(
-                    localStorage.getItem(
-                        'voteWeight' +
-                            'Down' +
-                            '-' +
-                            username +
-                            (is_comment ? '-comment' : '')
-                    )
+                    localStorage.getItem('voteWeight' + 'Down' + '-' + username + (is_comment ? '-comment' : ''))
                 );
                 this.setState({
                     sliderWeight: {
@@ -234,11 +197,7 @@ class Voting extends React.Component {
             return (
                 <span className="Voting">
                     <span className="Voting__inner">
-                        <FormattedAsset
-                            amount={post.get('payout')}
-                            asset="$"
-                            classname=""
-                        />
+                        <FormattedAsset amount={post.get('payout')} asset="$" classname="" />
                     </span>
                 </span>
             );
@@ -250,9 +209,7 @@ class Voting extends React.Component {
         const votingDownActive = voting && votingDown;
 
         const slider = up => {
-            const b = up
-                ? this.state.sliderWeight.up
-                : this.state.sliderWeight.down;
+            const b = up ? this.state.sliderWeight.up : this.state.sliderWeight.down;
             const s = up ? '' : '-';
             return (
                 <span>
@@ -272,12 +229,7 @@ class Voting extends React.Component {
 
         let downVote;
         if (true) {
-            const down = (
-                <Icon
-                    name={votingDownActive ? 'empty' : 'chevron-down-circle'}
-                    className="flag"
-                />
-            );
+            const down = <Icon name={votingDownActive ? 'empty' : 'chevron-down-circle'} className="flag" />;
             const classDown =
                 'Voting__button Voting__button-down' +
                 (myVote < 0 ? ' Voting__button--downvoted' : '') +
@@ -287,9 +239,7 @@ class Voting extends React.Component {
             let dropdown = (
                 <a
                     href="#"
-                    onClick={
-                        enable_slider ? this.toggleWeightDown : this.voteDown
-                    }
+                    onClick={enable_slider ? this.toggleWeightDown : this.voteDown}
                     title="Downvote"
                     id="downvote_button"
                     className="flag"
@@ -299,13 +249,7 @@ class Voting extends React.Component {
             );
 
             const revokeFlag = (
-                <a
-                    href="#"
-                    onClick={this.voteDown}
-                    title="Downvote"
-                    className="flag"
-                    id="revoke_downvote_button"
-                >
+                <a href="#" onClick={this.voteDown} title="Downvote" className="flag" id="revoke_downvote_button">
                     {down}
                 </a>
             );
@@ -325,25 +269,12 @@ class Voting extends React.Component {
                     >
                         <div className="Voting__adjust_weight_down">
                             {(myVote == null || myVote === 0) &&
-                                enable_slider && (
-                                    <div className="weight-container">
-                                        {slider(false)}
-                                    </div>
-                                )}
-                            <CloseButton
-                                onClick={() =>
-                                    this.setState({ showWeight: false })
-                                }
-                            />
+                                enable_slider && <div className="weight-container">{slider(false)}</div>}
+                            <CloseButton onClick={() => this.setState({ showWeight: false })} />
                             <div className="clear Voting__about-flag">
                                 {ABOUT_FLAG}
                                 <br />
-                                <span
-                                    href="#"
-                                    onClick={this.voteDown}
-                                    className="button outline"
-                                    title="Downvote"
-                                >
+                                <span href="#" onClick={this.voteDown} className="button outline" title="Downvote">
                                     Submit
                                 </span>
                             </div>
@@ -352,14 +283,11 @@ class Voting extends React.Component {
                 );
             }
 
-            downVote = (
-                <span className={classDown}>
-                    {myVote === null || myVote === 0 ? dropdown : revokeFlag}
-                </span>
-            );
+            downVote = <span className={classDown}>{myVote === null || myVote === 0 ? dropdown : revokeFlag}</span>;
         }
 
         // payout meta
+        const net_rshares = post.get('net_rshares');
         const total_votes = post.getIn(['stats', 'total_votes']);
         const payout_at = post.get('payout_at');
         const promoted = amt(post.get('promoted'));
@@ -379,15 +307,9 @@ class Voting extends React.Component {
         const pending_hive = (_hbd - pending_hbd) / price_per_hive;
 
         const payout_limit_hit = total_payout >= max_payout;
-        const shown_payout =
-            payout_limit_hit && max_payout > 0 ? max_payout : total_payout;
+        const shown_payout = payout_limit_hit && max_payout > 0 ? max_payout : total_payout;
 
-        const up = (
-            <Icon
-                name={votingUpActive ? 'empty' : 'chevron-up-circle'}
-                className="upvote"
-            />
-        );
+        const up = <Icon name={votingUpActive ? 'empty' : 'chevron-up-circle'} className="upvote" />;
         const classUp =
             'Voting__button Voting__button-up' +
             (myVote > 0 ? ' Voting__button--upvoted' : '') +
@@ -410,9 +332,7 @@ class Voting extends React.Component {
                         tt('voting_jsx.breakdown') +
                         ': ' +
                         (fmt(pending_hbd, DEBT_TOKEN_SHORT) + ', ') +
-                        (hbd_print_rate != HBD_PRINT_RATE_MAX
-                            ? fmt(pending_hive, LIQUID_TOKEN_UPPERCASE) + ', '
-                            : '') +
+                        (hbd_print_rate != HBD_PRINT_RATE_MAX ? fmt(pending_hive, LIQUID_TOKEN_UPPERCASE) + ', ' : '') +
                         fmt(pending_hp, INVEST_TOKEN_SHORT),
                 });
             }
@@ -421,10 +341,7 @@ class Voting extends React.Component {
             if (beneficiaries) {
                 beneficiaries.forEach(function(key) {
                     payoutItems.push({
-                        value:
-                            key.get('account') +
-                            ': ' +
-                            (fmt(parseFloat(key.get('weight')) / 100) + '%'),
+                        value: key.get('account') + ': ' + (fmt(parseFloat(key.get('weight')) / 100) + '%'),
                         link: '/@' + key.get('account'),
                     });
                 });
@@ -432,8 +349,7 @@ class Voting extends React.Component {
 
             const payoutDate = (
                 <span>
-                    {tt('voting_jsx.payout')}{' '}
-                    <TimeAgoWrapper date={payout_at} />
+                    {tt('voting_jsx.payout')} <TimeAgoWrapper date={payout_at} />
                 </span>
             );
             payoutItems.push({ value: payoutDate });
@@ -508,8 +424,13 @@ class Voting extends React.Component {
             for (let v = 0; v < maxlen; ++v) {
                 const { rshares, voter } = avotes[v];
                 if (rshares === 0) continue;
-                const sign = rshares < 0 ? '- ' : '+ ';
-                voters.push({ value: sign + voter, link: '/@' + voter });
+                const rshares_percent = rshares * 100 / net_rshares;
+                const vote_value = shown_payout * rshares_percent / 100;
+                const sign = rshares < 0 ? '-' : '';
+                voters.push({
+                    value: `${voter}: ${sign}$${Math.abs(vote_value).toFixed(2)}`,
+                    link: '/@' + voter,
+                });
             }
 
             // add overflow, if any
@@ -567,21 +488,11 @@ class Voting extends React.Component {
                 >
                     <div className="Voting__adjust_weight">
                         {votingUpActive ? (
-                            <a
-                                href="#"
-                                onClick={() => null}
-                                className="confirm_weight"
-                                title={tt('g.upvote')}
-                            >
+                            <a href="#" onClick={() => null} className="confirm_weight" title={tt('g.upvote')}>
                                 <Icon size="2x" name={'empty'} />
                             </a>
                         ) : (
-                            <a
-                                href="#"
-                                onClick={this.voteUp}
-                                className="confirm_weight"
-                                title={tt('g.upvote')}
-                            >
+                            <a href="#" onClick={this.voteUp} className="confirm_weight" title={tt('g.upvote')}>
                                 <Icon size="2x" name="chevron-up-circle" />
                             </a>
                         )}
@@ -613,8 +524,7 @@ class Voting extends React.Component {
 export default connect(
     // mapStateToProps
     (state, ownProps) => {
-        const post =
-            state.global.getIn(['content', ownProps.post_ref]) || ownProps.post;
+        const post = state.global.getIn(['content', ownProps.post_ref]) || ownProps.post;
 
         if (!post) {
             console.error('post_not_found', ownProps);
@@ -633,10 +543,7 @@ export default connect(
         const vote_status_key = `transaction_vote_active_${author}_${permlink}`;
         const voting = state.global.get(vote_status_key);
         const price_per_hive = pricePerHive(state) || ownProps.price_per_hive;
-        const hbd_print_rate = state.global.getIn(
-            ['props', 'hbd_print_rate'],
-            ownProps.hbd_print_rate
-        );
+        const hbd_print_rate = state.global.getIn(['props', 'hbd_print_rate'], ownProps.hbd_print_rate);
         const enable_slider = net_vests > VOTE_WEIGHT_DROPDOWN_THRESHOLD;
 
         let myVote = ownProps.myVote || null; // ownProps: test only
@@ -674,10 +581,7 @@ export default connect(
 
     // mapDispatchToProps
     dispatch => ({
-        vote: (
-            weight,
-            { author, permlink, username, myVote, isFlag, rshares }
-        ) => {
+        vote: (weight, { author, permlink, username, myVote, isFlag, rshares }) => {
             const confirm = () => {
                 // new vote
                 if (myVote == null) return null;
@@ -686,21 +590,15 @@ export default connect(
                 if (weight === 0)
                     return isFlag
                         ? tt('voting_jsx.removing_your_vote')
-                        : tt(
-                              'voting_jsx.removing_your_vote_will_reset_curation_rewards_for_this_post'
-                          );
+                        : tt('voting_jsx.removing_your_vote_will_reset_curation_rewards_for_this_post');
                 if (weight > 0)
                     return isFlag
                         ? tt('voting_jsx.changing_to_an_upvote')
-                        : tt(
-                              'voting_jsx.changing_to_an_upvote_will_reset_curation_rewards_for_this_post'
-                          );
+                        : tt('voting_jsx.changing_to_an_upvote_will_reset_curation_rewards_for_this_post');
                 if (weight < 0)
                     return isFlag
                         ? tt('voting_jsx.changing_to_a_downvote')
-                        : tt(
-                              'voting_jsx.changing_to_a_downvote_will_reset_curation_rewards_for_this_post'
-                          );
+                        : tt('voting_jsx.changing_to_a_downvote_will_reset_curation_rewards_for_this_post');
                 return null;
             };
             dispatch(
