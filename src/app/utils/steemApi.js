@@ -17,12 +17,15 @@ export async function callBridge(method, params) {
         delete params.observer;
     }
 
+    if (method === 'normalize_post' && params && params.observer !== undefined) delete params.observer;
+
     if (
         method !== 'account_notifications' &&
         method !== 'unread_notifications' &&
         method !== 'list_all_subscriptions' &&
         method !== 'get_post_header' &&
         method !== 'list_subscribers' &&
+        method !== 'normalize_post' &&
         (params.observer === null || params.observer === undefined)
     )
         params.observer = $STM_Config.default_observer;
@@ -130,9 +133,9 @@ export async function getStateAsync(url, observer, ssr = false) {
     if (ssr && account) {
         // TODO: move to global reducer?
         const profile = await callBridge('get_profile', { account });
-        const hive_power = await getHivePowerForUser(account);
 
         if (profile && profile['name']) {
+            const hive_power = await getHivePowerForUser(account);
             state['profiles'][account] = {
                 ...profile,
                 stats: {
@@ -165,8 +168,7 @@ async function loadThread(account, permlink, observer) {
         );
         if (crossPosts && content[keys[0]] && content[keys[0]].cross_post_key) {
             const crossPostKey = content[keys[0]].cross_post_key;
-            if (crossPostKey)
-            {
+            if (crossPostKey) {
                 content[keys[0]] = preppedContent[keys[0]];
                 content[keys[0]] = augmentContentWithCrossPost(content[keys[0]], crossPosts[crossPostKey]);
             }
