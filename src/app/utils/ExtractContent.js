@@ -89,7 +89,7 @@ export function extractBodySummary(body, stripQuotes = false) {
 
 export function getPostSummary(jsonMetadata, body, stripQuotes = false) {
     let shortDescription;
-    if (typeof jsonMetadata.get === 'function') {
+    if (jsonMetadata && typeof jsonMetadata.get === 'function') {
         shortDescription = jsonMetadata.get('description');
     } else {
         shortDescription = _.get(jsonMetadata, 'description');

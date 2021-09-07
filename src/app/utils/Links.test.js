@@ -9,6 +9,8 @@ import mixcloudRegex from 'app/components/elements/EmbeddedPlayers/mixcloud';
 import archiveorg from 'app/components/elements/EmbeddedPlayers/archiveorg';
 import bandcamp from 'app/components/elements/EmbeddedPlayers/bandcamp';
 import redditRegex from 'app/components/elements/EmbeddedPlayers/reddit';
+import gist from 'app/components/elements/EmbeddedPlayers/gist';
+import truvvl from 'app/components/elements/EmbeddedPlayers/truvvl';
 import { PARAM_VIEW_MODE, VIEW_MODE_WHISTLE } from '../../shared/constants';
 
 describe('Links', () => {
@@ -183,23 +185,35 @@ describe('Performance', () => {
     });
     it('threespeak', () => {
         match(threespeakRegex.main, 'https://3speak.co/watch?v=artemislives/tvxkobat');
+        match(threespeakRegex.main, 'https://3speak.tv/watch?v=artemislives/tvxkobat');
         match(threespeakRegex.main, 'https://3speak.co/watch?v=artemislives/tvxkobat&jwsource=cl');
+        match(threespeakRegex.main, 'https://3speak.tv/watch?v=artemislives/tvxkobat&jwsource=cl');
         match(threespeakRegex.main, 'https://3speak.co/embed?v=artemislives/tvxkobat');
+        match(threespeakRegex.main, 'https://3speak.tv/embed?v=artemislives/tvxkobat');
     });
     it('threespeakId', () => {
-        match(threespeakRegex.main, 'https://3speak.co/watch?v=artemislives/tvxkobat', 'artemislives/tvxkobat', 1);
+        match(threespeakRegex.main, 'https://3speak.tv/watch?v=artemislives/tvxkobat', 'artemislives/tvxkobat', 1);
         match(
             threespeakRegex.main,
-            'https://3speak.co/watch?v=artemislives/tvxkobat&jwsource=cl',
+            'https://3speak.tv/watch?v=artemislives/tvxkobat&jwsource=cl',
             'artemislives/tvxkobat',
             1
         );
-        match(threespeakRegex.main, 'https://3speak.co/embed?v=artemislives/tvxkobat', 'artemislives/tvxkobat', 1);
+        match(threespeakRegex.main, 'https://3speak.tv/embed?v=artemislives/tvxkobat', 'artemislives/tvxkobat', 1);
+
+        match(threespeakRegex.main, 'https://3speak.tv/watch?v=artemislives/tvxkobat', 'artemislives/tvxkobat', 1);
+        match(
+            threespeakRegex.main,
+            'https://3speak.tv/watch?v=artemislives/tvxkobat&jwsource=cl',
+            'artemislives/tvxkobat',
+            1
+        );
+        match(threespeakRegex.main, 'https://3speak.tv/embed?v=artemislives/tvxkobat', 'artemislives/tvxkobat', 1);
     });
     it('threespeakImageLink', () => {
         match(
             threespeakRegex.htmlReplacement,
-            '<a href="https://3speak.co/watch?v=artemislives/tvxkobat" rel="noopener" title="This link will take you away from this site" class="steem-keychain-checked"><img src="https://images.hive.blog/768x0/https://img.3speakcontent.online/tvxkobat/post.png"></a>'
+            '<a href="https://3speak.tv/watch?v=artemislives/tvxkobat" rel="noopener" title="This link will take you away from this site" class="steem-keychain-checked"><img src="https://images.hive.blog/768x0/https://img.3speakcontent.online/tvxkobat/post.png"></a>'
         );
     });
     it('twitter', () => {
@@ -238,9 +252,18 @@ describe('Performance', () => {
         match(spotifyRegex.main, 'https://open.spotify.com/playlist/37i9dQZF1DWSDCcNkUu5tr?si=WPhzYzqATGSIa0d3kbNgBg');
         match(spotifyRegex.main, 'https://open.spotify.com/show/37i9dQZF1DWSDCcNkUu5tr?si=WPhzYzqATGSIa0d3kbNgBg');
         match(spotifyRegex.main, 'https://open.spotify.com/episode/37i9dQZF1DWSDCcNkUu5tr?si=WPhzYzqATGSIa0d3kbNgBg');
+        match(spotifyRegex.main, 'https://open.spotify.com/album/7f6Vo2c0GMRcvkdgsLaPld?si=RChe9-s5TxaoHGNxG5mAHw');
+        match(spotifyRegex.main, 'https://open.spotify.com/track/7ngO2TJ9Gg9VCzNSJF2O4N');
+        match(spotifyRegex.main, 'https://open.spotify.com/artist/70eAfg5WeShjPxtD9Yi6P9');
         match(spotifyRegex.sanitize, 'https://open.spotify.com/embed/playlist/37i9dQZF1DWSDCcNkUu5tr');
         match(spotifyRegex.sanitize, 'https://open.spotify.com/embed-podcast/show/37i9dQZF1DWSDCcNkUu5tr');
         match(spotifyRegex.sanitize, 'https://open.spotify.com/embed-podcast/episode/37i9dQZF1DWSDCcNkUu5tr');
+        match(spotifyRegex.sanitize, 'https://open.spotify.com/embed/album/7f6Vo2c0GMRcvkdgsLaPld');
+        match(spotifyRegex.sanitize, 'https://open.spotify.com/embed/track/6V4oUHrin3AlMarW8MsnIK?si=03e929f5a0ad4893');
+        match(
+            spotifyRegex.sanitize,
+            'https://open.spotify.com/embed/artist/70eAfg5WeShjPxtD9Yi6P9?si=VDDO-Ju9TOqTw_pS5piraA'
+        );
     });
     it('mixcloud', () => {
         match(
@@ -261,6 +284,24 @@ describe('Performance', () => {
         match(
             bandcamp.sanitize,
             'https://bandcamp.com/EmbeddedPlayer/album=313320652/size=large/bgcol=ffffff/linkcol=0687f5/tracklist=false/transparent=true/'
+        );
+    });
+    it('gist', () => {
+        match(gist.main, 'https://gist.github.com/huysbs/647a50197b95c4027550a2cc558af6aa');
+        match(gist.sanitize, 'https://gist.github.com/huysbs/647a50197b95c4027550a2cc558af6aa.js');
+        match(
+            gist.htmlReplacement,
+            '<script src="https://gist.github.com/huysbs/647a50197b95c4027550a2cc558af6aa.js"></script>'
+        );
+    });
+    it('truvvl', () => {
+        match(
+            truvvl.main,
+            'https://travelfeed.io/@tvt3st/prague-to-sarajevo-cool-places-in-europe-europe-prague-zagreb-bosnia-20210420t103208397z'
+        );
+        match(
+            truvvl.sanitize,
+            'https://embed.truvvl.com/@tvt3st/prague-to-sarajevo-cool-places-in-europe-europe-prague-zagreb-bosnia-20210420t103208397z'
         );
     });
 });

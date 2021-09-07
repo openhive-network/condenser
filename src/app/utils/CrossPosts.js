@@ -4,31 +4,32 @@ import { callBridge } from './steemApi';
 export async function fetchCrossPosts(posts, observer) {
     const crossPostRegex = /^This is a cross post of \[@(.*?)\/(.*?)\]\(\/.*?@.*?\/.*?\) by @.*?\.<br>/;
     const crossPostPromises = [];
-
+    const crossPosts = {};
     const content = {};
     const keys = [];
 
-    for (let idx = 0; idx < posts.length; idx += 1) {
-        const post = posts[idx];
-        const crossPostMatches = crossPostRegex.exec(post.body);
+    if (Array.isArray(posts)) {
+        for (let idx = 0; idx < posts.length; idx += 1) {
+            const post = posts[idx];
+            if (!post || !post.body) continue;
+            const crossPostMatches = crossPostRegex.exec(post.body);
 
-        if (crossPostMatches) {
-            const [, crossPostAuthor, crossPostPermlink] = crossPostMatches;
-            const crossPostParams = {
-                author: crossPostAuthor,
-                permlink: crossPostPermlink,
-                observer,
-            };
-            crossPostPromises.push(callBridge('get_post', crossPostParams));
-            post.cross_post_key = `${crossPostAuthor}/${crossPostPermlink}`;
+            if (crossPostMatches) {
+                const [, crossPostAuthor, crossPostPermlink] = crossPostMatches;
+                const crossPostParams = {
+                    author: crossPostAuthor,
+                    permlink: crossPostPermlink,
+                    observer,
+                };
+                crossPostPromises.push(callBridge('get_post', crossPostParams));
+                post.cross_post_key = `${crossPostAuthor}/${crossPostPermlink}`;
+            }
+
+            const key = post.author + '/' + post.permlink;
+            content[key] = post;
+            keys.push(key);
         }
-
-        const key = post.author + '/' + post.permlink;
-        content[key] = post;
-        keys.push(key);
     }
-
-    const crossPosts = {};
 
     if (crossPostPromises.length > 0) {
         try {
@@ -39,9 +40,7 @@ export async function fetchCrossPosts(posts, observer) {
 
                 if (response.state === 'resolved') {
                     const crossPost = response.value;
-                    const crossPostKey = `${crossPost.author}/${
-                        crossPost.permlink
-                    }`;
+                    const crossPostKey = `${crossPost.author}/${crossPost.permlink}`;
                     crossPosts[crossPostKey] = crossPost;
                 } else {
                     console.error('cross post error', response);

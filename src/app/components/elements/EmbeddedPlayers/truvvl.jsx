@@ -5,18 +5,11 @@ import React from 'react';
  * @type {{htmlReplacement: RegExp, main: RegExp, sanitize: RegExp}}
  */
 const regex = {
-    main: /(?:https?:\/\/(?:(?:open.spotify.com\/(playlist|show|episode|album|track|artist)\/(.*))))/i,
-    sanitize: /^https:\/\/open\.spotify\.com\/(embed|embed-podcast)\/(playlist|show|episode|album|track|artist)\/(.*)/i,
+    // https://travelfeed.io/@tvt3st/prague-to-sarajevo-cool-places-in-europe-europe-prague-zagreb-bosnia-20210420t103208397z
+    main: /^(?:https?:)?\/\/travelfeed\.io\/@((.*?)\/(.*))/i,
+    sanitize: /^(?:https?:)?\/\/embed\.truvvl\.com\/@((.*?)\/(.*))/i,
 };
-
 export default regex;
-
-export function getIframeDimensions() {
-    return {
-        width: '100%',
-        height: '240',
-    };
-}
 
 /**
  * Configuration for HTML iframe's `sandbox` attribute
@@ -24,22 +17,44 @@ export function getIframeDimensions() {
  */
 export const sandboxConfig = {
     useSandbox: true,
-    sandboxAttributes: ['allow-scripts', 'allow-same-origin', 'allow-popups', 'allow-forms'],
+    sandboxAttributes: ['allow-scripts', 'allow-same-origin', 'allow-popups'],
 };
+
+export function getIframeDimensions() {
+    return {
+        width: '375',
+        height: '700',
+    };
+}
 
 /**
  * Check if the iframe code in the post editor is to an allowed URL
+ * <iframe src="https://embed.truvvl.com/@tvt3st/prague-to-sarajevo-cool-places-in-europe-europe-prague-zagreb-bosnia-20210420t103208397z" frameborder="0" height="700" width="375"></iframe>
  * @param url
  * @returns {boolean|*}
  */
 export function validateIframeUrl(url) {
     const match = url.match(regex.sanitize);
-
-    if (!match || match.length !== 4) {
-        return false;
+    if (match) {
+        return url;
     }
 
-    return `https://open.spotify.com/${match[1]}/${match[2]}/${match[3]}`;
+    return false;
+}
+
+/**
+ * Rewrites the embedded URL to a normalized format
+ * @param url
+ * @returns {string|boolean}
+ */
+export function normalizeEmbedUrl(url) {
+    const match = url.match(regex.sanitize);
+
+    if (match && match.length >= 2) {
+        return `https://embed.truvvl.com/@${match[1]}`;
+    }
+
+    return false;
 }
 
 /**
@@ -47,24 +62,20 @@ export function validateIframeUrl(url) {
  * @param data
  * @returns {null|{id: *, canonical: string, url: *}}
  */
-function extractMetadata(data) {
+export function extractMetadata(data) {
     if (!data) return null;
-    const m = data.match(regex.main);
-    if (!m || m.length < 2) return null;
 
-    const startTime = m.input.match(/t=(\d+)s?/);
-    let embed;
-    if (m[1] === 'show' || m[1] === 'episode') {
-        embed = 'embed-podcast';
-    } else {
-        embed = 'embed';
-    }
+    const match = data.match(regex.main);
+    const url = match ? match[0] : null;
+    if (!url) return null;
+    const fullId = match[1];
+    const id = fullId.split('/').pop();
 
     return {
-        id: `${embed}/${m[1]}/${m[2]}`,
-        url: m[0],
-        startTime: startTime ? startTime[1] : 0,
-        canonical: `https://open.spotify.com/${m[1]}/${m[2]}`,
+        id,
+        fullId,
+        url,
+        canonical: url,
     };
 }
 
@@ -74,16 +85,19 @@ function extractMetadata(data) {
  * @param links
  * @returns {*}
  */
-export function embedNode(child, links /*images*/) {
+export function embedNode(child, links) {
     try {
         const { data } = child;
-        const spotify = extractMetadata(data);
-        if (!spotify) return child;
+        const truvvl = extractMetadata(data);
+        if (!truvvl) return child;
 
-        child.data = data.replace(spotify.url, `~~~ embed:${spotify.id} spotify ~~~`);
+        child.data = data.replace(truvvl.url, `~~~ embed:${truvvl.fullId} truvvl ~~~`);
 
-        if (links) links.add(spotify.canonical);
-        // if(images) images.add(spotify.thumbnail) // not available
+        if (links) {
+            links.add(truvvl.canonical);
+        }
+
+        if (links) links.add(truvvl.canonical);
     } catch (error) {
         console.log(error);
     }
@@ -99,7 +113,7 @@ export function embedNode(child, links /*images*/) {
  * @returns {*}
  */
 export function genIframeMd(idx, id, width, height) {
-    const url = `https://open.spotify.com/${id}`;
+    const url = `https://embed.truvvl.com/@${id}`;
 
     let sandbox = sandboxConfig.useSandbox;
     if (sandbox) {
@@ -115,15 +129,16 @@ export function genIframeMd(idx, id, width, height) {
         webkitallowfullscreen: 'webkitallowfullscreen',
         mozallowfullscreen: 'mozallowfullscreen',
         allowFullScreen: 'allowFullScreen',
+        className: 'truvvl-iframe',
     };
     if (sandbox) {
         iframeProps.sandbox = sandbox;
     }
 
     return (
-        <div key={`spotify-${id}-${idx}`} className="videoWrapper">
+        <div key={`truvvl-${id}-${idx}`} className="videoWrapper">
             <iframe
-                title="spotify embedded player"
+                title="truvvl.com embedded player"
                 // eslint-disable-next-line react/jsx-props-no-spreading
                 {...iframeProps}
             />

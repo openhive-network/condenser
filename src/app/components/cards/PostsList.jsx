@@ -67,15 +67,8 @@ class PostsList extends PureComponent {
         const scrollTop =
             window.pageYOffset !== undefined
                 ? window.pageYOffset
-                : (
-                      document.documentElement ||
-                      document.body.parentNode ||
-                      document.body
-                  ).scrollTop;
-        if (
-            topPosition(el) + el.offsetHeight - scrollTop - window.innerHeight <
-            10
-        ) {
+                : (document.documentElement || document.body.parentNode || document.body).scrollTop;
+        if (topPosition(el) + el.offsetHeight - scrollTop - window.innerHeight < 10) {
             const { loadMore, posts } = this.props;
             if (loadMore && posts.size > 0) loadMore();
         }
@@ -107,14 +100,7 @@ class PostsList extends PureComponent {
     }
 
     render() {
-        const {
-            posts,
-            loading,
-            category,
-            order,
-            nsfwPref,
-            hideCategory,
-        } = this.props;
+        const { posts, loading, category, order, nsfwPref, hideCategory } = this.props;
         const { thumbSize } = this.state;
 
         const renderSummary = items =>
@@ -141,21 +127,10 @@ class PostsList extends PureComponent {
                             </div>
                         </div>
                     );
-                } else if (
-                    this.props.shouldSeeAds &&
-                    i >= every &&
-                    i % every === 0
-                ) {
+                } else if (this.props.shouldSeeAds && i >= every && i % every === 0) {
                     summary.push(
-                        <div
-                            key={`ad-${i}`}
-                            className="articles__content-block--ad"
-                        >
-                            <GptAd
-                                tags={[category]}
-                                type="Freestar"
-                                id="bsa-zone_1566495089502-1_123456"
-                            />
+                        <div key={`ad-${i}`} className="articles__content-block--ad">
+                            <GptAd tags={[category]} type="Freestar" id="bsa-zone_1566495089502-1_123456" />
                         </div>
                     );
                 }
@@ -165,19 +140,12 @@ class PostsList extends PureComponent {
 
         return (
             <div id="posts_list" className="PostsList">
-                <ul
-                    className="PostsList__summaries hfeed"
-                    itemScope
-                    itemType="http://schema.org/blogPosts"
-                >
+                <ul className="PostsList__summaries hfeed" itemScope itemType="http://schema.org/blogPosts">
                     {renderSummary(posts)}
                 </ul>
                 {loading && (
                     <center>
-                        <LoadingIndicator
-                            style={{ marginBottom: '2rem' }}
-                            type="circle"
-                        />
+                        <LoadingIndicator style={{ marginBottom: '2rem' }} type="circle" />
                     </center>
                 )}
             </div>
@@ -190,20 +158,12 @@ export default connect(
         const userPreferences = state.app.get('user_preferences').toJS();
         const nsfwPref = userPreferences.nsfwPref || 'warn';
         const shouldSeeAds = state.app.getIn(['googleAds', 'enabled']);
-        const videoAdsEnabled = state.app.getIn([
-            'googleAds',
-            'videoAdsEnabled',
-        ]);
+        const videoAdsEnabled = state.app.getIn(['googleAds', 'videoAdsEnabled']);
         const adSlots = state.app.getIn(['googleAds', 'adSlots']).toJS();
 
         const current = state.user.get('current');
-        const username = current
-            ? current.get('username')
-            : state.offchain.get('account');
-        const mutes = state.global.getIn(
-            ['follow', 'getFollowingAsync', username, 'ignore_result'],
-            List()
-        );
+        const username = current ? current.get('username') : state.offchain.get('account');
+        const mutes = state.global.getIn(['follow', 'getFollowingAsync', username, 'ignore_result'], List());
 
         let { posts } = props;
         if (typeof posts === 'undefined') {

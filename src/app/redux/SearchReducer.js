@@ -13,7 +13,7 @@ const defaultSearchState = Map({
 });
 
 export default function reducer(state = defaultSearchState, action) {
-    const payload = action.payload;
+    const { payload } = action;
 
     switch (action.type) {
         // Has a saga watcher.
@@ -22,6 +22,8 @@ export default function reducer(state = defaultSearchState, action) {
         }
         case SEARCH_PENDING: {
             const { pending } = payload;
+            state.setIn(['result'], undefined);
+            state.setIn(['error'], undefined);
             return state.setIn(['pending'], pending);
         }
         case SEARCH_ERROR: {
@@ -29,17 +31,24 @@ export default function reducer(state = defaultSearchState, action) {
             return state.setIn(['error'], error);
         }
         case SEARCH_RESULT: {
-            const { hits, results, scroll_id, append } = payload;
+            const { results, scroll_id, append } = payload;
 
             if (results === null || results === undefined) return state;
 
             const posts = List(
-                results.map(post => {
-                    post.created = post.created_at;
-                    post.author_reputation = post.author_rep;
-                    post.stats = { total_votes: post.total_votes };
-                    return fromJS(post);
-                })
+                results
+                    .filter(post => {
+                        // Don't include comments in search results
+                        return post.depth === 0;
+                    })
+                    .map(post => {
+                        post.created = post.created_at;
+                        post.author_rep = parseFloat(post.author_rep);
+                        post.author_reputation = post.author_rep;
+                        post.stats = { total_votes: post.total_votes };
+
+                        return fromJS(post);
+                    })
             );
 
             let newState = {};
@@ -66,7 +75,7 @@ export const searchPending = payload => ({
     payload,
 });
 export const searchError = payload => ({
-    type: SEARCH_PENDING,
+    type: SEARCH_ERROR,
     payload,
 });
 

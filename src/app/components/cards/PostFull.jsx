@@ -476,7 +476,7 @@ class PostFull extends React.Component {
                                 title={tt('g.share_this_post')}
                                 onClick={this.showExplorePost}
                             >
-                                <Icon name="link" className="chain-right" />
+                                <Icon name="link" className="chain-rotated" />
                             </button>
                         </div>
                         {crossPostedBy && (

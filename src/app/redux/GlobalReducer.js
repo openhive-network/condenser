@@ -1,4 +1,5 @@
 import { Map, List, fromJS, Iterable } from 'immutable';
+import Sanitizer from 'app/utils/Sanitizer';
 
 export const defaultState = Map({
     status: {},
@@ -91,6 +92,21 @@ export default function reducer(state = defaultState, action = {}) {
             return state.updateIn(['content', key], Map(), c => c.mergeDeep(update));
 
         case RECEIVE_STATE: {
+            if (payload.hasOwnProperty('community')) {
+                const communities = Object.keys(payload.community);
+                for (let ci = 0; ci < communities.length; ci += 1) {
+                    const community = payload.community[communities[ci]];
+                    community.title = Sanitizer.getTextOnly(community.title);
+                    community.description = Sanitizer.getTextOnly(community.description);
+                    community.flag_text = Sanitizer.getTextOnly(community.flag_text);
+                    community.about = Sanitizer.getTextOnly(community.about);
+
+                    for (let ti = 0; ti < community.team.length; ti += 1) {
+                        const member = community.team[ti];
+                        community.team[ti][2] = Sanitizer.getTextOnly(member[2]);
+                    }
+                }
+            }
             console.log('Merging state', state.mergeDeep(fromJS(payload)).toJS());
             return state.mergeDeep(fromJS(payload));
         }
@@ -149,6 +165,7 @@ export default function reducer(state = defaultState, action = {}) {
         }
 
         case RECEIVE_COMMUNITY: {
+            console.log('DEBUG: community payload', payload);
             return state.update('community', Map(), a => a.mergeDeep(payload));
         }
 

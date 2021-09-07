@@ -109,17 +109,13 @@ export default function reducer(state = defaultState, action) {
         case REMOVE_HIGH_SECURITY_KEYS: {
             if (!state.hasIn(['current', 'private_keys'])) return state;
             let empty = false;
-            state = state.updateIn(
-                ['current', 'private_keys'],
-                private_keys => {
-                    if (!private_keys) return null;
-                    if (private_keys.has('active_private'))
-                        console.log('removeHighSecurityKeys');
-                    private_keys = private_keys.delete('active_private');
-                    empty = private_keys.size === 0;
-                    return private_keys;
-                }
-            );
+            state = state.updateIn(['current', 'private_keys'], private_keys => {
+                if (!private_keys) return null;
+                if (private_keys.has('active_private')) console.log('removeHighSecurityKeys');
+                private_keys = private_keys.delete('active_private');
+                empty = private_keys.size === 0;
+                return private_keys;
+            });
             if (empty) {
                 // LOGOUT
                 return defaultState.merge({ logged_out: true });
@@ -146,9 +142,14 @@ export default function reducer(state = defaultState, action) {
             return state; // saga
 
         case SET_USER:
+            let show_login_modal = false;
+            if (payload.show_login_modal != undefined) {
+                show_login_modal = payload.show_login_modal;
+                delete payload['show_login_modal'];
+            }
             return state.mergeDeep({
                 current: payload,
-                show_login_modal: false,
+                show_login_modal: show_login_modal,
                 show_login_warning: false,
                 loginBroadcastOperation: undefined,
                 loginDefault: undefined,
@@ -183,8 +184,7 @@ export default function reducer(state = defaultState, action) {
             // AuthSaga
             const { accountName, auth, pub_keys_used } = payload;
             state = state.setIn(['authority', accountName], fromJS(auth));
-            if (pub_keys_used)
-                state = state.set('pub_keys_used', pub_keys_used);
+            if (pub_keys_used) state = state.set('pub_keys_used', pub_keys_used);
             return state;
         }
 
@@ -192,10 +192,7 @@ export default function reducer(state = defaultState, action) {
             return state.set('hide_connection_error_modal', true);
 
         case SET:
-            return state.setIn(
-                Array.isArray(payload.key) ? payload.key : [payload.key],
-                fromJS(payload.value)
-            );
+            return state.setIn(Array.isArray(payload.key) ? payload.key : [payload.key], fromJS(payload.value));
 
         case SHOW_SIDE_PANEL:
             return state.set('show_side_panel', true);
@@ -204,22 +201,17 @@ export default function reducer(state = defaultState, action) {
             return state.set('show_side_panel', false);
 
         case SHOW_POST_ADVANCED_SETTINGS:
-            return state.set(
-                'show_post_advanced_settings_modal',
-                payload.formId
-            );
+            return state.set('show_post_advanced_settings_modal', payload.formId);
 
         case HIDE_POST_ADVANCED_SETTINGS:
             return state.set('show_post_advanced_settings_modal', '');
 
         case SHOW_ANNOUNCEMENT:
-            typeof sessionStorage !== 'undefined' &&
-                sessionStorage.setItem('hideAnnouncement', 'false');
+            typeof sessionStorage !== 'undefined' && sessionStorage.setItem('hideAnnouncement', 'false');
             return state.set('showAnnouncement', true);
 
         case HIDE_ANNOUNCEMENT:
-            typeof sessionStorage !== 'undefined' &&
-                sessionStorage.setItem('hideAnnouncement', 'true');
+            typeof sessionStorage !== 'undefined' && sessionStorage.setItem('hideAnnouncement', 'true');
             return state.set('showAnnouncement', false);
 
         default:

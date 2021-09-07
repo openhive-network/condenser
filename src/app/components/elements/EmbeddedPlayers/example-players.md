@@ -47,15 +47,39 @@ Show
 <iframe src="https://open.spotify.com/embed-podcast/show/6C1Q7ITJKvZVosOdC9M1RM" width="100%" height="232" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>
 Episode
 <iframe src="https://open.spotify.com/embed-podcast/episode/49EzBVgb4exGi2AIRKmTGK" width="100%" height="232" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>
+Album
+<iframe src="https://open.spotify.com/embed/album/5PbrLFDyJ7LMisMZkgFw60" width="300" height="380" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>
+Track
+<iframe src="https://open.spotify.com/embed/track/7ngO2TJ9Gg9VCzNSJF2O4N" width="300" height="380" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>
+Artist
+<iframe src="https://open.spotify.com/embed/artist/70eAfg5WeShjPxtD9Yi6P9" width="100%" height="380" frameBorder="0" allowtransparency="true" allow="encrypted-media"></iframe>
 
 ## spotify iframe embedded from link
+Playlist
+https://open.spotify.com/playlist/1zLvUhumbFIEdfxYQcgUxk?si=0f92104b469e4226
+Show
+https://open.spotify.com/show/6C1Q7ITJKvZVosOdC9M1RM
+Episode
 https://open.spotify.com/episode/523CYPCmCXdv8uBME5yzZ7?si=l2uwhVjERe21N86grg3ZEg
+Album
+https://open.spotify.com/album/5PbrLFDyJ7LMisMZkgFw60?si=-9wUBVZ1R5iN9_vh_5I6nQ
+Track
+https://open.spotify.com/track/6V4oUHrin3AlMarW8MsnIK?si=03e929f5a0ad4893
+Artist
+https://open.spotify.com/artist/70eAfg5WeShjPxtD9Yi6P9?si=VDDO-Ju9TOqTw_pS5piraA
+
 
 ## threespeak direct html iframe markup
-<iframe src="https://3speak.co/embed?v=threespeak/iaarkpvf"></iframe>
+<iframe src="https://3speak.tv/embed?v=threespeak/iaarkpvf"></iframe>
 
 ## threespeak iframe embedded from link
-https://3speak.co/watsch?v=threespeak/iaarkpvf
+https://3speak.tv/watsch?v=threespeak/iaarkpvf
+
+## truvvl direct html iframe markup
+<iframe src="https://embed.truvvl.com/@tvt3st/prague-to-sarajevo-cool-places-in-europe-europe-prague-zagreb-bosnia-20210420t103208397z"></iframe>
+
+## truvvl iframe embedded from link
+Not supported
 
 ## twitch direct html iframe markup
 <iframe src="https://player.twitch.tv/?channel=tfue" frameborder="0" allowfullscreen="true" scrolling="no" height="378" width="620"></iframe>

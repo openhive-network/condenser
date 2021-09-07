@@ -14,6 +14,8 @@ variables:
 
 .docker-job: &docker-job
     image: docker:stable
+    tags:
+        - public-runner-docker
     services:
         - docker:dind
     before_script:
@@ -52,6 +54,8 @@ variables:
 run-unit-tests:
     stage: test
     image: node:12.16.2
+    tags:
+        - public-runner-docker
     only:
         - branches
         - merge_requests
@@ -64,6 +68,8 @@ run-unit-tests:
 run-eslint:
     stage: test
     image: node:12.16.2
+    tags:
+        - public-runner-docker
     only:
         - branches
         - merge_requests
