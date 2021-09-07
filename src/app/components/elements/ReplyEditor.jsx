@@ -771,24 +771,13 @@ class ReplyEditor extends React.Component {
                                     {titleError}
                                     <div className="float-left primary" style={{ margin: '0.8rem 0 0 0' }}>
                                         {rte && (
-                                            <a
-                                                href="#"
-                                                onClick={this.toggleRte}
-                                            >
-                                                🗒️{' '}
-                                                {tt(
-                                                    'reply_editor.enable_markdown_editor'
-                                                )}
+                                            <a href="#" onClick={this.toggleRte}>
+                                                🗒️ {tt('reply_editor.enable_markdown_editor')}
                                             </a>
                                         )}
                                         {!rte && (
-                                            <a
-                                                href="#"
-                                                onClick={this.toggleRte}
-                                            >
-                                                {`📰 ${tt(
-                                                    'reply_editor.editor'
-                                                )}`}
+                                            <a href="#" onClick={this.toggleRte}>
+                                                {`📰 ${tt('reply_editor.editor')}`}
                                             </a>
                                         )}
                                     </div>
@@ -799,16 +788,11 @@ class ReplyEditor extends React.Component {
                         <div
                             className={
                                 'ReplyEditor__body Markdown ' +
-                                (rte
-                                    ? `rte ${vframe_section_class}`
-                                    : vframe_section_shrink_class)
+                                (rte ? `rte ${vframe_section_class}` : vframe_section_shrink_class)
                             }
                         >
                             {process.env.BROWSER && rte ? (
-                                <VisualEditor
-                                    onChange={this.onChange}
-                                    value={body.value}
-                                />
+                                <VisualEditor onChange={this.onChange} value={body.value} />
                             ) : (
                                 <span>
                                     <Dropzone
@@ -1064,7 +1048,6 @@ class ReplyEditor extends React.Component {
                         )}
                     </div>
                     {!loading &&
-                        !rte &&
                         body.value && (
                             <div
                                 className={classnames({
