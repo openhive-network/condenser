@@ -39,6 +39,7 @@ export default ({ large = true, highQualityPost = true, noImage = false, sanitiz
 
         // style is subject to attack, filtering more below
         td: ['style'],
+        th: ['style'],
         img: ['src', 'srcset', 'alt', 'class'],
 
         // title is only set in the case of an external link warning
@@ -127,9 +128,25 @@ export default ({ large = true, highQualityPost = true, noImage = false, sanitiz
                 attribs: attys,
             };
         },
+        th: (tagName, attribs) => {
+            const attys = {};
+            const allowedStyles = ['text-align:right', 'text-align:left', 'text-align:center'];
+            if (allowedStyles.indexOf(attribs.style) !== -1) {
+                attys.style = attribs.style;
+            }
+
+            return {
+                tagName,
+                attribs: attys,
+            };
+        },
         td: (tagName, attribs) => {
             const attys = {};
-            if (attribs.style === 'text-align:right') attys.style = 'text-align:right';
+            const allowedStyles = ['text-align:right', 'text-align:left', 'text-align:center'];
+            if (allowedStyles.indexOf(attribs.style) !== -1) {
+                attys.style = attribs.style;
+            }
+
             return {
                 tagName,
                 attribs: attys,

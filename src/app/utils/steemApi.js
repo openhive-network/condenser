@@ -133,9 +133,9 @@ export async function getStateAsync(url, observer, ssr = false) {
     if (ssr && account) {
         // TODO: move to global reducer?
         const profile = await callBridge('get_profile', { account });
-        const hive_power = await getHivePowerForUser(account);
 
         if (profile && profile['name']) {
+            const hive_power = await getHivePowerForUser(account);
             state['profiles'][account] = {
                 ...profile,
                 stats: {
