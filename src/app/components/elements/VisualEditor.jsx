@@ -1,6 +1,12 @@
 import React, { Component } from 'react';
-import RichTextEditor from 'react-rte';
+
 import PropTypes from 'prop-types';
+
+let RichTextEditor;
+if (process.env.BROWSER) {
+    // eslint-disable-next-line global-require
+    RichTextEditor = require('react-rte').default;
+}
 
 class VisualEditor extends Component {
     static propTypes = {
@@ -12,13 +18,12 @@ class VisualEditor extends Component {
 
         const state = {};
 
-        if (props.value) {
-            state.value = RichTextEditor.createValueFromString(
-                props.value,
-                'markdown'
-            );
-        } else {
-            state.value = RichTextEditor.createEmptyValue();
+        if (RichTextEditor) {
+            if (props.value) {
+                state.value = RichTextEditor.createValueFromString(props.value, 'markdown');
+            } else {
+                state.value = RichTextEditor.createEmptyValue();
+            }
         }
 
         this.state = state;
@@ -34,10 +39,7 @@ class VisualEditor extends Component {
     render() {
         return (
             <div className="visual-editor">
-                <RichTextEditor
-                    value={this.state.value}
-                    onChange={this.onChange}
-                />
+                {RichTextEditor && <RichTextEditor value={this.state.value} onChange={this.onChange} />}
             </div>
         );
     }
