@@ -826,13 +826,6 @@ class ReplyEditor extends React.Component {
                                             tabIndex={0}
                                         />
                                     </Dropzone>
-                                    <p className="drag-and-drop">
-                                        {tt('reply_editor.insert_images_by_dragging_dropping')}
-                                        {noClipboardData ? '' : tt('reply_editor.pasting_from_the_clipboard')}
-                                        {tt('reply_editor.or_by')}{' '}
-                                        <a onClick={this.onOpenClick}>{tt('reply_editor.selecting_them')}</a>
-                                        .
-                                    </p>
                                     {progress.message && <div className="info">{progress.message}</div>}
                                     {progress.error && (
                                         <div className="error">
@@ -842,6 +835,13 @@ class ReplyEditor extends React.Component {
                                 </span>
                             )}
                         </div>
+                        <p className="drag-and-drop">
+                            {tt('reply_editor.insert_images_by_dragging_dropping')}
+                            {noClipboardData ? '' : tt('reply_editor.pasting_from_the_clipboard')}
+                            {tt('reply_editor.or_by')}{' '}
+                            <a onClick={this.onOpenClick}>{tt('reply_editor.selecting_them')}</a>
+                            .
+                        </p>
                         <div className={vframe_section_shrink_class}>
                             <div className="error">
                                 {body.touched && body.error && body.error !== 'Required' && body.error}
