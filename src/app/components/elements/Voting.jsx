@@ -427,8 +427,15 @@ class Voting extends React.Component {
                 const rshares_percent = rshares * 100 / net_rshares;
                 const vote_value = shown_payout * rshares_percent / 100;
                 const sign = rshares < 0 ? '-' : '';
+                let vote_value_string = '';
+                if (shown_payout > 0) {
+                    vote_value_string = `: ${sign}$${Math.abs(vote_value).toFixed(2)}`;
+                } else if (sign === '-') {
+                    vote_value_string = ` [${sign}]`;
+                }
+
                 voters.push({
-                    value: `${voter}: ${sign}$${Math.abs(vote_value).toFixed(2)}`,
+                    value: `${voter}${vote_value_string}`,
                     link: '/@' + voter,
                 });
             }
