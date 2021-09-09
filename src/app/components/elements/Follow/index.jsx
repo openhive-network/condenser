@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import LoadingIndicator from 'app/components/elements/LoadingIndicator';
-import shouldComponentUpdate from 'app/utils/shouldComponentUpdate';
+// import shouldComponentUpdate from 'app/utils/shouldComponentUpdate';
 import * as transactionActions from 'app/redux/TransactionReducer';
 import * as userActions from 'app/redux/UserReducer';
 import { Set, Map } from 'immutable';
@@ -10,7 +10,7 @@ import tt from 'counterpart';
 
 const { string, bool, any } = PropTypes;
 
-export default class Follow extends React.Component {
+export default class Follow extends PureComponent {
     static propTypes = {
         following: string,
         follower: string, // OPTIONAL default to current user
@@ -32,7 +32,7 @@ export default class Follow extends React.Component {
         this.state = {};
         this.initEvents(props);
         this.followLoggedOut = this.followLoggedOut.bind(this);
-        this.shouldComponentUpdate = shouldComponentUpdate(this, 'Follow');
+        // this.shouldComponentUpdate = shouldComponentUpdate(this, 'Follow');
     }
 
     componentWillUpdate(nextProps) {

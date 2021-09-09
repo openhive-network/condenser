@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { List } from 'immutable';
@@ -8,7 +8,7 @@ import PostSummary from 'app/components/cards/PostSummary';
 import LoadingIndicator from 'app/components/elements/LoadingIndicator';
 import GptAd from 'app/components/elements/GptAd';
 import VideoAd from 'app/components/elements/VideoAd';
-import shouldComponentUpdate from 'app/utils/shouldComponentUpdate';
+// import shouldComponentUpdate from 'app/utils/shouldComponentUpdate';
 
 function topPosition(domElt) {
     if (!domElt) {
@@ -17,7 +17,7 @@ function topPosition(domElt) {
     return domElt.offsetTop + topPosition(domElt.offsetParent);
 }
 
-class PostsList extends React.Component {
+class PostsList extends PureComponent {
     static propTypes = {
         posts: PropTypes.object,
         loading: PropTypes.bool.isRequired,
@@ -38,7 +38,7 @@ class PostsList extends React.Component {
         };
         this.scrollListener = this.scrollListener.bind(this);
         this.onBackButton = this.onBackButton.bind(this);
-        this.shouldComponentUpdate = shouldComponentUpdate(this, 'PostsList');
+        // this.shouldComponentUpdate = shouldComponentUpdate(this, 'PostsList');
     }
 
     componentDidMount() {

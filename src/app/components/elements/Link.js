@@ -1,10 +1,10 @@
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { PureComponent } from 'react';
 import links from 'app/utils/Links';
 import { browserHistory } from 'react-router';
-import shouldComponentUpdate from 'app/utils/shouldComponentUpdate';
+// import shouldComponentUpdate from 'app/utils/shouldComponentUpdate';
 
-export default class Link extends React.Component {
+export default class Link extends PureComponent {
     static propTypes = {
         // HTML properties
         href: PropTypes.string,
@@ -12,7 +12,7 @@ export default class Link extends React.Component {
     constructor(props) {
         super();
         const { href } = props;
-        this.shouldComponentUpdate = shouldComponentUpdate(this, 'Link');
+        // this.shouldComponentUpdate = shouldComponentUpdate(this, 'Link');
         this.localLink = href && links.local.test(href);
         this.onLocalClick = e => {
             e.preventDefault();

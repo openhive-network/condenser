@@ -1,32 +1,33 @@
-import React from 'react';
+import React, { PureComponent } from 'react';
 import Autocomplete from 'react-autocomplete';
-import shouldComponentUpdate from 'app/utils/shouldComponentUpdate';
+// import shouldComponentUpdate from 'app/utils/shouldComponentUpdate';
 import { validate_account_name } from 'app/utils/ChainValidation';
 import reactForm from 'app/utils/ReactForm';
 import { List, Set } from 'immutable';
 import tt from 'counterpart';
+import PropTypes from 'prop-types';
 
-export class BeneficiarySelector extends React.Component {
+export class BeneficiarySelector extends PureComponent {
     static propTypes = {
         // HTML props
-        id: React.PropTypes.string, // DOM id for active component (focusing, etc...)
-        onChange: React.PropTypes.func.isRequired,
-        onBlur: React.PropTypes.func.isRequired,
-        value: React.PropTypes.array,
-        tabIndex: React.PropTypes.number,
+        id: PropTypes.string, // DOM id for active component (focusing, etc...)
+        onChange: PropTypes.func.isRequired,
+        onBlur: PropTypes.func.isRequired,
+        value: PropTypes.array,
+        tabIndex: PropTypes.number,
 
         // redux connect
-        following: React.PropTypes.array.isRequired,
+        following: PropTypes.array.isRequired,
     };
     static defaultProps = {
         id: 'BeneficiarySelectorId',
     };
     constructor() {
         super();
-        this.shouldComponentUpdate = shouldComponentUpdate(
-            this,
-            'BeneficiarySelector'
-        );
+        // this.shouldComponentUpdate = shouldComponentUpdate(
+        //     this,
+        //     'BeneficiarySelector'
+        // );
     }
 
     matchAutocompleteUser(item, value) {
