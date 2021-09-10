@@ -87,6 +87,7 @@ class PostsIndex extends PureComponent {
         if (isFetchingOrRecentlyUpdated(status, order, category)) return;
 
         const [author, permlink] = last_post.split('/');
+
         this.props.requestData({
             author,
             permlink,

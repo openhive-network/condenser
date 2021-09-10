@@ -262,7 +262,7 @@ class CommentImpl extends PureComponent {
                 sortComments(cont, replies, this.props.sort_order);
                 replies = replies.map((reply) => (
                     <Comment
-                        key={reply.get('permlink')}
+                        key={reply}
                         postref={reply}
                         cont={cont}
                         sort_order={this.props.sort_order}

@@ -20,7 +20,7 @@ function topPosition(domElt) {
 class PostsList extends PureComponent {
     static propTypes = {
         posts: PropTypes.object,
-        loading: PropTypes.bool.isRequired,
+        loading: PropTypes.bool,
         category: PropTypes.string,
         loadMore: PropTypes.func,
         nsfwPref: PropTypes.string.isRequired,
@@ -96,8 +96,8 @@ class PostsList extends PureComponent {
 
     render() {
         const {
- posts, loading, category, order, nsfwPref, hideCategory
-} = this.props;
+            posts, loading, category, order, nsfwPref, hideCategory
+        } = this.props;
         const { thumbSize } = this.state;
 
         const renderSummary = (items) => items.map((post, i) => {

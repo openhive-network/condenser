@@ -96,12 +96,11 @@ export function getHivePowerForUser(account) {
 }
 
 export async function getStateAsync(url, observer, ssr = false) {
-    console.log('getStateAsync');
     if (observer === undefined) observer = null;
 
     const {
- page, tag, sort, key
-} = parsePath(url);
+        page, tag, sort, key
+    } = parsePath(url);
 
     console.log('GSA', url, observer, ssr);
     const state = {
@@ -221,11 +220,11 @@ async function loadPosts(sort, tag, observer) {
 
 function parsePath(url) {
     // strip off query string
-    let baseUrl = url.split('?')[0];
+    let [baseUrl] = url.split('?');
 
     // strip off leading and trailing slashes
-    if (url.length > 0 && url[0] == '/') url = url.substring(1, url.length);
-    if (url.length > 0 && url[url.length - 1] == '/') url = url.substring(0, url.length - 1);
+    if (baseUrl.length > 0 && baseUrl[0] == '/') baseUrl = baseUrl.substring(1, baseUrl.length);
+    if (baseUrl.length > 0 && baseUrl[baseUrl.length - 1] == '/') url = baseUrl.substring(0, baseUrl.length - 1);
 
     // blank URL defaults to `trending`
     if (baseUrl === '') baseUrl = 'trending';

@@ -284,8 +284,8 @@ export function* markNotificationsAsReadSaga(action) {
 export function* fetchData(action) {
     // TODO: postFilter unused
     const {
- order, author, permlink, postFilter, observer
-} = action.payload;
+        order, author, permlink, postFilter, observer
+    } = action.payload;
     let { category } = action.payload;
     if (!category) category = '';
 
@@ -302,7 +302,6 @@ export function* fetchData(action) {
             observer,
         };
     } else {
-        console.log('fetch saga ranked posts');
         call_name = 'get_ranked_posts';
         args = {
             sort: order,
@@ -361,7 +360,11 @@ export function* fetchData(action) {
 
             // Still return all data but only count ones matching the filter.
             // Rely on UI to actually hide the posts.
-            fetched += postFilter ? data.filter(postFilter).length : data.length;
+            if (postFilter && data) {
+                fetched += data.filter(postFilter).length;
+            } else {
+                fetched += data.length;
+            }
 
             fetchDone = endOfData || fetchLimitReached || fetched >= constants.FETCH_DATA_BATCH_SIZE;
 
