@@ -1,6 +1,7 @@
+/*global $STM_Config*/
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Link } from 'react-router';
+import { Link, browserHistory } from 'react-router';
 import { connect } from 'react-redux';
 import { parseJsonTags } from 'app/utils/StateFunctions';
 import Headroom from 'react-headroom';
@@ -26,9 +27,8 @@ class Header extends React.Component {
     static propTypes = {
         current_account_name: PropTypes.string,
         display_name: PropTypes.string,
-        category: PropTypes.string,
-        order: PropTypes.string,
         pathname: PropTypes.string,
+        // eslint-disable-next-line react/no-unused-prop-types
         getUnreadAccountNotifications: PropTypes.func,
         startNotificationsPolling: PropTypes.func,
         loggedIn: PropTypes.bool,
@@ -39,6 +39,7 @@ class Header extends React.Component {
         super(props);
 
         this.state = {
+            // eslint-disable-next-line react/no-unused-state
             gptAdRendered: false,
             showAd: false,
             showAnnouncement: this.props.showAnnouncement,
@@ -74,7 +75,10 @@ class Header extends React.Component {
             const route = resolveRoute(nextProps.pathname);
             if (route && route.page === 'PostsIndex' && route.params && route.params.length > 0) {
                 const sort_order = route.params[0] !== 'home' ? route.params[0] : null;
-                if (sort_order) window.last_sort_order = this.last_sort_order = sort_order;
+                if (sort_order) {
+                    window.last_sort_order = sort_order;
+                    this.last_sort_order = sort_order;
+                }
             }
         }
     }
@@ -114,7 +118,7 @@ class Header extends React.Component {
             notificationActionPending,
         } = this.props;
 
-        let { showAd, showAnnouncement } = this.state;
+        const { showAnnouncement } = this.state;
 
         /*Set the document.title on each header render.*/
         const route = resolveRoute(pathname);
@@ -122,7 +126,6 @@ class Header extends React.Component {
         let page_title = route.page;
         let sort_order = '';
         let topic = '';
-        let page_name = null;
         if (route.page === 'PostsIndex') {
             sort_order = route.params[0];
             if (sort_order === 'home') {
@@ -193,8 +196,6 @@ class Header extends React.Component {
             }
         } else if (route.page === 'ListManagement') {
             page_title = 'Manage Lists';
-        } else {
-            page_name = ''; //page_title = route.page.replace( /([a-z])([A-Z])/g, '$1 $2' ).toLowerCase();
         }
 
         // Format first letter of all titles and lowercase user name
@@ -202,8 +203,11 @@ class Header extends React.Component {
             page_title = page_title.charAt(0).toUpperCase() + page_title.slice(1);
         }
 
-        if (process.env.BROWSER && route.page !== 'Post' && route.page !== 'PostNoCategory')
-            document.title = page_title + ' — ' + APP_NAME;
+        if (
+            process.env.BROWSER
+            && route.page !== 'Post'
+            && route.page !== 'PostNoCategory'
+        ) document.title = page_title + ' — ' + APP_NAME;
 
         //const _feed = current_account_name && `/@${current_account_name}/feed`;
         //const logo_link = _feed && pathname != _feed ? _feed : '/';
@@ -234,8 +238,7 @@ class Header extends React.Component {
         const comments_link = `/@${username}/comments`;
         const notifs_link = `/@${username}/notifications`;
         const wallet_link = `${walletUrl}/@${username}`;
-        const notif_label =
-            tt('g.notifications') + (unreadNotificationCount > 0 ? ` (${unreadNotificationCount})` : '');
+        const notif_label = tt('g.notifications') + (unreadNotificationCount > 0 ? ` (${unreadNotificationCount})` : '');
 
         const user_menu = [
             { link: account_link, icon: 'profile', value: tt('g.profile') },
@@ -257,7 +260,7 @@ class Header extends React.Component {
                 value: tt('g.logout'),
             },
         ];
-        showAd = false; // TODO: fix header ad overlap bug
+        const showAd = false; // TODO: fix header ad overlap bug
         const headerMutated = (mutation, discconnectObserver) => {
             if (mutation.target.id.indexOf('google_ads_iframe_') !== -1) {
                 this.gptAdRendered();
@@ -268,11 +271,18 @@ class Header extends React.Component {
         };
         return (
             <ReactMutationObserver onChildListChanged={headerMutated}>
-                <Headroom onUnpin={(e) => this.headroomOnUnpin(e)} onUnfix={(e) => this.headroomOnUnfix(e)}>
+                <Headroom
+                    onUnpin={(e) => this.headroomOnUnpin(e)}
+                    onUnfix={(e) => this.headroomOnUnfix(e)}
+                >
                     <header className="Header">
-                        {showAnnouncement && <Announcement onClose={(e) => this.hideAnnouncement(e)} />}
+                        {showAnnouncement && (
+                            <Announcement
+                                onClose={(e) => this.hideAnnouncement(e)}
+                            />
+                        )}
                         {/*<div className="beta-disclaimer">
-                            Viewing <strong>Steemit.com beta</strong>. Note that
+                            Viewing <strong>Hive.blog beta</strong>. Note that
                             availability of features or service may change at
                             any time.
                         </div>*/}
@@ -290,20 +300,20 @@ class Header extends React.Component {
 
                             <div className="large-5 columns show-for-large large-centered Header__sort">
                                 <ul className="nav__block-list">
-                                    <li className={`nav__block-list-item`}>
-                                        <Link to={'/'}>Posts</Link>
+                                    <li className="nav__block-list-item">
+                                        <Link to="/">Posts</Link>
                                     </li>
-                                    <li className={`nav__block-list-item`}>
+                                    <li className="nav__block-list-item">
                                         <Link to={`${walletUrl}/proposals`} target="_blank" rel="noopener noreferrer">
                                             Proposals
                                         </Link>
                                     </li>
-                                    <li className={`nav__block-list-item`}>
+                                    <li className="nav__block-list-item">
                                         <Link to={`${walletUrl}/~witnesses`} target="_blank" rel="noopener noreferrer">
                                             Witnesses
                                         </Link>
                                     </li>
-                                    <li className={`nav__block-list-item`}>
+                                    <li className="nav__block-list-item">
                                         <Link to="https://hive.io/eco/" target="_blank" rel="noopener noreferrer">
                                             Our dApps
                                         </Link>
@@ -339,23 +349,23 @@ class Header extends React.Component {
                                 {/*USER AVATAR */}
                                 {loggedIn && (
                                     <DropdownMenu
-                                        className={'Header__usermenu'}
+                                        className="Header__usermenu"
                                         items={user_menu}
                                         title={username}
                                         el="span"
                                         position="left"
                                     >
-                                        <li className={'Header__userpic '}>
+                                        <li className="Header__userpic ">
                                             <Userpic account={username} />
                                         </li>
                                         {!notificationActionPending && unreadNotificationCount > 0 && (
-                                            <div className={'Header__notification'}>
+                                            <div className="Header__notification">
                                                 <span>{unreadNotificationCount}</span>
                                             </div>
                                         )}
                                     </DropdownMenu>
                                 )}
-                                {/*HAMBURGER*/}
+                                {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions */}
                                 <span onClick={showSidePanel} className="toggle-menu Header__hamburger">
                                     <span className="hamburger" />
                                 </span>

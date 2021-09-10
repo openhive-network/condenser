@@ -8,6 +8,9 @@ import spotifyRegex from 'app/components/elements/EmbeddedPlayers/spotify';
 import mixcloudRegex from 'app/components/elements/EmbeddedPlayers/mixcloud';
 import archiveorg from 'app/components/elements/EmbeddedPlayers/archiveorg';
 import bandcamp from 'app/components/elements/EmbeddedPlayers/bandcamp';
+import redditRegex from 'app/components/elements/EmbeddedPlayers/reddit';
+import gist from 'app/components/elements/EmbeddedPlayers/gist';
+import truvvl from 'app/components/elements/EmbeddedPlayers/truvvl';
 import { PARAM_VIEW_MODE, VIEW_MODE_WHISTLE } from '../../shared/constants';
 
 describe('Links', () => {
@@ -39,10 +42,9 @@ describe('Links', () => {
         match(linksRe.local(), locals);
         matchNot(linksRe.remote(), locals);
 
-        const remotes = ['https://steemit.com/', 'http://abc.co'];
+        const remotes = ['https://peakd.com/', 'http://abc.co'];
         match(linksRe.remote(), remotes);
         matchNot(linksRe.local(), remotes);
-        // match(linksRe({external: false}), largeData + 'https://steemit.com2/next', 'https://steemit.com2/next')
     });
     it('by image', () => {
         match(linksRe.image(), 'https://example.com/a.jpeg');
@@ -183,23 +185,35 @@ describe('Performance', () => {
     });
     it('threespeak', () => {
         match(threespeakRegex.main, 'https://3speak.co/watch?v=artemislives/tvxkobat');
+        match(threespeakRegex.main, 'https://3speak.tv/watch?v=artemislives/tvxkobat');
         match(threespeakRegex.main, 'https://3speak.co/watch?v=artemislives/tvxkobat&jwsource=cl');
+        match(threespeakRegex.main, 'https://3speak.tv/watch?v=artemislives/tvxkobat&jwsource=cl');
         match(threespeakRegex.main, 'https://3speak.co/embed?v=artemislives/tvxkobat');
+        match(threespeakRegex.main, 'https://3speak.tv/embed?v=artemislives/tvxkobat');
     });
     it('threespeakId', () => {
-        match(threespeakRegex.main, 'https://3speak.co/watch?v=artemislives/tvxkobat', 'artemislives/tvxkobat', 1);
+        match(threespeakRegex.main, 'https://3speak.tv/watch?v=artemislives/tvxkobat', 'artemislives/tvxkobat', 1);
         match(
             threespeakRegex.main,
-            'https://3speak.co/watch?v=artemislives/tvxkobat&jwsource=cl',
+            'https://3speak.tv/watch?v=artemislives/tvxkobat&jwsource=cl',
             'artemislives/tvxkobat',
             1
         );
-        match(threespeakRegex.main, 'https://3speak.co/embed?v=artemislives/tvxkobat', 'artemislives/tvxkobat', 1);
+        match(threespeakRegex.main, 'https://3speak.tv/embed?v=artemislives/tvxkobat', 'artemislives/tvxkobat', 1);
+
+        match(threespeakRegex.main, 'https://3speak.tv/watch?v=artemislives/tvxkobat', 'artemislives/tvxkobat', 1);
+        match(
+            threespeakRegex.main,
+            'https://3speak.tv/watch?v=artemislives/tvxkobat&jwsource=cl',
+            'artemislives/tvxkobat',
+            1
+        );
+        match(threespeakRegex.main, 'https://3speak.tv/embed?v=artemislives/tvxkobat', 'artemislives/tvxkobat', 1);
     });
     it('threespeakImageLink', () => {
         match(
             threespeakRegex.htmlReplacement,
-            '<a href="https://3speak.co/watch?v=artemislives/tvxkobat" rel="noopener" title="This link will take you away from steemit.com" class="steem-keychain-checked"><img src="https://steemitimages.com/768x0/https://img.3speakcontent.online/tvxkobat/post.png"></a>'
+            '<a href="https://3speak.tv/watch?v=artemislives/tvxkobat" rel="noopener" title="This link will take you away from this site" class="steem-keychain-checked"><img src="https://images.hive.blog/768x0/https://img.3speakcontent.online/tvxkobat/post.png"></a>'
         );
     });
     it('twitter', () => {
@@ -214,13 +228,42 @@ describe('Performance', () => {
             '<blockquote><p>Dear government and elites in the UK, a short thread about your attempted suppression of Tommy Robinson through your ability to control private enterprises like Twitter, Facebook and YouTube /1</p>&amp;mdash; 🇮🇱Dr BrianofLondon.me (<a href="/@brianoflondon" class="keychainify-checked">@brianoflondon</a>) <a href="https://twitter.com/brianoflondon/status/1219518959168389121?ref_src=twsrc%5Etfw" rel="nofollow noopener" title="This link will take you away from hive.blog">January 21, 2020</a></blockquote>'
         );
     });
+    it('reddit', () => {
+        match(
+            redditRegex.main,
+            'https://www.reddit.com/r/Kefir/comments/l1ntst/is_this_kahn_yeast_its_always_start_appearing/'
+        );
+        match(
+            redditRegex.sanitize,
+            'https://www.reddit.com/r/Kefir/comments/l1ntst/is_this_kahn_yeast_its_always_start_appearing/'
+        );
+        match(
+            redditRegex.htmlReplacement,
+            '<blockquote class="reddit-card" data-card-created="1614855336"><a href="https://www.reddit.com/r/CryptoCurrency/comments/lxcmup/to_all_the_small_hodlers_keeping_your_coins_at_an/">To all the small hodlers, keeping your coins at an exchange might be the best thing for you</a> from <a href="http://www.reddit.com/r/CryptoCurrency">r/CryptoCurrency</a></blockquote>\n'
+                + '<script async src="//embed.redditmedia.com/widgets/platform.js" charset="UTF-8"></script>'
+        );
+        match(
+            redditRegex.htmlReplacement,
+            '<blockquote class="reddit-card" data-card-created="1614855336"><a href="https://www.reddit.com/r/CryptoCurrency/comments/lxcmup/to_all_the_small_hodlers_keeping_your_coins_at_an/">To all the small hodlers, keeping your coins at an exchange might be the best thing for you</a> from <a href="http://www.reddit.com/r/CryptoCurrency">r/CryptoCurrency</a></blockquote>\n'
+                + '<script async src="//embed.redditmedia.com/widgets/platform.js" charset="UTF-8"></script>'
+        );
+    });
     it('spotify', () => {
         match(spotifyRegex.main, 'https://open.spotify.com/playlist/37i9dQZF1DWSDCcNkUu5tr?si=WPhzYzqATGSIa0d3kbNgBg');
         match(spotifyRegex.main, 'https://open.spotify.com/show/37i9dQZF1DWSDCcNkUu5tr?si=WPhzYzqATGSIa0d3kbNgBg');
         match(spotifyRegex.main, 'https://open.spotify.com/episode/37i9dQZF1DWSDCcNkUu5tr?si=WPhzYzqATGSIa0d3kbNgBg');
+        match(spotifyRegex.main, 'https://open.spotify.com/album/7f6Vo2c0GMRcvkdgsLaPld?si=RChe9-s5TxaoHGNxG5mAHw');
+        match(spotifyRegex.main, 'https://open.spotify.com/track/7ngO2TJ9Gg9VCzNSJF2O4N');
+        match(spotifyRegex.main, 'https://open.spotify.com/artist/70eAfg5WeShjPxtD9Yi6P9');
         match(spotifyRegex.sanitize, 'https://open.spotify.com/embed/playlist/37i9dQZF1DWSDCcNkUu5tr');
         match(spotifyRegex.sanitize, 'https://open.spotify.com/embed-podcast/show/37i9dQZF1DWSDCcNkUu5tr');
         match(spotifyRegex.sanitize, 'https://open.spotify.com/embed-podcast/episode/37i9dQZF1DWSDCcNkUu5tr');
+        match(spotifyRegex.sanitize, 'https://open.spotify.com/embed/album/7f6Vo2c0GMRcvkdgsLaPld');
+        match(spotifyRegex.sanitize, 'https://open.spotify.com/embed/track/6V4oUHrin3AlMarW8MsnIK?si=03e929f5a0ad4893');
+        match(
+            spotifyRegex.sanitize,
+            'https://open.spotify.com/embed/artist/70eAfg5WeShjPxtD9Yi6P9?si=VDDO-Ju9TOqTw_pS5piraA'
+        );
     });
     it('mixcloud', () => {
         match(
@@ -241,6 +284,24 @@ describe('Performance', () => {
         match(
             bandcamp.sanitize,
             'https://bandcamp.com/EmbeddedPlayer/album=313320652/size=large/bgcol=ffffff/linkcol=0687f5/tracklist=false/transparent=true/'
+        );
+    });
+    it('gist', () => {
+        match(gist.main, 'https://gist.github.com/huysbs/647a50197b95c4027550a2cc558af6aa');
+        match(gist.sanitize, 'https://gist.github.com/huysbs/647a50197b95c4027550a2cc558af6aa.js');
+        match(
+            gist.htmlReplacement,
+            '<script src="https://gist.github.com/huysbs/647a50197b95c4027550a2cc558af6aa.js"></script>'
+        );
+    });
+    it('truvvl', () => {
+        match(
+            truvvl.main,
+            'https://travelfeed.io/@tvt3st/prague-to-sarajevo-cool-places-in-europe-europe-prague-zagreb-bosnia-20210420t103208397z'
+        );
+        match(
+            truvvl.sanitize,
+            'https://embed.truvvl.com/@tvt3st/prague-to-sarajevo-cool-places-in-europe-europe-prague-zagreb-bosnia-20210420t103208397z'
         );
     });
 });

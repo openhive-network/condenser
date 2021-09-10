@@ -1,8 +1,7 @@
-/*eslint no-shadow: "warn"*/
-/* global $STM_Config */
+/*global $STM_Config*/
 import { fromJS, Set } from 'immutable';
 import {
- call, put, select, fork, takeLatest
+ call, put, select, fork, take, takeLatest
 } from 'redux-saga/effects';
 import { api, auth } from '@hiveio/hive-js';
 import { PrivateKey, Signature, hash } from '@hiveio/hive-js/lib/auth/ecc';
@@ -29,7 +28,13 @@ import { setHiveSignerAccessToken, isLoggedInWithHiveSigner, hiveSignerClient } 
 export const userWatches = [
     takeLatest('user/lookupPreviousOwnerAuthority', lookupPreviousOwnerAuthority),
     takeLatest(userActions.CHECK_KEY_TYPE, checkKeyType),
-    takeLatest(userActions.USERNAME_PASSWORD_LOGIN, usernamePasswordLogin),
+    // takeLeading https://redux-saga.js.org/docs/api/#notes-5
+    fork(function* () {
+        while (true) {
+            const action = yield take(userActions.USERNAME_PASSWORD_LOGIN);
+            yield call(usernamePasswordLogin, action);
+        }
+    }),
     takeLatest(userActions.SAVE_LOGIN, saveLogin_localStorage),
     takeLatest(userActions.LOGOUT, logout),
     takeLatest(userActions.LOGIN_ERROR, loginError),
@@ -199,7 +204,12 @@ function* usernamePasswordLogin2({
     } catch (error) {
         defaultBeneficiaries = [];
     }
-    yield put(userActions.setUser({ defaultBeneficiaries }));
+    yield put(
+        userActions.setUser({
+            defaultBeneficiaries,
+            show_login_modal: true,
+        })
+    );
 
     // return if already logged in using steem keychain
     if (login_with_keychain) {
@@ -282,7 +292,7 @@ function* usernamePasswordLogin2({
         const accountName = account.get('name');
         authority = authority.set('active', 'none');
         yield put(userActions.setAuthority({ accountName, auth: authority }));
-        const fullAuths = authority.reduce((r, auth, type) => (auth === 'full' ? r.add(type) : r), Set());
+        const fullAuths = authority.reduce((r, _auth, type) => (_auth === 'full' ? r.add(type) : r), Set());
         if (!fullAuths.size) {
             console.log('No full auths');
             yield put(userActions.hideLoginWarning());
@@ -372,8 +382,8 @@ function* usernamePasswordLogin2({
 
             if (useKeychain) {
                 const response = yield new Promise((resolve) => {
-                    window.hive_keychain.requestSignBuffer(username, buf, 'Posting', (response) => {
-                        resolve(response);
+                    window.hive_keychain.requestSignBuffer(username, buf, 'Posting', (res) => {
+                        resolve(res);
                     });
                 });
                 if (response.success) {
@@ -545,11 +555,11 @@ function* saveLogin_localStorage() {
     }
     const postingPubkey = posting_private ? posting_private.toPublicKey().toString() : 'none';
     try {
-        account.getIn(['active', 'key_auths']).forEach((auth) => {
-            if (auth.get(0) === postingPubkey) throw 'Login will not be saved, posting key is the same as active key';
+        account.getIn(['active', 'key_auths']).forEach((_auth) => {
+            if (_auth.get(0) === postingPubkey) throw 'Login will not be saved, posting key is the same as active key';
         });
-        account.getIn(['owner', 'key_auths']).forEach((auth) => {
-            if (auth.get(0) === postingPubkey) throw 'Login will not be saved, posting key is the same as owner key';
+        account.getIn(['owner', 'key_auths']).forEach((_auth) => {
+            if (_auth.get(0) === postingPubkey) throw 'Login will not be saved, posting key is the same as owner key';
         });
     } catch (e) {
         console.error('login_auth_err', e);
@@ -713,8 +723,8 @@ function* uploadImage({
     } else {
         if (keychainLogin) {
             const response = yield new Promise((resolve) => {
-                window.hive_keychain.requestSignBuffer(username, JSON.stringify(buf), 'Posting', (response) => {
-                    resolve(response);
+                window.hive_keychain.requestSignBuffer(username, JSON.stringify(buf), 'Posting', (res) => {
+                    resolve(res);
                 });
             });
             if (response.success) {

@@ -34,18 +34,27 @@ function TimeAuthorCategory({ post }) {
     return (
         <span className="PostFull__time_author_category vcard">
             <Icon name="clock" className="space-right" />
-            <TimeAgoWrapper date={post.get('created')} /> {tt('g.in')} <Tag post={post} /> {tt('g.by')}{' '}
+            <TimeAgoWrapper date={post.get('created')} />
+            {' '}
+            {tt('g.in')}
+            {' '}
+            <Tag post={post} />
+            {' '}
+            {tt('g.by')}
+            {' '}
             <Author post={post} showAffiliation />
         </span>
     );
 }
 
 function TimeAuthorCategoryLarge({ post }) {
-    const crossPostedBy = post.get('cross_posted_by');
+    const jsonMetadata = post.get('json_metadata');
+    const authoredBy = jsonMetadata.get('author');
     let author = post.get('author');
     let created = post.get('created');
     let updated = post.get('updated');
 
+    const crossPostedBy = post.get('cross_posted_by');
     if (crossPostedBy) {
         author = post.get('cross_post_author');
         created = post.get('cross_post_created');
@@ -57,9 +66,24 @@ function TimeAuthorCategoryLarge({ post }) {
             <Userpic account={author} />
             <div className="right-side">
                 <Author post={post} showAffiliation resolveCrossPost />
-                {tt('g.in')} <Tag post={post} />
+                {tt('g.in')}
+                {' '}
+                <Tag post={post} />
                 {' • '}
-                <TimeAgoWrapper date={created} /> <ContentEditedWrapper createDate={created} updateDate={updated} />
+                <TimeAgoWrapper date={created} />
+                {' '}
+                <ContentEditedWrapper createDate={created} updateDate={updated} />
+                {authoredBy
+                    && authoredBy !== author && (
+                        <div className="PostFull__authored_by">
+                            {tt('postfull_jsx.authored_by')}
+                            {' '}
+                            <a href={`/@${authoredBy}`}>
+                                @
+                                {authoredBy}
+                            </a>
+                        </div>
+                    )}
             </div>
         </span>
     );
@@ -149,7 +173,9 @@ class PostFull extends React.Component {
         e.preventDefault();
         const winWidth = 640;
         const winHeight = 320;
+        // eslint-disable-next-line no-restricted-globals
         const winTop = screen.height / 2 - winWidth / 2;
+        // eslint-disable-next-line no-restricted-globals
         const winLeft = screen.width / 2 - winHeight / 2;
         const s = this.share_params;
         const q = 'text=' + encodeURIComponent(s.title) + '&url=' + encodeURIComponent(s.url);
@@ -173,11 +199,12 @@ class PostFull extends React.Component {
         e.preventDefault();
         const winWidth = 720;
         const winHeight = 480;
+        // eslint-disable-next-line no-restricted-globals
         const winTop = screen.height / 2 - winWidth / 2;
+        // eslint-disable-next-line no-restricted-globals
         const winLeft = screen.width / 2 - winHeight / 2;
         const s = this.share_params;
-        const q =
-            'title=' + encodeURIComponent(s.title) + '&url=' + encodeURIComponent(s.url) + '&source=Steemit&mini=true';
+        const q = 'title=' + encodeURIComponent(s.title) + '&url=' + encodeURIComponent(s.url) + '&source=Steemit&mini=true';
         window.open(
             'https://www.linkedin.com/shareArticle?' + q,
             'Share',
@@ -200,7 +227,9 @@ class PostFull extends React.Component {
     };
 
     onTogglePin = (isPinned) => {
-        const { community, username, post, postref } = this.props;
+        const {
+ community, username, post, postref
+} = this.props;
         if (!community || !username) console.error('pin fail', this.props);
 
         const key = ['content', postref, 'stats', 'is_pinned'];
@@ -213,8 +242,12 @@ class PostFull extends React.Component {
 
     render() {
         const {
-            props: { username, post, community, viewer_role },
-            state: { PostFullReplyEditor, PostFullEditEditor, formId, showReply, showEdit },
+            props: {
+ username, post, community, viewer_role
+},
+            state: {
+ PostFullReplyEditor, PostFullEditEditor, formId, showReply, showEdit
+},
             onShowReply,
             onShowEdit,
             onDeletePost,
@@ -243,9 +276,16 @@ class PostFull extends React.Component {
                         <span className="articles__crosspost-icon">
                             <Icon name="cross-post" />
                         </span>
-                        <UserNames names={[author]} /> {tt('postsummary_jsx.crossposted')}{' '}
-                        <Link to={`/${crossPostCategory}/@${crossPostAuthor}/${crossPostPermlink}`}>this post</Link>{' '}
-                        {tt('g.in')} <Link to={`/created/${community}`}>{community_title}</Link>{' '}
+                        <UserNames names={[author]} />
+                        {' '}
+                        {tt('postsummary_jsx.crossposted')}
+                        {' '}
+                        <Link to={`/${crossPostCategory}/@${crossPostAuthor}/${crossPostPermlink}`}>this post</Link>
+                        {' '}
+                        {tt('g.in')}
+                        {' '}
+                        <Link to={`/created/${community}`}>{community_title}</Link>
+                        {' '}
                         <TimeAgoWrapper date={post.get('created')} />
                     </p>
                     <hr />
@@ -366,7 +406,10 @@ class PostFull extends React.Component {
             const prnturl = `/${category}/@${parent_author}/${parent_permlink}`;
             post_header = (
                 <div className="callout">
-                    <div>{tt('postfull_jsx.you_are_viewing_a_single_comments_thread_from')}:</div>
+                    <div>
+                        {tt('postfull_jsx.you_are_viewing_a_single_comments_thread_from')}
+                        :
+                    </div>
                     <h4>{post.get('title')}</h4>
                     <ul>
                         <li>
@@ -394,7 +437,6 @@ class PostFull extends React.Component {
 
         const isPinned = post.getIn(['stats', 'is_pinned'], false);
 
-        const isPreViewCount = Date.parse(post.get('created')) < 1480723200000; // check if post was created before view-count tracking began (2016-12-03)
         let contentBody;
 
         if (bShowLoading) {
@@ -430,6 +472,7 @@ class PostFull extends React.Component {
 
                     {canPromote && username && (
                         <button
+                            type="button"
                             className="Promote__button float-right button hollow tiny"
                             onClick={this.showPromotePost}
                         >
@@ -446,15 +489,21 @@ class PostFull extends React.Component {
                             {canReblog && <Reblog author={author} permlink={permlink} />}
                             <span className="PostFull__reply">
                                 {/* all */}
-                                {canReply && <a onClick={onShowReply}>{tt('g.reply')}</a>} {/* mods */}
+                                {canReply && <a role="link" tabIndex={0} onClick={onShowReply}>{tt('g.reply')}</a>}
+                                {' '}
+                                {/* mods */}
                                 {canPin && (
-                                    <a onClick={() => this.onTogglePin(isPinned)}>
+                                    <a role="link" tabIndex={0} onClick={() => this.onTogglePin(isPinned)}>
                                         {isPinned ? tt('g.unpin') : tt('g.pin')}
                                     </a>
-                                )}{' '}
-                                {canMute && <MuteButton post={post} />} {/* owner */}
-                                {canEdit && <a onClick={onShowEdit}>{tt('g.edit')}</a>}{' '}
-                                {canDelete && <a onClick={onDeletePost}>{tt('g.delete')}</a>}
+                                )}
+                                {' '}
+                                {canMute && <MuteButton post={post} />}
+                                {' '}
+                                {/* owner */}
+                                {canEdit && <a role="link" tabIndex={0} onClick={onShowEdit}>{tt('g.edit')}</a>}
+                                {' '}
+                                {canDelete && <a role="link" tabIndex={0} onClick={onDeletePost}>{tt('g.delete')}</a>}
                             </span>
                             <span className="PostFull__responses">
                                 <Link
@@ -469,11 +518,12 @@ class PostFull extends React.Component {
                             </span>
                             <ShareMenu menu={share_menu} />
                             <button
+                                type="button"
                                 className="explore-post"
                                 title={tt('g.share_this_post')}
                                 onClick={this.showExplorePost}
                             >
-                                <Icon name="link" className="chain-right" />
+                                <Icon name="link" className="chain-rotated" />
                             </button>
                         </div>
                         {crossPostedBy && (
@@ -482,7 +532,8 @@ class PostFull extends React.Component {
                                     className="button"
                                     to={`/${crossPostCategory}/@${crossPostAuthor}/${crossPostPermlink}`}
                                 >
-                                    Browse to the original post by @{crossPostAuthor}
+                                    Browse to the original post by @
+                                    {crossPostAuthor}
                                 </Link>
                             </div>
                         )}

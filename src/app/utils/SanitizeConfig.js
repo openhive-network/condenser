@@ -33,6 +33,7 @@ export default ({
             'webkitallowfullscreen',
             'mozallowfullscreen',
             'sandbox',
+            'class',
         ],
 
         // class attribute is strictly whitelisted (below)
@@ -41,6 +42,7 @@ export default ({
 
         // style is subject to attack, filtering more below
         td: ['style'],
+        th: ['style'],
         img: ['src', 'srcset', 'alt', 'class'],
 
         // title is only set in the case of an external link warning
@@ -53,13 +55,13 @@ export default ({
             const widthAtty = attribs.width;
             const heightAtty = attribs.height;
             const {
- validUrl, useSandbox, sandboxAttributes, width, height
-} = validateEmbbeddedPlayerIframeUrl(
-                srcAtty,
-                large,
-                widthAtty,
-                heightAtty
-            );
+                validUrl,
+                useSandbox,
+                sandboxAttributes,
+                width,
+                height,
+                providerId,
+            } = validateEmbbeddedPlayerIframeUrl(srcAtty, large, widthAtty, heightAtty);
 
             if (validUrl !== false) {
                 const iframe = {
@@ -72,6 +74,7 @@ export default ({
                         src: validUrl,
                         width,
                         height,
+                        class: `${providerId}-iframe`,
                     },
                 };
                 if (useSandbox) {
@@ -129,9 +132,25 @@ export default ({
                 attribs: attys,
             };
         },
+        th: (tagName, attribs) => {
+            const attys = {};
+            const allowedStyles = ['text-align:right', 'text-align:left', 'text-align:center'];
+            if (allowedStyles.indexOf(attribs.style) !== -1) {
+                attys.style = attribs.style;
+            }
+
+            return {
+                tagName,
+                attribs: attys,
+            };
+        },
         td: (tagName, attribs) => {
             const attys = {};
-            if (attribs.style === 'text-align:right') attys.style = 'text-align:right';
+            const allowedStyles = ['text-align:right', 'text-align:left', 'text-align:center'];
+            if (allowedStyles.indexOf(attribs.style) !== -1) {
+                attys.style = attribs.style;
+            }
+
             return {
                 tagName,
                 attribs: attys,

@@ -19,17 +19,21 @@ export async function callBridge(method, params) {
         delete params.observer;
     }
 
+    if (method === 'normalize_post' && params && params.observer !== undefined) delete params.observer;
+
     if (
         method !== 'account_notifications'
         && method !== 'unread_notifications'
         && method !== 'list_all_subscriptions'
         && method !== 'get_post_header'
+        && method !== 'list_subscribers'
+        && method !== 'normalize_post'
         && (params.observer === null || params.observer === undefined)
     ) params.observer = $STM_Config.default_observer;
 
     console.log('call bridge', method, params && JSON.stringify(params).substring(0, 200));
 
-    return new Promise((resolve, reject) => {
+    return new Promise(((resolve, reject) => {
         api.call('bridge.' + method, params, (err, data) => {
             if (err) {
                 // [JES] This is also due to a change in hivemind that we've requested a change for.
@@ -47,7 +51,7 @@ export async function callBridge(method, params) {
                 reject(err);
             } else resolve(data);
         });
-    });
+    }));
 }
 
 export function getHivePowerForUser(account) {
@@ -114,7 +118,7 @@ export async function getStateAsync(url, observer, ssr = false) {
         state.content = posts.content;
         state.discussion_idx = posts.discussion_idx;
     } else if (page == 'thread') {
-        const posts = await loadThread(key[0], key[1]);
+        const posts = await loadThread(key[0], key[1], observer);
         state.content = posts.content;
     } else {
         // no-op
@@ -137,9 +141,9 @@ export async function getStateAsync(url, observer, ssr = false) {
     if (ssr && account) {
         // TODO: move to global reducer?
         const profile = await callBridge('get_profile', { account });
-        const hive_power = await getHivePowerForUser(account);
 
         if (profile && profile.name) {
+            const hive_power = await getHivePowerForUser(account);
             state.profiles[account] = {
                 ...profile,
                 stats: {
@@ -161,19 +165,21 @@ export async function getStateAsync(url, observer, ssr = false) {
     return cleansed;
 }
 
-async function loadThread(account, permlink) {
+async function loadThread(account, permlink, observer) {
     const author = account.slice(1);
-    const content = await callBridge('get_discussion', { author, permlink });
+    const content = await callBridge('get_discussion', { author, permlink, observer });
 
-    if (content) {
+    if (Object.values(content).length > 0) {
         const { content: preppedContent, keys, crossPosts } = await fetchCrossPosts(
             [Object.values(content)[0]],
             author
         );
-        if (crossPosts) {
+        if (crossPosts && content[keys[0]] && content[keys[0]].cross_post_key) {
             const crossPostKey = content[keys[0]].cross_post_key;
-            content[keys[0]] = preppedContent[keys[0]];
-            content[keys[0]] = augmentContentWithCrossPost(content[keys[0]], crossPosts[crossPostKey]);
+            if (crossPostKey) {
+                content[keys[0]] = preppedContent[keys[0]];
+                content[keys[0]] = augmentContentWithCrossPost(content[keys[0]], crossPosts[crossPostKey]);
+            }
         }
     }
 
@@ -218,8 +224,8 @@ function parsePath(url) {
     let baseUrl = url.split('?')[0];
 
     // strip off leading and trailing slashes
-    if (baseUrl.length > 0 && baseUrl[0] == '/') baseUrl = baseUrl.substring(1, baseUrl.length);
-    if (baseUrl.length > 0 && baseUrl[baseUrl.length - 1] == '/') baseUrl = baseUrl.substring(0, baseUrl.length - 1);
+    if (url.length > 0 && url[0] == '/') url = url.substring(1, url.length);
+    if (url.length > 0 && url[url.length - 1] == '/') url = url.substring(0, url.length - 1);
 
     // blank URL defaults to `trending`
     if (baseUrl === '') baseUrl = 'trending';

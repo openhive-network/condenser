@@ -77,12 +77,12 @@ export function extractBodySummary(body, stripQuotes = false) {
     // eslint-disable-next-line prefer-destructuring
     desc = desc.trim().split('\n')[0];
 
-    if (desc.length > 140) {
-        desc = desc.substring(0, 140).trim();
+    if (desc.length > 200) {
+        desc = desc.substring(0, 200).trim();
 
         // Truncate, remove the last (likely partial) word (along with random punctuation), and add ellipses
         desc = desc
-            .substring(0, 120)
+            .substring(0, 180)
             .trim()
             .replace(/[,!?]?\s+[^\s]+$/, '…');
     }
@@ -92,7 +92,7 @@ export function extractBodySummary(body, stripQuotes = false) {
 
 export function getPostSummary(jsonMetadata, body, stripQuotes = false) {
     let shortDescription;
-    if (typeof jsonMetadata.get === 'function') {
+    if (jsonMetadata && typeof jsonMetadata.get === 'function') {
         shortDescription = jsonMetadata.get('description');
     } else {
         shortDescription = _.get(jsonMetadata, 'description');

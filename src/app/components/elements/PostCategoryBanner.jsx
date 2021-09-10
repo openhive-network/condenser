@@ -1,62 +1,61 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import Userpic from 'app/components/elements/Userpic';
-import { Link } from 'react-router';
-
 import { actions as fetchDataSagaActions } from 'app/redux/FetchDataSaga';
-import * as transactionActions from 'app/redux/TransactionReducer';
 
 class PostCategoryBanner extends React.Component {
-    componentWillMount() {
-        const { communityName, getCommunity, community } = this.props;
-        if (communityName && !community) getCommunity(communityName);
+    constructor(props) {
+        super(props);
+        const { category } = props;
+
+        this.state = {
+            postDestination: category,
+        };
     }
 
-    componentDidUpdate(prevProps) {
-        const { communityName, getCommunity, community } = this.props;
-        if (prevProps.communityName != communityName) {
-            if (communityName && !community) getCommunity(communityName);
+    componentWillMount() {
+        const { username, subscriptions, getAccountSubscriptions } = this.props;
+
+        if (username && subscriptions.length === 0) {
+            getAccountSubscriptions(username);
         }
     }
 
     render() {
-        const { username, community, disabledCommunity } = this.props;
-        const url = community ? '/trending/' + community.get('name') : null;
-        const label = community ? <Link to={url}>{community.get('title')}</Link> : `@${username}'s blog`;
-        const onClick = (e) => {
-            e.preventDefault();
-            this.props.onCancel();
-        };
-        const onUndo = (e) => {
-            e.preventDefault();
-            this.props.onUndo(disabledCommunity);
+        const { subscriptions, onChange } = this.props;
+        const { postDestination } = this.state;
+        const onCommunitySelected = (e) => {
+            const destination = e.target.value;
+            this.setState({ postDestination: destination });
+            onChange(destination);
         };
 
         return (
-            <div className="PostCategoryBanner column small-12 ">
-                {community && (
-                    <a href="#" onClick={onClick} style={{ float: 'right' }}>
-                        [Post to blog]
-                    </a>
-                )}
-                {disabledCommunity && (
-                    <a href="#" onClick={onUndo} style={{ float: 'right' }}>
-                        [Post to Community]
-                    </a>
-                )}
+            <div className="PostCategoryBanner">
                 <div className="postTo">
                     <small>
-                        Posting to {community ? 'Community: ' : ''}
-                        <span className="smallLabel">{label}</span>
+                        Posting to:
+                        {' '}
+                        <select
+                            className="PostCategoryBanner--community-selector"
+                            value={postDestination || ''}
+                            onChange={onCommunitySelected}
+                        >
+                            <option value="blog">My blog</option>
+                            <optgroup label="Subscribed Community">
+                                {subscriptions
+                                    && subscriptions.map((entry) => {
+                                        const [hive, name] = entry;
+                                        return (
+                                            <option value={hive} key={hive}>
+                                                {name}
+                                            </option>
+                                        );
+                                    })}
+                            </optgroup>
+                        </select>
                     </small>
                 </div>
-                {/*
-                <div className="categoryName">
-                    <Userpic account={currentUser} />
-                    <h3>{label}</h3>
-                </div>
-                */}
             </div>
         );
     }
@@ -64,23 +63,30 @@ class PostCategoryBanner extends React.Component {
 
 PostCategoryBanner.propTypes = {
     username: PropTypes.string.isRequired,
-    communityName: PropTypes.string,
-    community: PropTypes.object, // TODO: define shape
-    onCancel: PropTypes.func,
+    category: PropTypes.string,
+    subscriptions: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.string)),
+};
+
+PostCategoryBanner.defaultProps = {
+    category: 'blog',
+    subscriptions: [],
 };
 
 export default connect(
     (state, ownProps) => {
-        const username = state.user.getIn(['current', 'username'], null);
+        const { user, global } = state;
+        const username = user.getIn(['current', 'username'], null);
+        const subscriptions = global.getIn(['subscriptions', username]);
+
         return {
             ...ownProps,
-            community: state.global.getIn(['community', ownProps.communityName], null),
             username,
+            subscriptions: subscriptions ? subscriptions.toJS() : [],
         };
     },
     (dispatch) => ({
-        getCommunity: (communityName) => {
-            return dispatch(fetchDataSagaActions.getCommunity(communityName));
+        getAccountSubscriptions: (username) => {
+            return dispatch(fetchDataSagaActions.getSubscriptions(username));
         },
     })
 )(PostCategoryBanner);

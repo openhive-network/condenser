@@ -49,6 +49,7 @@ const defaultState = fromJS({
 
 export default function reducer(state = defaultState, action) {
     const { payload } = action;
+    let show_login_modal;
 
     switch (action.type) {
         case SHOW_LOGIN: {
@@ -140,9 +141,14 @@ export default function reducer(state = defaultState, action) {
             return state; // saga
 
         case SET_USER:
+            show_login_modal = false;
+            if (payload.show_login_modal != undefined) {
+                show_login_modal = payload.show_login_modal;
+                delete payload.show_login_modal;
+            }
             return state.mergeDeep({
                 current: payload,
-                show_login_modal: false,
+                show_login_modal,
                 show_login_warning: false,
                 loginBroadcastOperation: undefined,
                 loginDefault: undefined,

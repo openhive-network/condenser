@@ -7,10 +7,15 @@ import CloseButton from 'app/components/elements/CloseButton';
 import Icon from 'app/components/elements/Icon';
 import { Link } from 'react-router';
 
-const SidePanel = ({ alignment, visible, hideSidePanel, username, walletUrl, toggleNightmode }) => {
+const SidePanel = ({
+ alignment, visible, hideSidePanel, username, walletUrl, toggleNightmode
+}) => {
     if (process.env.BROWSER) {
-        visible && document.addEventListener('click', hideSidePanel);
-        !visible && document.removeEventListener('click', hideSidePanel);
+        if (visible) {
+            document.addEventListener('click', hideSidePanel);
+        } else {
+            document.removeEventListener('click', hideSidePanel);
+        }
     }
 
     const loggedIn = username === undefined ? 'show-for-small-only' : 'SidePanel__hide-signup';
@@ -23,7 +28,8 @@ const SidePanel = ({ alignment, visible, hideSidePanel, username, walletUrl, tog
             return (
                 <li key={ix} className={cn}>
                     <a href={i.link} target="_blank" rel="noopener noreferrer">
-                        {i.label}&nbsp;
+                        {i.label}
+                        &nbsp;
                         <Icon name="extlink" />
                     </a>
                 </li>
@@ -32,7 +38,7 @@ const SidePanel = ({ alignment, visible, hideSidePanel, username, walletUrl, tog
         if (i.onClick) {
             return (
                 <li key={ix} className={cn}>
-                    <a onClick={i.onClick}>{i.label}</a>
+                    <a role="link" tabIndex={0} onClick={i.onClick}>{i.label}</a>
                 </li>
             );
         }
@@ -94,24 +100,6 @@ const SidePanel = ({ alignment, visible, hideSidePanel, username, walletUrl, tog
                 label: tt('navigation.chat'),
                 link: 'https://openhive.chat/home',
             },
-            /*
-            {
-                label: tt('navigation.advertise'),
-                link: 'https://selfserve.steemit.com',
-            },
-            {
-                label: tt('navigation.jobs'),
-                link:
-                    'https://recruiting.paylocity.com/recruiting/jobs/List/3288/Steemit-Inc',
-            },
-            {
-                label: tt('navigation.app_center'),
-                link: 'https://steemprojects.com/',
-            },
-            {
-                label: tt('navigation.business_center'),
-                link: 'https://steemeconomy.com/',
-            },*/
         ],
 
         organizational: [

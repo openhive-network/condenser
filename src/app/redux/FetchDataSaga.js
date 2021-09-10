@@ -85,43 +85,44 @@ export function* fetchState(location_change_action) {
 
 function* syncSpecialPosts() {
     // Bail if we're rendering serverside since there is no localStorage
-    if (process.env.BROWSER) {
-        // Get special posts from the store.
-        const specialPosts = yield select((state) => state.offchain.get('special_posts'));
+    if (!process.env.BROWSER) return null;
 
-        // Mark seen featured posts.
-        const seenFeaturedPosts = specialPosts.get('featured_posts').map((post) => {
-            const id = `${post.get('author')}/${post.get('permlink')}`;
-            return post.set('seen', localStorage.getItem(`featured-post-seen:${id}`) === 'true');
-        });
+    // Get special posts from the store.
+    const specialPosts = yield select((state) => state.offchain.get('special_posts'));
 
-        // Mark seen promoted posts.
-        const seenPromotedPosts = specialPosts.get('promoted_posts').map((post) => {
-            const id = `${post.get('author')}/${post.get('permlink')}`;
-            return post.set('seen', localStorage.getItem(`promoted-post-seen:${id}`) === 'true');
-        });
+    // Mark seen featured posts.
+    const seenFeaturedPosts = specialPosts.get('featured_posts').map((post) => {
+        const id = `${post.get('author')}/${post.get('permlink')}`;
+        return post.set('seen', localStorage.getItem(`featured-post-seen:${id}`) === 'true');
+    });
 
-        // Look up seen post URLs.
-        yield put(
-            globalActions.syncSpecialPosts({
-                featuredPosts: seenFeaturedPosts,
-                promotedPosts: seenPromotedPosts,
-            })
-        );
+    // Mark seen promoted posts.
+    const seenPromotedPosts = specialPosts.get('promoted_posts').map((post) => {
+        const id = `${post.get('author')}/${post.get('permlink')}`;
+        return post.set('seen', localStorage.getItem(`promoted-post-seen:${id}`) === 'true');
+    });
 
-        // Mark all featured posts as seen.
-        specialPosts.get('featured_posts').forEach((post) => {
-            const id = `${post.get('author')}/${post.get('permlink')}`;
-            localStorage.setItem(`featured-post-seen:${id}`, 'true');
-        });
+    // Look up seen post URLs.
+    yield put(
+        globalActions.syncSpecialPosts({
+            featuredPosts: seenFeaturedPosts,
+            promotedPosts: seenPromotedPosts,
+        })
+    );
 
-        // Mark all promoted posts as seen.
-        specialPosts.get('promoted_posts').forEach((post) => {
-            const id = `${post.get('author')}/${post.get('permlink')}`;
-            localStorage.setItem(`promoted-post-seen:${id}`, 'true');
-        });
-    }
+    // Mark all featured posts as seen.
+    specialPosts.get('featured_posts').forEach((post) => {
+        const id = `${post.get('author')}/${post.get('permlink')}`;
+        localStorage.setItem(`featured-post-seen:${id}`, 'true');
+    });
+
+    // Mark all promoted posts as seen.
+    specialPosts.get('promoted_posts').forEach((post) => {
+        const id = `${post.get('author')}/${post.get('permlink')}`;
+        localStorage.setItem(`promoted-post-seen:${id}`, 'true');
+    });
 }
+
 
 /**
  * Request all communities
@@ -130,14 +131,13 @@ function* syncSpecialPosts() {
 export function* listCommunities(action) {
     const { observer, query, sort } = action.payload;
     try {
+        yield put(globalActions.receiveCommunities(null));
         const communities = yield call(callBridge, 'list_communities', {
             observer,
-            query,
+            query: query !== '' ? query : null,
             sort,
         });
-        if (communities.length > 0) {
-            yield put(globalActions.receiveCommunities(communities));
-        }
+        yield put(globalActions.receiveCommunities(communities));
     } catch (error) {
         console.log('Error requesting communities:', error);
     }
@@ -160,11 +160,13 @@ export function* getCommunity(action) {
     });
 
     // TODO: Handle error state
-    if (community.name) { yield put(
+    if (community.name) {
+        yield put(
             globalActions.receiveCommunity({
                 [community.name]: { ...community },
             })
-        ); }
+        );
+    }
 }
 
 /**

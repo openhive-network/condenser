@@ -176,17 +176,30 @@ app.use(function* (next) {
         }
     }
 
-    // remember ch, cn, r url params in the session and remove them from url
-    if (this.method === 'GET' && /\?[^\w]*(ch=|cn=|r=)/.test(this.url)) {
-        let redir = this.url.replace(/((ch|cn|r)=[^&]+)/gi, (r) => {
-            const p = r.split('=');
-            // eslint-disable-next-line prefer-destructuring
-            if (p.length === 2) this.session[p[0]] = p[1];
-            return '';
+    // this.url is a relative URL, it does not include the scheme
+    const [pathString, queryString] = this.url.split('?');
+    const urlParams = new URLSearchParams(queryString);
+
+    let paramFound = false;
+    if (this.url.indexOf('?') !== -1) {
+        const paramsToProcess = ['ch', 'cn', 'r'];
+
+        paramsToProcess.forEach((paramToProcess) => {
+            if (urlParams.has(paramToProcess)) {
+                const paramValue = urlParams.get(paramToProcess);
+                if (paramValue) {
+                    paramFound = true;
+                    this.session[paramToProcess] = paramValue;
+                    urlParams.delete(paramToProcess);
+                }
+            }
         });
-        redir = redir.replace(/&&&?/, '');
-        redir = redir.replace(/\?&?$/, '');
-        console.log(`server redirect ${this.url} -> ${redir}`);
+    }
+
+    if (paramFound) {
+        const newQueryString = urlParams.toString();
+        const redir = `${pathString.replace(/\/\//g, '/')}${newQueryString ? `?${newQueryString}` : ''}`;
+
         this.status = 302;
         this.redirect(redir);
     } else {

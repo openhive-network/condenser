@@ -36,7 +36,6 @@ const vote_weights = (post) => {
 class PostSummary extends React.Component {
     static propTypes = {
         post: PropTypes.object.isRequired,
-        onClose: PropTypes.func,
         nsfwPref: PropTypes.string,
     };
 
@@ -48,11 +47,11 @@ class PostSummary extends React.Component {
 
     shouldComponentUpdate(props, state) {
         return (
-            props.username !== this.props.username ||
-            props.nsfwPref !== this.props.nsfwPref ||
-            props.blogmode !== this.props.blogmode ||
-            state.revealNsfw !== this.state.revealNsfw ||
-            props.post != this.props.post
+            props.username !== this.props.username
+            || props.nsfwPref !== this.props.nsfwPref
+            || props.blogmode !== this.props.blogmode
+            || state.revealNsfw !== this.state.revealNsfw
+            || props.post != this.props.post
         );
     }
 
@@ -86,7 +85,9 @@ class PostSummary extends React.Component {
                         <span className="articles__resteem-icon">
                             <Icon name="reblog" />
                         </span>
-                        <UserNames names={reblogged_by} /> {tt('postsummary_jsx.reblogged')}
+                        <UserNames names={reblogged_by} />
+                        {' '}
+                        {tt('postsummary_jsx.reblogged')}
                     </p>
                 </div>
             );
@@ -105,9 +106,15 @@ class PostSummary extends React.Component {
                         <span className="articles__crosspost-icon">
                             <Icon name="cross-post" />
                         </span>
-                        <UserNames names={[crossPostedBy]} /> {tt('postsummary_jsx.crossposted')}{' '}
+                        <UserNames names={[crossPostedBy]} />
+                        {' '}
+                        {tt('postsummary_jsx.crossposted')}
+                        {' '}
                         <Link to={`${crossPostCategory}/@${crossPostAuthor}/${crossPostPermlink}`}>
-                            @{crossPostAuthor}/{crossPostPermlink}
+                            @
+                            {crossPostAuthor}
+                            /
+                            {crossPostPermlink}
                         </Link>
                     </div>
                 </div>
@@ -166,7 +173,7 @@ class PostSummary extends React.Component {
                             <Author
                                 post={post}
                                 follow={false}
-                                hideEditor={true}
+                                hideEditor
                                 resolveCrossPost
                                 showRole={showCommunityLabels}
                             />
@@ -174,7 +181,8 @@ class PostSummary extends React.Component {
 
                         {hideCategory || (
                             <span className="articles__tag-link">
-                                {tt('g.in')}&nbsp;
+                                {tt('g.in')}
+&nbsp;
                                 <Tag post={post} />
                                 &nbsp;•&nbsp;
                             </span>
@@ -207,12 +215,11 @@ class PostSummary extends React.Component {
                 return cnt > 0 ? '•'.repeat(cnt) : null;
             };
             const { up, dn } = vote_weights(post);
-            dots =
-                up || dn ? (
-                    <span className="vote_weights">
-                        {_dots(up)}
-                        {<span>{_dots(dn)}</span>}
-                    </span>
+            dots = up || dn ? (
+                <span className="vote_weights">
+                    {_dots(up)}
+                    {<span>{_dots(dn)}</span>}
+                </span>
                 ) : null;
         }
 
@@ -234,20 +241,24 @@ class PostSummary extends React.Component {
             if (nsfwPref === 'hide') {
                 // user wishes to hide these posts entirely
                 return null;
-            } else if (nsfwPref === 'warn' && !revealNsfw) {
+            } if (nsfwPref === 'warn' && !revealNsfw) {
                 // user wishes to be warned, and has not revealed this post
                 return (
-                    <article className={'PostSummary hentry'} itemScope itemType="http://schema.org/blogPost">
+                    <article className="PostSummary hentry" itemScope itemType="http://schema.org/blogPost">
                         <div className="PostSummary__nsfw-warning">
                             {summary_header}
-                            <span className="nsfw-flag">nsfw</span>&nbsp;&nbsp;
+                            <span className="nsfw-flag">nsfw</span>
+                            &nbsp;&nbsp;
+                            {/* eslint-disable-next-line jsx-a11y/interactive-supports-focus */}
                             <span role="button" onClick={this.onRevealNsfw}>
                                 <a>{tt('postsummary_jsx.reveal_it')}</a>
-                            </span>{' '}
+                            </span>
+                            {' '}
                             {tt('g.or') + ' '}
                             {username ? (
                                 <span>
-                                    {tt('postsummary_jsx.adjust_your')}{' '}
+                                    {tt('postsummary_jsx.adjust_your')}
+                                    {' '}
                                     <Link to={`/@${username}/settings`}>
                                         {tt('postsummary_jsx.display_preferences')}
                                     </Link>
@@ -255,8 +266,16 @@ class PostSummary extends React.Component {
                                 </span>
                             ) : (
                                 <span>
-                                    <a href={SIGNUP_URL}>{tt('postsummary_jsx.create_an_account')}</a>{' '}
-                                    {tt('postsummary_jsx.to_save_your_preferences')}.
+                                    <a href={SIGNUP_URL}>
+                                        {tt(
+                                            'postsummary_jsx.create_an_account'
+                                        )}
+                                    </a>
+                                    {' '}
+                                    {tt(
+                                        'postsummary_jsx.to_save_your_preferences'
+                                    )}
+                                    .
                                 </span>
                             )}
                             {summary_footer}
@@ -272,6 +291,10 @@ class PostSummary extends React.Component {
             image_link = extractImageLink(post.get('cross_post_json_metadata'), post.get('cross_post_body'));
         }
 
+        if (!image_link) {
+            image_link = `https://images.hive.blog/u/${author}/avatar`;
+        }
+
         let thumb = null;
         if (!gray && image_link && !ImageUserBlockList.includes(author)) {
             // on mobile, we always use blog layout style -- there's no toggler
@@ -279,16 +302,17 @@ class PostSummary extends React.Component {
             // if blogmode is false, output an image with a srcset
             // which has the 256x512 for whatever the large breakpoint is where the list layout is used
             // and the 640 for lower than that
-            const blogImg = proxify(image_link, '640x480');
-
             if (this.props.blogmode) {
-                thumb = <img className="articles__feature-img" src={blogImg} />;
+                image_link = proxify(image_link, '640x480');
+                thumb = (
+                    <img className="articles__feature-img" src={image_link} alt="featured" />
+                );
             } else {
                 const listImg = proxify(image_link, '256x512');
                 thumb = (
                     <picture className="articles__feature-img">
                         <source srcSet={listImg} media="(min-width: 1000px)" />
-                        <img srcSet={blogImg} />
+                        <img srcSet={image_link} alt="featured" />
                     </picture>
                 );
             }
@@ -302,9 +326,9 @@ class PostSummary extends React.Component {
                 {summary_header}
                 <div
                     className={
-                        'articles__content hentry' +
-                        (thumb ? ' with-image ' : ' ') +
-                        (gray || ignore ? ' downvoted' : '')
+                        'articles__content hentry'
+                        + (thumb ? ' with-image ' : ' ')
+                        + (gray || ignore ? ' downvoted' : '')
                     }
                     itemScope
                     itemType="http://schema.org/blogPost"

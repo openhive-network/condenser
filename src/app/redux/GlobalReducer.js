@@ -1,7 +1,7 @@
-/*eslint no-case-declarations: "warn", no-shadow: "warn" */
 import {
  Map, List, fromJS, Iterable
 } from 'immutable';
+import Sanitizer from 'app/utils/Sanitizer';
 
 export const defaultState = Map({
     status: {},
@@ -93,6 +93,21 @@ export default function reducer(state = defaultState, action = {}) {
             return state.updateIn(['content', key], Map(), (c) => c.mergeDeep(update));
 
         case RECEIVE_STATE: {
+            if (Object.prototype.hasOwnProperty.call(payload, 'community')) {
+                const communities = Object.keys(payload.community);
+                for (let ci = 0; ci < communities.length; ci += 1) {
+                    const community = payload.community[communities[ci]];
+                    community.title = Sanitizer.getTextOnly(community.title);
+                    community.description = Sanitizer.getTextOnly(community.description);
+                    community.flag_text = Sanitizer.getTextOnly(community.flag_text);
+                    community.about = Sanitizer.getTextOnly(community.about);
+
+                    for (let ti = 0; ti < community.team.length; ti += 1) {
+                        const member = community.team[ti];
+                        community.team[ti][2] = Sanitizer.getTextOnly(member[2]);
+                    }
+                }
+            }
             console.log('Merging state', state.mergeDeep(fromJS(payload)).toJS());
             return state.mergeDeep(fromJS(payload));
         }
@@ -132,12 +147,19 @@ export default function reducer(state = defaultState, action = {}) {
         }
 
         case RECEIVE_COMMUNITIES: {
-            const map = Map(payload.map((c) => [c.name, fromJS(c)]));
-            const idx = List(payload.map((c) => c.name));
+            let map = null;
+            let idx = null;
+
+            if (payload !== null) {
+                map = Map(payload.map((c) => [c.name, fromJS(c)]));
+                idx = List(payload.map((c) => c.name));
+            }
+
             return state.setIn(['community'], map).setIn(['community_idx'], idx);
         }
 
         case RECEIVE_COMMUNITY: {
+            console.log('DEBUG: community payload', payload);
             return state.update('community', Map(), (a) => a.mergeDeep(payload));
         }
 
@@ -163,14 +185,14 @@ export default function reducer(state = defaultState, action = {}) {
 
         case RECEIVE_CONTENT: {
             const content = fromJS(payload.content);
-            const key = content.get('author') + '/' + content.get('permlink');
+            const _key = content.get('author') + '/' + content.get('permlink');
             console.log('received content...', payload.content);
 
             // merge content object into map
-            let new_state = state.updateIn(['content', key], Map(), (c) => c.mergeDeep(content));
+            let new_state = state.updateIn(['content', _key], Map(), (c) => c.mergeDeep(content));
 
             // merge vote info taking pending votes into account
-            const votes_key = ['content', key, 'active_votes'];
+            const votes_key = ['content', _key, 'active_votes'];
             const old_votes = state.getIn(votes_key, List());
             const new_votes = content.get('active_votes');
             const merged_votes = new_votes.merge(new_votes, old_votes);
@@ -180,7 +202,7 @@ export default function reducer(state = defaultState, action = {}) {
             if (content.get('depth') == 0) {
                 const category = content.get('category');
                 const dkey = ['discussion_idx', category, '_created'];
-                new_state = new_state.setIn(dkey, key);
+                new_state = new_state.setIn(dkey, _key);
             }
 
             return new_state;
@@ -192,9 +214,13 @@ export default function reducer(state = defaultState, action = {}) {
 } = payload;
             const parent_key = postKey(parent_author, parent_permlink);
             if (!parent_key) return state;
-            const key = author + '/' + permlink;
+            const _key = author + '/' + permlink;
             // Add key if not exist
-            let updatedState = state.updateIn(['content', parent_key, 'replies'], List(), (l) => l.findIndex((i) => i === key) === -1 ? l.push(key) : l);
+            let updatedState = state.updateIn(
+                ['content', parent_key, 'replies'],
+                List(),
+                (l) => (l.findIndex((i) => i === _key) === -1 ? l.push(_key) : l)
+            );
             const children = updatedState.getIn(['content', parent_key, 'replies'], List()).size;
             updatedState = updatedState.updateIn(['content', parent_key, 'children'], 0, () => children);
             return updatedState;
@@ -202,12 +228,12 @@ export default function reducer(state = defaultState, action = {}) {
 
         case DELETE_CONTENT: {
             const { author, permlink } = payload;
-            const key = author + '/' + permlink;
-            const content = state.getIn(['content', key]);
+            const _key = author + '/' + permlink;
+            const content = state.getIn(['content', _key]);
             const parent_key = postKey(content.get('parent_author'), content.get('parent_permlink'));
-            let updatedState = state.deleteIn(['content', key]);
+            let updatedState = state.deleteIn(['content', _key]);
             if (parent_key) {
-                updatedState = updatedState.updateIn(['content', parent_key, 'replies'], List(), (r) => r.filter((i) => i !== key));
+                updatedState = updatedState.updateIn(['content', parent_key, 'replies'], List(), (r) => r.filter((i) => i !== _key));
             }
             return updatedState;
         }
@@ -217,14 +243,14 @@ export default function reducer(state = defaultState, action = {}) {
  voter, author, permlink, weight
 } = payload;
             const vote = Map({ voter, percent: weight });
-            const key = ['content', author + '/' + permlink, 'active_votes'];
-            let votes = state.getIn(key, List());
+            const _key = ['content', author + '/' + permlink, 'active_votes'];
+            let votes = state.getIn(_key, List());
 
             const idx = votes.findIndex((v) => v.get('voter') === voter);
             votes = idx === -1 ? votes.push(vote) : votes.set(idx, vote);
 
             // TODO: new state never returned -- masked by RECEIVE_CONTENT
-            state = state.setIn(key, votes);
+            state = state.setIn(_key, votes);
             return state;
         }
 
@@ -243,12 +269,12 @@ export default function reducer(state = defaultState, action = {}) {
             let new_state;
 
             // append content keys to `discussion_idx` list
-            const key = ['discussion_idx', category || '', order];
-            new_state = state.updateIn(key, List(), (list) => {
+            const _key = ['discussion_idx', category || '', order];
+            new_state = state.updateIn(_key, List(), (list) => {
                 return list.withMutations((posts) => {
                     data.forEach((value) => {
-                        const key = `${value.author}/${value.permlink}`;
-                        if (!posts.includes(key)) posts.push(key);
+                        const __key = `${value.author}/${value.permlink}`;
+                        if (!posts.includes(_key)) posts.push(__key);
                     });
                 });
             });
@@ -257,8 +283,8 @@ export default function reducer(state = defaultState, action = {}) {
             new_state = new_state.updateIn(['content'], (content) => {
                 return content.withMutations((map) => {
                     data.forEach((value) => {
-                        const key = `${value.author}/${value.permlink}`;
-                        map.set(key, fromJS(value));
+                        const __key = `${value.author}/${value.permlink}`;
+                        map.set(__key, fromJS(value));
                     });
                 });
             });
@@ -274,19 +300,19 @@ export default function reducer(state = defaultState, action = {}) {
         }
 
         case SET: {
-            const { key, value } = payload;
-            const key_array = Array.isArray(key) ? key : [key];
+            const { key: _key, value } = payload;
+            const key_array = Array.isArray(_key) ? _key : [_key];
             return state.setIn(key_array, fromJS(value));
         }
 
         case REMOVE: {
-            const key = Array.isArray(payload.key) ? payload.key : [payload.key];
-            return state.removeIn(key);
+            const _key = Array.isArray(payload.key) ? payload.key : [payload.key];
+            return state.removeIn(_key);
         }
 
         case UPDATE: {
-            const { key, notSet = Map(), updater } = payload;
-            return state.updateIn(key, notSet, updater);
+            const { key: _key, notSet = Map(), updater } = payload;
+            return state.updateIn(_key, notSet, updater);
         }
 
         case FETCH_JSON: {

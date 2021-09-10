@@ -1,7 +1,7 @@
+/*global $STM_Config*/
 /* eslint react/prop-types: 0 */
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Map } from 'immutable';
 import * as transactionActions from 'app/redux/TransactionReducer';
 import * as globalActions from 'app/redux/GlobalReducer';
 import * as userActions from 'app/redux/UserReducer';
@@ -19,11 +19,14 @@ import PdfDownload from 'app/components/elements/PdfDownload';
 import { hiveSignerClient } from 'app/utils/HiveSigner';
 import { getQueryStringParams } from 'app/utils/Links';
 
+import { connect } from 'react-redux';
+
 class LoginForm extends Component {
     static propTypes = {
         // Steemit.
         loginError: PropTypes.string,
         onCancel: PropTypes.func,
+        afterLoginRedirectToWelcome: PropTypes.bool,
     };
 
     static defaultProps = {
@@ -67,7 +70,9 @@ class LoginForm extends Component {
     }
 
     componentDidMount() {
+        // eslint-disable-next-line react/no-string-refs
         if (this.refs.username && !this.refs.username.value) this.refs.username.focus();
+        // eslint-disable-next-line react/no-string-refs
         if (this.refs.username && this.refs.username.value) this.refs.pw.focus();
     }
 
@@ -129,8 +134,14 @@ class LoginForm extends Component {
                 isHiveSigner: true,
             });
             const params = getQueryStringParams(window.location.search);
-            const { username, access_token, expires_in, state } = params;
-            const { saveLogin, afterLoginRedirectToWelcome, lastPath } = JSON.parse(state);
+            const {
+                username, access_token, expires_in, state
+            } = params;
+            const {
+                saveLogin,
+                afterLoginRedirectToWelcome,
+                lastPath,
+            } = JSON.parse(decodeURI(state));
             const { reallySubmit, loginBroadcastOperation } = this.props;
             const data = {
                 username,
@@ -151,7 +162,10 @@ class LoginForm extends Component {
             return (
                 <div className="row">
                     <div className="column">
-                        <p>{'loading'}...</p>
+                        <p>
+                            loading
+                            ...
+                        </p>
                     </div>
                 </div>
             );
@@ -164,9 +178,14 @@ class LoginForm extends Component {
                             <h4>{tt('loginform_jsx.cryptography_test_failed')}</h4>
                             <p>{tt('loginform_jsx.unable_to_log_you_in')}</p>
                             <p>
-                                {tt('loginform_jsx.the_latest_versions_of')}{' '}
-                                <a href="https://www.google.com/chrome/">Chrome</a> {tt('g.and')}{' '}
-                                <a href="https://www.mozilla.org/en-US/firefox/new/">Firefox</a>{' '}
+                                {tt('loginform_jsx.the_latest_versions_of')}
+                                {' '}
+                                <a href="https://www.google.com/chrome/">Chrome</a>
+                                {' '}
+                                {tt('g.and')}
+                                {' '}
+                                <a href="https://www.mozilla.org/en-US/firefox/new/">Firefox</a>
+                                {' '}
                                 {tt('loginform_jsx.are_well_tested_and_known_to_work_with', { APP_URL })}
                             </p>
                         </div>
@@ -197,7 +216,9 @@ class LoginForm extends Component {
             afterLoginRedirectToWelcome,
             msg,
         } = this.props;
-        const { username, password, useKeychain, saveLogin } = this.state;
+        const {
+ username, password, useKeychain, saveLogin
+} = this.state;
         const { valid, handleSubmit } = this.state.login;
         const submitting = this.state.login.submitting || this.state.isHiveSigner;
         const { usernameOnChange, onCancel /*qrReader*/ } = this;
@@ -227,9 +248,12 @@ class LoginForm extends Component {
         if (error === 'owner_login_blocked') {
             error = (
                 <span>
-                    {tt('loginform_jsx.this_password_is_bound_to_your_account_owner_key')}{' '}
+                    {tt('loginform_jsx.this_password_is_bound_to_your_account_owner_key')}
+                    {' '}
                     {tt('loginform_jsx.however_you_can_use_it_to')}
-                    {tt('loginform_jsx.update_your_password')} {tt('loginform_jsx.to_obtain_a_more_secure_set_of_keys')}
+                    {tt('loginform_jsx.update_your_password')}
+                    {' '}
+                    {tt('loginform_jsx.to_obtain_a_more_secure_set_of_keys')}
                 </span>
             );
         } else if (error === 'active_login_blocked') {
@@ -255,8 +279,7 @@ class LoginForm extends Component {
                 );
             }
         }
-        const password_info =
-            !useKeychain.value && checkPasswordChecksum(password.value) === false
+        const password_info = !useKeychain.value && checkPasswordChecksum(password.value) === false
                 ? tt('loginform_jsx.password_info')
                 : null;
         const titleText = (
@@ -264,19 +287,6 @@ class LoginForm extends Component {
                 {tt('loginform_jsx.returning_users')}
                 <span className="OpAction">{title}</span>
             </h3>
-        );
-
-        const signupLink = (
-            <div className="sign-up">
-                <hr />
-                <p>
-                    {tt('loginform_jsx.join_our')} <em>{tt('loginform_jsx.amazing_community')}</em>
-                    {tt('loginform_jsx.to_comment_and_reward_others')}
-                </p>
-                <button type="button" className="button hollow" onClick={this.SignUp}>
-                    {tt('loginform_jsx.sign_up_get_hive')}
-                </button>
-            </div>
         );
 
         const form = (
@@ -309,11 +319,21 @@ class LoginForm extends Component {
                     />
                 </div>
                 {username.touched && username.blur && username.error ? (
-                    <div className="error">{username.error}&nbsp;</div>
+                    <div className="error">
+                        {username.error}
+&nbsp;
+                    </div>
                 ) : null}
 
                 {useKeychain.value ? (
-                    <div>{error && <div className="error">{error}&nbsp;</div>}</div>
+                    <div>
+                        {error && (
+                        <div className="error">
+                            {error}
+&nbsp;
+                        </div>
+)}
+                    </div>
                 ) : (
                     <div>
                         <input
@@ -325,8 +345,18 @@ class LoginForm extends Component {
                             autoComplete="on"
                             disabled={submitting}
                         />
-                        {error && <div className="error">{error}&nbsp;</div>}
-                        {error && password_info && <div className="warning">{password_info}&nbsp;</div>}
+                        {error && (
+                        <div className="error">
+                            {error}
+&nbsp;
+                        </div>
+)}
+                        {error && password_info && (
+                        <div className="warning">
+                            {password_info}
+&nbsp;
+                        </div>
+)}
                     </div>
                 )}
                 {loginBroadcastOperation && (
@@ -347,7 +377,8 @@ class LoginForm extends Component {
                                 onChange={this.useKeychainToggle}
                                 disabled={submitting}
                             />
-                            &nbsp;{tt('loginform_jsx.use_keychain')}
+                            &nbsp;
+                            {tt('loginform_jsx.use_keychain')}
                         </label>
                     </div>
                 )}
@@ -361,7 +392,8 @@ class LoginForm extends Component {
                             onChange={this.saveLoginToggle}
                             disabled={submitting}
                         />
-                        &nbsp;{tt('loginform_jsx.keep_me_logged_in')}
+                        &nbsp;
+                        {tt('loginform_jsx.keep_me_logged_in')}
                     </label>
                 </div>
                 <div className="login-modal-buttons">
@@ -371,9 +403,9 @@ class LoginForm extends Component {
                     </button>
                     {this.props.onCancel && (
                         <button
-                            type="button float-right"
+                            type="button"
                             disabled={submitting}
-                            className="button hollow"
+                            className="button hollow float-right"
                             onClick={onCancel}
                         >
                             {tt('g.cancel')}
@@ -394,7 +426,7 @@ class LoginForm extends Component {
                         username: username.value,
                         password: password.value,
                         saveLogin: saveLogin.value,
-                        loginBroadcastOperation: loginBroadcastOperation,
+                        loginBroadcastOperation,
                     };
                     reallySubmit(data, afterLoginRedirectToWelcome);
                 })}
@@ -434,8 +466,8 @@ class LoginForm extends Component {
         const moreLoginMethods = (
             <div className="row buttons">
                 <div className="column">
-                    <a id="btn-hivesigner" className="button" onClick={this.onClickHiveSignerBtn} disabled={submitting}>
-                        <img src="/images/hivesigner.svg" />
+                    <a role="link" id="btn-hivesigner" className="button" onClick={this.onClickHiveSignerBtn} disabled={submitting}>
+                        <img src="/images/hivesigner.svg" alt="Hive Signer" />
                     </a>
                 </div>
             </div>
@@ -469,7 +501,7 @@ if (process.env.BROWSER) {
 
 function urlAccountName() {
     let suggestedAccountName = '';
-    const account_match = window.location.hash.match(/account\=([\w\d\-\.]+)/);
+    const account_match = window.location.hash.match(/account=([\w\d\-.]+)/);
     if (account_match && account_match.length > 1) suggestedAccountName = account_match[1];
     return suggestedAccountName;
 }
@@ -487,8 +519,6 @@ function checkPasswordChecksum(password) {
 
     return PrivateKey.isWif(wif);
 }
-
-import { connect } from 'react-redux';
 export default connect(
     // mapStateToProps
     (state) => {
@@ -503,8 +533,7 @@ export default connect(
         };
 
         // The username input has a value prop, so it should not use initialValues
-        const initialUsername =
-            currentUser && currentUser.has('username') ? currentUser.get('username') : urlAccountName();
+        const initialUsername = currentUser && currentUser.has('username') ? currentUser.get('username') : urlAccountName();
         const loginDefault = state.user.get('loginDefault');
         if (loginDefault) {
             const { username, authType } = loginDefault.toJS();
@@ -517,7 +546,7 @@ export default connect(
             initialValues.username = offchainUser.get('account');
         }
         let msg = '';
-        const msg_match = window.location.hash.match(/msg\=([\w]+)/);
+        const msg_match = window.location.hash.match(/msg=([\w]+)/);
         if (msg_match && msg_match.length > 1) msg = msg_match[1];
         hasError = !!loginError;
         return {
@@ -538,7 +567,9 @@ export default connect(
             const { password, saveLogin } = data;
             const username = data.username.trim().toLowerCase();
             if (loginBroadcastOperation) {
-                const { type, operation, successCallback, errorCallback } = loginBroadcastOperation.toJS();
+                const {
+ type, operation, successCallback, errorCallback
+} = loginBroadcastOperation.toJS();
                 dispatch(
                     transactionActions.broadcastOperation({
                         type,

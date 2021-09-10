@@ -12,14 +12,22 @@ import tt from 'counterpart';
 import { callBridge } from 'app/utils/steemApi';
 import 'app/components/cards/Comment';
 
-class ListManagement extends React.Component {
-    static propTypes = {
-        username: PropTypes.string,
-        accountname: PropTypes.string,
-        list_type: PropTypes.string,
-        profile: PropTypes.object,
-    };
+const propTypes = {
+    username: PropTypes.string,
+    accountname: PropTypes.string,
+    list_type: PropTypes.string,
+    // eslint-disable-next-line react/forbid-prop-types
+    profile: PropTypes.object,
+};
 
+const defaultProps = {
+    username: '',
+    accountname: '',
+    list_type: '',
+    profile: {},
+};
+
+class ListManagement extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -56,7 +64,9 @@ class ListManagement extends React.Component {
     }
 
     componentWillMount() {
-        const { profile, accountname, fetchProfile, username, list_type } = this.props;
+        const {
+            profile, accountname, fetchProfile, username,
+        } = this.props;
         if (!profile) fetchProfile(accountname, username);
     }
 
@@ -66,11 +76,12 @@ class ListManagement extends React.Component {
 
     componentDidUpdate(prevProps) {
         if (prevProps.accountname !== this.props.accountname || prevProps.username !== this.props.username) {
-            if (!this.props.profile) fetchProfile(this.props.accountname, this.props.username);
+            if (!this.props.profile) this.props.fetchProfile(this.props.accountname, this.props.username);
         }
 
         if (prevProps.list_type !== this.props.list_type) {
             this.get_accounts_from_api();
+            // eslint-disable-next-line react/no-did-update-set-state
             this.setState({ account_filter: '', start_index: 0 });
             this.searchbox.value = '';
         }
@@ -131,20 +142,20 @@ class ListManagement extends React.Component {
                 },
                 async (error) => {
                     console.log('callBridge returned an error: ', error);
-                    this.setState({ error: error.toString() });
+                    this.setState({ error_message: error.toString() });
                 }
             )
             .catch((error) => {
                 console.log('callBridge returned an error: ', error);
-                this.setState({ error: error.toString() });
+                this.setState({ error_message: error.toString() });
             });
     }
 
     get_filtered_accounts() {
-        let matches = [];
-        let loaded_accounts = this.state.all_listed_accounts;
+        const matches = [];
+        const loaded_accounts = this.state.all_listed_accounts;
         if (!loaded_accounts || loaded_accounts.length == 0) return [];
-        for (var account of loaded_accounts) {
+        for (const account of loaded_accounts) {
             if (account.name.includes(this.state.account_filter)) matches.push(account);
         }
         return matches;
@@ -157,10 +168,10 @@ class ListManagement extends React.Component {
 
         if (!accounts || accounts.length == 0) return [];
 
-        let result = [];
-        let end_index = Math.min(accounts.length, this.state.start_index + this.state.entries_per_page);
-        for (var i = this.state.start_index; i < end_index; i++) {
-            result.push(accounts[i]);
+        const result = [];
+        const end_index = Math.min(accounts.length, this.state.start_index + this.state.entries_per_page);
+        for (let i = this.state.start_index; i < end_index; i+=1) {
+            if (accounts[i] !== null && accounts[i].name && accounts[i].name !== 'null') result.push(accounts[i]);
         }
 
         return result;
@@ -168,12 +179,27 @@ class ListManagement extends React.Component {
 
     get_list_length() {
         if (!this.state.all_listed_accounts) return 0;
-        if (this.state.account_filter === '') return this.state.all_listed_accounts.length;
-        else return this.get_filtered_accounts().length;
+        let count = 0;
+        if (this.state.account_filter === '') {
+            count = this.state.all_listed_accounts.length;
+        } else {
+            count = this.get_filtered_accounts().length;
+        }
+
+        // eslint-disable-next-line no-restricted-syntax
+        for (const account of this.state.all_listed_accounts) {
+            if (account && account.name === 'null') {
+                // eslint-disable-next-line no-plusplus
+                count--;
+                break;
+            }
+        }
+
+        return count;
     }
 
     handle_page_select(direction) {
-        let new_index = this.state.start_index;
+        let new_index;
         switch (direction) {
             case 'next':
                 new_index = this.state.start_index + this.state.entries_per_page;
@@ -185,8 +211,7 @@ class ListManagement extends React.Component {
                 new_index = 0;
                 break;
             case 'last':
-                new_index =
-                    (Math.ceil(this.get_list_length() / this.state.entries_per_page) - 1) * this.state.entries_per_page;
+                new_index = (Math.ceil(this.get_list_length() / this.state.entries_per_page) - 1) * this.state.entries_per_page;
                 break;
             default:
                 new_index = 0;
@@ -194,7 +219,7 @@ class ListManagement extends React.Component {
         }
 
         if (new_index > this.get_list_length()) return;
-        else if (new_index < 0) new_index = 0;
+        if (new_index < 0) new_index = 0;
 
         this.setState({ start_index: new_index });
     }
@@ -205,58 +230,58 @@ class ListManagement extends React.Component {
         }
         text = text.replace(/\s+/g, '');
         this.setState({ unmatched_accounts: [] });
-        let accounts = [];
-        let validated_accounts = [];
-        let all_users = text.split(',');
+        const accounts = [];
+        const validated_accounts = [];
+        const all_users = text.split(',');
         if (this.state.error_message !== '') this.setState({ error_message: '' });
-        if (all_users.length > 100)
-            this.setState({
+        if (all_users.length > 100) { this.setState({
                 warning_message:
                     'You are adding a large number of accounts. Numerous brodcast operations will be required.',
-            });
+            }); }
         else this.setState({ warning_message: '' });
 
-        let names_only = this.state.all_listed_accounts.map((item) => {
+        const names_only = this.state.all_listed_accounts.map((item) => {
             return item.name;
         });
 
-        for (var user of all_users) {
+        for (const user of all_users) {
             if (user !== '') accounts.push(user);
         }
 
         hive_api.api.getAccounts(accounts, (error, result) => {
-            let bad_accounts = [];
-            let result_string = JSON.stringify(result);
-            for (var check_user of all_users) {
-                if (check_user === '') continue;
-                if (names_only.includes(check_user)) {
-                    bad_accounts.push(check_user);
-                    continue;
-                }
-                if (!result_string.includes(check_user)) bad_accounts.push(check_user);
-                else validated_accounts.push(check_user);
+            const bad_accounts = [];
+            const result_string = JSON.stringify(result);
+            for (const check_user of all_users) {
+                if (check_user !== '') {
+                    if (!names_only.includes(check_user)) {
+                        if (!result_string.includes(check_user)) bad_accounts.push(check_user);
+                        else validated_accounts.push(check_user);
 
-                if (error) {
-                    console.log('hiveio/hive-js returned an error when fetching accounts: ', error);
+                        if (error) {
+                            console.log('hiveio/hive-js returned an error when fetching accounts: ', error);
+                        }
+                    } else {
+                        bad_accounts.push(check_user);
+                    }
                 }
             }
 
             this.setState({
-                validated_accounts: validated_accounts,
+                validated_accounts,
                 unmatched_accounts: bad_accounts,
             });
         });
     }, 300);
 
     toggle_help() {
-        let expand_welcome_panel = this.state.expand_welcome_panel;
+        const {expand_welcome_panel} = this.state;
         this.setState({ expand_welcome_panel: !expand_welcome_panel });
     }
 
     dismiss_intro() {
         //Subscribes them to blacklist and mute list of the hive.blog account
         this.setState({ expand_welcome_panel: false, first_time_user: false });
-        this.handle_reset_list(true);
+        this.handle_reset_list();
     }
 
     broadcastFollowOperation() {
@@ -282,14 +307,13 @@ class ListManagement extends React.Component {
                 return;
         }
 
-        let follower = this.props.username;
-        let following = this.state.validated_accounts;
+        const follower = this.props.username;
+        const following = this.state.validated_accounts;
 
-        let followings = [];
+        const followings = [];
         if (following.length > 100) {
-            let i = 0;
             while (following.length > 0) {
-                let new_following = following.splice(0, 100);
+                const new_following = following.splice(0, 100);
                 followings.push(new_following);
             }
         } else {
@@ -297,7 +321,7 @@ class ListManagement extends React.Component {
         }
 
         this.setState({ is_busy: true });
-        for (var following_list of followings) {
+        for (const following_list of followings) {
             this.props.updateList(follower, following_list, what, () => {});
         }
         this.setState({
@@ -310,9 +334,9 @@ class ListManagement extends React.Component {
     }
 
     generate_table_rows() {
-        let show_button = this.props.username === this.props.accountname ? 'inline' : 'none';
-        let listed_accounts = this.get_accounts_to_display();
-        let items = [];
+        const show_button = this.props.username === this.props.accountname ? 'inline' : 'none';
+        const listed_accounts = this.get_accounts_to_display();
+        const items = [];
         let button_text = '';
         let include_blacklist_description = false;
         let include_mute_list_description = false;
@@ -338,8 +362,8 @@ class ListManagement extends React.Component {
         if (this.state.is_busy) button_text = tt('list_management_jsx.button_busy');
 
         if (listed_accounts.length == 0) {
-            let item = (
-                <tr key={'empty_tr'}>
+            const item = (
+                <tr key="empty_tr">
                     <td colSpan="2" style={{ width: '75%' }}>
                         <center>
                             <b>
@@ -355,8 +379,8 @@ class ListManagement extends React.Component {
             return items;
         }
 
-        for (var account of listed_accounts) {
-            let item = (
+        for (const account of listed_accounts) {
+            const item = (
                 <tr key={account.name + 'tr'}>
                     <td style={{ width: '75%', whiteSpace: 'nowrap' }}>
                         <Link to={'/@' + account.name}>
@@ -364,17 +388,21 @@ class ListManagement extends React.Component {
                         </Link>
                         {include_blacklist_description && (
                             <div style={{ display: 'inline' }}>
-                                &nbsp;&nbsp;{account.blacklist_description == null ? '' : account.blacklist_description}
+                                &nbsp;&nbsp;
+                                {account.blacklist_description == null ? '' : account.blacklist_description}
                             </div>
                         )}
                         {include_mute_list_description && (
                             <div style={{ display: 'inline' }}>
-                                &nbsp;&nbsp;{account.mute_list_description == null ? '' : account.mute_list_description}
+                                &nbsp;&nbsp;
+                                {account.mute_list_description == null ? '' : account.mute_list_description}
                             </div>
                         )}
                     </td>
                     <td>
                         <span
+                            role="button"
+                            tabIndex={0}
                             style={{
                                 display: show_button,
                                 whiteSpace: 'nowrap',
@@ -397,7 +425,7 @@ class ListManagement extends React.Component {
         this.setState({ account_filter: event.target.value, start_index: 0 });
     }
 
-    handle_reset_list(reset_all) {
+    handle_reset_list() {
         if (this.state.is_busy) {
             console.log(tt('list_management_jsx.busy'));
             return;
@@ -421,29 +449,30 @@ class ListManagement extends React.Component {
                 return;
         }
 
-        if (reset_all) what = 'reset_all_lists';
-
-        let follower = this.props.username;
-        let following = 'all'; //there is an 'all' account, but it appears unused so i'm stealing their identity for this
+        const follower = this.props.username;
+        const following = 'all'; //there is an 'all' account, but it appears unused so i'm stealing their identity for this
         this.setState({ is_busy: true });
-        this.props.updateList(follower, following, what, () => {
-            setTimeout(() => {
-                this.follow_hive_blog_lists();
-            }, 5000);
-        });
+        if (what !== '') {
+            this.props.updateList(follower, following, what, () => {
+                setTimeout(() => {
+                    this.follow_hive_blog_lists();
+                }, 5000);
+            });
+        } else {
+            this.follow_hive_blog_lists();
+        }
     }
 
     follow_hive_blog_lists() {
-        let follower = this.props.username;
-        let following = 'hive.blog';
-        let what = 'follow_muted';
+        const follower = this.props.username;
+        const following = ['hive.blog', 'plentyofphish'];
+        const what = 'follow_muted';
         this.props.updateList(follower, following, what, () => {
             setTimeout(() => {
-                //[JES] Uncomment after hivemind follow bug gets fixed
-                //let what = 'follow_blacklist';
-                //this.props.updateList(follower, following, what, () => {});
+                const _what = 'follow_blacklist';
+                this.props.updateList(follower, following, _what, () => {});
                 this.setState({ is_busy: false, updates_are_pending: false });
-                //this.get_accounts_from_api();
+                this.get_accounts_from_api();
             }, 1000);
         });
     }
@@ -471,8 +500,8 @@ class ListManagement extends React.Component {
                 return;
         }
 
-        let follower = this.props.username;
-        let following = account;
+        const follower = this.props.username;
+        const following = account;
         this.setState({ is_busy: true });
         this.props.updateList(follower, following, what, () => {
             this.setState({ is_busy: false, updates_are_pending: true });
@@ -481,29 +510,36 @@ class ListManagement extends React.Component {
     }
 
     render() {
-        if (!this.props.profile)
-            return (
-                <center>
-                    <LoadingIndicator type="circle" />
-                </center>
-            );
+        if (!this.props.profile) { return (
+            <center>
+                <LoadingIndicator type="circle" />
+            </center>
+            ); }
 
-        let blacklist_description = this.props.profile.get('metadata').get('profile').get('blacklist_description');
+        let blacklist_description = this.props.profile
+            .get('metadata')
+            .get('profile')
+            .get('blacklist_description');
         if (!blacklist_description) blacklist_description = "User hasn't added a description to their blacklist yet";
-        let mute_list_description = this.props.profile.get('metadata').get('profile').get('muted_list_description');
+        let mute_list_description = this.props.profile
+            .get('metadata')
+            .get('profile')
+            .get('muted_list_description');
         if (!mute_list_description) mute_list_description = "User hasn't added a description to their mute list yet";
 
-        let list_rows = this.generate_table_rows();
-        let list_length = this.get_list_length();
+        const list_rows = this.generate_table_rows();
+        const list_length = this.get_list_length();
 
-        let viewing_own_page = this.props.username === this.props.accountname;
+        const viewing_own_page = this.props.username === this.props.accountname;
 
         let header_text = '',
+            // eslint-disable-next-line no-unused-vars
             add_to_text = '',
             button_text = '',
+            // eslint-disable-next-line no-unused-vars
             description_text = '',
             reset_button_text = '';
-        let reset_all_button_text = tt('list_management_jsx.reset_all_lists');
+        const reset_all_button_text = tt('list_management_jsx.reset_all_lists');
         switch (this.props.list_type) {
             case 'blacklisted':
                 header_text = tt('list_management_jsx.blacklisted_header') + this.props.accountname;
@@ -531,12 +567,16 @@ class ListManagement extends React.Component {
                 button_text = tt('list_management_jsx.button_follow_muted_lists');
                 reset_button_text = tt('list_management_jsx.reset_followed_muted_list');
                 break;
+
+            default:
+                // Nothing
+                break;
         }
 
         if (this.state.is_busy) button_text = tt('list_management_jsx.button_busy');
 
-        let current_page_number = Math.floor(this.state.start_index / this.state.entries_per_page) + 1;
-        let total_pages = Math.max(Math.ceil(list_length / this.state.entries_per_page), 1);
+        const current_page_number = Math.floor(this.state.start_index / this.state.entries_per_page) + 1;
+        const total_pages = Math.max(Math.ceil(list_length / this.state.entries_per_page), 1);
 
         return (
             <div>
@@ -550,10 +590,11 @@ class ListManagement extends React.Component {
                 <p />
 
                 <center>
-                    <span onClick={this.toggle_help}>
+                    <span role="button" tabIndex={0} onClick={this.toggle_help}>
                         {' '}
                         <h5>
-                            <u>{tt('list_management_jsx.what_is_this')}</u>{' '}
+                            <u>{tt('list_management_jsx.what_is_this')}</u>
+                            {' '}
                             {!this.state.first_time_user && !this.state.expand_welcome_panel}
                         </h5>
                     </span>
@@ -579,11 +620,16 @@ class ListManagement extends React.Component {
                                     <tr>
                                         <td>
                                             <center>
-                                                {tt('list_management_jsx.info1')} {tt('list_management_jsx.info2')}{' '}
+                                                {tt('list_management_jsx.info1')}
+                                                {' '}
+                                                {tt('list_management_jsx.info2')}
+                                                {' '}
                                                 <Link to={'/@' + this.props.username + '/settings'}>
                                                     {tt('list_management_jsx.info3')}
                                                 </Link>
-                                                {tt('list_management_jsx.info4')} {tt('list_management_jsx.info5')}
+                                                {tt('list_management_jsx.info4')}
+                                                {' '}
+                                                {tt('list_management_jsx.info5')}
                                                 <p />
                                                 {tt('list_management_jsx.info6')}
                                             </center>
@@ -591,19 +637,24 @@ class ListManagement extends React.Component {
                                     </tr>
                                 </tbody>
                             </table>
-                            {viewing_own_page && this.state.first_time_user && (
-                                <div>
-                                    {tt('list_management_jsx.info7')} <br />
-                                    <span
-                                        className="button slim hollow secondary"
-                                        onClick={(e) => {
-                                            this.dismiss_intro();
-                                        }}
-                                    >
-                                        {tt('list_management_jsx.acknowledge')}
-                                    </span>
-                                </div>
-                            )}
+                            {viewing_own_page
+                                && this.state.first_time_user && (
+                                    <div>
+                                        {tt('list_management_jsx.info7')}
+                                        {' '}
+                                        <br />
+                                        <span
+                                            role="button"
+                                            tabIndex={0}
+                                            className="button slim hollow secondary"
+                                            onClick={() => {
+                                                this.dismiss_intro();
+                                            }}
+                                        >
+                                            {tt('list_management_jsx.acknowledge')}
+                                        </span>
+                                    </div>
+                                )}
                         </center>
                     </div>
                 )}
@@ -616,7 +667,8 @@ class ListManagement extends React.Component {
                         </h5>
                         {(this.props.list_type === 'blacklisted' || this.props.list_type === 'muted') && (
                             <h6>
-                                {tt('list_management_jsx.list_description_placement')}{' '}
+                                {tt('list_management_jsx.list_description_placement')}
+                                {' '}
                                 {this.props.list_type === 'blacklisted' ? blacklist_description : mute_list_description}
                             </h6>
                         )}
@@ -631,9 +683,11 @@ class ListManagement extends React.Component {
 
                         {list_length > this.state.entries_per_page && (
                             <span
+                                role="button"
+                                tabIndex={0}
                                 className="button slim hollow secondary"
                                 value="first"
-                                onClick={(e) => {
+                                onClick={() => {
                                     this.handle_page_select('first');
                                 }}
                             >
@@ -642,9 +696,11 @@ class ListManagement extends React.Component {
                         )}
                         {list_length > this.state.entries_per_page && (
                             <span
+                                role="button"
+                                tabIndex={0}
                                 className="button slim hollow secondary"
                                 value="prev"
-                                onClick={(e) => {
+                                onClick={() => {
                                     this.handle_page_select('previous');
                                 }}
                             >
@@ -653,9 +709,11 @@ class ListManagement extends React.Component {
                         )}
                         {list_length > this.state.entries_per_page && (
                             <span
+                                role="button"
+                                tabIndex={0}
                                 className="button slim hollow secondary"
                                 value="next"
-                                onClick={(e) => {
+                                onClick={() => {
                                     this.handle_page_select('next');
                                 }}
                             >
@@ -664,9 +722,11 @@ class ListManagement extends React.Component {
                         )}
                         {list_length > this.state.entries_per_page && (
                             <span
+                                role="button"
+                                tabIndex={0}
                                 className="button slim hollow secondary"
                                 value="last"
-                                onClick={(e) => {
+                                onClick={() => {
                                     this.handle_page_select('last');
                                 }}
                             >
@@ -734,6 +794,8 @@ class ListManagement extends React.Component {
                                                     <center>
                                                         {this.state.validated_accounts.length > 0 && (
                                                             <span
+                                                                role="button"
+                                                                tabIndex={0}
                                                                 className="button slim hollow secondary"
                                                                 onClick={this.broadcastFollowOperation}
                                                             >
@@ -749,7 +811,8 @@ class ListManagement extends React.Component {
                                     {this.state.unmatched_accounts.length > 0 && (
                                         <div style={{ color: 'red' }}>
                                             <b>
-                                                {tt('list_management_jsx.unknown_accounts')}{' '}
+                                                {tt('list_management_jsx.unknown_accounts')}
+                                                {' '}
                                                 {this.state.unmatched_accounts.join(', ')}
                                             </b>
                                         </div>
@@ -783,10 +846,7 @@ class ListManagement extends React.Component {
                         <h5>
                             <b>{tt('list_management_jsx.reset_header')}</b>
                         </h5>
-                        <span
-                            className="button slim hollow secondary"
-                            onClick={this.handle_reset_list.bind(this, false)}
-                        >
+                        <span role="button" tabIndex={0} className="button slim hollow secondary" onClick={this.handle_reset_list.bind(this)}>
                             {this.state.is_busy ? tt('list_management_jsx.button_busy') : reset_button_text}
                         </span>
                         <span
@@ -819,12 +879,15 @@ class ListManagement extends React.Component {
     }
 }
 
+ListManagement.propTypes = propTypes;
+ListManagement.defaultProps = defaultProps;
+
 module.exports = {
     path: '@:accountname/lists/:list_type',
     component: connect(
         (state, ownProps) => {
             const username = state.user.getIn(['current', 'username']);
-            const list_type = ownProps.routeParams.list_type;
+            const {list_type} = ownProps.routeParams;
             const accountname = ownProps.routeParams.accountname.toLowerCase();
             const profile = state.userProfiles.getIn(['profiles', accountname]);
             return {

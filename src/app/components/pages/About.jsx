@@ -1,6 +1,4 @@
 import React from 'react';
-import { APP_NAME, APP_URL } from 'app/client_config';
-import tt from 'counterpart';
 
 class About extends React.Component {
     render() {
@@ -15,22 +13,28 @@ class About extends React.Component {
                             <div className="AboutMission__square" />
                             <h2 className="AboutMission__heading">Mission</h2>
                             <p className="AboutMission__text">
-                                Make great communities <span className="line-break">with financial inclusion.</span>
+                                Make great communities
+                                {' '}
+                                <span className="line-break">with financial inclusion.</span>
                             </p>
 
                             <div className="AboutMission__square AboutMission__square--2" />
                             <h2 className="AboutMission__heading">Vision</h2>
                             <p className="AboutMission__text">
-                                Our vision is that steemit.com is a vibrant communities web app, expanding the
-                                boundaries of community coordination and online discussion by incorporating
-                                cryptocurrency as incentives. The company focuses on sustainability and decentralization
-                                by lowering running costs and increasing revenues, while increasing stickiness by
-                                providing better homepage and community tools, and is always demanding a secure and
+                                Our vision is that hive.blog is a vibrant
+                                communities web app, expanding the boundaries of
+                                community coordination and online discussion by
+                                incorporating cryptocurrency as incentives. The
+                                company focuses on sustainability and
+                                decentralization by lowering running costs and
+                                increasing revenues, while increasing stickiness
+                                by providing better homepage and community
+                                tools, and is always demanding a secure and
                                 safe, client-side signing experience.
                             </p>
                         </div>
                         <div className="AboutMission__image-container">
-                            <img className="AboutMission__img" src="/images/about/mission.jpg" alt />
+                            <img className="AboutMission__img" src="/images/about/mission.jpg" alt="About mission" />
                         </div>
                     </div>
                     <div className="AboutMission__section">
@@ -45,16 +49,23 @@ class About extends React.Component {
                             </p>
                             <h3 className="AboutMission__subheading">Sustainability</h3>
                             <p className="AboutMission__text">
-                                Sustainability means building real business from steemit.com by way of advertisements
-                                and programatically selling cryptocurrency assets that Steemit, Inc. holds. Steemit,
-                                Inc., for instance, has held lots of STEEM since 2016. The company could have sold all
-                                of it over the past several years, and instead continues to hold and only sell
-                                programmatically, because we value the potential of Steem. Advertising is also an
-                                important part of our business for aligning steemit.com with all its participants, such
-                                as bloggers, content consumers, community builders and our company’s shareholders, who
-                                all benefit from increased stickiness and usage of steemit.com. Both of these revenue
-                                sources–capital gains from currency sales and advertising revenue–are valuable to our
-                                sustainability.
+                                Sustainability means building real business from
+                                hive.blog by way of advertisements and
+                                programatically selling cryptocurrency assets
+                                that Steemit, Inc. holds. Steemit, Inc., for
+                                instance, has held lots of STEEM since 2016. The
+                                company could have sold all of it over the past
+                                several years, and instead continues to hold and
+                                only sell programmatically, because we value the
+                                potential of Steem. Advertising is also an
+                                important part of our business for aligning
+                                hive.blog with all its participants, such as
+                                bloggers, content consumers, community builders
+                                and our company’s shareholders, who all benefit
+                                from increased stickiness and usage of
+                                hive.blog. Both of these revenue sources–capital
+                                gains from currency sales and advertising
+                                revenue–are valuable to our sustainability.
                             </p>
                             <h3 className="AboutMission__subheading">Health</h3>
                             <p className="AboutMission__text">
@@ -64,28 +75,41 @@ class About extends React.Component {
                             </p>
                             <h3 className="AboutMission__subheading">Safety</h3>
                             <p className="AboutMission__text">
-                                Safety means introducing changes slowly and predictably with much testing. We greatly
-                                prefer to move carefully and not break things, especially when those things are near
-                                steemit.com’s wallet functionality or when proposing Steem hardforking upgrades, rather
-                                than move fast while introducing breaking changes.
+                                Safety means introducing changes slowly and
+                                predictably with much testing. We greatly prefer
+                                to move carefully and not break things,
+                                especially when those things are near
+                                hive.blog’s wallet functionality or when
+                                proposing Steem hardforking upgrades, rather
+                                than move fast while introducing breaking
+                                changes.
                             </p>
                             <h3 className="AboutMission__subheading">Security</h3>
                             <p className="AboutMission__text">
-                                Security means providing tools to our users of steemit.com that mitigate risk when it
-                                comes to cryptocurrency interactions. This principle has led us to preferred use of
-                                client-side signing for cryptocurrency use on steemit.com, which means all transactions
-                                are pushed by the user while Steemit, Inc. never has access to, nor sees the user’s
-                                private keys; this keeps the risk of cryptocurrency manageable for the user because they
-                                can be assured they are the only person responsible for their private key usage.
-                                Security also comes from open-sourcing most of our software. By open-sourcing, we’ve
-                                found community engagement occurs to help audit and review the published tools.
-                                Sometimes bugs and pitfalls are discovered this way. Beyond that, we publish our
-                                open-source software with an MIT license, which means others can build from it freely
-                                and can then advance the ecosystem in parallel.
+                                Security means providing tools to our users of
+                                hive.blog that mitigate risk when it comes to
+                                cryptocurrency interactions. This principle has
+                                led us to preferred use of client-side signing
+                                for cryptocurrency use on hive.blog, which means
+                                all transactions are pushed by the user while
+                                Steemit, Inc. never has access to, nor sees the
+                                user’s private keys; this keeps the risk of
+                                cryptocurrency manageable for the user because
+                                they can be assured they are the only person
+                                responsible for their private key usage.
+                                Security also comes from open-sourcing most of
+                                our software. By open-sourcing, we’ve found
+                                community engagement occurs to help audit and
+                                review the published tools. Sometimes bugs and
+                                pitfalls are discovered this way. Beyond that,
+                                we publish our open-source software with an MIT
+                                license, which means others can build from it
+                                freely and can then advance the ecosystem in
+                                parallel.
                             </p>
                         </div>
                         <div className="AboutMission__image-container">
-                            <img className="AboutMission__img" src="/images/about/coin.jpg" alt />
+                            <img className="AboutMission__img" src="/images/about/coin.jpg" alt="About mission" />
                         </div>
                     </div>
                     <div className="AboutMission__section AboutMission__section--vision">
@@ -93,7 +117,8 @@ class About extends React.Component {
                             <div className="AboutMission__square" />
                             <h2 className="AboutMission__heading">Priorities</h2>
                             <p className="AboutMission__text">
-                                We strive to make steemit.com great for communities and financial inclusion. This
+                                We strive to make hive.blog great for
+                                communities and financial inclusion. This
                                 includes focusing on the following:
                             </p>
                             <ul className="AboutMission__list">
@@ -116,7 +141,8 @@ class About extends React.Component {
                                                 Communication of Steem developments
                                             </li>
                                             <li className="AboutMission__list-item">
-                                                Communication of steemit.com developments
+                                                Communication of hive.blog
+                                                developments
                                             </li>
                                             <li className="AboutMission__list-item">
                                                 Communication of Steemit, Inc. developments
@@ -146,7 +172,8 @@ class About extends React.Component {
                                             Lower costs of running full (economic) nodes
                                         </li>
                                         <li className="AboutMission__list-item">
-                                            Lower costs of running steemit.com by lowering costs of hive nodes or new
+                                            Lower costs of running hive.blog by
+                                            lowering costs of hive nodes or new
                                             social plugins architecture
                                         </li>
                                     </ul>
@@ -173,7 +200,7 @@ class About extends React.Component {
                             </p>
                         </div>
                         <div className="AboutMission__image-container">
-                            <img className="AboutMission__img" src="/images/about/priorities.jpg" alt />
+                            <img className="AboutMission__img" src="/images/about/priorities.jpg" alt="About mission" />
                         </div>
                     </div>
                     <div className="AboutMission__section">
@@ -181,17 +208,23 @@ class About extends React.Component {
                             <div className="AboutMission__square" />
                             <h2 className="AboutMission__heading">Disclaimer</h2>
                             <p className="AboutMission__text">
-                                Steemit Inc. (The “Company”), is a private company that helps develop the open-source
-                                software that powers steemit.com, including steemd. The Company may own various digital
-                                assets, including, without limitation, quantities of cryptocurrencies such as STEEM.
-                                These assets are the sole property of the Company. Further, the Company’s mission,
-                                vision, goals, statements, actions, and core values do not constitute a contract,
-                                commitment, obligation, or other duty to any person, company or cryptocurrency network
-                                user and are subject to change at any time.
+                                Steemit Inc. (The “Company”), is a private
+                                company that helps develop the open-source
+                                software that powers hive.blog, including
+                                steemd. The Company may own various digital
+                                assets, including, without limitation,
+                                quantities of cryptocurrencies such as STEEM.
+                                These assets are the sole property of the
+                                Company. Further, the Company’s mission, vision,
+                                goals, statements, actions, and core values do
+                                not constitute a contract, commitment,
+                                obligation, or other duty to any person, company
+                                or cryptocurrency network user and are subject
+                                to change at any time.
                             </p>
                         </div>
                         <div className="AboutMission__image-container">
-                            <img className="AboutMission__img" src="/images/about/talk.jpg" alt />
+                            <img className="AboutMission__img" src="/images/about/talk.jpg" alt="About mission" />
                         </div>
                     </div>
                 </section>

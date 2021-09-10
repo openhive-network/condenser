@@ -6,7 +6,6 @@ import ReplyEditor from 'app/components/elements/ReplyEditor';
 import MuteButton from 'app/components/elements/MuteButton';
 import FlagButton from 'app/components/elements/FlagButton';
 import MarkdownViewer from 'app/components/cards/MarkdownViewer';
-import shouldComponentUpdate from 'app/utils/shouldComponentUpdate';
 import Voting from 'app/components/elements/Voting';
 import { connect } from 'react-redux';
 import { Link } from 'react-router';
@@ -15,12 +14,12 @@ import TimeAgoWrapper from 'app/components/elements/TimeAgoWrapper';
 import Userpic from 'app/components/elements/Userpic';
 import * as transactionActions from 'app/redux/TransactionReducer';
 import tt from 'counterpart';
-import { parsePayoutAmount } from 'app/utils/ParsersAndFormatters';
 import { Long } from 'bytebuffer';
 import ImageUserBlockList from 'app/utils/ImageUserBlockList';
-import ContentEditedWrapper from '../elements/ContentEditedWrapper';
 import { allowDelete } from 'app/utils/StateFunctions';
 import { Role } from 'app/utils/Community';
+import Icon from 'app/components/elements/Icon';
+import ContentEditedWrapper from '../elements/ContentEditedWrapper';
 
 export function sortComments(cont, comments, sort_order) {
     const rshares = (post) => Long.fromString(String(post.get('net_rshares')));
@@ -127,7 +126,7 @@ class CommentImpl extends React.Component {
      *    it hides the comment body (but not the header) until the "reveal comment" link is clicked.
      */
     _checkHide(props) {
-        const { cont, postref, post } = props;
+        const { post } = props;
         if (post) {
             const hide = false && post.getIn(['stats', 'hide']);
             const gray = post.getIn(['stats', 'gray']);
@@ -144,12 +143,15 @@ class CommentImpl extends React.Component {
     }
 
     toggleCollapsed() {
+        // eslint-disable-next-line react/no-access-state-in-setstate
         this.setState({ collapsed: !this.state.collapsed });
     }
+
     revealBody() {
         this.setState({ hide_body: false });
     }
-    initEditor(props) {
+
+    initEditor() {
         if (this.state.PostReplyEditor) return;
         const { post, postref } = this.props;
         if (!post) return;
@@ -170,19 +172,31 @@ class CommentImpl extends React.Component {
         }
         this.setState({ PostReplyEditor, PostEditEditor });
     }
+
     render() {
-        const { cont, post, postref, viewer_role } = this.props;
+        const {
+ cont, post, postref, viewer_role
+} = this.props;
 
         // Don't server-side render the comment if it has a certain number of newlines
         if (!post || (global.process !== undefined && (post.get('body').match(/\r?\n/g) || '').length > 25)) {
-            return <div>{tt('g.loading')}...</div>;
+            return (
+                <div>
+                    {tt('g.loading')}
+                    ...
+                </div>
+);
         }
 
         const { onShowReply, onShowEdit, onDeletePost } = this;
 
-        const { username, depth, anchor_link, showNegativeComments, ignored, rootComment, community } = this.props;
+        const {
+            username, depth, anchor_link, showNegativeComments, ignored, rootComment, community
+        } = this.props;
 
-        const { PostReplyEditor, PostEditEditor, showReply, showEdit, hide, hide_body } = this.state;
+        const {
+            PostReplyEditor, PostEditEditor, showReply, showEdit, hide, hide_body
+        } = this.state;
 
         if (!showNegativeComments && (hide || ignored)) return null;
 
@@ -216,9 +230,13 @@ class CommentImpl extends React.Component {
                 <div>
                     <Voting post={post} />
                     <span className="Comment__footer__controls">
-                        {canReply && <a onClick={onShowReply}>{tt('g.reply')}</a>}{' '}
-                        {canMute && <MuteButton post={post} />} {canEdit && <a onClick={onShowEdit}>{tt('g.edit')}</a>}{' '}
-                        {canDelete && <a onClick={onDeletePost}>{tt('g.delete')}</a>}
+                        {canReply && <a role="button" tabIndex={0} onClick={onShowReply}>{tt('g.reply')}</a>}
+                        {' '}
+                        {canMute && <MuteButton post={post} />}
+                        {' '}
+                        {canEdit && <a role="button" tabIndex={0} onClick={onShowEdit}>{tt('g.edit')}</a>}
+                        {' '}
+                        {canDelete && <a role="button" tabIndex={0} onClick={onDeletePost}>{tt('g.delete')}</a>}
                     </span>
                 </div>
             );
@@ -229,15 +247,21 @@ class CommentImpl extends React.Component {
             if (depth > 7) {
                 replies = (
                     <Link to={commentUrl(comment)}>
-                        Show {comment.children} more {comment.children == 1 ? 'reply' : 'replies'}
+                        Show
+                        {' '}
+                        {comment.children}
+                        {' '}
+                        more
+                        {' '}
+                        {comment.children == 1 ? 'reply' : 'replies'}
                     </Link>
                 );
             } else {
                 replies = comment.replies;
                 sortComments(cont, replies, this.props.sort_order);
-                replies = replies.map((reply, idx) => (
+                replies = replies.map((reply) => (
                     <Comment
-                        key={idx}
+                        key={reply.get('permlink')}
                         postref={reply}
                         cont={cont}
                         sort_order={this.props.sort_order}
@@ -297,8 +321,8 @@ class CommentImpl extends React.Component {
                     </div>
                     <div className="Comment__header">
                         <div className="Comment__header_collapse">
-                            {canFlag && <FlagButton post={post} isComment={true} />}
-                            <a onClick={this.toggleCollapsed}>{this.state.collapsed ? '[+]' : '[-]'}</a>
+                            {canFlag && <FlagButton post={post} isComment />}
+                            <a role="link" tabIndex={0} onClick={this.toggleCollapsed}>{this.state.collapsed ? '[+]' : '[-]'}</a>
                         </div>
                         <span className="Comment__header-user">
                             <div className="Comment__Userpic-small">
@@ -306,29 +330,36 @@ class CommentImpl extends React.Component {
                             </div>
                             <Author post={post} showAffiliation />
                         </span>
-                        &nbsp;{/* &middot; &nbsp;*/}
+                        &nbsp;
+                        {/* &middot; &nbsp;*/}
                         <Link to={commentUrl(comment, rootComment)} className="PlainLink">
                             <TimeAgoWrapper date={comment.created} />
                         </Link>
                         &nbsp;
                         <ContentEditedWrapper createDate={comment.created} updateDate={comment.updated} />
+                        &nbsp;
+                        <Link to={commentUrl(comment)}>
+                            <Icon name="link" className="chain-rotated" />
+                        </Link>
                         {(this.state.collapsed || hide_body) && <Voting post={post} showList={false} />}
-                        {this.state.collapsed && comment.children > 0 && (
-                            <span>
-                                {tt('g.reply_count', {
-                                    count: comment.children,
-                                })}
-                            </span>
-                        )}
-                        {!this.state.collapsed && hide_body && (
-                            <a onClick={this.revealBody}>{tt('g.reveal_comment')}</a>
-                        )}
-                        {!this.state.collapsed && !hide_body && (ignored || gray) && (
-                            <span>
-                                &middot;&nbsp;
-                                {tt('g.will_be_hidden_due_to_low_rating')}
-                            </span>
-                        )}
+                        {this.state.collapsed
+                            && comment.children > 0 && (
+                                <span>
+                                    {tt('g.reply_count', {
+                                        count: comment.children,
+                                    })}
+                                </span>
+                            )}
+                        {!this.state.collapsed
+                            && hide_body && <a role="link" tabIndex={0} onClick={this.revealBody}>{tt('g.reveal_comment')}</a>}
+                        {!this.state.collapsed
+                            && !hide_body
+                            && (ignored || gray) && (
+                                <span>
+                                    &middot;&nbsp;
+                                    {tt('g.will_be_hidden_due_to_low_rating')}
+                                </span>
+                            )}
                     </div>
                     <div className="Comment__body entry-content">{showEdit ? renderedEditor : body}</div>
                     <div className="Comment__footer">{controls}</div>
@@ -345,15 +376,14 @@ class CommentImpl extends React.Component {
 const Comment = connect(
     // mapStateToProps
     (state, ownProps) => {
-        const { postref, cont, sort_order } = ownProps;
+        const { postref, cont } = ownProps;
         const post = ownProps.cont.get(postref);
 
         const category = post.get('category');
         const community = state.global.getIn(['community', category], Map());
         const author = post.get('author');
         const username = state.user.getIn(['current', 'username']);
-        const ignored =
-            author && username
+        const ignored = author && username
                 ? state.global.hasIn(['follow', 'getFollowingAsync', username, 'ignore_result', author])
                 : null;
 

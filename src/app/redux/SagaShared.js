@@ -64,7 +64,16 @@ export function* getContent({
     while (!content) {
         console.log('getContent', author, permlink);
         content = yield call([api, api.getContentAsync], author, permlink);
-        if (content.author == '') {
+        try {
+            const converted = JSON.parse(content);
+            if (converted.result && converted.result.length === 0) {
+                content = null;
+            }
+        } catch (exception) {
+            console.log('SagaShared::getContent()', exception.message);
+        }
+
+        if (content !== null && content.author == '') {
             // retry if content not found. #1870
             content = null;
             yield call(wait, 3000);

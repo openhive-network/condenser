@@ -14,27 +14,19 @@ import * as api from '@hiveio/hive-js';
 import Cookies from 'universal-cookie';
 
 //TODO?: Maybe move this to a config file somewhere?
-const KNOWN_API_NODES = [
-    'api.hive.blog',
-    'anyx.io',
-    'api.openhive.network',
-    'rpc.ausbit.dev',
-    'api.hivekings.com',
-    'beta.openhive.network',
-];
+const KNOWN_API_NODES = ['api.hive.blog', 'rpc.ausbit.dev', 'anyx.io', 'api.ha.deathwing.me', 'api.deathwing.me'];
 
 class Settings extends React.Component {
     constructor(props) {
         super(props);
-        let cookies = new Cookies();
+        const cookies = new Cookies();
         this.state = {
             errorMessage: '',
             successMessage: '',
             progress: {},
             expand_advanced: false,
-            cookies: cookies,
+            cookies,
             endpoint_error_message: '',
-            original_api_endpoints: '', //safety precaution for the moment
         };
         this.initForm(props);
         this.onNsfwPrefChange = this.onNsfwPrefChange.bind(this);
@@ -59,17 +51,17 @@ class Settings extends React.Component {
         //Create the cookies if they don't already exist
         let endpoints = [];
         if (!this.state.cookies.get('user_preferred_api_endpoint')) {
-            let default_endpoint = 'https://api.hive.blog';
-            this.state.cookies.set('user_preferred_api_endpoint', default_endpoint);
+            const default_endpoint = 'https://api.hive.blog';
+            this.state.cookies.set('user_preferred_api_endpoint', default_endpoint, { path: '/', maxAge: 1000000000 });
         }
 
         if (!this.state.cookies.get('user_api_endpoints')) {
             endpoints = api.config.get('alternative_api_endpoints');
-            for (var node of KNOWN_API_NODES) endpoints.push('https://' + node);
-            this.state.cookies.set('user_api_endpoints', endpoints);
+            for (const node of KNOWN_API_NODES) endpoints.push('https://' + node);
+            this.state.cookies.set('user_api_endpoints', endpoints, { path: '/', maxAge: 1000000000 });
         } else endpoints = this.state.cookies.get('user_api_endpoints');
 
-        let preferred = this.getPreferredApiEndpoint();
+        const preferred = this.getPreferredApiEndpoint();
         api.api.setOptions({ url: preferred });
         this.synchronizeLists();
     }
@@ -106,8 +98,8 @@ class Settings extends React.Component {
                         values.name && values.name.length > 20
                             ? tt('settings_jsx.name_is_too_long')
                             : values.name && /^\s*@/.test(values.name)
-                            ? tt('settings_jsx.name_must_not_begin_with')
-                            : null,
+                              ? tt('settings_jsx.name_must_not_begin_with')
+                              : null,
                     about: values.about && values.about.length > 160 ? tt('settings_jsx.about_is_too_long') : null,
                     location:
                         values.location && values.location.length > 30 ? tt('settings_jsx.location_is_too_long') : null,
@@ -115,8 +107,8 @@ class Settings extends React.Component {
                         values.website && values.website.length > 100
                             ? tt('settings_jsx.website_url_is_too_long')
                             : values.website && !/^https?:\/\//.test(values.website)
-                            ? tt('settings_jsx.invalid_url')
-                            : null,
+                              ? tt('settings_jsx.invalid_url')
+                              : null,
                     witness_owner:
                         values.witness_owner && values.witness_owner.length > 30
                             ? tt('settings_jsx.witness_owner_is_too_long')
@@ -160,7 +152,7 @@ class Settings extends React.Component {
         this.dropzone.open();
     };
 
-    upload = (file, name = '') => {
+    upload = (file = '') => {
         const { uploadImage } = this.props;
         this.setState({
             progress: { message: tt('settings_jsx.uploading_image') + '...' },
@@ -248,7 +240,6 @@ class Settings extends React.Component {
                     console.log('updateAccount ERROR', e);
                     this.setState({
                         loading: false,
-                        changed: false,
                         errorMessage: tt('g.server_returned_error'),
                     });
                 }
@@ -256,7 +247,6 @@ class Settings extends React.Component {
             successCallback: () => {
                 this.setState({
                     loading: false,
-                    changed: false,
                     errorMessage: '',
                     successMessage: tt('settings_jsx.saved'),
                 });
@@ -303,44 +293,46 @@ class Settings extends React.Component {
 
     getPreferredApiEndpoint = () => {
         let preferred_api_endpoint = 'https://api.hive.blog';
-        if (this.state.cookies.get('user_preferred_api_endpoint'))
-            preferred_api_endpoint = this.state.cookies.get('user_preferred_api_endpoint');
+        if (this.state.cookies.get('user_preferred_api_endpoint')) preferred_api_endpoint = this.state.cookies.get('user_preferred_api_endpoint');
         return preferred_api_endpoint;
     };
 
     resetEndpointOptions = () => {
-        this.state.cookies.set('user_preferred_api_endpoint', 'https://api.hive.blog');
-        this.state.cookies.set('user_api_endpoints', []);
-        let preferred_api_endpoint = 'https://api.hive.blog';
-        let alternative_api_endpoints = api.config.get('alternative_api_endpoints');
+        this.state.cookies.set('user_preferred_api_endpoint', 'https://api.hive.blog', {
+            path: '/',
+            maxAge: 1000000000,
+        });
+        this.state.cookies.set('user_api_endpoints', [], { path: '/', maxAge: 1000000000 });
+        const preferred_api_endpoint = 'https://api.hive.blog';
+        const alternative_api_endpoints = api.config.get('alternative_api_endpoints');
         alternative_api_endpoints.length = 0;
-        for (var node of KNOWN_API_NODES) alternative_api_endpoints.push('https://' + node);
+        for (const node of KNOWN_API_NODES) alternative_api_endpoints.push('https://' + node);
         api.api.setOptions({ url: preferred_api_endpoint });
 
-        let cookies = this.state.cookies;
-        cookies.set('user_preferred_api_endpoint', preferred_api_endpoint);
-        cookies.set('user_api_endpoints', alternative_api_endpoints);
-        this.setState({ cookies: cookies, endpoint_error_message: '' });
+        const { cookies } = this.state;
+        cookies.set('user_preferred_api_endpoint', preferred_api_endpoint, { path: '/', maxAge: 1000000000 });
+        cookies.set('user_api_endpoints', alternative_api_endpoints, { path: '/', maxAge: 1000000000 });
+        this.setState({ cookies, endpoint_error_message: '' });
     };
 
     synchronizeLists = () => {
-        let preferred = this.getPreferredApiEndpoint();
-        let alternative_api_endpoints = api.config.get('alternative_api_endpoints');
-        let user_endpoints = this.state.cookies.get('user_api_endpoints');
+        const preferred = this.getPreferredApiEndpoint();
+        const alternative_api_endpoints = api.config.get('alternative_api_endpoints');
+        const user_endpoints = this.state.cookies.get('user_api_endpoints');
         api.api.setOptions({ url: preferred });
         alternative_api_endpoints.length = 0;
-        for (var user_endpoint of user_endpoints) alternative_api_endpoints.push(user_endpoint);
+        for (const user_endpoint of user_endpoints) alternative_api_endpoints.push(user_endpoint);
     };
 
     setPreferredApiEndpoint = (event) => {
-        let cookies = this.state.cookies;
-        cookies.set('user_preferred_api_endpoint', event.target.value);
-        this.setState({ cookies: cookies, endpoint_error_message: '' }); //doing it this way to force a re-render, otherwise the option doesn't look updated even though it is
+        const { cookies } = this.state;
+        cookies.set('user_preferred_api_endpoint', event.target.value, { path: '/', maxAge: 1000000000 });
+        this.setState({ cookies, endpoint_error_message: '' }); //doing it this way to force a re-render, otherwise the option doesn't look updated even though it is
         api.api.setOptions({ url: event.target.value });
     };
 
     generateAPIEndpointOptions = () => {
-        let user_endpoints = this.state.cookies.get('user_api_endpoints');
+        const user_endpoints = this.state.cookies.get('user_api_endpoints');
 
         if (user_endpoints === null || user_endpoints === undefined) return;
 
@@ -348,7 +340,7 @@ class Settings extends React.Component {
         const entries = [];
         for (let ei = 0; ei < user_endpoints.length; ei += 1) {
             const endpoint = user_endpoints[ei];
-            let entry = (
+            const entry = (
                 <tr key={endpoint + 'key'}>
                     <td>{endpoint}</td>
                     <td>
@@ -361,7 +353,8 @@ class Settings extends React.Component {
                     </td>
                     <td style={{ fontSize: '20px' }}>
                         <button
-                            onClick={(e) => {
+                            type="button"
+                            onClick={() => {
                                 this.removeAPIEndpoint(endpoint);
                             }}
                         >
@@ -375,13 +368,14 @@ class Settings extends React.Component {
         return entries;
     };
 
-    toggleShowAdvancedSettings = (event) => {
+    toggleShowAdvancedSettings = () => {
+        // eslint-disable-next-line react/no-access-state-in-setstate
         this.setState({ expand_advanced: !this.state.expand_advanced });
     };
 
     addAPIEndpoint = (value) => {
         this.setState({ endpoint_error_message: '' });
-        let validated = /^https?:\/\//.test(value);
+        const validated = /^https?:\/\//.test(value);
         if (!validated) {
             this.setState({
                 endpoint_error_message: tt('settings_jsx.error_bad_url'),
@@ -389,8 +383,8 @@ class Settings extends React.Component {
             return;
         }
 
-        let cookies = this.state.cookies;
-        let endpoints = cookies.get('user_api_endpoints');
+        const { cookies } = this.state;
+        const endpoints = cookies.get('user_api_endpoints');
         if (endpoints === null || endpoints === undefined) {
             this.setState({
                 endpoint_error_message: tt('settings_jsx.error_bad_cookie'),
@@ -398,7 +392,7 @@ class Settings extends React.Component {
             return;
         }
 
-        for (var endpoint of endpoints) {
+        for (const endpoint of endpoints) {
             if (endpoint === value) {
                 this.setState({
                     endpoint_error_message: tt('settings_jsx.error_already_exists'),
@@ -408,8 +402,8 @@ class Settings extends React.Component {
         }
 
         endpoints.push(value);
-        cookies.set('user_api_endpoints', endpoints);
-        this.setState({ cookies: cookies }, () => {
+        cookies.set('user_api_endpoints', endpoints, { path: '/', maxAge: 1000000000 });
+        this.setState({ cookies }, () => {
             this.synchronizeLists();
         });
     };
@@ -418,7 +412,7 @@ class Settings extends React.Component {
         this.setState({ endpoint_error_message: '' });
         //don't remove the active endpoint
         //don't remove it if it is the only endpoint in the list
-        let active_endpoint = this.getPreferredApiEndpoint();
+        const active_endpoint = this.getPreferredApiEndpoint();
         if (value === active_endpoint) {
             this.setState({
                 endpoint_error_message: tt('settings_jsx.error_cant_remove_active'),
@@ -426,8 +420,8 @@ class Settings extends React.Component {
             return;
         }
 
-        let cookies = this.state.cookies;
-        let endpoints = cookies.get('user_api_endpoints');
+        const { cookies } = this.state;
+        const endpoints = cookies.get('user_api_endpoints');
         if (endpoints === null || endpoints === undefined) {
             this.setState({
                 endpoint_error_message: tt('settings_jsx.error_bad_cookie'),
@@ -442,22 +436,24 @@ class Settings extends React.Component {
             return;
         }
 
-        let new_endpoints = [];
-        for (var endpoint of endpoints) {
+        const new_endpoints = [];
+        for (const endpoint of endpoints) {
             if (endpoint !== value) {
                 new_endpoints.push(endpoint);
             }
         }
 
-        cookies.set('user_api_endpoints', new_endpoints);
-        this.setState({ cookies: cookies }, () => {
+        cookies.set('user_api_endpoints', new_endpoints, { path: '/', maxAge: 1000000000 });
+        this.setState({ cookies }, () => {
             this.synchronizeLists();
         });
     };
 
     render() {
         const { state, props } = this;
-        const { walletUrl, ignores, accountname, isOwnAccount, user_preferences, follow, metaData } = this.props;
+        const {
+            ignores, accountname, isOwnAccount, user_preferences,
+        } = this.props;
 
         const { submitting, valid, touched } = this.state.accountSettings;
         const disabled = !props.isOwnAccount || state.loading || submitting || !valid || !touched;
@@ -482,7 +478,8 @@ class Settings extends React.Component {
         return (
             <div className="Settings">
                 <div className="row">
-                    {isLoggedIn() && isOwnAccount && (
+                    {isLoggedIn()
+                    && isOwnAccount && (
                         <form onSubmit={this.handleSubmitForm} className="large-12 columns">
                             <h4>{tt('settings_jsx.public_profile_settings')}</h4>
                             {progress.message && <div className="info">{progress.message}</div>}
@@ -499,7 +496,7 @@ class Settings extends React.Component {
                                         {tt('settings_jsx.profile_image_url')}
                                         <Dropzone
                                             onDrop={this.onDrop}
-                                            className={'none'}
+                                            className="none"
                                             disableClick
                                             multiple={false}
                                             accept="image/*"
@@ -509,7 +506,7 @@ class Settings extends React.Component {
                                         >
                                             <input type="url" {...profile_image.props} autoComplete="off" />
                                         </Dropzone>
-                                        <a onClick={() => this.onOpenClick('profile_image')}>
+                                        <a role="link" tabIndex={0} onClick={() => this.onOpenClick('profile_image')}>
                                             {tt('settings_jsx.upload_image')}
                                         </a>
                                     </label>
@@ -519,9 +516,11 @@ class Settings extends React.Component {
                                 </div>
                                 <div className="form__field column small-12 medium-6 large-4">
                                     <label>
-                                        {tt('settings_jsx.cover_image_url')} <small>(Optimal: 2048 x 512 pixels)</small>
+                                        {tt('settings_jsx.cover_image_url')}
+                                        {' '}
+                                        <small>(Optimal: 2048 x 512 pixels)</small>
                                         <input type="url" {...cover_image.props} autoComplete="off" />
-                                        <a onClick={() => this.onOpenClick('cover_image')}>
+                                        <a role="link" tabIndex={0} onClick={() => this.onOpenClick('cover_image')}>
                                             {tt('settings_jsx.upload_image')}
                                         </a>
                                     </label>
@@ -626,7 +625,8 @@ class Settings extends React.Component {
                                     value={tt('settings_jsx.update')}
                                     disabled={disabled}
                                 />
-                            )}{' '}
+                            )}
+                            {' '}
                             {state.errorMessage ? (
                                 <small className="error">{state.errorMessage}</small>
                             ) : state.successMessage ? (
@@ -721,8 +721,11 @@ class Settings extends React.Component {
                 <br />
                 <div className="row">
                     <div className="large-12 columns">
+                        {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions */}
                         <h4 onClick={this.toggleShowAdvancedSettings}>
-                            {tt('settings_jsx.advanced') + ' '} {this.state.expand_advanced ? '\u25BC' : '\u25B2'}
+                            {tt('settings_jsx.advanced') + ' '}
+                            {' '}
+                            {this.state.expand_advanced ? '\u25BC' : '\u25B2'}
                         </h4>
                         {this.state.expand_advanced && (
                             <div>
@@ -760,7 +763,7 @@ class Settings extends React.Component {
                                                     fontSize: '30px',
                                                 }}
                                             >
-                                                <button onClick={(e) => this.addAPIEndpoint(this.new_endpoint.value)}>
+                                                <button type="button" onClick={() => this.addAPIEndpoint(this.new_endpoint.value)}>
                                                     {'\u2713'}
                                                 </button>
                                             </td>
@@ -770,6 +773,7 @@ class Settings extends React.Component {
                                         </tr>
                                     </tbody>
                                 </table>
+                                {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions */}
                                 <span className="button" onClick={this.resetEndpointOptions}>
                                     {tt('settings_jsx.reset_endpoints')}
                                 </span>
@@ -814,11 +818,8 @@ export default connect(
         const { accountname } = ownProps.routeParams;
 
         const isOwnAccount = state.user.getIn(['current', 'username'], '') == accountname;
-        const ignores =
-            isOwnAccount && state.global.getIn(['follow', 'getFollowingAsync', accountname, 'ignore_result']);
+        const ignores = isOwnAccount && state.global.getIn(['follow', 'getFollowingAsync', accountname, 'ignore_result']);
         const account = state.global.getIn(['accounts', accountname]);
-        const current_user = state.user.get('current');
-        const username = current_user ? current_user.get('username') : '';
 
         const metaData = read_profile_v2(account);
         const profile = metaData && metaData.profile ? metaData.profile : {};

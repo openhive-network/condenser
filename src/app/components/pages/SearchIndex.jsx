@@ -1,12 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import tt from 'counterpart';
+import _ from 'lodash';
 import { search } from 'app/redux/SearchReducer';
 import Callout from 'app/components/elements/Callout';
 import ElasticSearchInput from 'app/components/elements/ElasticSearchInput';
 import PostsList from 'app/components/cards/PostsList';
-import { List, Map, fromJS } from 'immutable';
+import { fromJS } from 'immutable';
 
 class SearchIndex extends React.Component {
     static propTypes = {
@@ -17,6 +17,7 @@ class SearchIndex extends React.Component {
             s: PropTypes.string,
         }).isRequired,
         scrollId: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]).isRequired,
+        error: PropTypes.object.isRequired,
         result: PropTypes.arrayOf(
             PropTypes.shape({
                 app: PropTypes.string,
@@ -42,14 +43,13 @@ class SearchIndex extends React.Component {
 
     constructor(props) {
         super(props);
-        this.state = {};
         this.fetchMoreResults = this.fetchMoreResults.bind(this);
     }
 
     componentDidMount() {
         const { performSearch, params } = this.props;
         if (!params.s) {
-            params.s = undefined;
+            params.s = 'newest';
         }
         if (params.q) {
             performSearch(params);
@@ -67,28 +67,43 @@ class SearchIndex extends React.Component {
     }
 
     render() {
-        const { result, loading, params, performSearch } = this.props;
+        const {
+ result, loading, params, performSearch, error
+} = this.props;
+        const errorMessage = _.get(error, 'message', undefined);
 
         const searchResults = (
+            // eslint-disable-next-line react/no-string-refs
             <PostsList ref="list" posts={fromJS(result)} loading={loading} loadMore={this.fetchMoreResults} />
         );
 
         return (
-            <div className={'PostsIndex row ' + 'layout-list'}>
+            <div className="PostsIndex row layout-list">
                 <article className="articles">
                     <div className="articles__header row">
                         <div className="small-12 medium-12 large-12 column">
                             <ElasticSearchInput
                                 initValue={params.q}
-                                expanded={true}
-                                handleSubmit={(q) => {
-                                    performSearch({ q, s: undefined });
+                                expanded
+                                handleSubmit={(q, s) => {
+                                    performSearch({ q, s });
                                 }}
-                                redirect={true}
+                                redirect
+                                loading={loading}
                             />
                         </div>
                     </div>
-                    {!loading && result.length === 0 ? <Callout>{'Nothing was found.'}</Callout> : searchResults}
+                    {!loading && !errorMessage && result.length === 0 ? (
+                        <Callout>Nothing was found.</Callout>
+                    ) : (
+                        searchResults
+                    )}
+                    {!loading
+                        && errorMessage && (
+                            <Callout title="There was an error" type="alert">
+                                {errorMessage}
+                            </Callout>
+                        )}
                 </article>
             </div>
         );
@@ -102,7 +117,8 @@ module.exports = {
             const params = ownProps.location.query;
             return {
                 loading: state.search.get('pending'),
-                result: state.search.get('result').toJS(),
+                result: state.search.get('result').toJS() || {},
+                error: state.search.get('error') || {},
                 scrollId: state.search.get('scrollId'),
                 isBrowser: process.env.BROWSER,
                 params,

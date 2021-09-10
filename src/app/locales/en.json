@@ -33,6 +33,7 @@
         "community_settings_header": "Community Settings",
         "community_settings_description": "What does your community stand for?",
         "community_list_header": "Communities",
+        "community_search_no_result": "No results for your search",
         "community_user_role_add_description": "Set the role of a user in this community.",
         "community_user_role_edit_description": "Changing @%(username)s's role.",
         "community_user_role_add_header": "Add User Role",
@@ -318,6 +319,7 @@
         "title": "Title of your story",
         "update_post": "Update Post",
         "markdown_not_supported": "Markdown is not supported here",
+        "html_not_supported": "HTML is not supported here",
         "advanced_settings": "Advanced settings",
         "beneficiaries_set": "%(count)s set",
         "tags_input": "Enter your tags separated by a space",
@@ -326,7 +328,10 @@
         "post_options": "Post options",
         "summary": "Post summary (for posts list & SEO, max 140 chars)",
         "shorten_summary": "Shorten summary",
-        "select_cover_image": "Select your cover image"
+        "select_cover_image": "Select your cover image",
+        "alt_author": "Author (if different from current account)",
+        "shorten_alt_author": "Shorten the author name",
+        "invalid_username": "Invalid username (no @ required)"
     },
     "beneficiary_selector_jsx": {
         "header": "Who should receive any rewards?",
@@ -380,7 +385,8 @@
         "in_week_convert_DEBT_TOKEN_to_LIQUID_TOKEN": "In 3.5 days, convert %(amount)s %(DEBT_TOKEN)s into %(LIQUID_TOKEN)s",
         "view_the_full_context": "View the full context",
         "view_the_direct_parent": "View the direct parent",
-        "you_are_viewing_a_single_comments_thread_from": "You are viewing a single comment's thread from"
+        "you_are_viewing_a_single_comments_thread_from": "You are viewing a single comment's thread from",
+        "authored_by": "Authored by"
     },
     "recoveraccountstep1_jsx": {
         "recover_account_intro": "From time to time, a Hivian's owner key may be compromised. Stolen Account Recovery gives the rightful account owner 30 days to recover their account from the moment the thief changed their owner key. Stolen Account Recovery can only be used on %(APP_URL)s if the account owner had previously listed '%(APP_NAME)s' as their account trustee and complied with %(APP_NAME)s's Terms of Service."
@@ -798,5 +804,11 @@
         "next": "Next",
         "last": "Last",
         "users_on_list": "Users On List: %(user_count)s"
+    },
+    "searchinput": {
+        "sortBy": "Sort by:",
+        "newest": "Newest",
+        "popularity": "Popularity",
+        "relevance": "Relevance"
     }
 }

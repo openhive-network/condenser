@@ -19,7 +19,7 @@ export default class YoutubePreview extends React.Component {
         width: 640,
         height: 360,
         startTime: 0,
-        dataParams: 'enablejsapi=0&rel=0&origin=https://steemit.com',
+        dataParams: 'enablejsapi=0&rel=0&origin=https://hive.blog',
     };
 
     constructor() {
@@ -34,14 +34,20 @@ export default class YoutubePreview extends React.Component {
     };
 
     render() {
-        const { youTubeId, width, height, startTime, dataParams } = this.props;
+        const {
+ youTubeId, width, height, startTime, dataParams
+} = this.props;
         const { play } = this.state;
 
         if (!play) {
             // mqdefault.jpg (medium quality version, 320px × 180px)
             // hqdefault.jpg (high quality version, 480px × 360px
             // sddefault.jpg (standard definition version, 640px × 480px)
-            const thumbnail = width <= 320 ? 'mqdefault.jpg' : width <= 480 ? 'hqdefault.jpg' : '0.jpg';
+            const thumbnail = width <= 320
+                    ? 'mqdefault.jpg'
+                    : width <= 480
+                    ? 'hqdefault.jpg'
+                    : '0.jpg';
             const previewLink = `https://img.youtube.com/vi/${youTubeId}/${thumbnail}`;
 
             return (
@@ -52,6 +58,8 @@ export default class YoutubePreview extends React.Component {
                         backgroundImage: 'url(' + previewLink + ')',
                         height: `${height}px`,
                     }}
+                    role="button"
+                    tabIndex={0}
                 >
                     <div className="play" />
                 </div>
@@ -61,7 +69,14 @@ export default class YoutubePreview extends React.Component {
 
         return (
             <div className="videoWrapper">
-                <iframe width={width} height={height} src={autoPlaySrc} frameBorder="0" allowFullScreen="true" />
+                <iframe
+                    width={width}
+                    height={height}
+                    src={autoPlaySrc}
+                    frameBorder="0"
+                    allowFullScreen="true"
+                    title="Youtube video player"
+                />
             </div>
         );
     }
