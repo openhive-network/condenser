@@ -1,30 +1,22 @@
-import React from 'react';
+import React, { PureComponent } from 'react';
 import Autocomplete from 'react-autocomplete';
-import shouldComponentUpdate from 'app/utils/shouldComponentUpdate';
+// import shouldComponentUpdate from 'app/utils/shouldComponentUpdate';
 import { validate_account_name } from 'app/utils/ChainValidation';
-import reactForm from 'app/utils/ReactForm';
 import { List, Set } from 'immutable';
 import tt from 'counterpart';
+import PropTypes from 'prop-types';
 
-export class BeneficiarySelector extends React.Component {
+import { connect } from 'react-redux';
+
+export class BeneficiarySelector extends PureComponent {
     static propTypes = {
         // HTML props
-        id: React.PropTypes.string, // DOM id for active component (focusing, etc...)
-        onChange: React.PropTypes.func.isRequired,
-        onBlur: React.PropTypes.func.isRequired,
-        value: React.PropTypes.array,
-        tabIndex: React.PropTypes.number,
+        onChange: PropTypes.func.isRequired,
+        value: PropTypes.array,
 
         // redux connect
-        following: React.PropTypes.array.isRequired,
+        following: PropTypes.array.isRequired,
     };
-    static defaultProps = {
-        id: 'BeneficiarySelectorId',
-    };
-    constructor() {
-        super();
-        this.shouldComponentUpdate = shouldComponentUpdate(this, 'BeneficiarySelector');
-    }
 
     matchAutocompleteUser(item, value) {
         return item.toLowerCase().indexOf(value.toLowerCase()) > -1;
@@ -74,10 +66,9 @@ export class BeneficiarySelector extends React.Component {
     };
 
     render() {
-        const { username, following, tabIndex } = this.props;
+        const { username } = this.props;
         const beneficiaries = this.props.value;
-        const remainingPercent =
-            100 - beneficiaries.map((b) => (b.percent ? parseInt(b.percent) : 0)).reduce((sum, elt) => sum + elt, 0);
+        const remainingPercent = 100 - beneficiaries.map((b) => (b.percent ? parseInt(b.percent) : 0)).reduce((sum, elt) => sum + elt, 0);
 
         return (
             <span>
@@ -135,7 +126,9 @@ export class BeneficiarySelector extends React.Component {
                                         spellCheck: 'false',
                                     }}
                                     renderMenu={(items) => (
-                                        <div className="react-autocomplete-input" children={items} />
+                                        <div className="react-autocomplete-input">
+                                            {items}
+                                        </div>
                                     )}
                                     getItemValue={(item) => item}
                                     items={this.props.following}
@@ -172,10 +165,10 @@ export function validateBeneficiaries(username, beneficiaries, required = true) 
     if (beneficiaries.length > 8) {
         return tt('beneficiary_selector_jsx.exceeds_max_beneficiaries');
     }
-    var totalPercent = 0;
+    let totalPercent = 0;
 
-    var beneficiaryNames = Set();
-    for (var i = 0; i < beneficiaries.length; i++) {
+    let beneficiaryNames = Set();
+    for (let i = 0; i < beneficiaries.length; i += 1) {
         const beneficiary = beneficiaries[i];
         const accountError = validate_account_name(beneficiary.username, '');
         if ((required || beneficiary.username) && accountError) {
@@ -186,9 +179,9 @@ export function validateBeneficiaries(username, beneficiaries, required = true) 
         }
         if (beneficiaryNames.has(beneficiary.username)) {
             return tt('beneficiary_selector_jsx.beneficiary_cannot_be_duplicate');
-        } else {
-            beneficiaryNames = beneficiaryNames.add(beneficiary.username);
         }
+            beneficiaryNames = beneficiaryNames.add(beneficiary.username);
+
         if ((required || beneficiary.percent) && !/^[1-9]\d{0,2}$/.test(beneficiary.percent)) {
             return tt('beneficiary_selector_jsx.beneficiary_percent_invalid');
         }
@@ -198,8 +191,6 @@ export function validateBeneficiaries(username, beneficiaries, required = true) 
         return tt('beneficiary_selector_jsx.beneficiary_percent_total_invalid');
     }
 }
-
-import { connect } from 'react-redux';
 
 export default connect((state, ownProps) => {
     let following = List();

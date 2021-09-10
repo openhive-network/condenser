@@ -1,10 +1,14 @@
-import React, { Component, PropTypes } from 'react';
+/*global googletag*/
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
 class GptAd extends Component {
     constructor(props) {
         super(props);
-        const { ad_identifier, enabled, type, tags, bannedTags } = props;
+        const {
+ ad_identifier, enabled, type, tags, bannedTags
+} = props;
 
         this.ad_identifier = '';
         this.type = type;
@@ -31,7 +35,6 @@ class GptAd extends Component {
 
     componentDidMount() {
         if (!this.ad_identifier || !this.enabled) return;
-        const ad_identifier = this.ad_identifier;
         const unique_slot_id = this.unique_slot_id;
 
         window.optimize.queue.push(() => {
@@ -73,10 +76,6 @@ GptAd.defaultProps = {
 export default connect(
     (state, props) => {
         const enabled = !!state.app.getIn(['googleAds', 'gptEnabled']) && !!process.env.BROWSER;
-        const postCategory = state.global.get('postCategory');
-        const basicSlots = state.app.getIn(['googleAds', `gptBasicSlots`]);
-        const biddingSlots = state.app.getIn(['googleAds', `gptBiddingSlots`]);
-        const categorySlots = state.app.getIn(['googleAds', `gptCategorySlots`]);
         const bannedTags = state.app.getIn(['googleAds', 'gptBannedTags']);
         const bannedTagsJS = bannedTags ? bannedTags.toJS() : [];
 
@@ -98,5 +97,4 @@ export default connect(
             ...props,
         };
     },
-    (dispatch) => ({})
 )(GptAd);

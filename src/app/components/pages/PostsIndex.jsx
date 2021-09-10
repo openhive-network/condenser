@@ -1,25 +1,25 @@
 /* eslint react/prop-types: 0 */
-import React from 'react';
+import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Link } from 'react-router';
 import tt from 'counterpart';
 import { List } from 'immutable';
 import { actions as fetchDataSagaActions } from 'app/redux/FetchDataSaga';
-import shouldComponentUpdate from 'app/utils/shouldComponentUpdate';
+// import shouldComponentUpdate from 'app/utils/shouldComponentUpdate';
 import PostsList from 'app/components/cards/PostsList';
 import { isFetchingOrRecentlyUpdated } from 'app/utils/StateFunctions';
 import Callout from 'app/components/elements/Callout';
 import { GptUtils } from 'app/utils/GptUtils';
-import Topics from './Topics';
 import SortOrder from 'app/components/elements/SortOrder';
 import { ifHive } from 'app/utils/Community';
 import PostsIndexLayout from 'app/components/pages/PostsIndexLayout';
+import Topics from './Topics';
 
 // posts_index.empty_feed_1 [-5]
 const noFriendsText = (
     <div>
-        You haven't followed anyone yet!
+        You haven&apos;t followed anyone yet!
         <br />
         <br />
         <span style={{ fontSize: '1.1rem' }}>
@@ -33,7 +33,7 @@ const noFriendsText = (
 
 const noCommunitiesText = (
     <div>
-        You haven't joined any active communities yet!
+        You haven&apos;t joined any active communities yet!
         <br />
         <br />
         <span style={{ fontSize: '1.1rem' }}>
@@ -45,10 +45,11 @@ const noCommunitiesText = (
     </div>
 );
 
-class PostsIndex extends React.Component {
+class PostsIndex extends PureComponent {
     static propTypes = {
         posts: PropTypes.object,
         status: PropTypes.object,
+        // eslint-disable-next-line react/no-unused-prop-types
         routeParams: PropTypes.object,
         requestData: PropTypes.func,
         loading: PropTypes.bool,
@@ -61,7 +62,7 @@ class PostsIndex extends React.Component {
         super();
         this.state = {};
         this.loadMore = this.loadMore.bind(this);
-        this.shouldComponentUpdate = shouldComponentUpdate(this, 'PostsIndex');
+        // this.shouldComponentUpdate = shouldComponentUpdate(this, 'PostsIndex');
     }
 
     componentWillMount() {
@@ -79,7 +80,9 @@ class PostsIndex extends React.Component {
         const last_post = this.props.posts ? this.props.posts.last() : null;
         if (!last_post) return;
         if (last_post == this.props.pending) return; // if last post is 'pending', its an invalid start token
-        const { username, status, order, category } = this.props;
+        const {
+            username, status, order, category,
+        } = this.props;
 
         if (isFetchingOrRecentlyUpdated(status, order, category)) return;
 
@@ -125,8 +128,7 @@ class PostsIndex extends React.Component {
                 ? ' #' + category
                 : '';
 
-            if (order == 'payout')
-                emptyText = `No pending ${cat} posts found. This view only shows posts within 12 - 36 hours of payout.`;
+            if (order == 'payout') emptyText = `No pending ${cat} posts found. This view only shows posts within 12 - 36 hours of payout.`;
             else if (order == 'created') emptyText = `No posts in ${cat} yet!`;
             else emptyText = `No ${order} ${cat} posts found.`;
         } else {
@@ -241,9 +243,7 @@ module.exports = {
             const hive = ifHive(category);
             const community = state.global.getIn(['community', hive], null);
 
-            const enableAds =
-                ownProps.gptEnabled &&
-                !GptUtils.HasBannedTags([category], state.app.getIn(['googleAds', 'gptBannedTags']));
+            const enableAds = ownProps.gptEnabled && !GptUtils.HasBannedTags([category], state.app.getIn(['googleAds', 'gptBannedTags']));
 
             const key = ['discussion_idx', category || '', order];
             let posts = state.global.getIn(key, List());

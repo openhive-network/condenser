@@ -298,14 +298,17 @@ function* usernamePasswordLogin2({
             yield put(userActions.hideLoginWarning());
             localStorage.removeItem('autopost2');
             const owner_pub_key = account.getIn(['owner', 'key_auths', 0, 0]);
+
             if (login_owner_pubkey === owner_pub_key || login_wif_owner_pubkey === owner_pub_key) {
                 yield put(userActions.loginError({ error: 'owner_login_blocked' }));
                 return;
             }
+
             if (hasActiveAuth) {
                 yield put(userActions.loginError({ error: 'active_login_blocked' }));
                 return;
             }
+
             const generated_type = password[0] === 'P' && password.length > 40;
             serverApiRecordEvent(
                 'login_attempt',
@@ -318,6 +321,21 @@ function* usernamePasswordLogin2({
             );
             yield put(userActions.loginError({ error: 'Incorrect Password' }));
             return;
+
+            /* old unreachable code...
+            const generated_type = password[0] === 'P' && password.length > 40;
+            serverApiRecordEvent(
+                'login_attempt',
+                JSON.stringify({
+                    name: username,
+                    login_owner_pubkey,
+                    owner_pub_key,
+                    generated_type,
+                })
+            );
+            yield put(userActions.loginError({ error: 'Incorrect Password' }));
+            return;
+             */
         }
         if (authority.get('posting') !== 'full') private_keys = private_keys.remove('posting_private');
         if (authority.get('active') !== 'full') private_keys = private_keys.remove('active_private');
@@ -653,9 +671,9 @@ function* lookupPreviousOwnerAuthority({ payload: {} }) {
 }
 
 function* uploadImage({
- payload: {
- file, dataUrl, filename = 'image.txt', progress
-}
+    payload: {
+       file, dataUrl, filename = 'image.txt', progress
+    }
 }) {
     // eslint-disable-next-line no-underscore-dangle
     const _progress = progress;

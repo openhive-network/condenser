@@ -4,9 +4,8 @@
 import { call, takeEvery } from 'redux-saga/effects';
 import { callBridge } from 'app/utils/steemApi';
 import * as transactionActions from 'app/redux/TransactionReducer';
-
 import { configure } from 'enzyme';
-import Adapter from 'enzyme-adapter-react-15';
+import Adapter from 'enzyme-adapter-react-16';
 import {
     createPermlink,
     createPatch,

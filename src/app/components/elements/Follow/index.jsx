@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import LoadingIndicator from 'app/components/elements/LoadingIndicator';
-import shouldComponentUpdate from 'app/utils/shouldComponentUpdate';
+// import shouldComponentUpdate from 'app/utils/shouldComponentUpdate';
 import * as transactionActions from 'app/redux/TransactionReducer';
 import * as userActions from 'app/redux/UserReducer';
 import { Set, Map } from 'immutable';
@@ -10,7 +10,7 @@ import tt from 'counterpart';
 
 const { string, bool, any } = PropTypes;
 
-export default class Follow extends React.Component {
+export default class Follow extends PureComponent {
     static propTypes = {
         following: string,
         follower: string, // OPTIONAL default to current user
@@ -32,7 +32,7 @@ export default class Follow extends React.Component {
         this.state = {};
         this.initEvents(props);
         this.followLoggedOut = this.followLoggedOut.bind(this);
-        this.shouldComponentUpdate = shouldComponentUpdate(this, 'Follow');
+        // this.shouldComponentUpdate = shouldComponentUpdate(this, 'Follow');
     }
 
     componentWillUpdate(nextProps) {
@@ -73,12 +73,14 @@ export default class Follow extends React.Component {
 
     render() {
         const { loading } = this.props;
-        if (loading)
-            return (
-                <span>
-                    <LoadingIndicator /> {tt('g.loading')}&hellip;
-                </span>
-            );
+        if (loading) { return (
+            <span>
+                <LoadingIndicator />
+                {' '}
+                {tt('g.loading')}
+                &hellip;
+            </span>
+            ); }
         if (loading !== false) {
             // must know what the user is already following before any update can happen
             return <span />;
@@ -91,19 +93,20 @@ export default class Follow extends React.Component {
             return null;
         }
 
-        if (!follower || !following)
-            return (
-                <span>
-                    <label className="button slim hollow secondary" onClick={this.followLoggedOut}>
-                        {tt('g.follow')}
-                    </label>
-                </span>
-            );
+        if (!follower || !following) { return (
+            <span>
+                <label className="button slim hollow secondary" onClick={this.followLoggedOut}>
+                    {tt('g.follow')}
+                </label>
+            </span>
+            ); }
         // Can't follow or ignore self
         if (follower === following) return <span />;
 
         const { followingWhat } = this.props; // redux
-        const { showFollow, showMute, fat, children } = this.props; // html
+        const {
+ showFollow, showMute, fat, children
+} = this.props; // html
         const { busy } = this.state;
 
         const cnBusy = busy ? 'disabled' : '';
@@ -136,7 +139,11 @@ export default class Follow extends React.Component {
                     </label>
                 )}
 
-                {children && <span>&nbsp;&nbsp;{children}</span>}
+                {children && (
+                <span>
+                    {children}
+                </span>
+)}
             </span>
         );
     }

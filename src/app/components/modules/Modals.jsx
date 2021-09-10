@@ -1,43 +1,40 @@
-import React from 'react';
+import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import CloseButton from 'app/components/elements/CloseButton';
 import Reveal from 'app/components/elements/Reveal';
 import { NotificationStack } from 'react-notification';
-import { OrderedSet } from 'immutable';
 import tt from 'counterpart';
 import * as userActions from 'app/redux/UserReducer';
 import * as appActions from 'app/redux/AppReducer';
 import * as transactionActions from 'app/redux/TransactionReducer';
 import LoginForm from 'app/components/modules/LoginForm';
 import ConfirmTransactionForm from 'app/components/modules/ConfirmTransactionForm';
-import shouldComponentUpdate from 'app/utils/shouldComponentUpdate';
+// import shouldComponentUpdate from 'app/utils/shouldComponentUpdate';
 import TermsAgree from 'app/components/modules/TermsAgree';
 import PostAdvancedSettings from 'app/components/modules/PostAdvancedSettings';
 
-class Modals extends React.Component {
+class Modals extends PureComponent {
     static defaultProps = {
         username: '',
         notifications: undefined,
         removeNotification: () => {},
         show_terms_modal: false,
-        show_promote_post_modal: false,
         show_bandwidth_error_modal: false,
         show_confirm_modal: false,
         show_login_modal: false,
         show_post_advanced_settings_modal: '',
         loginBroadcastOperation: undefined,
     };
+
     static propTypes = {
         show_login_modal: PropTypes.bool,
         show_confirm_modal: PropTypes.bool,
         show_bandwidth_error_modal: PropTypes.bool,
-        show_promote_post_modal: PropTypes.bool,
         show_post_advanced_settings_modal: PropTypes.string,
         hideLogin: PropTypes.func.isRequired,
         username: PropTypes.string,
         hideConfirm: PropTypes.func.isRequired,
-        hidePromotePost: PropTypes.func.isRequired,
         hideBandwidthError: PropTypes.func.isRequired,
         hidePostAdvancedSettings: PropTypes.func.isRequired,
         notifications: PropTypes.object,
@@ -51,11 +48,6 @@ class Modals extends React.Component {
         }),
     };
 
-    constructor() {
-        super();
-        this.shouldComponentUpdate = shouldComponentUpdate(this, 'Modals');
-    }
-
     render() {
         const {
             show_login_modal,
@@ -67,12 +59,9 @@ class Modals extends React.Component {
             show_terms_modal,
             notifications,
             removeNotification,
-            hidePromotePost,
-            show_promote_post_modal,
             hideBandwidthError,
             hidePostAdvancedSettings,
             username,
-            loginBroadcastOperation,
         } = this.props;
 
         const notifications_array = notifications
@@ -86,8 +75,7 @@ class Modals extends React.Component {
             if (e && e.preventDefault) e.preventDefault();
             const new_window = window.open();
             new_window.opener = null;
-            new_window.location =
-                'https://blocktrades.us/?input_coin_type=eth&output_coin_type=steem_power&receive_address=' + username;
+            new_window.location = 'https://blocktrades.us/?input_coin_type=eth&output_coin_type=steem_power&receive_address=' + username;
         };
         return (
             <div>
@@ -127,7 +115,7 @@ class Modals extends React.Component {
                                 <li>{tt('modals_jsx.out_of_bandwidth_option_2')}</li>
                                 <li>{tt('modals_jsx.out_of_bandwidth_option_3')}</li>
                             </ol>
-                            <button className="button" onClick={buySteemPower}>
+                            <button type="button" className="button" onClick={buySteemPower}>
                                 {tt('g.buy_hive_power')}
                             </button>
                         </div>
@@ -140,7 +128,6 @@ class Modals extends React.Component {
                     </Reveal>
                 )}
                 <NotificationStack
-                    style={false}
                     notifications={notifications_array}
                     onDismiss={(n) => removeNotification(n.key)}
                 />
@@ -165,9 +152,9 @@ export default connect(
             show_promote_post_modal: state.user.get('show_promote_post_modal'),
             notifications: state.app.get('notifications'),
             show_terms_modal:
-                state.user.get('show_terms_modal') &&
-                state.routing.locationBeforeTransitions.pathname !== '/tos.html' &&
-                state.routing.locationBeforeTransitions.pathname !== '/privacy.html',
+                state.user.get('show_terms_modal')
+                && state.routing.locationBeforeTransitions.pathname !== '/tos.html'
+                && state.routing.locationBeforeTransitions.pathname !== '/privacy.html',
             show_bandwidth_error_modal: rcErr,
             show_post_advanced_settings_modal: state.user.get('show_post_advanced_settings_modal'),
             loginBroadcastOperation,

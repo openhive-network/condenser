@@ -9,11 +9,9 @@ import * as transactionActions from 'app/redux/TransactionReducer';
 import * as userActions from 'app/redux/UserReducer';
 import MarkdownViewer from 'app/components/cards/MarkdownViewer';
 import TagInput, { validateTagInput } from 'app/components/cards/TagInput';
-import SlateEditor, { serializeHtml, deserializeHtml, getDemoState } from 'app/components/elements/SlateEditor';
 import { extractRtags } from 'app/utils/ExtractContent';
 import LoadingIndicator from 'app/components/elements/LoadingIndicator';
 import PostCategoryBanner from 'app/components/elements/PostCategoryBanner';
-import shouldComponentUpdate from 'app/utils/shouldComponentUpdate';
 import Tooltip from 'app/components/elements/Tooltip';
 import sanitizeConfig, { allowedTags } from 'app/utils/SanitizeConfig';
 import sanitize from 'sanitize-html';
@@ -24,6 +22,7 @@ import Dropzone from 'react-dropzone';
 import tt from 'counterpart';
 import { loadUserTemplates, saveUserTemplates } from 'app/utils/UserTemplates';
 import BadActorList from 'app/utils/BadActorList';
+import VisualEditor from './VisualEditor';
 
 const remarkable = new Remarkable({ html: true, linkify: false, breaks: true });
 
@@ -202,7 +201,7 @@ class ReplyEditor extends React.Component {
         }, 300);
     }
 
-    shouldComponentUpdate = shouldComponentUpdate(this, 'ReplyEditor');
+    // shouldComponentUpdate = shouldComponentUpdate(this, 'ReplyEditor');
 
     componentWillUpdate(nextProps, nextState) {
         if (process.env.BROWSER) {
@@ -410,10 +409,8 @@ class ReplyEditor extends React.Component {
 
     // As rte_editor is updated, keep the (invisible) 'body' field in sync.
     onChange = (rte_value) => {
-        this.refs.rte.setState({ state: rte_value });
-        const html = stateToHtml(rte_value);
         const { body } = this.state;
-        if (body.value !== html) body.props.onChange(html);
+        body.props.onChange(rte_value);
     };
 
     toggleRte = (e) => {
@@ -787,17 +784,16 @@ class ReplyEditor extends React.Component {
                                     <div className="float-left primary" style={{ margin: '0.8rem 0 0 0' }}>
                                         {rte && (
                                             <a href="#" onClick={this.toggleRte}>
-                                                {body.value
-                                                    ? `👁️ ${tt('reply_editor.view_html_source')}`
-                                                    : `🗒️ ${tt('reply_editor.enable_markdown_editor')}`}
+                                                🗒️
+                                                {' '}
+                                                {tt('reply_editor.enable_markdown_editor')}
                                             </a>
                                         )}
-                                        {!rte
-                                            && (isHtml || !body.value) && (
-                                                <a href="#" onClick={this.toggleRte}>
-                                                    {`📰 ${tt('reply_editor.editor')}`}
-                                                </a>
-                                            )}
+                                        {!rte && (
+                                            <a href="#" onClick={this.toggleRte}>
+                                                {`📰 ${tt('reply_editor.editor')}`}
+                                            </a>
+                                        )}
                                     </div>
                                 </span>
                             )}
@@ -805,17 +801,12 @@ class ReplyEditor extends React.Component {
 
                         <div
                             className={
-                                'ReplyEditor__body '
+                                'ReplyEditor__body Markdown '
                                 + (rte ? `rte ${vframe_section_class}` : vframe_section_shrink_class)
                             }
                         >
                             {process.env.BROWSER && rte ? (
-                                <SlateEditor
-                                    ref="rte"
-                                    placeholder={isStory ? 'Write your story...' : 'Reply'}
-                                    initialState={this.state.rte_value}
-                                    onChange={this.onChange}
-                                />
+                                <VisualEditor onChange={this.onChange} value={body.value} />
                             ) : (
                                 <span>
                                     <Dropzone
@@ -840,14 +831,6 @@ class ReplyEditor extends React.Component {
                                             tabIndex={0}
                                         />
                                     </Dropzone>
-                                    <p className="drag-and-drop">
-                                        {tt('reply_editor.insert_images_by_dragging_dropping')}
-                                        {noClipboardData ? '' : tt('reply_editor.pasting_from_the_clipboard')}
-                                        {tt('reply_editor.or_by')}
-                                        {' '}
-                                        <a role="link" tabIndex={0} onClick={this.onOpenClick}>{tt('reply_editor.selecting_them')}</a>
-                                        .
-                                    </p>
                                     {progress.message && <div className="info">{progress.message}</div>}
                                     {progress.error && (
                                         <div className="error">
@@ -860,6 +843,14 @@ class ReplyEditor extends React.Component {
                                 </span>
                             )}
                         </div>
+                        <p className="drag-and-drop">
+                            {tt('reply_editor.insert_images_by_dragging_dropping')}
+                            {noClipboardData ? '' : tt('reply_editor.pasting_from_the_clipboard')}
+                            {tt('reply_editor.or_by')}
+                            {' '}
+                            <a role="link" tabIndex={0} onClick={this.onOpenClick}>{tt('reply_editor.selecting_them')}</a>
+                            .
+                        </p>
                         <div className={vframe_section_shrink_class}>
                             <div className="error">
                                 {body.touched && body.error && body.error !== 'Required' && body.error}
@@ -1113,7 +1104,6 @@ class ReplyEditor extends React.Component {
                         )}
                     </div>
                     {!loading
-                        && !rte
                         && body.value && (
                             <div
                                 className={classnames({
@@ -1133,27 +1123,17 @@ class ReplyEditor extends React.Component {
 
 let saveEditorTimeout;
 
-// removes <html></html> wrapper if exists
-function stripHtmlWrapper(text) {
-    const m = text.match(/<html>\n*([\S\s]+?)?\n*<\/html>/m);
-    return m && m.length === 2 ? m[1] : text;
-}
 // See also MarkdownViewer render
 const isHtmlTest = (text) => /^<html>/.test(text);
 
-function stateToHtml(state) {
-    let html = serializeHtml(state);
-    if (html === '<p></p>') html = '';
-    if (html === '<p><br></p>') html = '';
-    if (html == '') return '';
-    return `<html>
-                                }\n${html}\n</html>`;
-}
-
-function stateFromHtml(html = null) {
+function stateFromHtml() {
+    return null;
+/*
     if (html) html = stripHtmlWrapper(html);
     if (html && html.trim() == '') html = null;
     return html ? deserializeHtml(html) : getDemoState();
+
+ */
 }
 
 //var htmlclean = require('htmlclean');
@@ -1342,12 +1322,6 @@ export default (formId) => connect(
                     } : null;
 
                 if (!linkProps) throw new Error('Unknown type: ' + type);
-
-                // If this is an HTML post, it MUST begin and end with the tag
-                if (isHtml && !body.match(/^<html>[\s\S]*<\/html>$/)) {
-                    errorCallback('HTML posts must begin with <html> and end with </html>');
-                    return;
-                }
 
                 let rtags;
                 {

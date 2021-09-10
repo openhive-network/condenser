@@ -1,11 +1,11 @@
-import React from 'react';
+import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import CloseButton from 'app/components/elements/CloseButton';
 import Reveal from 'app/components/elements/Reveal';
 import { Map, List } from 'immutable';
 import * as globalActions from 'app/redux/GlobalReducer';
-import shouldComponentUpdate from 'app/utils/shouldComponentUpdate';
+// import shouldComponentUpdate from 'app/utils/shouldComponentUpdate';
 import QrReader from 'app/components/elements/QrReader';
 import CheckLoginOwner from 'app/components/elements/CheckLoginOwner';
 import PromotePost from 'app/components/modules/PromotePost';
@@ -13,36 +13,37 @@ import ExplorePost from 'app/components/modules/ExplorePost';
 import CommunitySubscriberList from './CommunitySubscriberList';
 import NotificationsList from '../cards/NotificationsList';
 
-class Dialogs extends React.Component {
+class Dialogs extends PureComponent {
     static propTypes = {
         active_dialogs: PropTypes.object,
         hide: PropTypes.func.isRequired,
     };
+
     constructor() {
         super();
-        this.shouldComponentUpdate = shouldComponentUpdate(this, 'Dialogs');
+        // this.shouldComponentUpdate = shouldComponentUpdate(this, 'Dialogs');
         this.hide = (name) => {
             this.props.hide(name);
         };
     }
+
     componentWillReceiveProps(nextProps) {
         const { active_dialogs, hide } = nextProps;
         active_dialogs.forEach((v, k) => {
             if (!this['hide_' + k]) this['hide_' + k] = () => hide(k);
         });
     }
+
     render() {
         const { active_dialogs } = this.props;
-        let idx = 0;
         const dialogs = active_dialogs.reduce((r, v, k) => {
-            const cmp =
-                k === 'qr_reader' ? (
-                    <span key={`dialog-${k}`}>
-                        <Reveal onHide={this['hide_' + k]} show revealStyle={{ width: '355px' }}>
-                            <CloseButton onClick={this['hide_' + k]} />
-                            <QrReader onClose={this['hide_' + k]} {...v.get('params').toJS()} />
-                        </Reveal>
-                    </span>
+            const cmp = k === 'qr_reader' ? (
+                <span key={`dialog-${k}`}>
+                    <Reveal onHide={this['hide_' + k]} show revealStyle={{ width: '355px' }}>
+                        <CloseButton onClick={this['hide_' + k]} />
+                        <QrReader onClose={this['hide_' + k]} {...v.get('params').toJS()} />
+                    </Reveal>
+                </span>
                 ) : k === 'promotePost' ? (
                     <span key={`dialog-${k}`}>
                         <Reveal onHide={this['hide_' + k]} show>

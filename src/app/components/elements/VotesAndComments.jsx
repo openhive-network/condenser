@@ -1,26 +1,19 @@
-import React from 'react';
+import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router';
 import { connect } from 'react-redux';
 import Icon from 'app/components/elements/Icon';
-import shouldComponentUpdate from 'app/utils/shouldComponentUpdate';
+// import shouldComponentUpdate from 'app/utils/shouldComponentUpdate';
 import tt from 'counterpart';
 
-class VotesAndComments extends React.Component {
+class VotesAndComments extends PureComponent {
     static propTypes = {
-        // HTML properties
-        post: PropTypes.object.isRequired,
         commentsLink: PropTypes.string.isRequired,
 
         // Redux connect properties
         comments: PropTypes.number,
         totalVotes: PropTypes.number,
     };
-
-    constructor(props) {
-        super(props);
-        this.shouldComponentUpdate = shouldComponentUpdate(this, 'VotesAndComments');
-    }
 
     render() {
         const { comments, commentsLink, totalVotes } = this.props;
@@ -36,12 +29,14 @@ class VotesAndComments extends React.Component {
                     })}
                 >
                     <Icon size="1x" name="chevron-up-circle" />
-                    &nbsp;{totalVotes}
+                    &nbsp;
+                    {totalVotes}
                 </span>
                 <span className={'VotesAndComments__comments' + (comments === 0 ? ' no-comments' : '')}>
                     <Link to={commentsLink} title={comments_tooltip}>
                         <Icon name={comments > 1 ? 'chatboxes' : 'chatbox'} />
-                        &nbsp;{comments}
+                        &nbsp;
+                        {comments}
                     </Link>
                 </span>
             </span>

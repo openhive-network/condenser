@@ -1,4 +1,4 @@
-import PureRenderMixin from 'react-addons-pure-render-mixin';
+import React from 'react';
 import { Iterable } from 'immutable';
 
 /**
@@ -6,8 +6,11 @@ import { Iterable } from 'immutable';
     This allows debugging that will show which properties changed.
 */
 export default function (instance, name) {
-    const mixin = PureRenderMixin.shouldComponentUpdate.bind(instance);
-    if (process.env.BROWSER && window.steemDebug_shouldComponentUpdate === undefined) {
+    const mixin = React.PureComponent.shouldComponentUpdate.bind(instance);
+    if (
+        process.env.BROWSER
+        && window.steemDebug_shouldComponentUpdate === undefined
+    ) {
         window.steemDebug_shouldComponentUpdate = false; // console command line completion
     }
     return (nextProps, nextState) => {

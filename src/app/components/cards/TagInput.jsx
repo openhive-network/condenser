@@ -1,33 +1,19 @@
-import React from 'react';
+import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import shouldComponentUpdate from 'app/utils/shouldComponentUpdate';
+// import shouldComponentUpdate from 'app/utils/shouldComponentUpdate';
 import { cleanReduxInput } from 'app/utils/ReduxForms';
 import tt from 'counterpart';
-import { List } from 'immutable';
 
 const MAX_TAGS = 8;
 
-class TagInput extends React.Component {
+class TagInput extends PureComponent {
     static propTypes = {
         // HTML props
-        id: PropTypes.string, // DOM id for active component (focusing, etc...)
-        autoComplete: PropTypes.string,
-        placeholder: PropTypes.string,
         onChange: PropTypes.func.isRequired,
-        onBlur: PropTypes.func.isRequired,
         disabled: PropTypes.bool,
-        value: PropTypes.string,
         tabIndex: PropTypes.number,
     };
-    static defaultProps = {
-        autoComplete: 'on',
-        id: 'TagInputId',
-    };
-    constructor() {
-        super();
-        this.shouldComponentUpdate = shouldComponentUpdate(this, 'TagInput');
-    }
 
     render() {
         const { tabIndex, disabled, onChange } = this.props;

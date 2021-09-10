@@ -1,4 +1,6 @@
-import React, { Component, PropTypes } from 'react';
+/*global googletag, pbjs*/
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
 class BiddingAd extends Component {
@@ -34,7 +36,7 @@ class BiddingAd extends Component {
             pbjs.requestBids({
                 timeout: 2000,
                 adUnitCodes: [path],
-                bidsBackHandler: function () {
+                bidsBackHandler() {
                     pbjs.setTargetingForGPTAsync([path]);
                     googletag.pubads().refresh([slot]);
                 },
@@ -83,14 +85,10 @@ BiddingAd.propTypes = {
 export default connect(
     (state, props) => {
         const enabled = !!state.app.getIn(['googleAds', 'gptEnabled']) && !!process.env.BROWSER && !!window.googletag;
-        const postCategory = state.global.get('postCategory');
-        const basicSlots = state.app.getIn(['googleAds', `gptBasicSlots`]);
-        const biddingSlots = state.app.getIn(['googleAds', `gptBiddingSlots`]);
-        const categorySlots = state.app.getIn(['googleAds', `gptCategorySlots`]);
 
         const slotName = props.slotName;
-        let type = props.type;
-        let slot = state.app.getIn(['googleAds', `gpt${type}Slots`, slotName]);
+        const type = props.type;
+        const slot = state.app.getIn(['googleAds', `gpt${type}Slots`, slotName]);
 
         return {
             enabled,
@@ -98,5 +96,4 @@ export default connect(
             ...props,
         };
     },
-    (dispatch) => ({})
 )(BiddingAd);

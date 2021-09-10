@@ -7,7 +7,7 @@ import tt from 'counterpart';
 import { List } from 'immutable';
 import { findDOMNode } from 'react-dom';
 import Overlay from 'react-overlays/lib/Overlay';
-import shouldComponentUpdate from 'app/utils/shouldComponentUpdate';
+// import shouldComponentUpdate from 'app/utils/shouldComponentUpdate';
 import Icon from 'app/components/elements/Icon';
 import Reputation from 'app/components/elements/Reputation';
 import AffiliationMap from 'app/utils/AffiliationMap';
@@ -99,7 +99,7 @@ class Author extends React.Component {
         });
     };
 
-    shouldComponentUpdate = shouldComponentUpdate(this, 'Author');
+    // shouldComponentUpdate = shouldComponentUpdate(this, 'Author');
 
     render() {
         const {

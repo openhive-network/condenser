@@ -303,7 +303,7 @@
         "are_you_sure_you_want_to_clear_this_form": "Are you sure you want to exit the comment editor?",
         "uploading": "Uploading...",
         "draft_saved": "Draft saved.",
-        "editor": "Enable WYSIWYG Editor",
+        "editor": "Enable Visual Editor",
         "enable_markdown_editor": "Enable Markdown Editor",
         "view_html_source": "View HTML source",
         "insert_images_by_dragging_dropping": "Insert images by dragging & dropping, ",

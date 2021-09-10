@@ -8,7 +8,7 @@ import * as userActions from 'app/redux/UserReducer';
 import { validate_account_name } from 'app/utils/ChainValidation';
 import { hasCompatibleKeychain } from 'app/utils/HiveKeychain';
 import runTests from 'app/utils/BrowserTests';
-import shouldComponentUpdate from 'app/utils/shouldComponentUpdate';
+// import shouldComponentUpdate from 'app/utils/shouldComponentUpdate';
 import reactForm from 'app/utils/ReactForm';
 import { serverApiRecordEvent } from 'app/utils/ServerApiClient';
 import tt from 'counterpart';
@@ -76,7 +76,7 @@ class LoginForm extends Component {
         if (this.refs.username && this.refs.username.value) this.refs.pw.focus();
     }
 
-    shouldComponentUpdate = shouldComponentUpdate(this, 'LoginForm');
+    // shouldComponentUpdate = shouldComponentUpdate(this, 'LoginForm');
 
     initForm(props) {
         reactForm({
@@ -289,6 +289,21 @@ class LoginForm extends Component {
             </h3>
         );
 
+/*
+        const signupLink = (
+            <div className="sign-up">
+                <hr />
+                <p>
+                    {tt('loginform_jsx.join_our')} <em>{tt('loginform_jsx.amazing_community')}</em>
+                    {tt('loginform_jsx.to_comment_and_reward_others')}
+                </p>
+                <button type="button" className="button hollow" onClick={this.SignUp}>
+                    {tt('loginform_jsx.sign_up_get_hive')}
+                </button>
+            </div>
+        );
+ */
+
         const form = (
             <form
                 onSubmit={handleSubmit(({ data }) => {
@@ -321,18 +336,18 @@ class LoginForm extends Component {
                 {username.touched && username.blur && username.error ? (
                     <div className="error">
                         {username.error}
-&nbsp;
+                        &nbsp;
                     </div>
                 ) : null}
 
                 {useKeychain.value ? (
                     <div>
                         {error && (
-                        <div className="error">
-                            {error}
-&nbsp;
-                        </div>
-)}
+                            <div className="error">
+                                {error}
+                                &nbsp;
+                            </div>
+                        )}
                     </div>
                 ) : (
                     <div>
@@ -346,17 +361,17 @@ class LoginForm extends Component {
                             disabled={submitting}
                         />
                         {error && (
-                        <div className="error">
-                            {error}
-&nbsp;
-                        </div>
-)}
+                            <div className="error">
+                                {error}
+                                &nbsp;
+                            </div>
+                        )}
                         {error && password_info && (
-                        <div className="warning">
-                            {password_info}
-&nbsp;
-                        </div>
-)}
+                            <div className="warning">
+                                {password_info}
+                                &nbsp;
+                            </div>
+                        )}
                     </div>
                 )}
                 {loginBroadcastOperation && (
@@ -568,8 +583,8 @@ export default connect(
             const username = data.username.trim().toLowerCase();
             if (loginBroadcastOperation) {
                 const {
- type, operation, successCallback, errorCallback
-} = loginBroadcastOperation.toJS();
+                    type, operation, successCallback, errorCallback
+                } = loginBroadcastOperation.toJS();
                 dispatch(
                     transactionActions.broadcastOperation({
                         type,

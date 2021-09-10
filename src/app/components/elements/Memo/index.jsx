@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import shouldComponentUpdate from 'app/utils/shouldComponentUpdate';
+// import shouldComponentUpdate from 'app/utils/shouldComponentUpdate';
 import tt from 'counterpart';
 import classnames from 'classnames';
 import { memo } from '@hiveio/hive-js';
@@ -10,9 +10,10 @@ import { repLog10 } from 'app/utils/ParsersAndFormatters';
 
 const MINIMUM_REPUTATION = 15;
 
-export class Memo extends React.Component {
+export class Memo extends PureComponent {
     static propTypes = {
         text: PropTypes.string,
+        // eslint-disable-next-line react/no-unused-prop-types
         username: PropTypes.string,
         fromAccount: PropTypes.string,
         // redux props
@@ -23,7 +24,7 @@ export class Memo extends React.Component {
 
     constructor() {
         super();
-        this.shouldComponentUpdate = shouldComponentUpdate(this, 'Memo');
+        // this.shouldComponentUpdate = shouldComponentUpdate(this, 'Memo');
         this.state = {
             revealMemo: false,
         };
@@ -45,7 +46,9 @@ export class Memo extends React.Component {
 
     render() {
         const { decodeMemo } = this;
-        const { memo_private, text, myAccount, fromAccount, fromNegativeRepUser } = this.props;
+        const {
+ memo_private, text, myAccount, fromAccount, fromNegativeRepUser
+} = this.props;
         const isEncoded = /^#/.test(text);
 
         const isFromBadActor = BadActorList.indexOf(fromAccount) > -1;
@@ -75,7 +78,8 @@ export default connect((state, ownProps) => {
     const currentUser = state.user.get('current');
     const myAccount = currentUser && ownProps.username === currentUser.get('username');
     const memo_private = myAccount && currentUser ? currentUser.getIn(['private_keys', 'memo_private']) : null;
-    const fromNegativeRepUser =
-        repLog10(state.global.getIn(['accounts', ownProps.fromAccount, 'reputation'])) < MINIMUM_REPUTATION;
-    return { ...ownProps, memo_private, myAccount, fromNegativeRepUser };
+    const fromNegativeRepUser = repLog10(state.global.getIn(['accounts', ownProps.fromAccount, 'reputation'])) < MINIMUM_REPUTATION;
+    return {
+ ...ownProps, memo_private, myAccount, fromNegativeRepUser
+};
 })(Memo);

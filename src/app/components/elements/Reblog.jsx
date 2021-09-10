@@ -1,24 +1,25 @@
-import React from 'react';
+import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 // import LoadingIndicator from 'app/components/elements/LoadingIndicator';
-import shouldComponentUpdate from 'app/utils/shouldComponentUpdate';
+// import shouldComponentUpdate from 'app/utils/shouldComponentUpdate';
 import * as transactionActions from 'app/redux/TransactionReducer';
 import Icon from 'app/components/elements/Icon';
 import tt from 'counterpart';
 
 const { string, func } = PropTypes;
 
-export default class Reblog extends React.Component {
+export default class Reblog extends PureComponent {
     static propTypes = {
         account: string,
         author: string,
         permlink: string,
         reblog: func,
     };
+
     constructor(props) {
         super(props);
-        this.shouldComponentUpdate = shouldComponentUpdate(this, 'Reblog');
+        // this.shouldComponentUpdate = shouldComponentUpdate(this, 'Reblog');
         this.state = { active: false, loading: false };
     }
 
@@ -39,7 +40,9 @@ export default class Reblog extends React.Component {
         e.preventDefault();
         if (this.state.active) return;
         this.setState({ loading: true });
-        const { reblog, account, author, permlink } = this.props;
+        const {
+ reblog, account, author, permlink
+} = this.props;
         reblog(
             account,
             author,
@@ -62,7 +65,7 @@ export default class Reblog extends React.Component {
     setReblogged(account) {
         const { author, permlink } = this.props;
         clearRebloggedCache();
-        let posts = getRebloggedList(account);
+        const posts = getRebloggedList(account);
         posts.push(author + '/' + permlink);
         if (posts.length > 200) posts.shift(1);
 
