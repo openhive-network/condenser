@@ -75,11 +75,11 @@ function logs {
 function build {
     case "$1" in
         "dev")
-            docker-compose -f docker-compose.dev.yml build
+            docker-compose -f docker-compose.dev.yml build --no-cache
         ;;
 
         "prod")
-            docker-compose -f docker-compose.prod.yml build
+            docker-compose -f docker-compose.prod.yml build --no-cache
         ;;
 
         "stg")
@@ -121,6 +121,19 @@ while test $# -gt 0; do
             shift
             if test $# -gt 0; then
                 stop $1
+            else
+                echo "no environment specified"
+                exit 1
+            fi
+            shift
+        ;;
+
+	"restart")
+            shift
+            if test $# -gt 0; then
+                stop $1
+		sleep 1
+		start $1
             else
                 echo "no environment specified"
                 exit 1

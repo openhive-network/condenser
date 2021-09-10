@@ -40,4 +40,9 @@ COPY --from=dependencies /var/app/healthcheck.js /var/app/healthcheck.js
 
 HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=5 CMD node /var/app/healthcheck.js
 
+ENV PORT 8080
+ENV NODE_ENV production
+
+EXPOSE 8080
+
 CMD [ "yarn", "run", "production" ]

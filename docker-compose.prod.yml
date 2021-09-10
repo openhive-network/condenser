@@ -1,43 +1,30 @@
 version: "3.7"
 services:
-    condenser:
-        image: hiveio/condenser:latest
-        deploy:
-            mode: replicated
-            replicas: 4
-            resources:
-                limits:
-                    cpus: "0.9"
-                    memory: 2048M
-            restart_policy:
-                condition: any
-                delay: 5s
-            update_config:
-                parallelism: 1
-                delay: 10s
-                failure_action: rollback
-                order: start-first
-            rollback_config:
-                parallelism: 1
-                delay: 5s
+    hive:
+        build: .
+        image: hive/condenser:latest
+        container_name: hive
+        expose:
+          - "8080"
         environment:
-            VIRTUAL_HOST: hive.blog
+            VIRTUAL_HOST: hivean.com
             VIRTUAL_PORT: 8080
-            DISABLE_CLUSTERING: true
-            SDC_CLIENT_STEEMD_URL: https://api.hive.blog
-            SDC_SERVER_STEEMD_URL: https://api.hive.blog
-            SDC_SITE_DOMAIN: hive.blog
+            SDC_CLIENT_STEEMD_URL: https://anyx.io
+            SDC_SERVER_STEEMD_URL: https://anyx.io
+            SDC_DISABLE_SIGNUPS: 1
+            SDC_SITE_DOMAIN: hivean.com
             SDC_IMAGE_PROXY_PREFIX: https://images.hive.blog/
             SDC_UPLOAD_IMAGE_URL: https://images.hive.blog
             SDC_ALT_API_ENDPOINTS: "https://api.hive.blog https://anyx.io https://api.openhive.network https://api.hivekings.com"
-            SDC_HELMET_CONNECTSRC: "'self' hive.blog https://hive.blog https://images.hive.blog https://api.hive.blog https://anyx.io https://api.openhive.network https://api.hivekings.com https://hivebuzz.me https://peakd.com https://www.reddit.com"
-            SDC_HELMET_STYLESRC: "'self' 'unsafe-inline' fonts.googleapis.com platform.twitter.com www.reddit.com cdn.embedly.com"
-            SDC_HELMET_FONTSRC: "data: fonts.gstatic.com cdn.embedly.com"
-            WALLET_URL: https://wallet.hive.blog
+            SDC_HELMET_CONNECTSRC: "'self' https://hivean.com https://images.hive.blog https://anyx.io https://api.hive.blog https://api.openhive.network https://api.hivekings.com https://hivebuzz.me https://peakd.com https://hivesigner.com https://gist.github.com"
+            SDC_HELMET_STYLESRC: "'self' 'unsafe-inline' fonts.googleapis.com platform.twitter.com embed.redditmedia.com github.githubassets.com"
+            ESTEEM_ELASTIC_SEARCH_API_KEY: "169EALKZ7LENMA1S5EBT55DGQCWX8JE6YCJRNR05TVCFJYUICRFEXRMY8YSS"
+            WALLET_URL: https://wallet.hivean.com
         networks:
-            - reverse-proxy
+            - proxy_reverse-proxy
+        restart: always
 
 networks:
-    reverse-proxy:
+    proxy_reverse-proxy:
         external:
-            name: reverse-proxy
+            name: proxy_reverse-proxy
