@@ -200,7 +200,7 @@ export default function reducer(state = defaultState, action) {
             return state.set('show_side_panel', false);
 
         case SHOW_POST_ADVANCED_SETTINGS:
-            return state.set('show_post_advanced_settings_modal', payload.formId);
+            return state.set('show_post_advanced_settings_modal', payload._formId);
 
         case HIDE_POST_ADVANCED_SETTINGS:
             return state.set('show_post_advanced_settings_modal', '');
