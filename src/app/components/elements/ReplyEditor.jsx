@@ -216,8 +216,8 @@ class ReplyEditor extends React.Component {
                 if (nextProps.postTemplateName.indexOf('create_') === 0) {
                     const { username } = tp;
                     const {
- body, title, summary, altAuthor, tags
-} = ns;
+                        body, title, summary, altAuthor, tags
+                    } = ns;
                     const { payoutType, beneficiaries } = np;
                     const userTemplates = loadUserTemplates(username);
                     const newTemplateName = nextProps.postTemplateName.replace('create_', '');
@@ -281,11 +281,11 @@ class ReplyEditor extends React.Component {
             ) {
                 // also prevents saving after parent deletes this information
                 const {
- formId, payoutType, beneficiaries, maxAcceptedPayout
-} = np;
+                    formId, payoutType, beneficiaries, maxAcceptedPayout
+                } = np;
                 const {
- tags, title, summary, altAuthor, body
-} = ns;
+                    tags, title, summary, altAuthor, body
+                } = ns;
                 const data = {
                     formId,
                     title: title ? title.value : undefined,
@@ -586,8 +586,8 @@ class ReplyEditor extends React.Component {
         };
         const { onCancel } = this;
         const {
- title, tags, summary, altAuthor, body, community, enableSideBySide
-} = this.state;
+            title, tags, summary, altAuthor, body, community, enableSideBySide
+        } = this.state;
         const {
             reply,
             username,
@@ -606,8 +606,8 @@ class ReplyEditor extends React.Component {
             maxAcceptedPayout,
         } = this.props;
         const {
- submitting, valid, handleSubmit, resetForm
-} = this.state.replyForm;
+            submitting, valid, handleSubmit, resetForm
+        } = this.state.replyForm;
         const { postError, rte } = this.state;
         const { progress, noClipboardData } = this.state;
         const disabled = submitting || !valid;
@@ -967,7 +967,7 @@ class ReplyEditor extends React.Component {
                                                     </div>
                                                 )}
                                             <div>
-                                                {tt('post_advanced_settings_jsx.max_accepted_payout')}
+                                                {tt('post_advanced_settings_jsx.payout_option_header')}
                                                 {': '}
                                                 {this.props.payoutType === '0%' && tt('reply_editor.decline_payout')}
                                                 {this.props.payoutType === '50%' && tt('reply_editor.default_50_50')}
@@ -992,23 +992,6 @@ class ReplyEditor extends React.Component {
                                             <br />
                                             &nbsp;
                                         </div>
-                                        <div>
-                                            {beneficiaries && beneficiaries.length > 0 && (
-                                                <span>
-                                                    {tt('g.beneficiaries')}
-                                                    {': '}
-                                                    {tt('reply_editor.beneficiaries_set', {
-                                                        count: beneficiaries.length,
-                                                    })}
-                                                </span>
-                                            )}
-                                        </div>
-                                        <a href="#" onClick={this.showAdvancedSettings}>
-                                            {tt('reply_editor.advanced_settings')}
-                                        </a>
-                                        {' '}
-                                        <br />
-                                        &nbsp;
                                     </div>
                             )}
                         </div>
@@ -1156,8 +1139,8 @@ export default (formId) => connect(
             const defaultBeneficiaries = state.user.getIn(['current', 'defaultBeneficiaries']);
             const fields = ['body'];
             const {
- author, permlink, type, parent_author
-} = ownProps;
+                author, permlink, type, parent_author
+            } = ownProps;
             const isEdit = type === 'edit';
             const isStory = /submit_story/.test(type) || (isEdit && !parent_author);
             if (isStory) fields.push('title');
@@ -1246,8 +1229,8 @@ export default (formId) => connect(
                 postTemplateName,
                 maxAcceptedPayout,
                 initialValues: {
- title, summary, altAuthor, body, tags
-},
+                    title, summary, altAuthor, body, tags
+                },
                 formId,
             };
         },
