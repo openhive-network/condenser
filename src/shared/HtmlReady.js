@@ -104,7 +104,6 @@ export default function (html, { mutate = true, hideImages = false } = {}) {
                 proxifyImages(doc);
             }
         }
-        // console.log('state', state)
         if (!mutate) return state;
         return {
             html: doc ? XMLSerializer.serializeToString(doc) : '',

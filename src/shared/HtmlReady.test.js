@@ -7,7 +7,9 @@ beforeEach(() => {
 });
 
 describe('htmlready', () => {
-    it('should return an empty string if input cannot be parsed', () => {
+    // plain text no longer trigger an error from the xmldom parser
+    // @TODO find another test scenario if needed
+    it.skip('should return an empty string if input cannot be parsed', () => {
         const teststring = 'teststring lol'; // this string causes the xmldom parser to fail & error out
         expect(HtmlReady(teststring).html).toEqual('');
     });
