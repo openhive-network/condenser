@@ -50,7 +50,7 @@ export default class PdfDownload extends Component {
         await new Promise((res, rej) => {
             const s = document.createElement('script');
             s.type = 'text/javascript';
-            s.src = 'https://staticfiles.steemit.com/jspdf.min.js';
+            s.src = 'https://hive.blog/static/jspdf.min.js';
             document.body.appendChild(s);
             s.addEventListener('load', res);
         });
@@ -58,7 +58,7 @@ export default class PdfDownload extends Component {
         await new Promise((res, rej) => {
             const s = document.createElement('script');
             s.type = 'text/javascript';
-            s.src = 'https://staticfiles.steemit.com/Roboto-Regular-normal.js';
+            s.src = 'https://hive.blog/static/Roboto-Regular-normal.js';
             document.body.appendChild(s);
             s.addEventListener('load', res);
         });
@@ -66,7 +66,7 @@ export default class PdfDownload extends Component {
         await new Promise((res, rej) => {
             const s = document.createElement('script');
             s.type = 'text/javascript';
-            s.src = 'https://staticfiles.steemit.com/Roboto-Bold-normal.js';
+            s.src = 'https://hive.blog/static/Roboto-Bold-normal.js';
             document.body.appendChild(s);
             s.addEventListener('load', res);
         });
@@ -74,7 +74,7 @@ export default class PdfDownload extends Component {
         await new Promise((res, rej) => {
             const s = document.createElement('script');
             s.type = 'text/javascript';
-            s.src = 'https://staticfiles.steemit.com/RobotoMono-Regular-normal.js';
+            s.src = 'https://hive.blog/static/RobotoMono-Regular-normal.js';
             document.body.appendChild(s);
             s.addEventListener('load', res);
         });
