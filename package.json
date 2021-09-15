@@ -116,7 +116,7 @@
     "remove-markdown": "^0.3.0",
     "sanitize-html": "~2.5.0",
     "sass": "^1.29.0",
-    "scroll-behavior": "^0.11.0",
+    "scroll-behavior": "^0.9.5",
     "secure-random": "1.1.1",
     "selection-position": "1.0.0",
     "slate": "0.59",
