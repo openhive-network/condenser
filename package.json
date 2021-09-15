@@ -81,7 +81,7 @@
     "minimist": "~1.2.3",
     "mixpanel": "0.5.0",
     "node-cache": "4.2.0",
-    "node-fetch": "^3.0.0",
+    "node-fetch": "^2.6.1",
     "os": "0.1.1",
     "pluralizers": "^0.1.7",
     "postcss": "^8.1.6",
