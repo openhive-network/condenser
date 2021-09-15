@@ -20,20 +20,14 @@ export default function reducer(state = defaultState, action) {
     switch (action.type) {
         case ADD_USER_PROFILE: {
             if (payload) {
-                return state.setIn(
-                    ['profiles', payload.username],
-                    fromJS(payload.account)
-                );
+                return state.setIn(['profiles', payload.username], fromJS(payload.account));
             }
             return state;
         }
 
         case ADD_LISTED_ACCOUNTS: {
             if (payload) {
-                return state.setIn(
-                    ['listedAccounts', payload.username],
-                    fromJS(payload.listed_accounts)
-                );
+                return state.setIn(['listedAccounts', payload.username], fromJS(payload.listed_accounts));
             }
             return state;
         }
@@ -64,6 +58,8 @@ export default function reducer(state = defaultState, action) {
 
         case ADD_PEAKD_BADGES: {
             if (payload) {
+                // 5 random characters
+                const rand = (Math.random() + 1).toString(36).substring(7);
                 return state.setIn(
                     ['peakdBadges', payload.username],
                     fromJS(
@@ -73,9 +69,7 @@ export default function reducer(state = defaultState, action) {
                                 type: 'badges',
                                 name: o.name,
                                 title: o.title,
-                                url: `https://images.hive.blog/u/${
-                                    o.name
-                                }/avatar/small`,
+                                url: `https://images.hive.blog/u/${o.name}/avatar/small?${rand}`,
                             };
                         })
                     )

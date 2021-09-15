@@ -14,7 +14,9 @@ class Userpic extends Component {
         if (this.props.hide) return null;
 
         const { account, size } = this.props;
-        const url = imageProxy() + `u/${account}/avatar${size}`;
+        // 5 random characters
+        const rand = (Math.random() + 1).toString(36).substring(7);
+        const url = imageProxy() + `u/${account}/avatar${size}?${rand}`;
         const style = { backgroundImage: `url(${url})` };
         return <div className="Userpic" style={style} />;
     }
@@ -29,10 +31,7 @@ export default connect((state, ownProps) => {
 
     let hide = false;
     if (hideIfDefault) {
-        const url = state.userProfiles.getIn(
-            ['profiles', account, 'metadata', 'profile', 'profile_image'],
-            null
-        );
+        const url = state.userProfiles.getIn(['profiles', account, 'metadata', 'profile', 'profile_image'], null);
         hide = !url || !/^(https?:)\/\//.test(url);
     }
 
