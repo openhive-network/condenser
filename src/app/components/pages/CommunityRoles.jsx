@@ -25,9 +25,7 @@ class CommunityRoles extends React.Component {
         this.onSubmit = this.onSubmit.bind(this);
         this.onEditUserRoleSelect = this.onEditUserRoleSelect.bind(this);
         this.toggleUpdateRoleModal = this.toggleUpdateRoleModal.bind(this);
-        this.toggleAddUserToCommunityModal = this.toggleAddUserToCommunityModal.bind(
-            this
-        );
+        this.toggleAddUserToCommunityModal = this.toggleAddUserToCommunityModal.bind(this);
     }
 
     componentDidMount() {
@@ -72,13 +70,7 @@ class CommunityRoles extends React.Component {
     }
 
     render() {
-        const {
-            community,
-            loading,
-            updating,
-            roles,
-            communityMetadata,
-        } = this.props;
+        const { community, loading, updating, roles, communityMetadata } = this.props;
 
         const canEdit = {
             owner: ['admin', 'mod', 'member', 'guest', 'muted'],
@@ -90,11 +82,7 @@ class CommunityRoles extends React.Component {
 
         let availableRoles = [];
 
-        if (
-            communityMetadata &&
-            communityMetadata.context &&
-            Object.keys(communityMetadata.context).length > 0
-        ) {
+        if (communityMetadata && communityMetadata.context && Object.keys(communityMetadata.context).length > 0) {
             availableRoles = canEdit[communityMetadata.context.role];
         }
 
@@ -107,7 +95,7 @@ class CommunityRoles extends React.Component {
                     <a
                         className="community-user--role"
                         aria-labelledby="Community User Role"
-                        onClick={e => {
+                        onClick={(e) => {
                             e.preventDefault();
                             this.onEditUserRoleSelect(name, tuple[1], title);
                             this.toggleUpdateRoleModal(true);
@@ -143,15 +131,13 @@ class CommunityRoles extends React.Component {
 
         const editUserModal = (
             <Reveal onHide={() => null} show>
-                <CloseButton
-                    onClick={() => this.toggleUpdateRoleModal(false)}
-                />
+                <CloseButton onClick={() => this.toggleUpdateRoleModal(false)} />
                 <UserRole
                     title={this.state.title}
                     username={this.state.account}
                     community={this.props.community}
                     role={this.state.role}
-                    onSubmit={newRole => {
+                    onSubmit={(newRole) => {
                         const params = {
                             community: this.props.community,
                             account: this.state.account,
@@ -168,9 +154,7 @@ class CommunityRoles extends React.Component {
 
         const addUserModal = (
             <Reveal onHide={() => null} show>
-                <CloseButton
-                    onClick={() => this.toggleAddUserToCommunityModal(false)}
-                />
+                <CloseButton onClick={() => this.toggleAddUserToCommunityModal(false)} />
                 <UserRole
                     title={this.state.title}
                     username={this.state.account}
@@ -204,9 +188,7 @@ class CommunityRoles extends React.Component {
             body = (
                 <div>
                     <h1 className="articles__h1">
-                        <Link to={`/trending/${community}`}>
-                            {commName || community}
-                        </Link>
+                        <Link to={`/trending/${community}`}>{commName || community}</Link>
                     </h1>
                     <br />
                     <div className="c-sidebar__module">
@@ -231,16 +213,10 @@ class CommunityRoles extends React.Component {
         }
 
         return (
-            <PostsIndexLayout
-                category={community}
-                enableAds={false}
-                blogmode={false}
-            >
+            <PostsIndexLayout category={community} enableAds={false} blogmode={false}>
                 <div className="CommunityRoles">
                     <div className="row">
-                        <div className="column large-9 medium-12 small-12">
-                            {body}
-                        </div>
+                        <div className="column large-9 medium-12 small-12">{body}</div>
                     </div>
                 </div>
             </PostsIndexLayout>
@@ -265,11 +241,11 @@ const CommunityRolesWrapped = connect(
         };
     },
 
-    dispatch => ({
-        getCommunityRoles: community => {
+    (dispatch) => ({
+        getCommunityRoles: (community) => {
             dispatch(communityActions.getCommunityRoles(community));
         },
-        updateUser: params => {
+        updateUser: (params) => {
             dispatch(communityActions.updateUserRole(params));
         },
     })

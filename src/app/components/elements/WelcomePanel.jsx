@@ -35,22 +35,16 @@ export default class WelcomePanel extends React.Component {
                                 {/*tt('navigation.intro_tagline')*/}
                             </h2>
                             <h4 className="fade-in--3">
-                                {
-                                    'A social network owned and operated by its users, '
-                                }
+                                {'A social network owned and operated by its users, '}
                                 {'powered by '}
-                                <a href="https://steem.io">Steem</a>.
-                                {/*tt('navigation.intro_paragraph')*/}
+                                <a href="https://steem.io">Steem</a>.{/*tt('navigation.intro_paragraph')*/}
                             </h4>
                             <div>
                                 {signup} {learn}
                             </div>
                         </div>
                         <div className="text-center welcomeImage medium-4 large-3 show-for-medium">
-                            <img
-                                className="heroImage"
-                                src={require('app/assets/images/welcome-hero.png')}
-                            />
+                            <img className="heroImage" src={require('app/assets/images/welcome-hero.png')} />
                         </div>
                     </div>
                 </div>

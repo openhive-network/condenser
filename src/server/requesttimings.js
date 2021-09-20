@@ -1,7 +1,7 @@
 import RequestTimer from './utils/RequestTimer';
 
 function requestTime(statsLoggerClient) {
-    return function*(next) {
+    return function* (next) {
         this.state.requestTimer = new RequestTimer(
             statsLoggerClient,
             'request',

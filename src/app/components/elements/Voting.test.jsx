@@ -2,16 +2,15 @@ import React from 'react';
 import { IntlProvider } from 'react-intl';
 import { Provider } from 'react-redux';
 import { createStore } from 'redux';
-import { configure, mount, shallow } from 'enzyme';
-import Adapter from 'enzyme-adapter-react-15';
+import { configure, shallow } from 'enzyme';
+import Adapter from 'enzyme-adapter-react-16';
 import { fromJS, Map } from 'immutable';
 import renderer from 'react-test-renderer';
 import rootReducer from 'app/redux/RootReducer';
-import Voting from './Voting';
 import configureMockStore from 'redux-mock-store';
+import Voting from './Voting';
 
 global.window = {};
-import localStorage from 'mock-local-storage';
 window.localStorage = global.localStorage;
 
 configure({ adapter: new Adapter() });
@@ -62,10 +61,10 @@ describe('Voting', () => {
             routing: {},
             app: {},
         });
-        let wrapped = shallow(
+        const wrapped = shallow(
             <Voting
-                flag={true}
-                vote={(w, p) => {}}
+                flag
+                vote={() => {}}
                 post={voteTestObj}
                 price_per_hive={1}
                 hbd_print_rate={10000}
@@ -88,11 +87,11 @@ describe('Voting', () => {
             routing: {},
             app: {},
         });
-        let wrapped = shallow(
+        const wrapped = shallow(
             <Voting
-                flag={true}
+                flag
                 myVote={-666}
-                vote={(w, p) => {}}
+                vote={() => {}}
                 post={voteTestObj}
                 price_per_hive={1}
                 hbd_print_rate={10000}
@@ -100,13 +99,9 @@ describe('Voting', () => {
             />
         ).dive();
         wrapped.find('#revoke_downvote_button').simulate('click');
-        expect(mockStore.getActions()[0].type).toEqual(
-            'transaction/BROADCAST_OPERATION'
-        );
+        expect(mockStore.getActions()[0].type).toEqual('transaction/BROADCAST_OPERATION');
         expect(mockStore.getActions()[0].payload.operation.weight).toEqual(0);
-        expect(mockStore.getActions()[0].payload.operation.voter).toEqual(
-            'Janice'
-        );
+        expect(mockStore.getActions()[0].payload.operation.voter).toEqual('Janice');
     });
 
     it('should render upvote and should not render flag if user is logged in and flag prop is false.', () => {
@@ -119,10 +114,10 @@ describe('Voting', () => {
             routing: {},
             app: {},
         });
-        let wrapped = shallow(
+        const wrapped = shallow(
             <Voting
                 flag={false}
-                vote={(w, p) => {}}
+                vote={() => {}}
                 post={voteTestObj}
                 price_per_hive={1}
                 hbd_print_rate={10000}
@@ -143,10 +138,10 @@ describe('Voting', () => {
             routing: {},
             app: {},
         });
-        let wrapped = shallow(
+        const wrapped = shallow(
             <Voting
                 flag={false}
-                vote={(w, p) => {}}
+                vote={() => {}}
                 post={voteTestObj}
                 price_per_hive={1}
                 hbd_print_rate={10000}
@@ -154,15 +149,9 @@ describe('Voting', () => {
             />
         ).dive();
         wrapped.find('#upvote_button').simulate('click');
-        expect(mockStore.getActions()[0].type).toEqual(
-            'transaction/BROADCAST_OPERATION'
-        );
-        expect(mockStore.getActions()[0].payload.operation.weight).toEqual(
-            10000
-        );
-        expect(mockStore.getActions()[0].payload.operation.voter).toEqual(
-            'Janice'
-        );
+        expect(mockStore.getActions()[0].type).toEqual('transaction/BROADCAST_OPERATION');
+        expect(mockStore.getActions()[0].payload.operation.weight).toEqual(10000);
+        expect(mockStore.getActions()[0].payload.operation.voter).toEqual('Janice');
     });
 
     it('should show all HP if percent_hbd is 0', () => {
@@ -179,18 +168,11 @@ describe('Voting', () => {
         const component = renderer.create(
             <Provider store={store}>
                 <IntlProvider locale="en">
-                    <Voting
-                        vote={(w, p) => {}}
-                        post={post_obj}
-                        price_per_hive={1}
-                        hbd_print_rate={10000}
-                    />
+                    <Voting vote={() => {}} post={post_obj} price_per_hive={1} hbd_print_rate={10000} />
                 </IntlProvider>
             </Provider>
         );
-        expect(JSON.stringify(component.toJSON())).toContain(
-            '0.00 HBD, 10.00 HP'
-        );
+        expect(JSON.stringify(component.toJSON())).toContain('0.00 HBD, 10.00 HP');
     });
 
     it('should omit liquid hive if print rate is 10000', () => {
@@ -207,18 +189,11 @@ describe('Voting', () => {
         const component = renderer.create(
             <Provider store={store}>
                 <IntlProvider locale="en">
-                    <Voting
-                        vote={(w, p) => {}}
-                        post={post_obj}
-                        price_per_hive={1}
-                        hbd_print_rate={10000}
-                    />
+                    <Voting vote={() => {}} post={post_obj} price_per_hive={1} hbd_print_rate={10000} />
                 </IntlProvider>
             </Provider>
         );
-        expect(JSON.stringify(component.toJSON())).toContain(
-            '5.00 HBD, 5.00 HP'
-        );
+        expect(JSON.stringify(component.toJSON())).toContain('5.00 HBD, 5.00 HP');
     });
 
     it('should show liquid hive if print rate is < 10000', () => {
@@ -235,17 +210,10 @@ describe('Voting', () => {
         const component = renderer.create(
             <Provider store={store}>
                 <IntlProvider locale="en">
-                    <Voting
-                        vote={(w, p) => {}}
-                        post={post_obj}
-                        price_per_hive={1}
-                        hbd_print_rate={5000}
-                    />
+                    <Voting vote={() => {}} post={post_obj} price_per_hive={1} hbd_print_rate={5000} />
                 </IntlProvider>
             </Provider>
         );
-        expect(JSON.stringify(component.toJSON())).toContain(
-            '2.50 HBD, 2.50 HIVE, 5.00 HP'
-        );
+        expect(JSON.stringify(component.toJSON())).toContain('2.50 HBD, 2.50 HIVE, 5.00 HP');
     });
 });

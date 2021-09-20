@@ -62,13 +62,12 @@ const SortOrder = ({ topic, sortOrder, horizontal, pathname }) => {
 
     // vertical dropdown
     if (!horizontal) {
-        const url = (sort, tag = null) =>
-            tag ? `/${sort}/${tag}` : `/${sort}`;
+        const url = (sort, tag = null) => (tag ? `/${sort}/${tag}` : `/${sort}`);
         return (
             <NativeSelect
                 currentlySelected={url(sort, tag)}
                 options={sorts(tag, false)}
-                onChange={el => browserHistory.replace(el.value)}
+                onChange={(el) => browserHistory.replace(el.value)}
             />
         );
     }
@@ -76,7 +75,7 @@ const SortOrder = ({ topic, sortOrder, horizontal, pathname }) => {
     // site header
     return (
         <ul className="nav__block-list">
-            {sorts('', true).map(i => {
+            {sorts('', true).map((i) => {
                 const active = i.value === `/${sort}`;
                 const cls = active ? 'nav__block-list-item--active' : '';
                 return (

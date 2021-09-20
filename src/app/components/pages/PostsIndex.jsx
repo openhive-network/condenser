@@ -1,25 +1,26 @@
 /* eslint react/prop-types: 0 */
-import React from 'react';
+import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Link } from 'react-router';
 import tt from 'counterpart';
 import { List } from 'immutable';
 import { actions as fetchDataSagaActions } from 'app/redux/FetchDataSaga';
-import shouldComponentUpdate from 'app/utils/shouldComponentUpdate';
+// import shouldComponentUpdate from 'app/utils/shouldComponentUpdate';
 import PostsList from 'app/components/cards/PostsList';
 import { isFetchingOrRecentlyUpdated } from 'app/utils/StateFunctions';
 import Callout from 'app/components/elements/Callout';
 import { GptUtils } from 'app/utils/GptUtils';
-import Topics from './Topics';
 import SortOrder from 'app/components/elements/SortOrder';
 import { ifHive } from 'app/utils/Community';
 import PostsIndexLayout from 'app/components/pages/PostsIndexLayout';
+import Topics from './Topics';
 
 // posts_index.empty_feed_1 [-5]
 const noFriendsText = (
     <div>
-        You haven't followed anyone yet!<br />
+        You haven&apos;t followed anyone yet!
+        <br />
         <br />
         <span style={{ fontSize: '1.1rem' }}>
             <Link to="/">Explore Trending</Link>
@@ -32,7 +33,8 @@ const noFriendsText = (
 
 const noCommunitiesText = (
     <div>
-        You haven't joined any active communities yet!<br />
+        You haven&apos;t joined any active communities yet!
+        <br />
         <br />
         <span style={{ fontSize: '1.1rem' }}>
             <Link to="/communities">Explore Communities</Link>
@@ -43,10 +45,11 @@ const noCommunitiesText = (
     </div>
 );
 
-class PostsIndex extends React.Component {
+class PostsIndex extends PureComponent {
     static propTypes = {
         posts: PropTypes.object,
         status: PropTypes.object,
+        // eslint-disable-next-line react/no-unused-prop-types
         routeParams: PropTypes.object,
         requestData: PropTypes.func,
         loading: PropTypes.bool,
@@ -59,7 +62,7 @@ class PostsIndex extends React.Component {
         super();
         this.state = {};
         this.loadMore = this.loadMore.bind(this);
-        this.shouldComponentUpdate = shouldComponentUpdate(this, 'PostsIndex');
+        // this.shouldComponentUpdate = shouldComponentUpdate(this, 'PostsIndex');
     }
 
     componentWillMount() {
@@ -68,11 +71,7 @@ class PostsIndex extends React.Component {
     }
 
     componentDidUpdate(prevProps) {
-        if (
-            window.innerHeight &&
-            window.innerHeight > 3000 &&
-            prevProps.posts !== this.props.posts
-        ) {
+        if (window.innerHeight && window.innerHeight > 3000 && prevProps.posts !== this.props.posts) {
             this.refs.list.fetchIfNeeded();
         }
     }
@@ -81,11 +80,14 @@ class PostsIndex extends React.Component {
         const last_post = this.props.posts ? this.props.posts.last() : null;
         if (!last_post) return;
         if (last_post == this.props.pending) return; // if last post is 'pending', its an invalid start token
-        const { username, status, order, category } = this.props;
+        const {
+            username, status, order, category,
+        } = this.props;
 
         if (isFetchingOrRecentlyUpdated(status, order, category)) return;
 
         const [author, permlink] = last_post.split('/');
+
         this.props.requestData({
             author,
             permlink,
@@ -108,9 +110,7 @@ class PostsIndex extends React.Component {
             username,
         } = this.props;
 
-        const status = this.props.status
-            ? this.props.status.getIn([category || '', order])
-            : null;
+        const status = this.props.status ? this.props.status.getIn([category || '', order]) : null;
         let fetching = (status && status.fetching) || this.props.loading;
 
         let emptyText = '';
@@ -125,12 +125,11 @@ class PostsIndex extends React.Component {
         } else if (posts.size === 0) {
             const cat = community
                 ? 'community' //community.get('title')
-                : category ? ' #' + category : '';
+                : category
+                ? ' #' + category
+                : '';
 
-            if (order == 'payout')
-                emptyText = `No pending ${
-                    cat
-                } posts found. This view only shows posts within 12 - 36 hours of payout.`;
+            if (order == 'payout') emptyText = `No pending ${cat} posts found. This view only shows posts within 12 - 36 hours of payout.`;
             else if (order == 'created') emptyText = `No posts in ${cat} yet!`;
             else emptyText = `No ${order} ${cat} posts found.`;
         } else {
@@ -140,14 +139,12 @@ class PostsIndex extends React.Component {
         // page title
         let page_title = tt('g.all_tags');
         if (order === 'feed') {
-            if (account_name === this.props.username)
-                page_title = 'My friends' || tt('posts_index.my_feed');
-            else
-                //page_title = tt('posts_index.accountnames_feed', {
-                //    account_name,
-                //});
-                //page_title = '@' + account_name + "'s friends"
-                page_title = 'My friends';
+            if (account_name === this.props.username) page_title = 'My friends' || tt('posts_index.my_feed');
+            //page_title = tt('posts_index.accountnames_feed', {
+            //    account_name,
+            //});
+            //page_title = '@' + account_name + "'s friends"
+            else page_title = 'My friends';
         } else if (category === 'my') {
             page_title = 'My communities';
         } else if (community) {
@@ -179,16 +176,10 @@ class PostsIndex extends React.Component {
         }
 
         return (
-            <PostsIndexLayout
-                category={category}
-                enableAds={enableAds}
-                blogmode={this.props.blogmode}
-            >
+            <PostsIndexLayout category={category} enableAds={enableAds} blogmode={this.props.blogmode}>
                 <div className="articles__header row">
                     <div className="small-8 medium-7 large-8 column">
-                        <h1 className="articles__h1 show-for-mq-large articles__h1--no-wrap">
-                            {page_title}
-                        </h1>
+                        <h1 className="articles__h1 show-for-mq-large articles__h1--no-wrap">{page_title}</h1>
                         <div className="show-for-mq-large">
                             {community && (
                                 <div
@@ -200,19 +191,16 @@ class PostsIndex extends React.Component {
                                     Community
                                 </div>
                             )}
-                            {!community &&
-                                category &&
-                                order !== 'feed' &&
-                                category !== 'my' && (
-                                    <div
-                                        style={{
-                                            fontSize: '80%',
-                                            color: 'gray',
-                                        }}
-                                    >
-                                        Unmoderated tag
-                                    </div>
-                                )}
+                            {!community && category && order !== 'feed' && category !== 'my' && (
+                                <div
+                                    style={{
+                                        fontSize: '80%',
+                                        color: 'gray',
+                                    }}
+                                >
+                                    Unmoderated tag
+                                </div>
+                            )}
                         </div>
                         <span className="hide-for-mq-large articles__header-select">
                             <Topics
@@ -224,16 +212,11 @@ class PostsIndex extends React.Component {
                             />
                         </span>
                     </div>
-                    {order != 'feed' &&
-                        !(category === 'my' && !posts.size) && (
-                            <div className="small-4 medium-5 large-4 column articles__header-select">
-                                <SortOrder
-                                    sortOrder={order}
-                                    topic={category}
-                                    horizontal={false}
-                                />
-                            </div>
-                        )}
+                    {order != 'feed' && !(category === 'my' && !posts.size) && (
+                        <div className="small-4 medium-5 large-4 column articles__header-select">
+                            <SortOrder sortOrder={order} topic={category} horizontal={false} />
+                        </div>
+                    )}
                     {/*
                     medium-4 large-3
                     <div className="medium-1 show-for-mq-medium column">
@@ -254,26 +237,14 @@ module.exports = {
             // route can be e.g. trending/food (order/category);
             //   or, @username/feed (category/order). Branch on presence of `@`.
             const route = ownProps.routeParams;
-            const account_name =
-                route.order && route.order[0] == '@'
-                    ? route.order.slice(1).toLowerCase()
-                    : null;
-            const category = account_name
-                ? route.order
-                : route.category ? route.category.toLowerCase() : null;
-            const order = account_name
-                ? route.category
-                : route.order || 'trending';
+            const account_name = route.order && route.order[0] == '@' ? route.order.slice(1).toLowerCase() : null;
+            const category = account_name ? route.order : route.category ? route.category.toLowerCase() : null;
+            const order = account_name ? route.category : route.order || 'trending';
 
             const hive = ifHive(category);
             const community = state.global.getIn(['community', hive], null);
 
-            const enableAds =
-                ownProps.gptEnabled &&
-                !GptUtils.HasBannedTags(
-                    [category],
-                    state.app.getIn(['googleAds', 'gptBannedTags'])
-                );
+            const enableAds = ownProps.gptEnabled && !GptUtils.HasBannedTags([category], state.app.getIn(['googleAds', 'gptBannedTags']));
 
             const key = ['discussion_idx', category || '', order];
             let posts = state.global.getIn(key, List());
@@ -285,9 +256,7 @@ module.exports = {
             if (pending && !posts.includes(pending)) {
                 posts = posts.unshift(pending);
             }
-            const username =
-                state.user.getIn(['current', 'username']) ||
-                state.offchain.get('account');
+            const username = state.user.getIn(['current', 'username']) || state.offchain.get('account');
 
             return {
                 subscriptions: state.global.getIn(['subscriptions', username]),
@@ -306,11 +275,9 @@ module.exports = {
                 enableAds,
             };
         },
-        dispatch => ({
-            getSubscriptions: account =>
-                dispatch(fetchDataSagaActions.getSubscriptions(account)),
-            requestData: args =>
-                dispatch(fetchDataSagaActions.requestData(args)),
+        (dispatch) => ({
+            getSubscriptions: (account) => dispatch(fetchDataSagaActions.getSubscriptions(account)),
+            requestData: (args) => dispatch(fetchDataSagaActions.requestData(args)),
         })
     )(PostsIndex),
 };

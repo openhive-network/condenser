@@ -67,10 +67,13 @@ class SearchIndex extends React.Component {
     }
 
     render() {
-        const { result, loading, params, performSearch, error } = this.props;
+        const {
+ result, loading, params, performSearch, error
+} = this.props;
         const errorMessage = _.get(error, 'message', undefined);
 
         const searchResults = (
+            // eslint-disable-next-line react/no-string-refs
             <PostsList ref="list" posts={fromJS(result)} loading={loading} loadMore={this.fetchMoreResults} />
         );
 
@@ -95,8 +98,8 @@ class SearchIndex extends React.Component {
                     ) : (
                         searchResults
                     )}
-                    {!loading &&
-                        errorMessage && (
+                    {!loading
+                        && errorMessage && (
                             <Callout title="There was an error" type="alert">
                                 {errorMessage}
                             </Callout>
@@ -121,8 +124,8 @@ module.exports = {
                 params,
             };
         },
-        dispatch => ({
-            performSearch: args => dispatch(search(args)),
+        (dispatch) => ({
+            performSearch: (args) => dispatch(search(args)),
         })
     )(SearchIndex),
 };

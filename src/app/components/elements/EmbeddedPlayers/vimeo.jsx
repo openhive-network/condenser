@@ -86,15 +86,9 @@ export function embedNode(child, links /*images*/) {
 
         const vimeoRegex = new RegExp(`${vimeo.url}(#t=${vimeo.startTime}s?)?`);
         if (vimeo.startTime > 0) {
-            child.data = data.replace(
-                vimeoRegex,
-                `~~~ embed:${vimeo.id} vimeo ${vimeo.startTime} ~~~`
-            );
+            child.data = data.replace(vimeoRegex, `~~~ embed:${vimeo.id} vimeo ${vimeo.startTime} ~~~`);
         } else {
-            child.data = data.replace(
-                vimeoRegex,
-                `~~~ embed:${vimeo.id} vimeo ~~~`
-            );
+            child.data = data.replace(vimeoRegex, `~~~ embed:${vimeo.id} vimeo ~~~`);
         }
 
         if (links) links.add(vimeo.canonical);
@@ -119,12 +113,7 @@ export function genIframeMd(idx, id, width, height, startTime) {
 
     let sandbox = sandboxConfig.useSandbox;
     if (sandbox) {
-        if (
-            Object.prototype.hasOwnProperty.call(
-                sandboxConfig,
-                'sandboxAttributes'
-            )
-        ) {
+        if (Object.prototype.hasOwnProperty.call(sandboxConfig, 'sandboxAttributes')) {
             sandbox = sandboxConfig.sandboxAttributes.join(' ');
         }
     }

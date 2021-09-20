@@ -25,7 +25,7 @@ class UserTitle extends React.Component {
         this.setState({ showDialog: !this.state.showDialog });
     };
 
-    onSave = newTitle => {
+    onSave = (newTitle) => {
         const community = this.props.community.get('name');
         //-- Simulate a "receiveState" action to feed new title into post state
         let newstate = { content: {}, simulation: true };
@@ -33,12 +33,7 @@ class UserTitle extends React.Component {
         newstate['content'][content_key] = { author_title: newTitle };
         this.props.pushState(newstate);
 
-        this.props.saveTitle(
-            this.props.username,
-            this.props.author,
-            community,
-            newTitle
-        );
+        this.props.saveTitle(this.props.username, this.props.author, community, newTitle);
         this.props.onEditSubmit();
         this.setState({
             newTitle: newTitle,
@@ -67,14 +62,12 @@ class UserTitle extends React.Component {
                     </a>
                     {showDialog && (
                         <Reveal onHide={() => null} show>
-                            <CloseButton
-                                onClick={() => this.onToggleDialog()}
-                            />
+                            <CloseButton onClick={() => this.onToggleDialog()} />
                             <UserTitleEditor
                                 title={title}
                                 username={author}
                                 community={community.get('title')}
-                                onSubmit={newTitle => {
+                                onSubmit={(newTitle) => {
                                     this.onToggleDialog();
                                     this.onSave(newTitle);
                                 }}
@@ -115,10 +108,7 @@ UserTitle.defaultProps = {
 
 export default connect(
     (state, ownProps) => {
-        const community = state.global.getIn(
-            ['community', ownProps.community],
-            Map()
-        );
+        const community = state.global.getIn(['community', ownProps.community], Map());
         const viewer_role = community.getIn(['context', 'role'], 'guest');
         const { author, permlink, title } = ownProps;
         return {
@@ -130,18 +120,11 @@ export default connect(
             viewer_role,
         };
     },
-    dispatch => ({
-        pushState: state => {
+    (dispatch) => ({
+        pushState: (state) => {
             return dispatch(globalActions.receiveState(state));
         },
-        saveTitle: (
-            username,
-            account,
-            community,
-            title,
-            successCallback,
-            errorCallback
-        ) => {
+        saveTitle: (username, account, community, title, successCallback, errorCallback) => {
             const action = 'setUserTitle';
 
             const payload = [

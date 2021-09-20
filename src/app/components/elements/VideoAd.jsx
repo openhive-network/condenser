@@ -1,5 +1,6 @@
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
 
 class VideoAd extends Component {
     constructor(props) {
@@ -13,11 +14,6 @@ class VideoAd extends Component {
             this.enabled = enabled;
             this.ad_identifier = ad_identifier;
         }
-    }
-
-    componentDidMount() {
-        if (!this.ad_identifier || !this.enabled) return;
-        const ad_identifier = this.ad_identifier;
     }
 
     render() {
@@ -38,9 +34,7 @@ VideoAd.defaultProps = {};
 
 export default connect(
     (state, props) => {
-        const enabled =
-            !!state.app.getIn(['googleAds', 'videoAdsEnabled']) &&
-            !!process.env.BROWSER;
+        const enabled = !!state.app.getIn(['googleAds', 'videoAdsEnabled']) && !!process.env.BROWSER;
 
         return {
             enabled,
@@ -48,5 +42,4 @@ export default connect(
             ...props,
         };
     },
-    dispatch => ({})
 )(VideoAd);

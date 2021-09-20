@@ -28,15 +28,12 @@
         "community_settings_header": "Ustawienia Społeczności",
         "community_settings_description": "What does your community stand for?",
         "community_list_header": "Społeczności",
-        "community_user_role_add_description":
-            "Ustaw rolę użytkownika w tej społeczności.",
-        "community_user_role_edit_description":
-            "Zmiana roli użytkownika @%(username)s",
+        "community_user_role_add_description": "Ustaw rolę użytkownika w tej społeczności.",
+        "community_user_role_edit_description": "Zmiana roli użytkownika @%(username)s",
         "community_user_role_add_header": "Dodaj rolę użytkownika",
         "community_user_role_edit_header": "Zmień rolę użytkownika",
         "community_user_title_edit_header": "Zmień tytuł użytkownika",
-        "community_user_title_edit_description":
-            "Ustaw tytuł dla @%(username)s",
+        "community_user_title_edit_description": "Ustaw tytuł dla @%(username)s",
         "comments": "Komentarze",
         "confirm": "Potwierdź",
         "convert": "Konwersja",
@@ -50,8 +47,7 @@
         "feed": "Strumień",
         "flag": "Flaga",
         "flag_this_post": "Oflaguj %(type)s",
-        "flag_this_post_description":
-            "Please provide a note regarding your decision to flag this %(type)s, it will be reviewed by community moderators.",
+        "flag_this_post_description": "Please provide a note regarding your decision to flag this %(type)s, it will be reviewed by community moderators.",
         "follow": "Obserwuj",
         "for": "za",
         "from": "od",
@@ -85,8 +81,7 @@
         "password": "Hasło",
         "payouts": "Wynagrodzenia",
         "permissions": "Uprawnienia",
-        "phishy_message":
-            "Link rozszerzony na zwykły tekst; uważaj na potencjalną próbę phishingu",
+        "phishy_message": "Link rozszerzony na zwykły tekst; uważaj na potencjalną próbę phishingu",
         "pin": "Przypnij",
         "post": "Napisz",
         "post_as": "Napisz jako %(username)s",
@@ -115,8 +110,7 @@
         },
         "reputation": "Reputacja",
         "reveal_comment": "Odsłoń komentarz",
-        "will_be_hidden_due_to_low_rating":
-            "Zostanie ukryty ze względu na niską ocenę wiarygodności",
+        "will_be_hidden_due_to_low_rating": "Zostanie ukryty ze względu na niską ocenę wiarygodności",
         "request": "prośba",
         "required": "Wymagany",
         "rewards": "Nagrody",
@@ -127,11 +121,9 @@
         "settings": "Ustawienia",
         "share_this_post": "Udostępnij ten post",
         "mute_this_post": "Wycisz post/komentarz",
-        "mute_this_post_description":
-            "Proszę podać notatkę dotyczącą decyzji o wyciszeniu tej treści.",
+        "mute_this_post_description": "Proszę podać notatkę dotyczącą decyzji o wyciszeniu tej treści.",
         "unmute_this_post": "Wyłącz wyciszenie tego postu/komentarza",
-        "unmute_this_post_description":
-            "Proszę podać notatkę dotyczącą decyzji o wyłączeniu wyciszenia tej treści.",
+        "unmute_this_post_description": "Proszę podać notatkę dotyczącą decyzji o wyłączeniu wyciszenia tej treści.",
         "show": "Pokaż",
         "sign_in": "Zaloguj się",
         "sign_up": "Zapisz się",
@@ -172,86 +164,63 @@
         "account_name": "Nazwa konta",
         "recover_your_account": "odzyskaj swoje konto",
         "reset_usernames_password": "Zresetuj hasło dla %(username)s",
-        "this_will_update_usernames_authtype_key":
-            "To dokona aktualizacji klucza %(authType)sdla %(username)s",
+        "this_will_update_usernames_authtype_key": "To dokona aktualizacji klucza %(authType)sdla %(username)s",
         "passwords_do_not_match": "Hasła się różnią",
-        "you_need_private_password_or_key_not_a_public_key":
-            "Potrzebujesz hasła głównego lub klucza prywatnego (nie klucza publicznego)",
+        "you_need_private_password_or_key_not_a_public_key": "Potrzebujesz hasła głównego lub klucza prywatnego (nie klucza publicznego)",
         "the_rules_of_APP_NAME": {
-            "one":
-                "Pierwsza zasada %(APP_NAME)s brzmi: Nie zgub swojego hasła.",
-            "second":
-                "Druga zasada %(APP_NAME)s brzmi: Nie zgub swojego hasła.",
-            "third":
-                "Trzecia zasada %(APP_NAME)s brzmi: Nie mamy możliwości odzyskania Twojego hasła.",
-            "fourth":
-                "Czwarta zasada: Jeśli potrafisz zapamiętać hasło to nie jest ono bezpieczne.",
-            "fifth":
-                "Piąta zasada: Używaj wyłącznie losowo generowanych haseł.",
+            "one": "Pierwsza zasada %(APP_NAME)s brzmi: Nie zgub swojego hasła.",
+            "second": "Druga zasada %(APP_NAME)s brzmi: Nie zgub swojego hasła.",
+            "third": "Trzecia zasada %(APP_NAME)s brzmi: Nie mamy możliwości odzyskania Twojego hasła.",
+            "fourth": "Czwarta zasada: Jeśli potrafisz zapamiętać hasło to nie jest ono bezpieczne.",
+            "fifth": "Piąta zasada: Używaj wyłącznie losowo generowanych haseł.",
             "sixth": "Szósta zasada: Nie ujawniaj nikomu swojego hasła.",
-            "seventh":
-                "Siódma zasada: Zawsze miej kopię zapasową swojego hasła."
+            "seventh": "Siódma zasada: Zawsze miej kopię zapasową swojego hasła."
         },
         "recover_password": "Odzyskaj konto",
         "current_password": "Obecne hasło",
         "generated_password": "Wygenerowane hasło",
-        "backup_password_by_storing_it":
-            "Zachowaj je zapisując w menadżerze haseł lub w pliku tekstowym",
-        "enter_account_show_password":
-            "Wpisz prawidłową nazwę konta by pokazać hasło",
+        "backup_password_by_storing_it": "Zachowaj je zapisując w menadżerze haseł lub w pliku tekstowym",
+        "enter_account_show_password": "Wpisz prawidłową nazwę konta by pokazać hasło",
         "click_to_generate_password": "Kliknij by wygenerować hasło",
         "re_enter_generate_password": "Podaj ponownie wygenerowane hasło",
-        "understand_that_APP_NAME_cannot_recover_password":
-            "Rozumiem, że %(APP_NAME)s nie ma możliwości odzyskania utraconych haseł",
+        "understand_that_APP_NAME_cannot_recover_password": "Rozumiem, że %(APP_NAME)s nie ma możliwości odzyskania utraconych haseł",
         "i_saved_password": "Zachowałem bezpiecznie moje wygenerowane hasło",
         "update_password": "Zaktualizuj hasło",
         "confirm_password": "Potwierdź hasło",
         "account_updated": "Konto zaktualizowane",
-        "password_must_be_characters_or_more":
-            "Hasło musi posiadać %(amount)s lub więcej znaków",
-        "need_password_or_key":
-            "Potrzebujesz hasła głównego lub klucza prywatnego (nie klucza publicznego)",
+        "password_must_be_characters_or_more": "Hasło musi posiadać %(amount)s lub więcej znaków",
+        "need_password_or_key": "Potrzebujesz hasła głównego lub klucza prywatnego (nie klucza publicznego)",
         "login_to_see_memo": "zaloguj by zobaczyć memo",
         "new_password": "Nowe hasło",
         "incorrect_password": "Nieprawidłowe hasło",
         "username_does_not_exist": "Nazwa użytkownika nie istnieje",
-        "account_name_should_start_with_a_letter":
-            "Nazwa konta powinna zaczynać się od litery",
+        "account_name_should_start_with_a_letter": "Nazwa konta powinna zaczynać się od litery",
         "account_name_should_be_shorter": "Nazwa konta powinna być krótsza",
         "account_name_should_be_longer": "Nazwa konta powinna być dłuższa",
-        "account_name_should_have_only_letters_digits_or_dashes":
-            "Nazwa konta powinna zawierać wyłącznie litery, cyfry, kropki lub myślniki",
-        "cannot_increase_reward_of_post_within_the_last_minute_before_payout":
-            "Nie można zwiększyć nagrody za post w ostatnich chwilach przed wypłatą",
-        "only_one_APP_NAME_account_allowed_per_ip_address_every_10_minutes":
-            "Dozwolone jest tylko jedno konto Hive dla danego adresu IP w ciągu 10 minut",
+        "account_name_should_have_only_letters_digits_or_dashes": "Nazwa konta powinna zawierać wyłącznie litery, cyfry, kropki lub myślniki",
+        "cannot_increase_reward_of_post_within_the_last_minute_before_payout": "Nie można zwiększyć nagrody za post w ostatnich chwilach przed wypłatą",
+        "only_one_APP_NAME_account_allowed_per_ip_address_every_10_minutes": "Dozwolone jest tylko jedno konto Hive dla danego adresu IP w ciągu 10 minut",
         "reblog_this_post": "Rebloguj ten post",
         "reblog": "Reblog",
         "write_your_story": "Napisz swoją historię",
-        "remember_voting_and_posting_key":
-            "Zapamiętaj klucze do głosowania i tworzenia wpisów",
+        "remember_voting_and_posting_key": "Zapamiętaj klucze do głosowania i tworzenia wpisów",
         "auto_login_question_mark": "Automatyczne logowanie?",
         "hide_private_key": "Ukryj klucz prywatny",
         "show_private_key": "Pokaż klucz prywatny",
         "login_to_show": "Zaloguj się by wyświetlić",
         "not_valid_email": "Niepoprawny adres email",
-        "thank_you_for_being_an_early_visitor_to_APP_NAME":
-            "Dziękujemy za to, że jesteś jednym z pierwszych odwiedzających%(APP_NAME)s. Skontaktujemy się z tobą przy najbliższej okazji.",
+        "thank_you_for_being_an_early_visitor_to_APP_NAME": "Dziękujemy za to, że jesteś jednym z pierwszych odwiedzających%(APP_NAME)s. Skontaktujemy się z tobą przy najbliższej okazji.",
         "author_rewards": "Wynagrodzenia autorskie",
         "curation_rewards": "Wynagrodzenia kuratorskie",
-        "sorry_your_reddit_account_doesnt_have_enough_karma":
-            "Twoje konto nie ma wystarczającej liczby punktów Reddit Karma, by zakwalifikować się na natychmiastową rejestrację. Podaj swój adres email by umieścić go na liście oczekujących ",
+        "sorry_your_reddit_account_doesnt_have_enough_karma": "Twoje konto nie ma wystarczającej liczby punktów Reddit Karma, by zakwalifikować się na natychmiastową rejestrację. Podaj swój adres email by umieścić go na liście oczekujących ",
         "register_with_facebook": "Zarejestruj się z użyciem Facebooka",
-        "or_click_the_button_below_to_register_with_facebook":
-            "Lub kliknij przycisk poniżej by zarejestrować się z użyciem Facebooka",
+        "or_click_the_button_below_to_register_with_facebook": "Lub kliknij przycisk poniżej by zarejestrować się z użyciem Facebooka",
         "server_returned_error": "serwer zwrócił błąd",
         "APP_NAME_support": "Wsparcie %(APP_NAME)s",
         "please_email_questions_to": "Proszę wysłać swoje zapytanie na maila",
         "next_7_strings_single_block": {
-            "authors_get_paid_when_people_like_you_upvote_their_post":
-                "Autorzy otrzymują wypłatę gdy ludzie tacy jak Ty głosują na ich wpisy",
-            "if_you_enjoyed_what_you_read_earn_amount":
-                "Jeśli podobało Ci się to o czym tu czytałeś, jeszcze dziś załóż tu konto i zacznij zarabiać DARMOWE TOKENY HIVE!",
+            "authors_get_paid_when_people_like_you_upvote_their_post": "Autorzy otrzymują wypłatę gdy ludzie tacy jak Ty głosują na ich wpisy",
+            "if_you_enjoyed_what_you_read_earn_amount": "Jeśli podobało Ci się to o czym tu czytałeś, jeszcze dziś załóż tu konto i zacznij zarabiać DARMOWE TOKENY HIVE!",
             "free_hive": "DARMOWE TOKENY HIVE",
             "sign_up_earn_hive": "Zarejestruj się by zarabiać"
         },
@@ -260,8 +229,7 @@
             "show_less": "Pokaż mniej",
             "value_posts": "posty niskiej jakości"
         },
-        "read_only_mode":
-            "Z powodu prac na serwerze działamy w trybie tylko do odczytu.\nPrzepraszamy za niedogodności.",
+        "read_only_mode": "Z powodu prac na serwerze działamy w trybie tylko do odczytu.\nPrzepraszamy za niedogodności.",
         "tags_and_topics": "Kategorie",
         "show_more_topics": "Pokaż więcej społeczności",
         "basic": "Podstawowy",
@@ -277,10 +245,8 @@
             "other": "%(count)s odpowiedzi"
         },
         "post_key_warning": {
-            "confirm":
-                "Zamierzasz opublikować klucz prywatny lub hasło główne do swojego konta HIVE. Prawdopodobnie stracisz kontrolę nad powiązanym kontem i wszystkimi jego środkami.",
-            "warning":
-                "Uczciwi użytkownicy, w tym pracownicy Hive, nigdy nie poproszą Cię o klucz prywatny lub hasło główne.",
+            "confirm": "Zamierzasz opublikować klucz prywatny lub hasło główne do swojego konta HIVE. Prawdopodobnie stracisz kontrolę nad powiązanym kontem i wszystkimi jego środkami.",
+            "warning": "Uczciwi użytkownicy, w tym pracownicy Hive, nigdy nie poproszą Cię o klucz prywatny lub hasło główne.",
             "checkbox": "Zrozumiałem"
         }
     },
@@ -311,8 +277,7 @@
         "smt_whitepaper": "SMT Whitepaper",
         "whitepaper": "Hive Whitepaper",
         "intro_tagline": "Pieniądze mają głos.",
-        "intro_paragraph":
-            "Twój głos ma wartość. Dołącz do społeczności, która płaci za publikowanie i głosowanie na wysokiej jakości treści.",
+        "intro_paragraph": "Twój głos ma wartość. Dołącz do społeczności, która płaci za publikowanie i głosowanie na wysokiej jakości treści.",
         "jobs": "Praca w Hive",
         "hive_proposals": "Hive Proposals",
         "blockexplorer": "Blockexplorer",
@@ -327,25 +292,21 @@
         "shorten_title": "Tytuł skrócony",
         "exceeds_maximum_length": "Przekracza maksymalną długość (%(maxKb)sKB)",
         "including_the_category": "(wliczając kategorię '%(rootCategory)s')",
-        "use_limited_amount_of_tags":
-            "Masz %(tagsLength)s tagów total%(includingCategory)s. Ogranicz liczbę tagów do 5 w swoim poście.",
-        "are_you_sure_you_want_to_clear_this_form":
-            "Czy jesteś pewien, że chcesz wyczyścić ten formularz?",
+        "use_limited_amount_of_tags": "Masz %(tagsLength)s tagów total%(includingCategory)s. Ogranicz liczbę tagów do 5 w swoim poście.",
+        "are_you_sure_you_want_to_clear_this_form": "Czy jesteś pewien, że chcesz wyczyścić ten formularz?",
         "uploading": "Wysyłanie",
         "draft_saved": "Szkic zapisany.",
         "editor": "Włącz edytor WYSIWYG",
         "enable_markdown_editor": "Włącz edytor Markdown",
         "view_html_source": "Zobacz kod HTML",
-        "insert_images_by_dragging_dropping":
-            "Wstaw obrazki przez przeciągnij i upuść.",
+        "insert_images_by_dragging_dropping": "Wstaw obrazki przez przeciągnij i upuść.",
         "pasting_from_the_clipboard": "wklejanie ze schowka,",
         "selecting_them": "wybranie ich",
         "image_upload": "Wgraj obrazek",
         "power_up_100": "Zwiększ moc 100%%",
         "default_50_50": "50%% / 50%%",
         "decline_payout": "Odmowa wypłaty",
-        "check_this_to_auto_upvote_your_post":
-            "Zaznacz by automatycznie zagłosować na swój wpis",
+        "check_this_to_auto_upvote_your_post": "Zaznacz by automatycznie zagłosować na swój wpis",
         "markdown_styling_guide": "Przewodnik formatowania z użyciem Markdown",
         "or_by": "lub przez",
         "title": "Tytuł",
@@ -359,81 +320,59 @@
         "header": "Kto powinien otrzymać nagrodę?",
         "add": "Dodaj konto",
         "exceeds_max_beneficiaries": "Możesz dodać maksymalnie 8 beneficjentów",
-        "beneficiary_cannot_be_self":
-            "Nie możesz dodać siebie jako beneficjenta",
-        "beneficiary_cannot_be_duplicate":
-            "Beneficjenci nie mogą się powtarzać",
-        "beneficiary_percent_invalid":
-            "Procent dla beneficjenta musi wynosić od 1 do 100",
-        "beneficiary_percent_total_invalid":
-            "Procent dla beneficjenta musi być mniejszy niż 100"
+        "beneficiary_cannot_be_self": "Nie możesz dodać siebie jako beneficjenta",
+        "beneficiary_cannot_be_duplicate": "Beneficjenci nie mogą się powtarzać",
+        "beneficiary_percent_invalid": "Procent dla beneficjenta musi wynosić od 1 do 100",
+        "beneficiary_percent_total_invalid": "Procent dla beneficjenta musi być mniejszy niż 100"
     },
     "category_selector_jsx": {
-        "tag_your_story":
-            "Kategorie (do 5 kategorii), pierwsza kategoria określa główną.",
+        "tag_your_story": "Kategorie (do 5 kategorii), pierwsza kategoria określa główną.",
         "select_a_tag": "Wybierz kategorię",
-        "maximum_tag_length_is_24_characters":
-            "Maksymalna długość nazwy kategorii to 24 znaki",
-        "use_limited_amount_of_categories":
-            "Użyj proszę co najwyżej %(amount)s kategorii",
+        "maximum_tag_length_is_24_characters": "Maksymalna długość nazwy kategorii to 24 znaki",
+        "use_limited_amount_of_categories": "Użyj proszę co najwyżej %(amount)s kategorii",
         "use_only_lowercase_letters": "Użyj wyłącznie małych liter",
         "use_one_dash": "Użyj tylko jednego myślnika",
-        "use_spaces_to_separate_tags":
-            "Użyj spacji do oddzielenia nazw kategorii",
-        "use_only_allowed_characters":
-            "Możesz użyć wyłącznie małych liter, cyfr i jednego znaku myślnika",
+        "use_spaces_to_separate_tags": "Użyj spacji do oddzielenia nazw kategorii",
+        "use_only_allowed_characters": "Możesz użyć wyłącznie małych liter, cyfr i jednego znaku myślnika",
         "must_start_with_a_letter": "Musi zaczynać się od litery",
         "must_end_with_a_letter_or_number": "Musi kończyć się literą lub cyfrą",
-        "must_not_include_hivemind_community_owner":
-            "Tag %(hive)s został dodany do wpisu automatycznie, proszę nie dodawaj go ponownie."
+        "must_not_include_hivemind_community_owner": "Tag %(hive)s został dodany do wpisu automatycznie, proszę nie dodawaj go ponownie."
     },
     "post_advanced_settings_jsx": {
         "payout_option_header": "Wynagrodzenie autora",
-        "payout_option_description":
-            "Jaki rodzaj tokenów chciałbyś otrzymać za ten wpis?",
+        "payout_option_description": "Jaki rodzaj tokenów chciałbyś otrzymać za ten wpis?",
         "current_default": "Domyślnie",
         "update_default_in_settings": "Zaktualizuj"
     },
     "postfull_jsx": {
-        "this_post_is_not_available_due_to_a_copyright_claim":
-            "Ten wpis jest niedostępny z powodu roszczeń do praw autorskich.",
+        "this_post_is_not_available_due_to_a_copyright_claim": "Ten wpis jest niedostępny z powodu roszczeń do praw autorskich.",
         "share_on_facebook": "Podziel się na Facebooku",
         "share_on_twitter": "Podziel się na Twitterze",
         "share_on_reddit": "Podziel się na Reddit",
         "share_on_linkedin": "Podziel się na Linkedin",
         "recent_password": "Ostatnie hasło",
-        "in_week_convert_DEBT_TOKEN_to_LIQUID_TOKEN":
-            "W ciągu 3,5 dni, konwertuj %(amount)s %(DEBT_TOKEN)s w %(LIQUID_TOKEN)s",
+        "in_week_convert_DEBT_TOKEN_to_LIQUID_TOKEN": "W ciągu 3,5 dni, konwertuj %(amount)s %(DEBT_TOKEN)s w %(LIQUID_TOKEN)s",
         "view_the_full_context": "Zobacz pełen kontekst.",
         "view_the_direct_parent": "Zobacz wpis nadrzędny",
-        "you_are_viewing_a_single_comments_thread_from":
-            "Przeglądasz wątek pojedynczego komentarza"
+        "you_are_viewing_a_single_comments_thread_from": "Przeglądasz wątek pojedynczego komentarza"
     },
     "recoveraccountstep1_jsx": {
-        "recover_account_intro":
-            "Od czasu do czasu, klucz właściciela może zostać zagrożony. Odzyskiwanie konta pozwala prawowitemu właścicielowi na odzyskanie konta w ciągu 30 dni, liczone od momentu zmiany klucza właściciela przez złodzieja. Odzyskiwanie konta można zrobić na %(APP_URL)s o ile właściciel konta uprzednio wyszczególnił '%(APP_NAME)s'  jako powiernika konta i spełnił warunki użytkowania %(APP_NAME)s's."
+        "recover_account_intro": "Od czasu do czasu, klucz właściciela może zostać zagrożony. Odzyskiwanie konta pozwala prawowitemu właścicielowi na odzyskanie konta w ciągu 30 dni, liczone od momentu zmiany klucza właściciela przez złodzieja. Odzyskiwanie konta można zrobić na %(APP_URL)s o ile właściciel konta uprzednio wyszczególnił '%(APP_NAME)s'  jako powiernika konta i spełnił warunki użytkowania %(APP_NAME)s's."
     },
     "user_profile": {
         "unknown_account": "Konto nieznane",
-        "user_hasnt_made_any_posts_yet":
-            "Wygląda na to, że %(name)s nie opublikował jeszcze żadnych wpisów!",
-        "user_hasnt_started_bloggin_yet":
-            "Wygląda na to, że %(name)s nie zaczął jeszcze blogowania!",
-        "user_hasnt_followed_anything_yet":
-            "Wygląda na to, że użytkownik %(name)s jeszcze nikogo nie obserwuje. Jeśli %(name)s zaczął(ęła) obserwować nowych użytkowników jego(jej) osobisty strumień zacznie się zapełniać, gdy powstaną nowe treści.  ",
-        "user_hasnt_had_any_replies_yet":
-            "%(name)s nie ma jeszcze żadnych odpowiedzi",
-        "user_hasnt_had_any_notifications_yet":
-            "%(name)s nie ma jeszcze żadnych powiadomień",
-        "looks_like_you_havent_posted_anything_yet":
-            "Wygląda na to, że jeszcze nic nie opublikowałeś.",
+        "user_hasnt_made_any_posts_yet": "Wygląda na to, że %(name)s nie opublikował jeszcze żadnych wpisów!",
+        "user_hasnt_started_bloggin_yet": "Wygląda na to, że %(name)s nie zaczął jeszcze blogowania!",
+        "user_hasnt_followed_anything_yet": "Wygląda na to, że użytkownik %(name)s jeszcze nikogo nie obserwuje. Jeśli %(name)s zaczął(ęła) obserwować nowych użytkowników jego(jej) osobisty strumień zacznie się zapełniać, gdy powstaną nowe treści.  ",
+        "user_hasnt_had_any_replies_yet": "%(name)s nie ma jeszcze żadnych odpowiedzi",
+        "user_hasnt_had_any_notifications_yet": "%(name)s nie ma jeszcze żadnych powiadomień",
+        "looks_like_you_havent_posted_anything_yet": "Wygląda na to, że jeszcze nic nie opublikowałeś.",
         "create_a_post": "Stwórz wpis",
         "explore_trending_articles": "Przeglądaj gorące wpisy",
         "read_the_quick_start_guide": "Przeczytaj skróconą instrukcję obsługi",
         "browse_the_faq": "Przeglądaj FAQ",
         "followers": "Obserwujący",
-        "this_is_users_reputations_score_it_is_based_on_history_of_votes":
-            "To są punkty reputacji użytkownika %(name)s.\n\nSystem punktów reputacji bazuje na historii otrzymanych przez użytkownika głosów i jest używany do ukrywania wpisów o niskiej jakości.",
+        "this_is_users_reputations_score_it_is_based_on_history_of_votes": "To są punkty reputacji użytkownika %(name)s.\n\nSystem punktów reputacji bazuje na historii otrzymanych przez użytkownika głosów i jest używany do ukrywania wpisów o niskiej jakości.",
         "follower_count": {
             "zero": "Brak obserwujących",
             "one": "1 obserwujący",
@@ -453,11 +392,9 @@
         "show_all": "Pokaż wszystko"
     },
     "post_jsx": {
-        "now_showing_comments_with_low_ratings":
-            "Od teraz komentarze o niskich ocenach będą wyświetlane",
+        "now_showing_comments_with_low_ratings": "Od teraz komentarze o niskich ocenach będą wyświetlane",
         "sort_order": "Kolejność sortowania",
-        "comments_were_hidden_due_to_low_ratings":
-            "Komentarze zostały ukryte z powodu otrzymania niskich ocen",
+        "comments_were_hidden_due_to_low_ratings": "Komentarze zostały ukryte z powodu otrzymania niskich ocen",
         "comment_sort_order": {
             "trending": "Popularność",
             "votes": "Liczba głosów",
@@ -466,44 +403,36 @@
         }
     },
     "voting_jsx": {
-        "flagging_post_can_remove_rewards_the_flag_should_be_used_for_the_following":
-            "Nadanie flagi może obniżać wynagrodzenia i spowodować mniejszą widoczność tej treści. Niektóre z powodów do oznaczania wpisów flagami",
+        "flagging_post_can_remove_rewards_the_flag_should_be_used_for_the_following": "Nadanie flagi może obniżać wynagrodzenia i spowodować mniejszą widoczność tej treści. Niektóre z powodów do oznaczania wpisów flagami",
         "disagreement_on_rewards": "Niezgoda co do wysokości wynagrodzenia",
         "fraud_or_plagiarism": "Oszustwo lub plagiat",
         "hate_speech_or_internet_trolling": "Mowa nienawiści lub trolowanie",
-        "intentional_miss_categorized_content_or_spam":
-            "Świadome złe przydzielenie kategorii do treści lub spam",
+        "intentional_miss_categorized_content_or_spam": "Świadome złe przydzielenie kategorii do treści lub spam",
         "pending_payout": "Wypłata $%(value)s nastąpi",
         "payout_declined": "Odmowa przyjęcia wypłaty",
-        "max_accepted_payout":
-            "Maksymalna akceptowana wysokość wypłaty $%(value)s",
+        "max_accepted_payout": "Maksymalna akceptowana wysokość wypłaty $%(value)s",
         "promotion_cost": "Koszty promocji $%(value)s",
         "past_payouts": "Wcześniejsze wypłaty $%(value)s",
         "past_payouts_author": "- Autor $%(value)s",
         "past_payouts_curators": "- Kuratorzy $%(value)s",
         "removing_your_vote": "Wycofanie twojego głosu",
-        "removing_your_vote_will_reset_curation_rewards_for_this_post":
-            "Usunięcie głosu wyzeruje nagrodę kuratorska dla tego wpisu",
+        "removing_your_vote_will_reset_curation_rewards_for_this_post": "Usunięcie głosu wyzeruje nagrodę kuratorska dla tego wpisu",
         "changing_to_an_upvote": "Zmień na głos za",
-        "changing_to_an_upvote_will_reset_curation_rewards_for_this_post":
-            "Zmiana głosu na za wyzeruje nagrodę kuratorska dla tego wpisu",
+        "changing_to_an_upvote_will_reset_curation_rewards_for_this_post": "Zmiana głosu na za wyzeruje nagrodę kuratorska dla tego wpisu",
         "changing_to_a_downvote": "Zmień na głos przeciw",
-        "changing_to_a_downvote_will_reset_curation_rewards_for_this_post":
-            "Zmiana głosu na przeciwny wyzeruje nagrodę kuratorska dla tego wpisu",
+        "changing_to_a_downvote_will_reset_curation_rewards_for_this_post": "Zmiana głosu na przeciwny wyzeruje nagrodę kuratorska dla tego wpisu",
         "confirm_flag": "Potwierdź oznaczenie flagą",
         "and_more": "i %(count)s więcej",
         "votes_plural": {
             "one": "%(count)s głos",
             "other": "%(count)s głosów"
         },
-        "must_reached_minimum_payout":
-            "(wynagrodzenie musi osiągnąć $0.02 do wypłaty)",
+        "must_reached_minimum_payout": "(wynagrodzenie musi osiągnąć $0.02 do wypłaty)",
         "payout": "Wypłata",
         "breakdown": "Podział"
     },
     "votesandcomments_jsx": {
-        "no_responses_yet_click_to_respond":
-            "Brak odpowiedzi. Kliknij by odpowiedzieć.",
+        "no_responses_yet_click_to_respond": "Brak odpowiedzi. Kliknij by odpowiedzieć.",
         "response_count_tooltip": {
             "zero": "brak odpowiedzi. Kliknij by odpowiedzieć.",
             "one": "1 odpowiedź. Kliknij by odpowiedzieć.",
@@ -520,68 +449,46 @@
         "private": "Prywatny",
         "public_something_key": "Klucz publiczny %(key)s",
         "private_something_key": "Klucz prywatny %(key)s",
-        "posting_key_is_required_it_should_be_different":
-            "Klucz do publikowania jest używany do publikowania treści, komentarzy i głosowania. Powinien różnić się od klucza aktywności i klucza właściciela.",
-        "the_active_key_is_used_to_make_transfers_and_place_orders":
-            "Klucz aktywności używany jest do przesyłania tokenów i składania ofert na wewnętrznym rynku wymiany walut.",
-        "the_owner_key_is_required_to_change_other_keys":
-            "Klucz właściciela jest kluczem głównym do twojego konta i jest wymagany do zmiany pozostałych kluczy.",
-        "the_private_key_or_password_should_be_kept_offline":
-            "Klucz prywatny właściciela lub hasło właściciela powinny być bezpiecznie przechowywane offline.",
-        "the_memo_key_is_used_to_create_and_read_memos":
-            "Klucz memo jest używany do tworzenia i czytania memo"
+        "posting_key_is_required_it_should_be_different": "Klucz do publikowania jest używany do publikowania treści, komentarzy i głosowania. Powinien różnić się od klucza aktywności i klucza właściciela.",
+        "the_active_key_is_used_to_make_transfers_and_place_orders": "Klucz aktywności używany jest do przesyłania tokenów i składania ofert na wewnętrznym rynku wymiany walut.",
+        "the_owner_key_is_required_to_change_other_keys": "Klucz właściciela jest kluczem głównym do twojego konta i jest wymagany do zmiany pozostałych kluczy.",
+        "the_private_key_or_password_should_be_kept_offline": "Klucz prywatny właściciela lub hasło właściciela powinny być bezpiecznie przechowywane offline.",
+        "the_memo_key_is_used_to_create_and_read_memos": "Klucz memo jest używany do tworzenia i czytania memo"
     },
     "suggestpassword_jsx": {
-        "APP_NAME_cannot_recover_passwords_keep_this_page_in_a_secure_location":
-            "%(APP_NAME)s nie jest w stanie odzyskiwać haseł. Trzymaj tę kartkę w bezpiecznym miejscu, takim jak ognioodporny sejf lub skrytka bankowa.",
+        "APP_NAME_cannot_recover_passwords_keep_this_page_in_a_secure_location": "%(APP_NAME)s nie jest w stanie odzyskiwać haseł. Trzymaj tę kartkę w bezpiecznym miejscu, takim jak ognioodporny sejf lub skrytka bankowa.",
         "APP_NAME_password_backup": "%(APP_NAME)s Kopia zapasowa hasła",
-        "APP_NAME_password_backup_required":
-            "%(APP_NAME)s Kopia zapasowa hasła (wymagane)",
-        "after_printing_write_down_your_user_name":
-            "Po wydrukowaniu, zapisz swoją nazwę użytkownika"
+        "APP_NAME_password_backup_required": "%(APP_NAME)s Kopia zapasowa hasła (wymagane)",
+        "after_printing_write_down_your_user_name": "Po wydrukowaniu, zapisz swoją nazwę użytkownika"
     },
     "converttohive_jsx": {
-        "your_existing_DEBT_TOKEN_are_liquid_and_transferable":
-            "Twoje %(DEBT_TOKEN)s są płynne i mogą być przetransferowane. Możesz to zrobić pod tym linkiem %(link)s lub przetransferować na zewnętrzną giełdę.",
-        "this_is_a_price_feed_conversion":
-            "Przeliczenie po kursie rynkowym. Okres 3,5 dnia jest niezbędny, aby zapobiec nadużyciom związanym z krótkoterminowymi zmianami średniej ceny rynkowej",
+        "your_existing_DEBT_TOKEN_are_liquid_and_transferable": "Twoje %(DEBT_TOKEN)s są płynne i mogą być przetransferowane. Możesz to zrobić pod tym linkiem %(link)s lub przetransferować na zewnętrzną giełdę.",
+        "this_is_a_price_feed_conversion": "Przeliczenie po kursie rynkowym. Okres 3,5 dnia jest niezbędny, aby zapobiec nadużyciom związanym z krótkoterminowymi zmianami średniej ceny rynkowej",
         "convert_to_LIQUID_TOKEN": "Przekonwertuj tokeny na %(LIQUID_TOKEN)s",
-        "DEBT_TOKEN_will_be_unavailable":
-            "Ta akcja zajmie 3,5 dnia od teraz i nie może być anulowana. Te tokeny %(DEBT_TOKEN)s natychmiast staną się niedostępne."
+        "DEBT_TOKEN_will_be_unavailable": "Ta akcja zajmie 3,5 dnia od teraz i nie może być anulowana. Te tokeny %(DEBT_TOKEN)s natychmiast staną się niedostępne."
     },
     "tips_js": {
-        "liquid_token":
-            "Zbywalne tokeny które mogą być przesłane gdziekolwiek w dowolnym momencie.<br/> %(LIQUID_TOKEN)s mogą zostać również przekonwertowane na %(VESTING_TOKEN)s w procesie nazywanym zwiększenie mocy.",
-        "influence_token":
-            "Tokeny wpływu, które zwiększają Twój wpływ na podział wypłat za publikowanie treści, oraz pozwalają Ci zarabiać na głosowaniu na treści.",
-        "estimated_value":
-            "Szacowana wartość bazuje na średniej cenie tokenu %(LIQUID_TOKEN)s w dolarach amerykańskich.",
-        "non_transferable":
-            "Jednostki %(VESTING_TOKEN)s są niezbywalne i wymagają 3 miesięcy (w 13 ratach) do konwersji z powrotem na tokeny %(LIQUID_TOKEN)s.",
-        "converted_VESTING_TOKEN_can_be_sent_to_yourself_but_can_not_transfer_again":
-            "Przekonwertowane jednostki %(VESTING_TOKEN)s możesz wysłać sobie lub komuś innemu ale nie możesz ich wysłać ponownie bez konwersji z powrotem do tokenów %(LIQUID_TOKEN)s.",
-        "part_of_your_hive_power_is_currently_delegated":
-            "Część z Twoich jednostek wpływu HIVE POWER jest Ci oddelegowana. Delegowane jednostek to czasowe użyczenie dla zwiększenia wpływu lub by pomóc nowym użytkownikom platformy w korzystaniu ze Hive. Kwota oddelegowanych jednostek może się zmieniać w czasie."
+        "liquid_token": "Zbywalne tokeny które mogą być przesłane gdziekolwiek w dowolnym momencie.<br/> %(LIQUID_TOKEN)s mogą zostać również przekonwertowane na %(VESTING_TOKEN)s w procesie nazywanym zwiększenie mocy.",
+        "influence_token": "Tokeny wpływu, które zwiększają Twój wpływ na podział wypłat za publikowanie treści, oraz pozwalają Ci zarabiać na głosowaniu na treści.",
+        "estimated_value": "Szacowana wartość bazuje na średniej cenie tokenu %(LIQUID_TOKEN)s w dolarach amerykańskich.",
+        "non_transferable": "Jednostki %(VESTING_TOKEN)s są niezbywalne i wymagają 3 miesięcy (w 13 ratach) do konwersji z powrotem na tokeny %(LIQUID_TOKEN)s.",
+        "converted_VESTING_TOKEN_can_be_sent_to_yourself_but_can_not_transfer_again": "Przekonwertowane jednostki %(VESTING_TOKEN)s możesz wysłać sobie lub komuś innemu ale nie możesz ich wysłać ponownie bez konwersji z powrotem do tokenów %(LIQUID_TOKEN)s.",
+        "part_of_your_hive_power_is_currently_delegated": "Część z Twoich jednostek wpływu HIVE POWER jest Ci oddelegowana. Delegowane jednostek to czasowe użyczenie dla zwiększenia wpływu lub by pomóc nowym użytkownikom platformy w korzystaniu ze Hive. Kwota oddelegowanych jednostek może się zmieniać w czasie."
     },
     "promote_post_jsx": {
         "promote_post": "Promuj wpis",
-        "spend_your_DEBT_TOKEN_to_advertise_this_post":
-            "Wydaj swoje tokeny %(DEBT_TOKEN)s by zareklamować ten wpis w sekcji treści promowanych",
-        "you_successfully_promoted_this_post":
-            "Promowanie tego wpisu zakończyło się sukcesem",
-        "this_post_was_hidden_due_to_low_ratings":
-            "Ten wpis został ukryty z powodu niskich ocen"
+        "spend_your_DEBT_TOKEN_to_advertise_this_post": "Wydaj swoje tokeny %(DEBT_TOKEN)s by zareklamować ten wpis w sekcji treści promowanych",
+        "you_successfully_promoted_this_post": "Promowanie tego wpisu zakończyło się sukcesem",
+        "this_post_was_hidden_due_to_low_ratings": "Ten wpis został ukryty z powodu niskich ocen"
     },
     "about_jsx": {
         "about_app": "O %(APP_NAME)s",
-        "about_app_details":
-            "%(APP_NAME)s jest platformą mediów społecznościowych gdzie wszyscy są opłacani za tworzenie i głosowanie na treści. Bazuje na solidnym systemie cyfrowych tokenów o nazwie Hive, który reprezentuje realną wartość żetonów cyfrowych, opierając się na płynności i wolnorynkowej wycenie.",
+        "about_app_details": "%(APP_NAME)s jest platformą mediów społecznościowych gdzie wszyscy są opłacani za tworzenie i głosowanie na treści. Bazuje na solidnym systemie cyfrowych tokenów o nazwie Hive, który reprezentuje realną wartość żetonów cyfrowych, opierając się na płynności i wolnorynkowej wycenie.",
         "learn_more_at_app_url": "Dowiedz się więcej %(APP_URL)s",
         "resources": "Zasoby"
     },
     "markdownviewer_jsx": {
-        "images_were_hidden_due_to_low_ratings":
-            "Obrazki zostały ukryte z powodu niskich ocen."
+        "images_were_hidden_due_to_low_ratings": "Obrazki zostały ukryte z powodu niskich ocen."
     },
     "postsummary_jsx": {
         "reblogged": "reblogowany",
@@ -594,8 +501,7 @@
     },
     "posts_index": {
         "empty_feed_1": "Wygląda na to, że jeszcze nikogo nie obserwujesz",
-        "empty_feed_2":
-            "Jeżeli dopiero zacząłeś kogoś obserwować, twój strumień zaktualizuje się, gdy pojawią się nowe treści",
+        "empty_feed_2": "Jeżeli dopiero zacząłeś kogoś obserwować, twój strumień zaktualizuje się, gdy pojawią się nowe treści",
         "empty_feed_3": "Przeglądaj aktywne posty",
         "empty_feed_4": "Przeczytaj Quick Start Guide",
         "empty_feed_5": "Przeglądaj FAQ",
@@ -622,43 +528,30 @@
         "comments_by": "Komentarze dodane przez %(username)s"
     },
     "loginform_jsx": {
-        "you_need_a_private_password_or_key":
-            "Potrzebujesz prywatnego hasła lub klucza (nie klucz publiczny)",
+        "you_need_a_private_password_or_key": "Potrzebujesz prywatnego hasła lub klucza (nie klucz publiczny)",
         "cryptography_test_failed": "Test kryptograficzny nieudany",
-        "unable_to_log_you_in":
-            "Nie będziemy mogli zalogować cię w tej przeglądarce.",
+        "unable_to_log_you_in": "Nie będziemy mogli zalogować cię w tej przeglądarce.",
         "the_latest_versions_of": "Ostatnie wersje",
-        "are_well_tested_and_known_to_work_with":
-            "zostały przetestowane i współpracują z %(APP_URL)s.",
-        "due_to_server_maintenance":
-            "Z powodu prac na serwerach, aktualnie można tylko przeglądać treści. Przepraszamy za niedogodności.",
+        "are_well_tested_and_known_to_work_with": "zostały przetestowane i współpracują z %(APP_URL)s.",
+        "due_to_server_maintenance": "Z powodu prac na serwerach, aktualnie można tylko przeglądać treści. Przepraszamy za niedogodności.",
         "login_to_vote": "Zaloguj się, aby zagłosować",
         "login_to_post": "Zaloguj się, aby napisać",
         "login_to_comment": "Zaloguj się, aby skomentować",
         "posting": "Publikacja",
         "active_or_owner": "Aktywny lub właściciela",
-        "this_password_is_bound_to_your_account_owner_key":
-            "To hasło jest przypisane do klucza właściciela, i nie może być użyte do logowania na tej stronie.",
+        "this_password_is_bound_to_your_account_owner_key": "To hasło jest przypisane do klucza właściciela, i nie może być użyte do logowania na tej stronie.",
         "however_you_can_use_it_to": "Jednakże, możesz użyć go do ",
         "update_your_password": "aktualizacji swojego hasła",
-        "to_obtain_a_more_secure_set_of_keys":
-            "otrzymania bardziej bezpiecznego zestawu kluczy.",
-        "this_password_is_bound_to_your_account_active_key":
-            "To hasło jest przypisane do klucza aktywnego, i nie może być użyte do logowania na tej stronie.",
-        "you_may_use_this_active_key_on_other_more":
-            "Możesz używać klucza aktywnego na stronach takich jak Portfel czy Giełda.",
-        "you_account_has_been_successfully_created":
-            "Twoje konto zostało utworzone!",
-        "you_account_has_been_successfully_recovered":
-            "Twoje konto zostało odzyskane!",
-        "password_update_succes":
-            "Hasło %(accountName)s zostało zaktualizowane",
-        "password_info":
-            "To hasło lub klucz prywatny zostało wprowadzone błędnie. Sprawdź poprawność zapisu. Wskazówka: Hasło lub klucz prywatny wygenerowany przez Hive, nigdy nie będzie zawierał znaków: 0 (zero), O (duża litera o), I (duża litera i) i l (mała litera L).",
+        "to_obtain_a_more_secure_set_of_keys": "otrzymania bardziej bezpiecznego zestawu kluczy.",
+        "this_password_is_bound_to_your_account_active_key": "To hasło jest przypisane do klucza aktywnego, i nie może być użyte do logowania na tej stronie.",
+        "you_may_use_this_active_key_on_other_more": "Możesz używać klucza aktywnego na stronach takich jak Portfel czy Giełda.",
+        "you_account_has_been_successfully_created": "Twoje konto zostało utworzone!",
+        "you_account_has_been_successfully_recovered": "Twoje konto zostało odzyskane!",
+        "password_update_succes": "Hasło %(accountName)s zostało zaktualizowane",
+        "password_info": "To hasło lub klucz prywatny zostało wprowadzone błędnie. Sprawdź poprawność zapisu. Wskazówka: Hasło lub klucz prywatny wygenerowany przez Hive, nigdy nie będzie zawierał znaków: 0 (zero), O (duża litera o), I (duża litera i) i l (mała litera L).",
         "enter_your_username": "Podaj nazwę użytkownika",
         "password_or_wif": "Hasło lub WIF",
-        "this_operation_requires_your_key_or_master_password":
-            "Ta operacja wymaga twojego klucza %(authType)s klub hasła głównego.",
+        "this_operation_requires_your_key_or_master_password": "Ta operacja wymaga twojego klucza %(authType)s klub hasła głównego.",
         "keep_me_logged_in": "Nie wylogowuj mnie",
         "amazing_community": "niesamowitej społeczności",
         "to_comment_and_reward_others": " aby komentować i nagradzać innych.",
@@ -666,38 +559,27 @@
         "signup_button_emphasis": "FREE HIVE!",
         "sign_up_get_hive": "Sign up. Get HIVE!",
         "returning_users": "Powracający: ",
-        "login_warning_title":
-            "Logowanie za pomocą klucza innego niż do publikowania",
-        "login_warning_body":
-            "Próbujesz użyć klucza z większą ilością uprawnień niż wymagane do codziennego korzystania z hive.blog. Ponieważ klucze i hasła są tym bardziej narażone na niebezpieczeństwo, im częściej są używane, zdecydowanie zaleca się używanie tylko swojego klucza do publikowania, aby się zalogować.",
+        "login_warning_title": "Logowanie za pomocą klucza innego niż do publikowania",
+        "login_warning_body": "Próbujesz użyć klucza z większą ilością uprawnień niż wymagane do codziennego korzystania z hive.blog. Ponieważ klucze i hasła są tym bardziej narażone na niebezpieczeństwo, im częściej są używane, zdecydowanie zaleca się używanie tylko swojego klucza do publikowania, aby się zalogować.",
         "continue_anyway": "Kontynuuj mimo to",
-        "login_warning_link_text":
-            "Otwórz mój Portfel Hive, żeby uzyskać dostęp i zobaczyć klucz do publikowania",
+        "login_warning_link_text": "Otwórz mój Portfel Hive, żeby uzyskać dostęp i zobaczyć klucz do publikowania",
         "join_our": "Dołącz do",
         "sign_transfer": "Podpisz, aby dokończyć przelew",
         "use_keychain": "Użyj rozszerzenia Hive Keychain",
         "more_login_methods": "więcej metod logowania"
     },
     "chainvalidation_js": {
-        "account_name_should_not_be_empty":
-            "Nazwa konta nie powinna być pusta.",
+        "account_name_should_not_be_empty": "Nazwa konta nie powinna być pusta.",
         "account_name_should_be_longer": "Nazwa konta powinna być dłuższa.",
         "account_name_should_be_shorter": "Nazwa konta powinna być krótsza.",
-        "each_account_segment_should_start_with_a_letter":
-            "Każdy segment nazwy konta powinien zaczynać się od litery.",
-        "each_account_segment_should_have_only_letters_digits_or_dashes":
-            "Każdy segment nazwy konta powinien mieć tylko litery, cyfry lub kreski.",
-        "each_account_segment_should_have_only_one_dash_in_a_row":
-            "Każdy segment nazwy konta powinien mieć tylko jedną kreskę po sobie.",
-        "each_account_segment_should_end_with_a_letter_or_digit":
-            "Każdy segment nazwy konta powinien być zakończony literą lub cyfrą.",
-        "each_account_segment_should_be_longer":
-            "Każdy segment nazwy konta powinien być dłuższy.",
+        "each_account_segment_should_start_with_a_letter": "Każdy segment nazwy konta powinien zaczynać się od litery.",
+        "each_account_segment_should_have_only_letters_digits_or_dashes": "Każdy segment nazwy konta powinien mieć tylko litery, cyfry lub kreski.",
+        "each_account_segment_should_have_only_one_dash_in_a_row": "Każdy segment nazwy konta powinien mieć tylko jedną kreskę po sobie.",
+        "each_account_segment_should_end_with_a_letter_or_digit": "Każdy segment nazwy konta powinien być zakończony literą lub cyfrą.",
+        "each_account_segment_should_be_longer": "Każdy segment nazwy konta powinien być dłuższy.",
         "verified_exchange_no_memo": "Musisz dołączyć notatkę do przelewu.",
-        "badactor":
-            "Należy zachować ostrożność przy przesyłaniu tokenów na to konto. Proszę dwukrotnie sprawdzić pisownię pod kątem ewentualnego phishingu.",
-        "memo_has_privatekey":
-            "Proszę nie podawać tego, co wydaje się być kluczem prywatnym lub hasłem.",
+        "badactor": "Należy zachować ostrożność przy przesyłaniu tokenów na to konto. Proszę dwukrotnie sprawdzić pisownię pod kątem ewentualnego phishingu.",
+        "memo_has_privatekey": "Proszę nie podawać tego, co wydaje się być kluczem prywatnym lub hasłem.",
         "memo_is_privatekey": "Nie używaj kluczy prywatnych w memo",
         "memo_is_password": "Nie używaj haseł w memo"
     },
@@ -738,22 +620,15 @@
         "this_memo_is_private": "To memo jest prywatne",
         "this_memo_is_public": "To memo jest publiczne",
         "convert_to_VESTING_TOKEN": "Zamień na %(VESTING_TOKEN)s",
-        "balance_subject_to_3_day_withdraw_waiting_period":
-            "Saldo zależy od 3-dniowego okresu karencji wymaganego do wycofania środków,",
-        "move_funds_to_another_account":
-            "Przenieś fundusze na inne konto Hive.",
-        "protect_funds_by_requiring_a_3_day_withdraw_waiting_period":
-            "Chroni fundusze poprzez 3-dniowy okres karencji.",
-        "withdraw_funds_after_the_required_3_day_waiting_period":
-            "Wypłata funduszy po 3-dniowym okresie karencji.",
+        "balance_subject_to_3_day_withdraw_waiting_period": "Saldo zależy od 3-dniowego okresu karencji wymaganego do wycofania środków,",
+        "move_funds_to_another_account": "Przenieś fundusze na inne konto Hive.",
+        "protect_funds_by_requiring_a_3_day_withdraw_waiting_period": "Chroni fundusze poprzez 3-dniowy okres karencji.",
+        "withdraw_funds_after_the_required_3_day_waiting_period": "Wypłata funduszy po 3-dniowym okresie karencji.",
         "from": "Od",
         "to": "Do",
-        "asset_currently_collecting":
-            "%(asset)s aktualnie zbierający %(interest)s%% APR.",
-        "beware_of_spam_and_phishing_links":
-            "Uważaj na spam i linki phishingowe w notatkach przelewowych. Nie otwieraj linków od użytkowników, którym nie ufasz. Nie udostępniaj swoich prywatnych kluczy na stronach internetowych osób trzecich.",
-        "transactions_make_take_a_few_minutes":
-            "Transakcje nie pojawią się, dopóki nie zostaną potwierdzone przez blockchain, co może potrwać kilka minut.",
+        "asset_currently_collecting": "%(asset)s aktualnie zbierający %(interest)s%% APR.",
+        "beware_of_spam_and_phishing_links": "Uważaj na spam i linki phishingowe w notatkach przelewowych. Nie otwieraj linków od użytkowników, którym nie ufasz. Nie udostępniaj swoich prywatnych kluczy na stronach internetowych osób trzecich.",
+        "transactions_make_take_a_few_minutes": "Transakcje nie pojawią się, dopóki nie zostaną potwierdzone przez blockchain, co może potrwać kilka minut.",
         "autocomplete_previous_transfers": "poprzednie transfery",
         "autocomplete_user_following": "obserwowani",
         "confirm_transfer": "Przesłać %(amount)s z %(from)s do %(to)s?"
@@ -769,24 +644,19 @@
         "convert_to_LIQUID_TOKEN": "Zamień na %(LIQUID_TOKEN)s",
         "withdraw_LIQUID_TOKEN": "Wypłać %(LIQUID_TOKEN)s",
         "withdraw_DEBT_TOKENS": "Wypłać %(DEBT_TOKENS)s",
-        "tokens_worth_about_1_of_LIQUID_TICKER":
-            "Tokeny warte około $1.00 z %(LIQUID_TICKER)s, aktualnie zbierają %(hbdInterest)s%% APR.",
-        "tradeable_tokens_transferred":
-            "Zbywalne tokeny, które mogą być wysłane komukolwiek, kiedykolwiek",
+        "tokens_worth_about_1_of_LIQUID_TICKER": "Tokeny warte około $1.00 z %(LIQUID_TICKER)s, aktualnie zbierają %(hbdInterest)s%% APR.",
+        "tradeable_tokens_transferred": "Zbywalne tokeny, które mogą być wysłane komukolwiek, kiedykolwiek",
         "savings": "OSZCZĘDNOŚCI",
         "estimated_account_value": "Szacowana wartość konta",
-        "next_power_down_is_scheduled_to_happen":
-            "Nastąpi następne zaplanowane zmniejszenie mocy",
+        "next_power_down_is_scheduled_to_happen": "Nastąpi następne zaplanowane zmniejszenie mocy",
         "transfers_are_temporary_disabled": "Transfery tymczasowo wyłączone.",
         "history": "HISTORIA",
         "redeem_rewards": "Odbierz nagrody (transfer do salda)",
         "buy_hive_or_hive_power": "Kup HIVE lub HIVE POWER"
     },
     "checkloginowner_jsx": {
-        "your_password_permissions_were_reduced":
-            "Twoje uprawnienia zostały zmniejszone",
-        "if_you_did_not_make_this_change":
-            "Jeżeli to nie ty wykonałeś tę zmianę",
+        "your_password_permissions_were_reduced": "Twoje uprawnienia zostały zmniejszone",
+        "if_you_did_not_make_this_change": "Jeżeli to nie ty wykonałeś tę zmianę",
         "ownership_changed_on": "Nastąpiła zmiana właściciela",
         "deadline_for_recovery_is": "Ostateczny czas na odzyskanie",
         "i_understand_dont_show_again": "Rozumiem, nie pokazuj mi tego ponownie"
@@ -794,8 +664,7 @@
     "termsagree_jsx": {
         "please_review": "Proszę przejrzeć nasze warunki, aby kontynuować",
         "hi_user": "Cześć %(username)s,",
-        "blurb":
-            "Nasze Warunki korzystania z usługi określają zasady i wytyczne, które użytkownik musi zaakceptować i przestrzegać, aby korzystać z Hive, a nasza Polityka prywatności wyjaśnia, jakie informacje zbieramy i co z nimi robimy. Nie martw się, nie sprzedajemy nikomu Twoich danych. Używamy ich, aby spełnić wymogi prawne i dowiedzieć się, jak ulepszyć Hive.",
+        "blurb": "Nasze Warunki korzystania z usługi określają zasady i wytyczne, które użytkownik musi zaakceptować i przestrzegać, aby korzystać z Hive, a nasza Polityka prywatności wyjaśnia, jakie informacje zbieramy i co z nimi robimy. Nie martw się, nie sprzedajemy nikomu Twoich danych. Używamy ich, aby spełnić wymogi prawne i dowiedzieć się, jak ulepszyć Hive.",
         "i_agree_to_hives": "Zgadzam się na",
         "terms_of_service": "Warunki Korzystania z Usług",
         "privacy_policy": "Polityka Prywatności",
@@ -808,14 +677,11 @@
     "modals_jsx": {
         "your_transaction_failed": "Your transaction failed to process",
         "out_of_bandwidth_title": "Why? You've run out of Resource Credits",
-        "out_of_bandwidth_reason":
-            "Actions such as posting and voting use computing resources, placing a real cost on the community members who run the Hive blockchain for everyone.",
-        "out_of_bandwidth_reason_2":
-            "To keep things free, Hive intelligently allocates Resource Credits to each user based on their Hive Power holdings, which can be used to submit a limited number of feeless transactions. When a user runs low on Resource Credits, they will either need to wait for them to recharge, or purchase additional Hive Power. This system prioritizes actions by good community members while limiting spam.",
+        "out_of_bandwidth_reason": "Actions such as posting and voting use computing resources, placing a real cost on the community members who run the Hive blockchain for everyone.",
+        "out_of_bandwidth_reason_2": "To keep things free, Hive intelligently allocates Resource Credits to each user based on their Hive Power holdings, which can be used to submit a limited number of feeless transactions. When a user runs low on Resource Credits, they will either need to wait for them to recharge, or purchase additional Hive Power. This system prioritizes actions by good community members while limiting spam.",
         "out_of_bandwidth_option_title": "To keep interacting on Hive:",
         "out_of_bandwidth_option_1": "Buy and hold more Hive Power",
-        "out_of_bandwidth_option_2":
-            "Wait until your Resource Credits recharge",
+        "out_of_bandwidth_option_2": "Wait until your Resource Credits recharge",
         "out_of_bandwidth_option_3": "Wait until the network usage decreases"
     },
     "sanitizedlink_jsx": {

@@ -48,7 +48,7 @@ if (process.env.NODE_ENV === 'production') {
 
 class Translator extends React.Component {
     render() {
-        const language = this.props.locale;
+        const { locale: language, children } = this.props;
         tt.setLocale(language);
         return (
             <IntlProvider
@@ -58,7 +58,7 @@ class Translator extends React.Component {
                 locale={language}
                 defaultLocale={DEFAULT_LANGUAGE}
             >
-                {this.props.children}
+                {children}
             </IntlProvider>
         );
     }

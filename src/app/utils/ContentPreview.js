@@ -3,11 +3,11 @@ export default function contentPreview(content, length) {
     const max_words = length / 7;
     let words = 0;
     let res = '';
-    for (let i = 0; i < txt.length; i++) {
+    for (let i = 0; i < txt.length; i += 1) {
         const ch = txt.charAt(i);
         if (ch === '.') break;
         if (ch === ' ' || ch === '\n') {
-            words++;
+            words += 1;
             if (words > max_words) break;
             if (i > length) break;
         }

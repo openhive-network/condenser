@@ -1,4 +1,4 @@
-import { Map, List, fromJS } from 'immutable';
+import { Map, List } from 'immutable';
 
 const COMMUNITY_SEARCH_DISPATCH = 'communitySearch/COMMUNITY_SEARCH_DISPATCH';
 const COMMUNITY_SEARCH_PENDING = 'communitySearch/COMMUNITY_SEARCH_PENDING';
@@ -12,7 +12,7 @@ const defaultCommunitySearchState = Map({
 });
 
 export default function reducer(state = defaultCommunitySearchState, action) {
-    const payload = action.payload;
+    const { payload } = action;
 
     switch (action.type) {
         // Has a saga watcher.
@@ -36,20 +36,20 @@ export default function reducer(state = defaultCommunitySearchState, action) {
     }
 }
 
-export const communitySearch = payload => ({
+export const communitySearch = (payload) => ({
     type: COMMUNITY_SEARCH_DISPATCH,
     payload,
 });
-export const communitySearchPending = payload => ({
+export const communitySearchPending = (payload) => ({
     type: COMMUNITY_SEARCH_PENDING,
     payload,
 });
-export const communitySearchError = payload => ({
+export const communitySearchError = (payload) => ({
     type: COMMUNITY_SEARCH_PENDING,
     payload,
 });
 
-export const communitySearchResult = payload => ({
+export const communitySearchResult = (payload) => ({
     type: COMMUNITY_SEARCH_RESULT,
     payload,
 });

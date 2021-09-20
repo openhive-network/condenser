@@ -1,3 +1,4 @@
+/*eslint no-multi-assign: "warn"*/
 /**
     @arg {string} name - form state will appear in this.state[name]
     @arg {object} instance - `this` for the component
@@ -6,18 +7,11 @@
     @arg {function} validation - values => ({ username: ! values.username ? 'Required' : null, ... })
 */
 export default function reactForm({
-    name,
-    instance,
-    fields,
-    initialValues,
-    validation = () => {},
+ name, instance, fields, initialValues, validation = () => {}
 }) {
-    if (typeof instance !== 'object')
-        throw new TypeError('instance is a required object');
-    if (!Array.isArray(fields))
-        throw new TypeError('fields is a required array');
-    if (typeof initialValues !== 'object')
-        throw new TypeError('initialValues is a required object');
+    if (typeof instance !== 'object') throw new TypeError('instance is a required object');
+    if (!Array.isArray(fields)) throw new TypeError('fields is a required array');
+    if (typeof initialValues !== 'object') throw new TypeError('initialValues is a required object');
 
     // Give API users access to this.props, this.state, this.etc..
     validation = validation.bind(instance);
@@ -25,7 +19,7 @@ export default function reactForm({
     const formState = (instance.state = instance.state || {});
     formState[name] = {
         // validate: () => setFormState(instance, fields, validation),
-        handleSubmit: submitCallback => event => {
+        handleSubmit: (submitCallback) => (event) => {
             event.preventDefault();
             const { valid } = setFormState(name, instance, fields, validation);
             if (!valid) return;
@@ -42,17 +36,18 @@ export default function reactForm({
 
             instance.setState({ [name]: fs }, () => {
                 // TODO, support promise ret
-                const ret =
-                    submitCallback({ data, event, updateInitialValues }) || {};
+                const ret = submitCallback({ data, event, updateInitialValues }) || {};
                 // Look for field level errors
+                // eslint-disable-next-line no-restricted-syntax
                 for (const fieldName of Object.keys(ret)) {
                     const error = ret[fieldName];
-                    if (!error) continue;
-                    const value = instance.state[fieldName] || {};
-                    value.error = error;
-                    value.touched = true;
-                    if (error) formValid = false;
-                    instance.setState({ [fieldName]: value });
+                    if (error) {
+                        const value = instance.state[fieldName] || {};
+                        value.error = error;
+                        value.touched = true;
+                        if (error) formValid = false;
+                        instance.setState({ [fieldName]: value });
+                    }
                 }
                 fs.submitting = false;
                 fs.valid = formValid;
@@ -60,6 +55,7 @@ export default function reactForm({
             });
         },
         resetForm: () => {
+            // eslint-disable-next-line no-restricted-syntax
             for (const field of fields) {
                 const fieldName = n(field);
                 const f = instance.state[fieldName];
@@ -68,6 +64,7 @@ export default function reactForm({
             }
         },
         clearForm: () => {
+            // eslint-disable-next-line no-restricted-syntax
             for (const field of fields) {
                 const fieldName = n(field);
                 const f = instance.state[fieldName];
@@ -76,10 +73,10 @@ export default function reactForm({
         },
     };
 
+    // eslint-disable-next-line no-restricted-syntax
     for (const field of fields) {
         const fieldName = n(field);
         const fieldType = t(field);
-
         const fs = (formState[fieldName] = {
             value: null,
             error: null,
@@ -103,7 +100,7 @@ export default function reactForm({
             }
         }
 
-        fs.props.onChange = e => {
+        fs.props.onChange = (e) => {
             const value = e && e.target ? e.target.value : e; // API may pass value directly
             const v = { ...(instance.state[fieldName] || {}) };
             const initialValue = initialValues[fieldName];
@@ -138,6 +135,7 @@ function setFormState(name, instance, fields, validation) {
     let formValid = true;
     let formTouched = false;
     const v = validation(getData(fields, instance.state));
+    // eslint-disable-next-line no-restricted-syntax
     for (const field of fields) {
         const fieldName = n(field);
         const validate = v[fieldName];
@@ -157,6 +155,7 @@ function setFormState(name, instance, fields, validation) {
 
 function setInitialValuesFromForm(name, instance, fields, initialValues) {
     const data = getData(fields, instance.state);
+    // eslint-disable-next-line no-restricted-syntax
     for (const field of fields) {
         const fieldName = n(field);
         initialValues[fieldName] = data[fieldName];
@@ -165,6 +164,7 @@ function setInitialValuesFromForm(name, instance, fields, initialValues) {
 
 function getData(fields, state) {
     const data = {};
+    // eslint-disable-next-line no-restricted-syntax
     for (const field of fields) {
         const fieldName = n(field);
         data[fieldName] = state[fieldName].value;
@@ -194,9 +194,6 @@ function n(field) {
     return name;
 }
 
-const hasValue = v =>
-    v == null
-        ? false
-        : (typeof v === 'string' ? v.trim() : v) === '' ? false : true;
-const toString = v => (hasValue(v) ? v : '');
-const toBoolean = v => (hasValue(v) ? JSON.parse(v) : '');
+const hasValue = (v) => (v == null ? false : (typeof v === 'string' ? v.trim() : v) === '' ? false : true);
+const toString = (v) => (hasValue(v) ? v : '');
+const toBoolean = (v) => (hasValue(v) ? JSON.parse(v) : '');

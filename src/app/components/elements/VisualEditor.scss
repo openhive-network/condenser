@@ -1,0 +1,10 @@
+.visual-editor {
+  button {
+    margin-right: 0 !important;
+  }
+  .DraftEditor-editorContainer {
+    > div {
+      min-height: 200px;
+    }
+  }
+}

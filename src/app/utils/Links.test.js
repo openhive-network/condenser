@@ -140,14 +140,14 @@ describe('determineViewMode', () => {
 describe('Performance', () => {
     const largeData = secureRandom.randomBuffer(1024 * 10).toString('hex');
     it('any, ' + largeData.length + ' bytes x 10,000', () => {
-        for (let i = 0; i < 10000; i++) {
+        for (let i = 0; i < 10000; i += 1) {
             const match = (largeData + 'https://example.com').match(linksRe.any());
             assert(match, 'no match');
             assert(match[0] === 'https://example.com', 'no match');
         }
     });
     it('image (large), ' + largeData.length + ' bytes x 10,000', () => {
-        for (let i = 0; i < 10000; i++) {
+        for (let i = 0; i < 10000; i += 1) {
             matchNot(
                 linksRe.image(),
                 'https://lh3.googleusercontent.com/OehcduRZPcVIX_2tlOKgYHADtBvorTfL4JtjfGAPWZyiiI9p_g2ZKEUKfuv3By-aiVfirXaYvEsViJEbxts6IeVYqidnpgkkkXAe0Q79_ARXX6CU5hBK2sZaHKa20U3jBzYbMxT-OVNX8-JYf-GYa2geUQa6pVpUDY35iaiiNBObF-TMIUOqm0P61gCdukTFwLgld2BBlxoVNNt_w6VglYHJP0W4izVNkEu7ugrU-qf2Iw9hb22SGIFNpbzL_ldomDMthIuYfKSYGsqe2ClvNKRz-_vVCQr7ggRXra16uQOdUUv5IVnkK67p9yR8ioajJ4tiGdzazYVow46pbeZ76i9_NoEYnOEX2_a7niofnC5BgAjoQEeoes1cMWVM7V8ZSexBA-cxmi0EVLds4RBkInvaUZjVL7h3oJ5I19GugPTzlyVyYtkf1ej6LNttkagqHgMck87UQGvCbwDX9ECTngffwQPYZlZKnthW0DlkFGgHN8T9uqEpl-3ki50gTa6gC0Q16mEeDRKZe7_g5Sw52OjMsfWxmBBWWMSHzlQKKAIKMKKaD6Td0O_zpiXXp7Fyl7z_iESvCpOAUAIKnyJyF_Y0UYktEmw=w2066-h1377-no'
@@ -155,14 +155,14 @@ describe('Performance', () => {
         }
     });
     it('image, ' + largeData.length + ' bytes x 10,000', () => {
-        for (let i = 0; i < 10000; i++) {
+        for (let i = 0; i < 10000; i += 1) {
             const match = (largeData + 'https://example.com/img.jpeg').match(linksRe.image());
             assert(match, 'no match');
             assert(match[0] === 'https://example.com/img.jpeg', 'no match');
         }
     });
     it('remote, ' + largeData.length + ' bytes x 10,000', () => {
-        for (let i = 0; i < 10000; i++) {
+        for (let i = 0; i < 10000; i += 1) {
             const match = (largeData + 'https://example.com').match(linksRe.remote());
             assert(match, 'no match');
             assert(match[0] === 'https://example.com', 'no match');
@@ -239,13 +239,13 @@ describe('Performance', () => {
         );
         match(
             redditRegex.htmlReplacement,
-            '<blockquote class="reddit-card" data-card-created="1614855336"><a href="https://www.reddit.com/r/CryptoCurrency/comments/lxcmup/to_all_the_small_hodlers_keeping_your_coins_at_an/">To all the small hodlers, keeping your coins at an exchange might be the best thing for you</a> from <a href="http://www.reddit.com/r/CryptoCurrency">r/CryptoCurrency</a></blockquote>\n' +
-                '<script async src="//embed.redditmedia.com/widgets/platform.js" charset="UTF-8"></script>'
+            '<blockquote class="reddit-card" data-card-created="1614855336"><a href="https://www.reddit.com/r/CryptoCurrency/comments/lxcmup/to_all_the_small_hodlers_keeping_your_coins_at_an/">To all the small hodlers, keeping your coins at an exchange might be the best thing for you</a> from <a href="http://www.reddit.com/r/CryptoCurrency">r/CryptoCurrency</a></blockquote>\n'
+                + '<script async src="//embed.redditmedia.com/widgets/platform.js" charset="UTF-8"></script>'
         );
         match(
             redditRegex.htmlReplacement,
-            '<blockquote class="reddit-card" data-card-created="1614855336"><a href="https://www.reddit.com/r/CryptoCurrency/comments/lxcmup/to_all_the_small_hodlers_keeping_your_coins_at_an/">To all the small hodlers, keeping your coins at an exchange might be the best thing for you</a> from <a href="http://www.reddit.com/r/CryptoCurrency">r/CryptoCurrency</a></blockquote>\n' +
-                '<script async src="//embed.redditmedia.com/widgets/platform.js" charset="UTF-8"></script>'
+            '<blockquote class="reddit-card" data-card-created="1614855336"><a href="https://www.reddit.com/r/CryptoCurrency/comments/lxcmup/to_all_the_small_hodlers_keeping_your_coins_at_an/">To all the small hodlers, keeping your coins at an exchange might be the best thing for you</a> from <a href="http://www.reddit.com/r/CryptoCurrency">r/CryptoCurrency</a></blockquote>\n'
+                + '<script async src="//embed.redditmedia.com/widgets/platform.js" charset="UTF-8"></script>'
         );
     });
     it('spotify', () => {
@@ -310,7 +310,7 @@ const match = (...args) => compare(true, ...args);
 const matchNot = (...args) => compare(false, ...args);
 const compare = (matching, re, input, output = input, pos = 0) => {
     if (Array.isArray(input)) {
-        for (let i = 0; i < input.length; i++) compare(matching, re, input[i], output[i]);
+        for (let i = 0; i < input.length; i += 1) compare(matching, re, input[i], output[i]);
         return;
     }
     // console.log('compare, input', input)

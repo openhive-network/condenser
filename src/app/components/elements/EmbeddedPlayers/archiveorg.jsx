@@ -100,10 +100,7 @@ export function embedNode(child, links /*images*/) {
         const archiveorg = extractMetadata(data);
         if (!archiveorg) return child;
 
-        child.data = data.replace(
-            archiveorg.url,
-            `~~~ embed:${archiveorg.id} archiveorg ~~~`
-        );
+        child.data = data.replace(archiveorg.url, `~~~ embed:${archiveorg.id} archiveorg ~~~`);
 
         if (links) {
             links.add(archiveorg.canonical);
@@ -130,12 +127,7 @@ export function genIframeMd(idx, id, width, height) {
 
     let sandbox = sandboxConfig.useSandbox;
     if (sandbox) {
-        if (
-            Object.prototype.hasOwnProperty.call(
-                sandboxConfig,
-                'sandboxAttributes'
-            )
-        ) {
+        if (Object.prototype.hasOwnProperty.call(sandboxConfig, 'sandboxAttributes')) {
             sandbox = sandboxConfig.sandboxAttributes.join(' ');
         }
     }

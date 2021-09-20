@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 const NativeSelect = ({ options, className, currentlySelected, onChange }) => {
-    const handleChange = event => {
+    const handleChange = (event) => {
         onChange(event.target);
     };
 
@@ -19,11 +19,7 @@ const NativeSelect = ({ options, className, currentlySelected, onChange }) => {
     });
 
     return (
-        <select
-            onChange={handleChange}
-            className={`nativeSelect ${className}`}
-            value={currentlySelected}
-        >
+        <select onChange={handleChange} className={`nativeSelect ${className}`} value={currentlySelected}>
             {opts}
         </select>
     );

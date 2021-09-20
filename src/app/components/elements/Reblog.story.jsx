@@ -12,11 +12,5 @@ const store = createStore(rootReducer);
 storiesOf('Elements', module)
     .addDecorator(withKnobs)
     .addDecorator(Center)
-    .addDecorator(getStory => <Provider store={store}>{getStory()}</Provider>)
-    .add('Reblog', () => (
-        <Reblog
-            permlink={'foo/bar'}
-            author={'maitland'}
-            reblog={() => alert('STEEM WAZ HERE')}
-        />
-    ));
+    .addDecorator((getStory) => <Provider store={store}>{getStory()}</Provider>)
+    .add('Reblog', () => <Reblog permlink={'foo/bar'} author={'maitland'} reblog={() => alert('STEEM WAZ HERE')} />);

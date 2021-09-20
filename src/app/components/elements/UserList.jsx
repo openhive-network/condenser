@@ -22,7 +22,9 @@ class UserList extends React.Component {
     };
 
     render() {
-        const { state: { historyIndex } } = this;
+        const {
+            state: { historyIndex },
+        } = this;
         const users = this.props.users;
         const title = this.props.title;
 
@@ -40,9 +42,7 @@ class UserList extends React.Component {
         }
 
         let idx = 0;
-        let user_list = users.map(user => (
-            <UserListRow user={user} key={idx++} />
-        ));
+        let user_list = users.map((user) => <UserListRow user={user} key={idx++} />);
         user_list = user_list.toArray();
 
         let currentIndex = -1;
@@ -50,10 +50,7 @@ class UserList extends React.Component {
         const limitedIndex = Math.min(historyIndex, usersLength - PER_PAGE);
         user_list = user_list.reverse().filter(() => {
             currentIndex++;
-            return (
-                currentIndex >= limitedIndex &&
-                currentIndex < limitedIndex + PER_PAGE
-            );
+            return currentIndex >= limitedIndex && currentIndex < limitedIndex + PER_PAGE;
         });
 
         const navButtons = (
@@ -61,36 +58,23 @@ class UserList extends React.Component {
                 <ul className="pager">
                     <li>
                         <div
-                            className={
-                                'button tiny hollow float-left ' +
-                                (historyIndex === 0 ? ' disabled' : '')
-                            }
+                            className={'button tiny hollow float-left ' + (historyIndex === 0 ? ' disabled' : '')}
                             onClick={this._setHistoryPagePrevious}
                             aria-label={tt('g.previous')}
                         >
-                            <span aria-hidden="true">
-                                &larr; {tt('g.previous')}
-                            </span>
+                            <span aria-hidden="true">&larr; {tt('g.previous')}</span>
                         </div>
                     </li>
                     <li>
                         <div
                             className={
                                 'button tiny hollow float-right ' +
-                                (historyIndex >= usersLength - PER_PAGE
-                                    ? ' disabled'
-                                    : '')
+                                (historyIndex >= usersLength - PER_PAGE ? ' disabled' : '')
                             }
-                            onClick={
-                                historyIndex >= usersLength - PER_PAGE
-                                    ? null
-                                    : this._setHistoryPageNext
-                            }
+                            onClick={historyIndex >= usersLength - PER_PAGE ? null : this._setHistoryPageNext}
                             aria-label={tt('g.next')}
                         >
-                            <span aria-hidden="true">
-                                {tt('g.next')} &rarr;
-                            </span>
+                            <span aria-hidden="true">{tt('g.next')} &rarr;</span>
                         </div>
                     </li>
                 </ul>

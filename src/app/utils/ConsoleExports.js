@@ -1,8 +1,6 @@
+/*eslint global-require: "warn"*/
 import {
-    PrivateKey,
-    PublicKey,
-    Aes,
-    key_utils,
+ PrivateKey, PublicKey, Aes, key_utils
 } from '@hiveio/hive-js/lib/auth/ecc';
 
 // import secureRandom from 'secure-random'
@@ -17,21 +15,21 @@ module.exports = {
 
     // Run once to start, then again to stop and print a report
     // https://facebook.github.io/react/docs/perf.html
-    perf: () => {
-        const Perf = require('react-addons-perf');
-        if (perfStarted) {
-            Perf.stop();
-            const lm = Perf.getLastMeasurements();
-            Perf.printInclusive(lm);
-            Perf.printExclusive(lm);
-            Perf.printWasted(lm);
-            perfStarted = false;
-        } else {
-            Perf.start();
-            perfStarted = true;
-        }
-        return Perf;
-    },
+    // perf: () => {
+    //     const Perf = require('react-addons-perf');
+    //     if (perfStarted) {
+    //         Perf.stop();
+    //         const lm = Perf.getLastMeasurements();
+    //         Perf.printInclusive(lm);
+    //         Perf.printExclusive(lm);
+    //         Perf.printWasted(lm);
+    //         perfStarted = false;
+    //     } else {
+    //         Perf.start();
+    //         perfStarted = true;
+    //     }
+    //     return Perf;
+    // },
 
     resolve: (object, atty = '_') => {
         if (!object.then) {
@@ -40,12 +38,12 @@ module.exports = {
         }
         return new Promise((resolve, reject) => {
             object
-                .then(result => {
+                .then((result) => {
                     console.log(result);
                     resolve(result);
                     window[atty] = result;
                 })
-                .catch(error => {
+                .catch((error) => {
                     console.error('resolve_err', error);
                     reject(error);
                     window[atty] = error;
@@ -53,11 +51,13 @@ module.exports = {
         });
     },
 
-    init: context => {
+    init: (context) => {
         if (!context) return;
+        // eslint-disable-next-line no-restricted-syntax
         for (const obj in module.exports) {
-            if (obj === 'init') continue;
-            context[obj] = module.exports[obj];
+            if (obj !== 'init') {
+                context[obj] = module.exports[obj];
+            }
         }
     },
 
@@ -72,4 +72,5 @@ module.exports = {
     // },
 };
 
-let perfStarted = false;
+// eslint-disable-next-line no-unused-vars
+const perfStarted = false;

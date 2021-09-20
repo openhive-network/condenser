@@ -3,6 +3,7 @@ import config from 'config';
 import * as steem from '@hiveio/hive-js';
 
 const path = require('path');
+
 const ROOT = path.join(__dirname, '../..');
 
 // Tell `require` calls to look into `/app` also
@@ -11,14 +12,13 @@ const ROOT = path.join(__dirname, '../..');
 // use Object.assign to bypass transform-inline-environment-variables-babel-plugin (process.env.NODE_PATH= will not work)
 Object.assign(process.env, { NODE_PATH: path.resolve(__dirname, '..') });
 
+// eslint-disable-next-line no-underscore-dangle
 require('module').Module._initPaths();
 
 // Load Intl polyfill
 // require('utils/intl-polyfill')(require('./config/init').locales);
 
-const alternativeApiEndpoints = config
-    .get('alternative_api_endpoints')
-    .split(' ');
+const alternativeApiEndpoints = config.get('alternative_api_endpoints').split(' ');
 
 global.$STM_Config = {
     fb_app: config.get('facebook_app_id'),
@@ -43,9 +43,7 @@ global.$STM_Config = {
 const WebpackIsomorphicTools = require('webpack-isomorphic-tools');
 const WebpackIsomorphicToolsConfig = require('../../webpack/webpack-isotools-config');
 
-global.webpackIsomorphicTools = new WebpackIsomorphicTools(
-    WebpackIsomorphicToolsConfig
-);
+global.webpackIsomorphicTools = new WebpackIsomorphicTools(WebpackIsomorphicToolsConfig);
 
 global.webpackIsomorphicTools.server(ROOT, () => {
     steem.api.setOptions({
@@ -64,11 +62,11 @@ global.webpackIsomorphicTools.server(ROOT, () => {
     });
     steem.config.set('address_prefix', config.get('address_prefix'));
     steem.config.set('rebranded_api', true);
-    steem.broadcast.updateOperations();
 
     // const CliWalletClient = require('shared/api_client/CliWalletClient').default;
     // if (process.env.NODE_ENV === 'production') connect_promises.push(CliWalletClient.instance().connect_promise());
     try {
+        // eslint-disable-next-line global-require
         require('./server');
     } catch (error) {
         console.error(error);

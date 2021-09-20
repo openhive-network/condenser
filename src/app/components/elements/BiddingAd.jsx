@@ -1,4 +1,6 @@
-import React, { Component, PropTypes } from 'react';
+/*global googletag, pbjs*/
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
 class BiddingAd extends Component {
@@ -6,11 +8,7 @@ class BiddingAd extends Component {
         if (!this.ad.path || !this.enabled) return;
 
         googletag.cmd.push(() => {
-            const slot = googletag.defineSlot(
-                this.ad.path,
-                this.ad.dimensions,
-                this.ad.path
-            );
+            const slot = googletag.defineSlot(this.ad.path, this.ad.dimensions, this.ad.path);
 
             if (slot) {
                 slot.addService(googletag.pubads());
@@ -21,17 +19,13 @@ class BiddingAd extends Component {
                     googletag.display(this.ad.path);
                     this.refreshBid(this.ad.path, slot);
 
-                    googletag
-                        .pubads()
-                        .addEventListener('impressionViewable', e => {
-                            window.dispatchEvent(new Event('gptadshown', e));
-                        });
+                    googletag.pubads().addEventListener('impressionViewable', (e) => {
+                        window.dispatchEvent(new Event('gptadshown', e));
+                    });
 
-                    googletag
-                        .pubads()
-                        .addEventListener('slotRenderEnded', e => {
-                            window.dispatchEvent(new Event('gptadshown', e));
-                        });
+                    googletag.pubads().addEventListener('slotRenderEnded', (e) => {
+                        window.dispatchEvent(new Event('gptadshown', e));
+                    });
                 });
             }
         });
@@ -42,7 +36,7 @@ class BiddingAd extends Component {
             pbjs.requestBids({
                 timeout: 2000,
                 adUnitCodes: [path],
-                bidsBackHandler: function() {
+                bidsBackHandler() {
                     pbjs.setTargetingForGPTAsync([path]);
                     googletag.pubads().refresh([slot]);
                 },
@@ -75,13 +69,7 @@ class BiddingAd extends Component {
     }
 
     render() {
-        return (
-            <div
-                className="bidding-ad gpt-ad"
-                style={{ width: '100%' }}
-                id={this.ad.path}
-            />
-        );
+        return <div className="bidding-ad gpt-ad" style={{ width: '100%' }} id={this.ad.path} />;
     }
 }
 
@@ -96,21 +84,11 @@ BiddingAd.propTypes = {
 
 export default connect(
     (state, props) => {
-        const enabled =
-            !!state.app.getIn(['googleAds', 'gptEnabled']) &&
-            !!process.env.BROWSER &&
-            !!window.googletag;
-        const postCategory = state.global.get('postCategory');
-        const basicSlots = state.app.getIn(['googleAds', `gptBasicSlots`]);
-        const biddingSlots = state.app.getIn(['googleAds', `gptBiddingSlots`]);
-        const categorySlots = state.app.getIn([
-            'googleAds',
-            `gptCategorySlots`,
-        ]);
+        const enabled = !!state.app.getIn(['googleAds', 'gptEnabled']) && !!process.env.BROWSER && !!window.googletag;
 
         const slotName = props.slotName;
-        let type = props.type;
-        let slot = state.app.getIn(['googleAds', `gpt${type}Slots`, slotName]);
+        const type = props.type;
+        const slot = state.app.getIn(['googleAds', `gpt${type}Slots`, slotName]);
 
         return {
             enabled,
@@ -118,5 +96,4 @@ export default connect(
             ...props,
         };
     },
-    dispatch => ({})
 )(BiddingAd);

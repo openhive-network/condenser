@@ -8,7 +8,7 @@ export default function usePostJson(app) {
     const router = koa_router();
     app.use(router.routes());
 
-    router.get(routeRegex.PostJson, function*() {
+    router.get(routeRegex.PostJson, function* () {
         // validate and build post details in JSON
         const author = this.url.match(/(\@[\w\d\.-]+)/)[0].replace('@', '');
         const permalink = this.url.match(/(\@[\w\d\.-]+)\/?([\w\d-]+)/)[2];

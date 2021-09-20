@@ -1,11 +1,9 @@
-import { put, takeEvery, call } from 'redux-saga/effects';
+import { put, takeEvery } from 'redux-saga/effects';
 import * as reducer from 'app/redux/CommunitySearchReducer';
 
-export const searchWatches = [
-    takeEvery('communitySearch/COMMUNITY_SEARCH_DISPATCH', communitySearchSaga),
-];
+export const searchWatches = [takeEvery('communitySearch/COMMUNITY_SEARCH_DISPATCH', communitySearchSaga)];
 
-export function* communitySearchSaga(action) {
+export function* communitySearchSaga() {
     // const { q, s, scroll_id } = action.payload;
     yield put(reducer.communitySearchPending({ pending: true }));
     try {

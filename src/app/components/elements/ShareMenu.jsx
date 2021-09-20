@@ -13,7 +13,7 @@ export default class ShareMenu extends React.Component {
         return (
             <span className="shareMenu">
                 <ul>
-                    {menu.map(i => (
+                    {menu.map((i) => (
                         <li key={i.title}>
                             <Link to="#" onClick={i.onClick} title={i.title}>
                                 <Icon name={i.icon} />

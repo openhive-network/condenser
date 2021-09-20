@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { List } from 'immutable';
@@ -8,7 +8,7 @@ import PostSummary from 'app/components/cards/PostSummary';
 import LoadingIndicator from 'app/components/elements/LoadingIndicator';
 import GptAd from 'app/components/elements/GptAd';
 import VideoAd from 'app/components/elements/VideoAd';
-import shouldComponentUpdate from 'app/utils/shouldComponentUpdate';
+// import shouldComponentUpdate from 'app/utils/shouldComponentUpdate';
 
 function topPosition(domElt) {
     if (!domElt) {
@@ -17,17 +17,13 @@ function topPosition(domElt) {
     return domElt.offsetTop + topPosition(domElt.offsetParent);
 }
 
-class PostsList extends React.Component {
+class PostsList extends PureComponent {
     static propTypes = {
         posts: PropTypes.object,
-        loading: PropTypes.bool.isRequired,
+        loading: PropTypes.bool,
         category: PropTypes.string,
         loadMore: PropTypes.func,
         nsfwPref: PropTypes.string.isRequired,
-    };
-
-    static defaultProps = {
-        loading: false,
     };
 
     constructor() {
@@ -38,7 +34,7 @@ class PostsList extends React.Component {
         };
         this.scrollListener = this.scrollListener.bind(this);
         this.onBackButton = this.onBackButton.bind(this);
-        this.shouldComponentUpdate = shouldComponentUpdate(this, 'PostsList');
+        // this.shouldComponentUpdate = shouldComponentUpdate(this, 'PostsList');
     }
 
     componentDidMount() {
@@ -64,8 +60,7 @@ class PostsList extends React.Component {
     scrollListener = debounce(() => {
         const el = window.document.getElementById('posts_list');
         if (!el) return;
-        const scrollTop =
-            window.pageYOffset !== undefined
+        const scrollTop = window.pageYOffset !== undefined
                 ? window.pageYOffset
                 : (document.documentElement || document.body.parentNode || document.body).scrollTop;
         if (topPosition(el) + el.offsetHeight - scrollTop - window.innerHeight < 10) {
@@ -100,11 +95,12 @@ class PostsList extends React.Component {
     }
 
     render() {
-        const { posts, loading, category, order, nsfwPref, hideCategory } = this.props;
+        const {
+            posts, loading, category, order, nsfwPref, hideCategory
+        } = this.props;
         const { thumbSize } = this.state;
 
-        const renderSummary = items =>
-            items.map((post, i) => {
+        const renderSummary = (items) => items.map((post, i) => {
                 const ps = (
                     <PostSummary
                         post={post}
@@ -167,10 +163,10 @@ export default connect(
 
         let { posts } = props;
         if (typeof posts === 'undefined') {
-            const { post_refs, loading } = props;
+            const { post_refs } = props;
             if (post_refs) {
                 posts = [];
-                props.post_refs.forEach(ref => {
+                props.post_refs.forEach((ref) => {
                     const post = state.global.getIn(['content', ref]);
                     if (!post) {
                         // can occur when deleting a post
@@ -195,8 +191,8 @@ export default connect(
             adSlots,
         };
     },
-    dispatch => ({
-        fetchState: pathname => {
+    (dispatch) => ({
+        fetchState: (pathname) => {
             dispatch(fetchDataSagaActions.fetchState({ pathname }));
         },
     })

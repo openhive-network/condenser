@@ -24,13 +24,13 @@ function last_part(value, sep) {
 }
 
 export default function reducer(state = defaultState, action) {
-    const payload = action.payload;
+    const { payload } = action;
 
     switch (action.type) {
         case CONFIRM_OPERATION: {
             const operation = fromJS(payload.operation);
-            const confirm = payload.confirm;
-            const warning = payload.warning;
+            const { confirm } = payload;
+            const { warning } = payload;
             return state.merge({
                 show_confirm_modal: true,
                 confirmBroadcastOperation: operation,
@@ -52,20 +52,17 @@ export default function reducer(state = defaultState, action) {
             return state;
 
         case ERROR: {
-            const { operations, error, errorCallback } = payload;
+            const { error, errorCallback } = payload;
 
             let msg;
-            let key = error.toString().replace(/rethrow$/, '');
+            const key = error.toString().replace(/rethrow$/, '');
 
             if (/You may only post once every/.test(key)) {
                 // Assert Exception:( now - auth.last_root_post ) > STEEM_MIN_ROOT_COMMENT_INTERVAL: You may only post once every 5 minutes.
                 msg = 'You may only post once every five minutes.';
-            } else if (
-                /Your current vote on this comment is identical/.test(key)
-            ) {
+            } else if (/Your current vote on this comment is identical/.test(key)) {
                 // Assert Exception:itr->vote_percent != o.weight: Your current vote on this comment is identical to this vote.
-                msg =
-                    'Your current vote on this comment is identical to this vote.';
+                msg = 'Your current vote on this comment is identical to this vote.';
             } else if (/Please wait to transact, or power up STEEM/.test(key)) {
                 // plugin exception:Account: test-safari has 1154101776 RC, needs 1274161808 RC. Please wait to transact, or power up STEEM.rethrow
                 try {
@@ -74,14 +71,8 @@ export default function reducer(state = defaultState, action) {
                     const fudge = 1.1;
                     const has_vests = parseInt(m[0][1], 10) / 1e6;
                     const needs_vests = parseInt(m[1][1], 10) / 1e6;
-                    const sp = (
-                        (needs_vests - has_vests) *
-                        spv *
-                        fudge
-                    ).toFixed(3);
-                    msg = `Bandwidth error: insufficient Resource Credits. Please wait to transact, or power up ${
-                        sp
-                    } STEEM.`;
+                    const sp = ((needs_vests - has_vests) * spv * fudge).toFixed(3);
+                    msg = `Bandwidth error: insufficient Resource Credits. Please wait to transact, or power up ${sp} STEEM.`;
                 } catch (e) {
                     console.error('bandwidth parse error', key);
                     msg = 'Bandwidth error: ' + last_part(key, ':');
@@ -107,7 +98,7 @@ export default function reducer(state = defaultState, action) {
             }
 
             // SagaShared / showTransactionErrorNotification
-            state = state.update('errors', errors => {
+            state = state.update('errors', (errors) => {
                 return errors ? errors.set(key, msg) : Map({ [key]: msg });
             });
 
@@ -115,8 +106,7 @@ export default function reducer(state = defaultState, action) {
                 state = state.setIn(['errors', 'bandwidthError'], true); //show_bandwidth_error_modal
             }
 
-            if (!errorCallback)
-                throw new Error(`PANIC: no error callback for '${key}'`);
+            if (!errorCallback) throw new Error(`PANIC: no error callback for '${key}'`);
             errorCallback(msg);
 
             return state;
@@ -129,15 +119,10 @@ export default function reducer(state = defaultState, action) {
             return state.setIn(['errors', payload.key], false);
 
         case SET:
-            return state.setIn(
-                Array.isArray(payload.key) ? payload.key : [payload.key],
-                fromJS(payload.value)
-            );
+            return state.setIn(Array.isArray(payload.key) ? payload.key : [payload.key], fromJS(payload.value));
 
         case REMOVE:
-            return state.removeIn(
-                Array.isArray(payload.key) ? payload.key : [payload.key]
-            );
+            return state.removeIn(Array.isArray(payload.key) ? payload.key : [payload.key]);
 
         default:
             return state;
@@ -145,42 +130,42 @@ export default function reducer(state = defaultState, action) {
 }
 
 // Action creators
-export const confirmOperation = payload => ({
+export const confirmOperation = (payload) => ({
     type: CONFIRM_OPERATION,
     payload,
 });
 
-export const hideConfirm = payload => ({
+export const hideConfirm = (payload) => ({
     type: HIDE_CONFIRM,
     payload,
 });
 
-export const broadcastOperation = payload => ({
+export const broadcastOperation = (payload) => ({
     type: BROADCAST_OPERATION,
     payload,
 });
 
-export const error = payload => ({
+export const error = (payload) => ({
     type: ERROR,
     payload,
 });
 
-export const deleteError = payload => ({
+export const deleteError = (payload) => ({
     type: DELETE_ERROR,
     payload,
 });
 
-export const dismissError = payload => ({
+export const dismissError = (payload) => ({
     type: DISMISS_ERROR,
     payload,
 });
 
-export const set = payload => ({
+export const set = (payload) => ({
     type: SET,
     payload,
 });
 
-export const remove = payload => ({
+export const remove = (payload) => ({
     type: REMOVE,
     payload,
 });
