@@ -53,10 +53,7 @@ const StoreWrapped = connect(
         let category = state.global.getIn(['content', postref, 'category']);
         if (typeof category === 'undefined') {
             if (state.global.hasIn(['headers', postref])) {
-                category = state.global.getIn(
-                    ['headers', postref, 'category'],
-                    null
-                );
+                category = state.global.getIn(['headers', postref, 'category'], null);
             }
         }
 
@@ -67,9 +64,8 @@ const StoreWrapped = connect(
             loading: typeof category === 'undefined',
         };
     },
-    dispatch => ({
-        getPostHeader: payload =>
-            dispatch(fetchDataSagaActions.getPostHeader(payload)),
+    (dispatch) => ({
+        getPostHeader: (payload) => dispatch(fetchDataSagaActions.getPostHeader(payload)),
     })
 )(PostWrapper);
 

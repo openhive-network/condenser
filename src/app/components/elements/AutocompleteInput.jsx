@@ -62,26 +62,17 @@ class AutocompleteInput extends React.Component {
                         display: 'inline-block',
                     }}
                     items={this.props.values}
-                    getItemValue={item => item.name}
+                    getItemValue={(item) => item.name}
                     shouldItemRender={matchInputToItem}
                     sortItems={sortInput}
                     onChange={(event, value) => this.setState({ value })}
-                    onSelect={value => {
+                    onSelect={(value) => {
                         this.setState({ value });
                         this.props.onSelect(value);
                     }}
-                    renderMenu={children => (
-                        <div className="react-autocomplete-input">
-                            {children}
-                        </div>
-                    )}
+                    renderMenu={(children) => <div className="react-autocomplete-input">{children}</div>}
                     renderItem={(item, isHighlighted) => (
-                        <div
-                            className={`item ${
-                                isHighlighted ? 'item-highlighted' : ''
-                            }`}
-                            key={item.abbr}
-                        >
+                        <div className={`item ${isHighlighted ? 'item-highlighted' : ''}`} key={item.abbr}>
                             {item.name}
                         </div>
                     )}

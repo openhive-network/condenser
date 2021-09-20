@@ -3,11 +3,11 @@ import { connect } from 'react-redux';
 import reactForm from 'app/utils/ReactForm';
 import { SUBMIT_FORM_ID } from 'shared/constants';
 import tt from 'counterpart';
+import PropTypes from 'prop-types';
 import { fromJS } from 'immutable';
 import BeneficiarySelector, { validateBeneficiaries } from 'app/components/cards/BeneficiarySelector';
 import PostTemplateSelector from 'app/components/cards/PostTemplateSelector';
 import { loadUserTemplates, saveUserTemplates } from 'app/utils/UserTemplates';
-import PropTypes from 'prop-types';
 
 import * as userActions from 'app/redux/UserReducer';
 
@@ -34,7 +34,7 @@ class PostAdvancedSettings extends Component {
             instance: this,
             name: 'advancedSettings',
             initialValues: props.initialValues,
-            validation: values => {
+            validation: (values) => {
                 return {
                     beneficiaries: validateBeneficiaries(props.username, values.beneficiaries, false),
                 };
@@ -42,11 +42,11 @@ class PostAdvancedSettings extends Component {
         });
     }
 
-    handlePayoutChange = event => {
+    handlePayoutChange = (event) => {
         this.setState({ payoutType: event.target.value });
     };
 
-    handleTemplateSelected = postTemplateName => {
+    handleTemplateSelected = (postTemplateName) => {
         const { username } = this.props;
         const userTemplates = loadUserTemplates(username);
         this.setState({ postTemplateName });
@@ -60,11 +60,11 @@ class PostAdvancedSettings extends Component {
                 };
 
                 if (template.name === postTemplateName) {
-                    if (template.hasOwnProperty('payoutType')) {
+                    if (Object.prototype.hasOwnProperty.call(template, 'payoutType')) {
                         this.setState({ payoutType: template.payoutType });
                     }
 
-                    if (template.hasOwnProperty('beneficiaries')) {
+                    if (Object.prototype.hasOwnProperty.call(template, 'beneficiaries')) {
                         newBeneficiaries.props.value = template.beneficiaries;
                         this.setState({ beneficiaries: newBeneficiaries });
                     }
@@ -82,6 +82,7 @@ class PostAdvancedSettings extends Component {
         const { username } = this.props;
         const userTemplates = loadUserTemplates(username);
         let ui = userTemplates.length;
+        // eslint-disable-next-line no-plusplus
         while (ui--) {
             if (userTemplates[ui].name === postTemplateName) {
                 userTemplates.splice(ui, 1);
@@ -92,7 +93,7 @@ class PostAdvancedSettings extends Component {
         this.setState({ postTemplateName: null });
     };
 
-    handleMaxAcceptedPayoutSelect = event => {
+    handleMaxAcceptedPayoutSelect = (event) => {
         const { payoutType, maxAcceptedPayout } = this.state;
         const { defaultPayoutType } = this.props;
         const maxAcceptedPayoutType = event.target.value;
@@ -114,7 +115,7 @@ class PostAdvancedSettings extends Component {
         }
     };
 
-    handleMaxAcceptedPayoutCustom = event => {
+    handleMaxAcceptedPayoutCustom = (event) => {
         const customValue = parseInt(event.target.value);
 
         if (customValue) {
@@ -124,7 +125,7 @@ class PostAdvancedSettings extends Component {
         }
     };
 
-    validateMaxAcceptedPayoutCustom = event => {
+    validateMaxAcceptedPayoutCustom = (event) => {
         const customValue = parseInt(event.target.value);
         if (!customValue || customValue < 1) {
             this.setState({ maxAcceptedPayout: 100 });
@@ -132,18 +133,21 @@ class PostAdvancedSettings extends Component {
     };
 
     render() {
-        const { formId, username, defaultPayoutType, initialPayoutType, initialMaxAcceptedPayout } = this.props;
-        const { beneficiaries, payoutType, postTemplateName, maxAcceptedPayout, maxAcceptedPayoutType } = this.state;
+        const {
+ formId, username, defaultPayoutType, initialPayoutType, initialMaxAcceptedPayout
+} = this.props;
+        const {
+ beneficiaries, payoutType, postTemplateName, maxAcceptedPayout, maxAcceptedPayoutType
+} = this.state;
         const loadingTemplate = postTemplateName && postTemplateName.indexOf('create_') === -1;
         const { submitting, valid, handleSubmit } = this.state.advancedSettings;
         const userTemplates = loadUserTemplates(username);
-        const disabled =
-            submitting ||
-            !(
-                valid ||
-                payoutType !== initialPayoutType ||
-                postTemplateName !== null ||
-                maxAcceptedPayout !== initialMaxAcceptedPayout
+        const disabled = submitting
+            || !(
+                valid
+                || payoutType !== initialPayoutType
+                || postTemplateName !== null
+                || maxAcceptedPayout !== initialMaxAcceptedPayout
             );
         let defaultMaxAcceptedPayoutType;
 
@@ -221,12 +225,14 @@ class PostAdvancedSettings extends Component {
                 <br />
                 <div className="row">
                     <div className="column">
-                        {tt('post_advanced_settings_jsx.current_default')}:{' '}
+                        {tt('post_advanced_settings_jsx.current_default')}
+                        :
+                        {' '}
                         {defaultPayoutType === '0%'
                             ? tt('reply_editor.decline_payout')
                             : defaultPayoutType === '50%'
-                              ? tt('reply_editor.default_50_50')
-                              : tt('reply_editor.power_up_100')}
+                            ? tt('reply_editor.default_50_50')
+                            : tt('reply_editor.power_up_100')}
                     </div>
                 </div>
                 <div className="row">
@@ -240,33 +246,35 @@ class PostAdvancedSettings extends Component {
                 <div className="row">
                     <h4 className="column">{tt('beneficiary_selector_jsx.header')}</h4>
                 </div>
-                <BeneficiarySelector {...beneficiaries.props} tabIndex={1} />
+                <BeneficiarySelector {...beneficiaries.props} tabIndex={0} />
                 <PostTemplateSelector
                     username={username}
                     onChange={this.handleTemplateSelected}
                     templates={userTemplates}
                 />
                 <div className="error">
-                    {(beneficiaries.touched || beneficiaries.value) && beneficiaries.error}&nbsp;
+                    {(beneficiaries.touched || beneficiaries.value) && beneficiaries.error}
+&nbsp;
                 </div>
                 <div className="row">
                     <div className="column">
                         <span>
-                            <button type="submit" className="button" disabled={disabled} tabIndex={2}>
+                            <button type="submit" className="button" disabled={disabled} tabIndex={0}>
                                 {loadingTemplate && tt('post_advanced_settings_jsx.load_template')}
                                 {!loadingTemplate && tt('g.save')}
                             </button>
                             {loadingTemplate && (
                                 <button
+                                    type="button"
                                     className="button"
-                                    tabIndex={2}
-                                    onClick={event => {
+                                    tabIndex={0}
+                                    onClick={(event) => {
                                         this.handleDeleteTemplate(event, postTemplateName);
                                     }}
                                 >
-                                    {postTemplateName &&
-                                        postTemplateName.indexOf('create_') === -1 &&
-                                        tt('post_advanced_settings_jsx.delete_template')}
+                                    {postTemplateName
+                                        && postTemplateName.indexOf('create_') === -1
+                                        && tt('post_advanced_settings_jsx.delete_template')}
                                 </button>
                             )}
                         </span>
@@ -289,7 +297,7 @@ class PostAdvancedSettings extends Component {
 export default connect(
     // mapStateToProps
     (state, ownProps) => {
-        const formId = ownProps.formId;
+        const {formId} = ownProps;
         const username = state.user.getIn(['current', 'username']);
         const isStory = formId === SUBMIT_FORM_ID;
         const defaultPayoutType = state.app.getIn(
@@ -312,24 +320,21 @@ export default connect(
     },
 
     // mapDispatchToProps
-    dispatch => ({
+    (dispatch) => ({
         hideAdvancedSettings: () => dispatch(userActions.hidePostAdvancedSettings()),
-        setPayoutType: (formId, payoutType) =>
-            dispatch(
+        setPayoutType: (formId, payoutType) => dispatch(
                 userActions.set({
                     key: ['current', 'post', formId, 'payoutType'],
                     value: payoutType,
                 })
             ),
-        setBeneficiaries: (formId, beneficiaries) =>
-            dispatch(
+        setBeneficiaries: (formId, beneficiaries) => dispatch(
                 userActions.set({
                     key: ['current', 'post', formId, 'beneficiaries'],
                     value: fromJS(beneficiaries),
                 })
             ),
-        setPostTemplateName: (formId, postTemplateName, create = false) =>
-            dispatch(
+        setPostTemplateName: (formId, postTemplateName, create = false) => dispatch(
                 userActions.set({
                     key: ['current', 'post', formId, 'postTemplateName'],
                     value: create ? `create_${postTemplateName}` : postTemplateName,

@@ -41,7 +41,7 @@ export default class Follow extends PureComponent {
 
     initEvents(props) {
         const { updateFollow, follower, following } = props;
-        const upd = type => {
+        const upd = (type) => {
             if (this.state.busy) return;
             this.setState({ busy: true });
             const done = () => {
@@ -73,12 +73,14 @@ export default class Follow extends PureComponent {
 
     render() {
         const { loading } = this.props;
-        if (loading)
-            return (
-                <span>
-                    <LoadingIndicator /> {tt('g.loading')}&hellip;
-                </span>
-            );
+        if (loading) { return (
+            <span>
+                <LoadingIndicator />
+                {' '}
+                {tt('g.loading')}
+                &hellip;
+            </span>
+            ); }
         if (loading !== false) {
             // must know what the user is already following before any update can happen
             return <span />;
@@ -91,22 +93,20 @@ export default class Follow extends PureComponent {
             return null;
         }
 
-        if (!follower || !following)
-            return (
-                <span>
-                    <label
-                        className="button slim hollow secondary"
-                        onClick={this.followLoggedOut}
-                    >
-                        {tt('g.follow')}
-                    </label>
-                </span>
-            );
+        if (!follower || !following) { return (
+            <span>
+                <label className="button slim hollow secondary" onClick={this.followLoggedOut}>
+                    {tt('g.follow')}
+                </label>
+            </span>
+            ); }
         // Can't follow or ignore self
         if (follower === following) return <span />;
 
         const { followingWhat } = this.props; // redux
-        const { showFollow, showMute, fat, children } = this.props; // html
+        const {
+ showFollow, showMute, fat, children
+} = this.props; // html
         const { busy } = this.state;
 
         const cnBusy = busy ? 'disabled' : '';
@@ -115,35 +115,35 @@ export default class Follow extends PureComponent {
 
         return (
             <span>
-                {showFollow &&
-                    followingWhat !== 'blog' && (
-                        <label className={cnInactive} onClick={this.follow}>
-                            {tt('g.follow')}
-                        </label>
-                    )}
+                {showFollow && followingWhat !== 'blog' && (
+                    <label className={cnInactive} onClick={this.follow}>
+                        {tt('g.follow')}
+                    </label>
+                )}
 
-                {showFollow &&
-                    followingWhat === 'blog' && (
-                        <label className={cnInactive} onClick={this.unfollow}>
-                            {tt('g.unfollow')}
-                        </label>
-                    )}
+                {showFollow && followingWhat === 'blog' && (
+                    <label className={cnInactive} onClick={this.unfollow}>
+                        {tt('g.unfollow')}
+                    </label>
+                )}
 
-                {showMute &&
-                    followingWhat !== 'ignore' && (
-                        <label className={cnInactive} onClick={this.ignore}>
-                            {tt('g.mute')}
-                        </label>
-                    )}
+                {showMute && followingWhat !== 'ignore' && (
+                    <label className={cnInactive} onClick={this.ignore}>
+                        {tt('g.mute')}
+                    </label>
+                )}
 
-                {showMute &&
-                    followingWhat === 'ignore' && (
-                        <label className={cnInactive} onClick={this.unignore}>
-                            {tt('g.unmute')}
-                        </label>
-                    )}
+                {showMute && followingWhat === 'ignore' && (
+                    <label className={cnInactive} onClick={this.unignore}>
+                        {tt('g.unmute')}
+                    </label>
+                )}
 
-                {children && <span>&nbsp;&nbsp;{children}</span>}
+                {children && (
+                <span>
+                    {children}
+                </span>
+)}
             </span>
         );
     }
@@ -161,10 +161,7 @@ module.exports = connect(
         }
 
         const { following } = ownProps;
-        const f = state.global.getIn(
-            ['follow', 'getFollowingAsync', follower],
-            emptyMap
-        );
+        const f = state.global.getIn(['follow', 'getFollowingAsync', follower], emptyMap);
 
         // the line below was commented out by val - I think it's broken so sometimes the loading indicator is shown forever
         // const loading = f.get('blog_loading', false) || f.get('ignore_loading', false)
@@ -173,8 +170,8 @@ module.exports = connect(
         const followingWhat = f.get('blog_result', emptySet).contains(following)
             ? 'blog'
             : f.get('ignore_result', emptySet).contains(following)
-              ? 'ignore'
-              : null;
+            ? 'ignore'
+            : null;
 
         return {
             follower,
@@ -183,7 +180,7 @@ module.exports = connect(
             loading,
         };
     },
-    dispatch => ({
+    (dispatch) => ({
         updateFollow: (follower, following, action, done) => {
             const what = action ? [action] : [];
             const json = ['follow', { follower, following, what }];
@@ -201,7 +198,7 @@ module.exports = connect(
                 })
             );
         },
-        showLogin: e => {
+        showLogin: (e) => {
             if (e) e.preventDefault();
             dispatch(userActions.showLogin());
         },

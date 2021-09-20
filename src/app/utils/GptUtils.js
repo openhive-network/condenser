@@ -30,6 +30,7 @@ class GptUtils {
      * @returns {boolean}
      */
     static HasBannedTags(tags = [], bannedTags) {
+        // eslint-disable-next-line no-restricted-syntax
         for (const tag of tags) {
             if (bannedTags.indexOf(tag) != -1) {
                 return true;
@@ -39,4 +40,5 @@ class GptUtils {
     }
 }
 
+// eslint-disable-next-line import/prefer-default-export
 export { GptUtils };

@@ -7,7 +7,8 @@ function fractional_part_len(value) {
 
 // FIXME this should be unit tested.. here is one bug: 501,695,.505
 export function formatDecimal(value, decPlaces = 2, truncate0s = true) {
-    let decSeparator, fl, i, j, sign, thouSeparator, abs_value;
+    let fl, j;
+    // eslint-disable-next-line no-void,no-restricted-globals
     if (value === null || value === void 0 || isNaN(value)) {
         return ['N', 'a', 'N'];
     }
@@ -16,23 +17,21 @@ export function formatDecimal(value, decPlaces = 2, truncate0s = true) {
         if (fl < 2) fl = 2;
         if (fl < decPlaces) decPlaces = fl;
     }
-    decSeparator = '.';
-    thouSeparator = ',';
-    sign = value < 0 ? '-' : '';
-    abs_value = Math.abs(value);
-    i = parseInt(abs_value.toFixed(decPlaces), 10) + '';
+    const decSeparator = '.';
+    const thouSeparator = ',';
+    const sign = value < 0 ? '-' : '';
+    const abs_value = Math.abs(value);
+    const i = parseInt(abs_value.toFixed(decPlaces), 10) + '';
     j = i.length;
     j = i.length > 3 ? j % 3 : 0;
     const decPart = decPlaces
-        ? decSeparator +
-          Math.abs(abs_value - i)
+        ? decSeparator
+          + Math.abs(abs_value - i)
               .toFixed(decPlaces)
               .slice(2)
         : '';
     return [
-        sign +
-            (j ? i.substr(0, j) + thouSeparator : '') +
-            i.substr(j).replace(/(\d{3})(?=\d)/g, '$1' + thouSeparator),
+        sign + (j ? i.substr(0, j) + thouSeparator : '') + i.substr(j).replace(/(\d{3})(?=\d)/g, '$1' + thouSeparator),
         decPart,
     ];
 }
@@ -53,15 +52,17 @@ function log10(str) {
     return n + (log - parseInt(log));
 }
 
-export const repLog10 = rep2 => {
+export const repLog10 = (rep2) => {
     if (rep2 == null) return rep2;
     let rep = String(rep2);
     const neg = rep.charAt(0) === '-';
     rep = neg ? rep.substring(1) : rep;
 
     let out = log10(rep);
+    // eslint-disable-next-line no-restricted-globals
     if (isNaN(out)) out = 0;
     out = Math.max(out - 9, 0); // @ -9, $0.50 earned is approx magnitude 1
+    // eslint-disable-next-line operator-assignment
     out = (neg ? -1 : 1) * out;
     out = out * 9 + 25; // 9 points per magnitude. center at 25
     // base-line 0 to darken and < 0 to auto hide (grep rephide)
@@ -72,12 +73,10 @@ export const repLog10 = rep2 => {
 export function countDecimals(amount) {
     if (amount == null) return amount;
     amount = String(amount)
-        .match(/[\d\.]+/g)
+        .match(/[\d.]+/g)
         .join(''); // just dots and digits
     const parts = amount.split('.');
-    return parts.length > 2
-        ? undefined
-        : parts.length === 1 ? 0 : parts[1].length;
+    return parts.length > 2 ? undefined : parts.length === 1 ? 0 : parts[1].length;
 }
 
 // this function searches for right translation of provided error (usually from back-end)
@@ -97,17 +96,11 @@ export function translateError(string) {
         case 'Account name should start with a letter.':
             return tt('g.account_name_should_start_with_a_letter');
         case 'Account name should have only letters, digits, periods or dashes.':
-            return tt(
-                'g.account_name_should_have_only_letters_digits_or_dashes'
-            );
+            return tt('g.account_name_should_have_only_letters_digits_or_dashes');
         case 'Only one Steem account allowed per IP address every 10 minutes':
-            return tt(
-                'g.only_one_APP_NAME_account_allowed_per_ip_address_every_10_minutes'
-            );
+            return tt('g.only_one_APP_NAME_account_allowed_per_ip_address_every_10_minutes');
         case 'Cannot increase reward of post within the last minute before payout':
-            return tt(
-                'g.cannot_increase_reward_of_post_within_the_last_minute_before_payout'
-            );
+            return tt('g.cannot_increase_reward_of_post_within_the_last_minute_before_payout');
         default:
             return string;
     }

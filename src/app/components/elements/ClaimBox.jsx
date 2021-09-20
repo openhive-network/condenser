@@ -6,15 +6,11 @@ import * as transactionActions from 'app/redux/TransactionReducer';
 
 const nothingToClaim = 'No rewards pending redemption.';
 
-const getRewardsString = account => {
+const getRewardsString = (account) => {
     const reward_hive =
-        parseFloat(account.get('reward_hive_balance').split(' ')[0]) > 0
-            ? account.get('reward_hive_balance')
-            : null;
+        parseFloat(account.get('reward_hive_balance').split(' ')[0]) > 0 ? account.get('reward_hive_balance') : null;
     const reward_hbd =
-        parseFloat(account.get('reward_hbd_balance').split(' ')[0]) > 0
-            ? account.get('reward_hbd_balance')
-            : null;
+        parseFloat(account.get('reward_hbd_balance').split(' ')[0]) > 0 ? account.get('reward_hbd_balance') : null;
     const reward_hp =
         parseFloat(account.get('reward_vesting_hive').split(' ')[0]) > 0
             ? account.get('reward_vesting_hive').replace('HIVE', 'HP')
@@ -49,17 +45,13 @@ class ClaimBox extends React.Component {
             claimed: false,
             empty: true,
             claimInProgress: false,
-            rewards_str: props.account
-                ? getRewardsString(props.account)
-                : 'Loading...',
+            rewards_str: props.account ? getRewardsString(props.account) : 'Loading...',
         };
     }
 
     componentDidUpdate(prevProps, prevState) {
         if (this.props.account !== prevProps.account) {
-            const rewards_str = this.props.account
-                ? getRewardsString(this.props.account)
-                : 'Loading...';
+            const rewards_str = this.props.account ? getRewardsString(this.props.account) : 'Loading...';
             this.setState({
                 rewards_str,
                 empty: rewards_str == nothingToClaim,
@@ -74,7 +66,7 @@ class ClaimBox extends React.Component {
         });
     };
 
-    handleClaimRewards = account => {
+    handleClaimRewards = (account) => {
         this.setState({
             claimInProgress: true,
         }); // disable the claim button
@@ -101,7 +93,7 @@ class ClaimBox extends React.Component {
                 <button
                     disabled={this.state.claimInProgress}
                     className="button"
-                    onClick={e => {
+                    onClick={(e) => {
                         e.preventDefault();
                         this.handleClaimRewards(account);
                     }}
@@ -117,8 +109,7 @@ const mapStateToProps = (state, ownProps) => {
     const accountName = ownProps.accountName;
     const currentUser = state.user.get('current');
     const account = state.global.getIn(['accounts', accountName]);
-    const isOwnAccount =
-        state.user.getIn(['current', 'username'], '') == accountName;
+    const isOwnAccount = state.user.getIn(['current', 'username'], '') == accountName;
     return {
         account,
         currentUser,
@@ -126,7 +117,7 @@ const mapStateToProps = (state, ownProps) => {
     };
 };
 
-const mapDispatchToProps = dispatch => {
+const mapDispatchToProps = (dispatch) => {
     return {
         claimRewards: (account, successCB) => {
             const username = account.get('name');

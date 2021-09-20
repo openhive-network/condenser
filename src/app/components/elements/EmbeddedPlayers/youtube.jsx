@@ -98,15 +98,9 @@ export function embedNode(child, links, images) {
         if (!yt) return child;
 
         if (yt.startTime) {
-            child.data = child.data.replace(
-                yt.url,
-                `~~~ embed:${yt.id} youtube ${yt.startTime} ~~~`
-            );
+            child.data = child.data.replace(yt.url, `~~~ embed:${yt.id} youtube ${yt.startTime} ~~~`);
         } else {
-            child.data = child.data.replace(
-                yt.url,
-                `~~~ embed:${yt.id} youtube ~~~`
-            );
+            child.data = child.data.replace(yt.url, `~~~ embed:${yt.id} youtube ~~~`);
         }
 
         if (links) links.add(yt.url);

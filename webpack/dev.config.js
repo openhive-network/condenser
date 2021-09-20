@@ -32,7 +32,7 @@ module.exports = {
         function () {
             console.log("Please wait for app server startup (~60s)" +
                 " after webpack server startup...");
-            this.plugin('done', startKoa);
+            this.hooks.done.tap('StartKoa', startKoa);
         },
         new LiveReloadPlugin({
             appendScriptTag: true,

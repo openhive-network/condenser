@@ -3,7 +3,7 @@ import { storiesOf } from '@storybook/react';
 import NativeSelect from './index';
 import { Center } from 'decorators';
 
-const opts = topic => [
+const opts = (topic) => [
     {
         value: 'trending',
         label: 'TRENDY',
@@ -31,7 +31,7 @@ storiesOf('Elements', module)
     .add('NativeSelect', () => (
         <NativeSelect
             className={'Rat'}
-            onChange={e => {
+            onChange={(e) => {
                 console.log('arg:', e.value);
             }}
             options={opts('cool')}

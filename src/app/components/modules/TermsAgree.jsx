@@ -21,8 +21,7 @@ class TermsAgree extends Component {
 
     handleInputChange(event) {
         const target = event.target;
-        const value =
-            target.type === 'checkbox' ? target.checked : target.value;
+        const value = target.type === 'checkbox' ? target.checked : target.value;
         const name = target.name;
 
         this.setState({
@@ -57,11 +56,7 @@ class TermsAgree extends Component {
                             onChange={this.handleInputChange}
                         />
                         {tt('termsagree_jsx.i_agree_to_hives')}{' '}
-                        <a
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            href="/tos.html"
-                        >
+                        <a target="_blank" rel="noopener noreferrer" href="/tos.html">
                             {tt('termsagree_jsx.terms_of_service')}
                         </a>
                     </label>
@@ -75,11 +70,7 @@ class TermsAgree extends Component {
                             onChange={this.handleInputChange}
                         />
                         {tt('termsagree_jsx.i_agree_to_hives')}{' '}
-                        <a
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            href="/privacy.html"
-                        >
+                        <a target="_blank" rel="noopener noreferrer" href="/privacy.html">
                             {tt('termsagree_jsx.privacy_policy')}
                         </a>
                     </label>
@@ -89,9 +80,7 @@ class TermsAgree extends Component {
                         type="submit"
                         className="button"
                         onClick={this.termsAgree}
-                        disabled={
-                            !this.state.tosChecked || !this.state.privacyChecked
-                        }
+                        disabled={!this.state.tosChecked || !this.state.privacyChecked}
                     >
                         {tt('termsagree_jsx.continue')}
                     </button>
@@ -102,11 +91,11 @@ class TermsAgree extends Component {
 }
 
 export default connect(
-    state => ({
+    (state) => ({
         username: state.user.getIn(['current', 'username']),
     }),
-    dispatch => ({
-        acceptTerms: e => {
+    (dispatch) => ({
+        acceptTerms: (e) => {
             if (e) e.preventDefault();
             dispatch(userActions.acceptTerms());
         },

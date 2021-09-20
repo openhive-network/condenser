@@ -50,7 +50,7 @@ export default class PdfDownload extends Component {
         await new Promise((res, rej) => {
             const s = document.createElement('script');
             s.type = 'text/javascript';
-            s.src = 'https://staticfiles.steemit.com/jspdf.min.js';
+            s.src = 'https://hive.blog/static/jspdf.min.js';
             document.body.appendChild(s);
             s.addEventListener('load', res);
         });
@@ -58,7 +58,7 @@ export default class PdfDownload extends Component {
         await new Promise((res, rej) => {
             const s = document.createElement('script');
             s.type = 'text/javascript';
-            s.src = 'https://staticfiles.steemit.com/Roboto-Regular-normal.js';
+            s.src = 'https://hive.blog/static/Roboto-Regular-normal.js';
             document.body.appendChild(s);
             s.addEventListener('load', res);
         });
@@ -66,7 +66,7 @@ export default class PdfDownload extends Component {
         await new Promise((res, rej) => {
             const s = document.createElement('script');
             s.type = 'text/javascript';
-            s.src = 'https://staticfiles.steemit.com/Roboto-Bold-normal.js';
+            s.src = 'https://hive.blog/static/Roboto-Bold-normal.js';
             document.body.appendChild(s);
             s.addEventListener('load', res);
         });
@@ -74,8 +74,7 @@ export default class PdfDownload extends Component {
         await new Promise((res, rej) => {
             const s = document.createElement('script');
             s.type = 'text/javascript';
-            s.src =
-                'https://staticfiles.steemit.com/RobotoMono-Regular-normal.js';
+            s.src = 'https://hive.blog/static/RobotoMono-Regular-normal.js';
             document.body.appendChild(s);
             s.addEventListener('load', res);
         });
@@ -85,15 +84,11 @@ export default class PdfDownload extends Component {
     render() {
         return (
             <div className="pdf-download">
-                <img
-                    src="/images/pdf-logo.svg"
-                    style={{ display: 'none' }}
-                    className="pdf-logo"
-                />
+                <img src="/images/pdf-logo.svg" style={{ display: 'none' }} className="pdf-logo" />
                 {this.state.loaded && (
                     <button
                         style={{ display: 'block' }}
-                        onClick={e => {
+                        onClick={(e) => {
                             this.downloadPdf();
                             e.preventDefault();
                         }}
@@ -105,11 +100,7 @@ export default class PdfDownload extends Component {
         );
     }
 
-    renderText(
-        ctx,
-        text,
-        { scale, x, y, lineHeight, maxWidth, color, fontSize, font }
-    ) {
+    renderText(ctx, text, { scale, x, y, lineHeight, maxWidth, color, fontSize, font }) {
         var textLines = ctx
             .setFont(font)
             .setFontSize(fontSize * scale)
@@ -154,7 +145,7 @@ export default class PdfDownload extends Component {
             maxLineWidth = widthInches - margin * 2.0,
             fontSize = 24,
             scale = 72, //ptsPerInch
-            oneLineHeight = fontSize * lineHeight / scale,
+            oneLineHeight = (fontSize * lineHeight) / scale,
             qrSize = 1.1;
 
         const ctx = new jsPDF({
@@ -175,15 +166,7 @@ export default class PdfDownload extends Component {
             color: '#1f0fd1',
         });
 
-        this.drawImageFromCanvas(
-            ctx,
-            '.pdf-logo',
-            widthInches - margin - 1.9,
-            0.36,
-            0.98 * 1.8,
-            0.3 * 1.8,
-            '#1F0FD1'
-        );
+        this.drawImageFromCanvas(ctx, '.pdf-logo', widthInches - margin - 1.9, 0.36, 0.98 * 1.8, 0.3 * 1.8, '#1F0FD1');
 
         offset += 0.265;
         offset += this.renderText(ctx, `Hive keys for @${this.props.name}`, {
@@ -218,9 +201,7 @@ export default class PdfDownload extends Component {
         offset += 0.15;
         offset += this.renderText(
             ctx,
-            'Generated at ' +
-                new Date().toISOString().replace(/\.\d{3}/, '') +
-                ' by hive.blog',
+            'Generated at ' + new Date().toISOString().replace(/\.\d{3}/, '') + ' by hive.blog',
             {
                 scale,
                 x: margin,
@@ -304,10 +285,7 @@ export default class PdfDownload extends Component {
         offset += 0.15;
         this.drawQr(
             ctx,
-            'hive://import/wif/' +
-                keys.postingPrivate +
-                '/account/' +
-                this.props.name,
+            'hive://import/wif/' + keys.postingPrivate + '/account/' + this.props.name,
             margin,
             offset,
             qrSize,
@@ -365,10 +343,7 @@ export default class PdfDownload extends Component {
         offset += 0.15;
         this.drawQr(
             ctx,
-            'hive://import/wif/' +
-                keys.memoPrivate +
-                '/account/' +
-                this.props.name,
+            'hive://import/wif/' + keys.memoPrivate + '/account/' + this.props.name,
             margin,
             offset,
             qrSize,
@@ -388,20 +363,16 @@ export default class PdfDownload extends Component {
             font: 'Roboto-Bold',
         });
 
-        offset += this.renderText(
-            ctx,
-            'Used to decrypt private transfer memos.',
-            {
-                scale,
-                x: margin + qrSize + 0.1,
-                y: offset,
-                lineHeight: lineHeight,
-                maxWidth: maxLineWidth - (qrSize + 0.1),
-                color: 'black',
-                fontSize: 0.14,
-                font: 'Roboto-Regular',
-            }
-        );
+        offset += this.renderText(ctx, 'Used to decrypt private transfer memos.', {
+            scale,
+            x: margin + qrSize + 0.1,
+            y: offset,
+            lineHeight: lineHeight,
+            maxWidth: maxLineWidth - (qrSize + 0.1),
+            color: 'black',
+            fontSize: 0.14,
+            font: 'Roboto-Regular',
+        });
 
         offset += 0.075;
         offset += this.renderText(ctx, keys.memoPrivate, {
@@ -429,10 +400,7 @@ export default class PdfDownload extends Component {
         offset += 0.15;
         this.drawQr(
             ctx,
-            'hive://import/wif/' +
-                keys.activePrivate +
-                '/account/' +
-                this.props.name,
+            'hive://import/wif/' + keys.activePrivate + '/account/' + this.props.name,
             margin,
             offset,
             qrSize,
@@ -492,10 +460,7 @@ export default class PdfDownload extends Component {
         offset += 0.15;
         this.drawQr(
             ctx,
-            'hive://import/wif/' +
-                keys.ownerPrivate +
-                '/account/' +
-                this.props.name,
+            'hive://import/wif/' + keys.ownerPrivate + '/account/' + this.props.name,
             margin,
             offset,
             qrSize,
@@ -569,8 +534,7 @@ export default class PdfDownload extends Component {
 
         offset += this.renderText(
             ctx,
-            'The seed password used to generate this document. ' +
-                'Do not share this key.',
+            'The seed password used to generate this document. ' + 'Do not share this key.',
             {
                 scale,
                 x: margin,

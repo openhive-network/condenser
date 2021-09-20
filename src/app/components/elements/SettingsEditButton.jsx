@@ -19,12 +19,12 @@ class SettingsEditButton extends React.Component {
         };
     }
 
-    onToggleDialog = e => {
+    onToggleDialog = (e) => {
         if (e) e.preventDefault();
         this.setState({ showDialog: !this.state.showDialog });
     };
 
-    onSave = newSettings => {
+    onSave = (newSettings) => {
         const community = this.props.community.get('name');
         this.setState({ loading: true });
         this.props.saveSettings(
@@ -62,7 +62,7 @@ class SettingsEditButton extends React.Component {
                         <CloseButton onClick={() => this.onToggleDialog()} />
                         <CommunitySettings
                             {...settings}
-                            onSubmit={newSettings => {
+                            onSubmit={(newSettings) => {
                                 this.onToggleDialog();
                                 this.onSave(newSettings);
                             }}
@@ -86,10 +86,7 @@ SettingsEditButton.defaultProps = {
 
 export default connect(
     (state, ownProps) => {
-        const community = state.global.getIn(
-            ['community', ownProps.community],
-            {}
-        );
+        const community = state.global.getIn(['community', ownProps.community], {});
         const settings = {
             title: community.get('title'),
             about: community.get('about'),
@@ -106,14 +103,8 @@ export default connect(
             settings,
         };
     },
-    dispatch => ({
-        saveSettings: (
-            account,
-            community,
-            settings,
-            successCallback,
-            errorCallback
-        ) => {
+    (dispatch) => ({
+        saveSettings: (account, community, settings, successCallback, errorCallback) => {
             const action = 'updateProps';
 
             const payload = [
@@ -137,7 +128,7 @@ export default connect(
                 })
             );
         },
-        pushState: state => {
+        pushState: (state) => {
             dispatch(globalActions.receiveState(state));
         },
     })

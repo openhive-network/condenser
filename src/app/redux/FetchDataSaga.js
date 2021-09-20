@@ -1,13 +1,13 @@
-import { call, put, select, fork, takeLatest, takeEvery } from 'redux-saga/effects';
-import { api } from '@hiveio/hive-js';
+import {
+ call, put, select, fork, takeLatest, takeEvery
+} from 'redux-saga/effects';
 import { loadFollows } from 'app/redux/FollowSaga';
+import { getStateAsync, callBridge } from 'app/utils/steemApi';
+import { fetchCrossPosts, augmentContentWithCrossPost } from 'app/utils/CrossPosts';
 import * as globalActions from './GlobalReducer';
 import * as appActions from './AppReducer';
 import * as transactionActions from './TransactionReducer';
 import constants from './constants';
-import { fromJS, Map, Set } from 'immutable';
-import { getStateAsync, callBridge } from 'app/utils/steemApi';
-import { fetchCrossPosts, augmentContentWithCrossPost } from 'app/utils/CrossPosts';
 
 const REQUEST_DATA = 'fetchDataSaga/REQUEST_DATA';
 const FETCH_STATE = 'fetchDataSaga/FETCH_STATE';
@@ -45,7 +45,7 @@ export function* getPostHeader(action) {
 let is_initial_state = true;
 export function* fetchState(location_change_action) {
     const { pathname } = location_change_action.payload;
-    const m = pathname.match(/^\/@([a-z0-9\.-]+)(\/notifications)?/);
+    const m = pathname.match(/^\/@([a-z0-9.-]+)(\/notifications)?/);
     if (m && m.length >= 2) {
         const username = m[1];
         yield fork(loadFollows, 'getFollowersAsync', username, 'blog');
@@ -54,7 +54,7 @@ export function* fetchState(location_change_action) {
 
     // `ignore_fetch` case should only trigger on initial page load. No need to call
     // fetchState immediately after loading fresh state from the server. Details: #593
-    const server_location = yield select(state => state.offchain.get('server_location'));
+    const server_location = yield select((state) => state.offchain.get('server_location'));
     const ignore_fetch = pathname === server_location && is_initial_state;
 
     if (ignore_fetch) {
@@ -70,7 +70,7 @@ export function* fetchState(location_change_action) {
     try {
         let username = null;
         if (process.env.BROWSER) {
-            [username] = yield select(state => [state.user.getIn(['current', 'username'])]);
+            [username] = yield select((state) => [state.user.getIn(['current', 'username'])]);
         }
         const state = yield call(getStateAsync, url, username, false);
         yield put(globalActions.receiveState(state));
@@ -88,16 +88,16 @@ function* syncSpecialPosts() {
     if (!process.env.BROWSER) return null;
 
     // Get special posts from the store.
-    const specialPosts = yield select(state => state.offchain.get('special_posts'));
+    const specialPosts = yield select((state) => state.offchain.get('special_posts'));
 
     // Mark seen featured posts.
-    const seenFeaturedPosts = specialPosts.get('featured_posts').map(post => {
+    const seenFeaturedPosts = specialPosts.get('featured_posts').map((post) => {
         const id = `${post.get('author')}/${post.get('permlink')}`;
         return post.set('seen', localStorage.getItem(`featured-post-seen:${id}`) === 'true');
     });
 
     // Mark seen promoted posts.
-    const seenPromotedPosts = specialPosts.get('promoted_posts').map(post => {
+    const seenPromotedPosts = specialPosts.get('promoted_posts').map((post) => {
         const id = `${post.get('author')}/${post.get('permlink')}`;
         return post.set('seen', localStorage.getItem(`promoted-post-seen:${id}`) === 'true');
     });
@@ -111,29 +111,18 @@ function* syncSpecialPosts() {
     );
 
     // Mark all featured posts as seen.
-    specialPosts.get('featured_posts').forEach(post => {
+    specialPosts.get('featured_posts').forEach((post) => {
         const id = `${post.get('author')}/${post.get('permlink')}`;
         localStorage.setItem(`featured-post-seen:${id}`, 'true');
     });
 
     // Mark all promoted posts as seen.
-    specialPosts.get('promoted_posts').forEach(post => {
+    specialPosts.get('promoted_posts').forEach((post) => {
         const id = `${post.get('author')}/${post.get('permlink')}`;
         localStorage.setItem(`promoted-post-seen:${id}`, 'true');
     });
 }
 
-/**
- * Request account data for a set of usernames.
- *
- * @todo batch the put()s
- *
- * @param {Iterable} usernames
- */
-function* getAccounts(usernames) {
-    const accounts = yield call([api, api.getAccountsAsync], usernames);
-    yield put(globalActions.receiveAccounts({ accounts }));
-}
 
 /**
  * Request all communities
@@ -161,7 +150,7 @@ export function* listCommunities(action) {
 export function* getCommunity(action) {
     if (!action.payload) throw 'no community specified';
 
-    const currentUser = yield select(state => state.user.get('current'));
+    const currentUser = yield select((state) => state.user.get('current'));
     const currentUsername = currentUser && currentUser.get('username');
 
     // TODO: If no current user is logged in, skip the observer param.
@@ -171,12 +160,13 @@ export function* getCommunity(action) {
     });
 
     // TODO: Handle error state
-    if (community.name)
+    if (community.name) {
         yield put(
             globalActions.receiveCommunity({
                 [community.name]: { ...community },
             })
         );
+    }
 }
 
 /**
@@ -219,7 +209,6 @@ export function* getAccountNotifications(action) {
             console.error('~~ Saga getAccountNotifications error ~~>', notifications.error);
             yield put(appActions.steemApiError(notifications.error.message));
         } else {
-            const limit = action.payload.limit ? action.payload.limit : 100;
             const isLastPage = notifications.length < action.payload.limit;
             yield put(
                 globalActions.receiveNotifications({
@@ -294,7 +283,9 @@ export function* markNotificationsAsReadSaga(action) {
 
 export function* fetchData(action) {
     // TODO: postFilter unused
-    const { order, author, permlink, postFilter, observer } = action.payload;
+    const {
+        order, author, permlink, postFilter, observer
+    } = action.payload;
     let { category } = action.payload;
     if (!category) category = '';
 
@@ -311,7 +302,6 @@ export function* fetchData(action) {
             observer,
         };
     } else {
-        console.log('fetch saga ranked posts');
         call_name = 'get_ranked_posts';
         args = {
             sort: order,
@@ -359,7 +349,7 @@ export function* fetchData(action) {
                 data = posts;
             }
 
-            batch++;
+            batch += 1;
             fetchLimitReached = batch >= constants.MAX_BATCHES;
 
             if (data.length > 0) {
@@ -370,7 +360,11 @@ export function* fetchData(action) {
 
             // Still return all data but only count ones matching the filter.
             // Rely on UI to actually hide the posts.
-            fetched += postFilter ? data.filter(postFilter).length : data.length;
+            if (postFilter && data) {
+                fetched += data.filter(postFilter).length;
+            } else {
+                fetched += data.length;
+            }
 
             fetchDone = endOfData || fetchLimitReached || fetched >= constants.FETCH_DATA_BATCH_SIZE;
 
@@ -397,7 +391,11 @@ export function* fetchData(action) {
     @arg {string} url
     @arg {object} body (for JSON.stringify)
 */
-function* fetchJson({ payload: { id, url, body, successCallback, skipLoading = false } }) {
+function* fetchJson({
+ payload: {
+ id, url, body, successCallback, skipLoading = false
+}
+}) {
     try {
         const payload = {
             method: body ? 'POST' : 'GET',
@@ -416,7 +414,7 @@ function* fetchJson({ payload: { id, url, body, successCallback, skipLoading = f
         yield put(globalActions.fetchJsonResult({ id, error }));
     }
 }
-export function* getRewardsDataSaga(action) {
+export function* getRewardsDataSaga() {
     yield put(appActions.fetchDataBegin());
     try {
         const rewards = yield call(callBridge, 'get_payout_stats', {});
@@ -435,54 +433,54 @@ export function* getRewardsDataSaga(action) {
 
 // Action creators
 export const actions = {
-    listCommunities: payload => ({
+    listCommunities: (payload) => ({
         type: LIST_COMMUNITIES,
         payload,
     }),
 
-    getCommunity: payload => {
+    getCommunity: (payload) => {
         return {
             type: GET_COMMUNITY,
             payload,
         };
     },
 
-    getSubscriptions: payload => ({
+    getSubscriptions: (payload) => ({
         type: GET_SUBSCRIPTIONS,
         payload,
     }),
 
-    getAccountNotifications: payload => ({
+    getAccountNotifications: (payload) => ({
         type: GET_ACCOUNT_NOTIFICATIONS,
         payload,
     }),
 
-    getUnreadAccountNotifications: payload => ({
+    getUnreadAccountNotifications: (payload) => ({
         type: GET_UNREAD_ACCOUNT_NOTIFICATIONS,
         payload,
     }),
 
-    markNotificationsAsRead: payload => ({
+    markNotificationsAsRead: (payload) => ({
         type: MARK_NOTIFICATIONS_AS_READ,
         payload,
     }),
 
-    requestData: payload => ({
+    requestData: (payload) => ({
         type: REQUEST_DATA,
         payload,
     }),
 
-    getPostHeader: payload => ({
+    getPostHeader: (payload) => ({
         type: GET_POST_HEADER,
         payload,
     }),
 
-    fetchState: payload => ({
+    fetchState: (payload) => ({
         type: FETCH_STATE,
         payload,
     }),
 
-    getRewardsData: payload => ({
+    getRewardsData: (payload) => ({
         type: GET_REWARDS_DATA,
         payload,
     }),

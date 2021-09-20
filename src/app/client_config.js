@@ -38,14 +38,11 @@ export const ALLOWED_CURRENCIES = ['USD'];
 
 // meta info
 export const TWITTER_HANDLE = '@';
-export const SHARE_IMAGE =
-    'https://' + APP_DOMAIN + '/images/hive-blog-share.png';
-export const TWITTER_SHARE_IMAGE =
-    'https://' + APP_DOMAIN + '/images/hive-blog-twshare.png';
-export const SITE_DESCRIPTION =
-    'Hive is a social media platform where everyone gets paid for ' +
-    'creating and curating content. It leverages a robust digital points system, called Hive, that ' +
-    'supports real value for digital rewards through market price discovery and liquidity';
+export const SHARE_IMAGE = 'https://' + APP_DOMAIN + '/images/hive-blog-share.png';
+export const TWITTER_SHARE_IMAGE = 'https://' + APP_DOMAIN + '/images/hive-blog-twshare.png';
+export const SITE_DESCRIPTION = 'Hive is a social media platform where everyone gets paid for '
+    + 'creating and curating content. It leverages a robust digital points system, called Hive, that '
+    + 'supports real value for digital rewards through market price discovery and liquidity';
 
 // various
 export const SUPPORT_EMAIL = 'support@' + APP_DOMAIN;

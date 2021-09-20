@@ -29,7 +29,7 @@ class VisualEditor extends Component {
         this.state = state;
     }
 
-    onChange = value => {
+    onChange = (value) => {
         this.setState({ value });
         if (this.props.onChange) {
             this.props.onChange(value.toString('markdown'));

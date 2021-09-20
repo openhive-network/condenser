@@ -2,55 +2,41 @@ import React, { PureComponent } from 'react';
 import Autocomplete from 'react-autocomplete';
 // import shouldComponentUpdate from 'app/utils/shouldComponentUpdate';
 import { validate_account_name } from 'app/utils/ChainValidation';
-import reactForm from 'app/utils/ReactForm';
 import { List, Set } from 'immutable';
 import tt from 'counterpart';
 import PropTypes from 'prop-types';
 
+import { connect } from 'react-redux';
+
 export class BeneficiarySelector extends PureComponent {
     static propTypes = {
         // HTML props
-        id: PropTypes.string, // DOM id for active component (focusing, etc...)
         onChange: PropTypes.func.isRequired,
-        onBlur: PropTypes.func.isRequired,
         value: PropTypes.array,
-        tabIndex: PropTypes.number,
 
         // redux connect
         following: PropTypes.array.isRequired,
     };
-    static defaultProps = {
-        id: 'BeneficiarySelectorId',
-    };
-    constructor() {
-        super();
-        // this.shouldComponentUpdate = shouldComponentUpdate(
-        //     this,
-        //     'BeneficiarySelector'
-        // );
-    }
 
     matchAutocompleteUser(item, value) {
         return item.toLowerCase().indexOf(value.toLowerCase()) > -1;
     }
 
-    handleAddBeneficiary = e => {
+    handleAddBeneficiary = (e) => {
         e.preventDefault();
         const beneficiaries = this.props.value;
         if (beneficiaries.length < 8) {
-            this.props.onChange(
-                beneficiaries.concat([{ username: '', percent: '' }])
-            );
+            this.props.onChange(beneficiaries.concat([{ username: '', percent: '' }]));
         }
     };
 
-    handleRemoveBeneficiary = idx => e => {
+    handleRemoveBeneficiary = (idx) => (e) => {
         e.preventDefault();
         const beneficiaries = this.props.value;
         this.props.onChange(beneficiaries.filter((s, bidx) => idx != bidx));
     };
 
-    handleBeneficiaryUserChange = idx => e => {
+    handleBeneficiaryUserChange = (idx) => (e) => {
         e.preventDefault();
         const beneficiaries = this.props.value;
         const newBeneficiaries = beneficiaries.map((beneficiary, bidx) => {
@@ -60,7 +46,7 @@ export class BeneficiarySelector extends PureComponent {
         this.props.onChange(newBeneficiaries);
     };
 
-    handleBeneficiaryUserSelect = idx => val => {
+    handleBeneficiaryUserSelect = (idx) => (val) => {
         const beneficiaries = this.props.value;
         const newBeneficiaries = beneficiaries.map((beneficiary, bidx) => {
             if (idx != bidx) return beneficiary;
@@ -69,7 +55,7 @@ export class BeneficiarySelector extends PureComponent {
         this.props.onChange(newBeneficiaries);
     };
 
-    handleBeneficiaryPercentChange = idx => e => {
+    handleBeneficiaryPercentChange = (idx) => (e) => {
         e.preventDefault();
         const beneficiaries = this.props.value;
         const newBeneficiaries = beneficiaries.map((beneficiary, bidx) => {
@@ -80,13 +66,9 @@ export class BeneficiarySelector extends PureComponent {
     };
 
     render() {
-        const { username, following, tabIndex } = this.props;
+        const { username } = this.props;
         const beneficiaries = this.props.value;
-        const remainingPercent =
-            100 -
-            beneficiaries
-                .map(b => (b.percent ? parseInt(b.percent) : 0))
-                .reduce((sum, elt) => sum + elt, 0);
+        const remainingPercent = 100 - beneficiaries.map((b) => (b.percent ? parseInt(b.percent) : 0)).reduce((sum, elt) => sum + elt, 0);
 
         return (
             <span>
@@ -101,20 +83,13 @@ export class BeneficiarySelector extends PureComponent {
                                 disabled
                                 className="BeneficiarySelector__percentbox"
                             />
-                            <span className="BeneficiarySelector__percentrow">
-                                %
-                            </span>
+                            <span className="BeneficiarySelector__percentrow">%</span>
                         </div>
                     </div>
                     <div className="column small-5">
                         <div className="input-group">
                             <span className="input-group-label">@</span>
-                            <input
-                                className="input-group-field bold"
-                                type="text"
-                                disabled
-                                value={username}
-                            />
+                            <input className="input-group-field bold" type="text" disabled value={username} />
                         </div>
                     </div>
                 </div>
@@ -127,14 +102,10 @@ export class BeneficiarySelector extends PureComponent {
                                     type="text"
                                     pattern="[0-9]*"
                                     value={beneficiary.percent}
-                                    onChange={this.handleBeneficiaryPercentChange(
-                                        idx
-                                    )}
+                                    onChange={this.handleBeneficiaryPercentChange(idx)}
                                     className="BeneficiarySelector__percentbox"
                                 />
-                                <span className="BeneficiarySelector__percentrow">
-                                    %
-                                </span>
+                                <span className="BeneficiarySelector__percentrow">%</span>
                             </div>
                         </div>
                         <div className="column small-5">
@@ -154,42 +125,25 @@ export class BeneficiarySelector extends PureComponent {
                                         autoCapitalize: 'off',
                                         spellCheck: 'false',
                                     }}
-                                    renderMenu={items => (
-                                        <div
-                                            className="react-autocomplete-input"
-                                            children={items}
-                                        />
-                                    )}
-                                    getItemValue={item => item}
-                                    items={this.props.following}
-                                    shouldItemRender={
-                                        this.matchAutocompleteUser
-                                    }
-                                    renderItem={(item, isHighlighted) => (
-                                        <div
-                                            className={
-                                                isHighlighted ? 'active' : ''
-                                            }
-                                        >
-                                            {item}
+                                    renderMenu={(items) => (
+                                        <div className="react-autocomplete-input">
+                                            {items}
                                         </div>
                                     )}
+                                    getItemValue={(item) => item}
+                                    items={this.props.following}
+                                    shouldItemRender={this.matchAutocompleteUser}
+                                    renderItem={(item, isHighlighted) => (
+                                        <div className={isHighlighted ? 'active' : ''}>{item}</div>
+                                    )}
                                     value={beneficiary.username}
-                                    onChange={this.handleBeneficiaryUserChange(
-                                        idx
-                                    )}
-                                    onSelect={this.handleBeneficiaryUserSelect(
-                                        idx
-                                    )}
+                                    onChange={this.handleBeneficiaryUserChange(idx)}
+                                    onSelect={this.handleBeneficiaryUserSelect(idx)}
                                 />
                             </div>
                         </div>
                         <div className="BeneficiarySelector__percentrow column small-5">
-                            <a
-                                id="remove"
-                                href="#"
-                                onClick={this.handleRemoveBeneficiary(idx)}
-                            >
+                            <a id="remove" href="#" onClick={this.handleRemoveBeneficiary(idx)}>
                                 {tt('g.remove')}
                             </a>
                         </div>
@@ -197,12 +151,7 @@ export class BeneficiarySelector extends PureComponent {
                 ))}
                 <div className="row">
                     <div className="column">
-                        <a
-                            id="add"
-                            href="#"
-                            onClick={this.handleAddBeneficiary}
-                            hidden={beneficiaries.length >= 8}
-                        >
+                        <a id="add" href="#" onClick={this.handleAddBeneficiary} hidden={beneficiaries.length >= 8}>
                             {tt('beneficiary_selector_jsx.add')}
                         </a>
                     </div>
@@ -212,18 +161,14 @@ export class BeneficiarySelector extends PureComponent {
     }
 }
 
-export function validateBeneficiaries(
-    username,
-    beneficiaries,
-    required = true
-) {
+export function validateBeneficiaries(username, beneficiaries, required = true) {
     if (beneficiaries.length > 8) {
         return tt('beneficiary_selector_jsx.exceeds_max_beneficiaries');
     }
-    var totalPercent = 0;
+    let totalPercent = 0;
 
-    var beneficiaryNames = Set();
-    for (var i = 0; i < beneficiaries.length; i++) {
+    let beneficiaryNames = Set();
+    for (let i = 0; i < beneficiaries.length; i += 1) {
         const beneficiary = beneficiaries[i];
         const accountError = validate_account_name(beneficiary.username, '');
         if ((required || beneficiary.username) && accountError) {
@@ -233,16 +178,11 @@ export function validateBeneficiaries(
             return tt('beneficiary_selector_jsx.beneficiary_cannot_be_self');
         }
         if (beneficiaryNames.has(beneficiary.username)) {
-            return tt(
-                'beneficiary_selector_jsx.beneficiary_cannot_be_duplicate'
-            );
-        } else {
-            beneficiaryNames = beneficiaryNames.add(beneficiary.username);
+            return tt('beneficiary_selector_jsx.beneficiary_cannot_be_duplicate');
         }
-        if (
-            (required || beneficiary.percent) &&
-            !/^[1-9]\d{0,2}$/.test(beneficiary.percent)
-        ) {
+            beneficiaryNames = beneficiaryNames.add(beneficiary.username);
+
+        if ((required || beneficiary.percent) && !/^[1-9]\d{0,2}$/.test(beneficiary.percent)) {
             return tt('beneficiary_selector_jsx.beneficiary_percent_invalid');
         }
         totalPercent += parseInt(beneficiary.percent);
@@ -252,18 +192,12 @@ export function validateBeneficiaries(
     }
 }
 
-import { connect } from 'react-redux';
-
 export default connect((state, ownProps) => {
     let following = List();
     const username = state.user.getIn(['current', 'username']);
     const follow = state.global.get('follow');
     if (follow) {
-        const followingData = follow.getIn([
-            'getFollowingAsync',
-            username,
-            'blog_result',
-        ]);
+        const followingData = follow.getIn(['getFollowingAsync', username, 'blog_result']);
         if (followingData) following = followingData.sort();
     }
     return {

@@ -5,11 +5,11 @@ import { Iterable } from 'immutable';
     Wrapper for PureRenderMixin.
     This allows debugging that will show which properties changed.
 */
-export default function(instance, name) {
+export default function (instance, name) {
     const mixin = React.PureComponent.shouldComponentUpdate.bind(instance);
     if (
-        process.env.BROWSER &&
-        window.steemDebug_shouldComponentUpdate === undefined
+        process.env.BROWSER
+        && window.steemDebug_shouldComponentUpdate === undefined
     ) {
         window.steemDebug_shouldComponentUpdate = false; // console command line completion
     }
@@ -17,11 +17,7 @@ export default function(instance, name) {
         const upd = mixin(nextProps, nextState);
         // Usage: steemDebug_shouldComponentUpdate = true
         // Or: steemDebug_shouldComponentUpdate = /Comment/
-        if (
-            upd &&
-            process.env.BROWSER &&
-            window.steemDebug_shouldComponentUpdate
-        ) {
+        if (upd && process.env.BROWSER && window.steemDebug_shouldComponentUpdate) {
             const filter = window.steemDebug_shouldComponentUpdate;
             if (filter.test) {
                 if (!filter.test(name)) return upd;
@@ -37,7 +33,7 @@ export function compare(name, a, b) {
     const aKeys = new Set(a && Object.keys(a));
     const bKeys = new Set(b && Object.keys(b));
     const ab = new Set([...aKeys, ...aKeys]);
-    ab.forEach(key => {
+    ab.forEach((key) => {
         const hasA = aKeys.has(key);
         const hasB = bKeys.has(key);
         if (!hasA && !hasB) return;
@@ -54,4 +50,4 @@ export function compare(name, a, b) {
     });
 }
 
-const toJS = o => (Iterable.isIterable(o) ? o.toJS() : o);
+const toJS = (o) => (Iterable.isIterable(o) ? o.toJS() : o);

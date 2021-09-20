@@ -31,29 +31,20 @@ class MuteButton extends React.Component {
         const key = ['content', postref, 'stats', 'gray'];
         this.props.stateSet(key, !isMuted);
 
-        this.props.toggleMutedPost(
-            username,
-            !isMuted,
-            community,
-            account,
-            notes,
-            permlink
-        );
+        this.props.toggleMutedPost(username, !isMuted, community, account, notes, permlink);
     };
 
     render() {
         const { isMuted } = this.props;
         return (
             <span>
-                <a onClick={() => this.showDialog()}>
-                    {isMuted ? 'Unmute' : 'Mute'}
-                </a>
+                <a onClick={() => this.showDialog()}>{isMuted ? 'Unmute' : 'Mute'}</a>
                 {this.state.showDialog && (
                     <Reveal onHide={() => null} show>
                         <CloseButton onClick={() => this.hideDialog()} />
                         <MutePost
                             isMuted={isMuted}
-                            onSubmit={notes => {
+                            onSubmit={(notes) => {
                                 this.hideDialog();
                                 this.onSubmit(isMuted, notes);
                             }}
@@ -87,20 +78,11 @@ export default connect(
             username: state.user.getIn(['current', 'username']),
         };
     },
-    dispatch => ({
+    (dispatch) => ({
         stateSet: (key, value) => {
             dispatch(globalActions.set({ key, value }));
         },
-        toggleMutedPost: (
-            username,
-            mutePost,
-            community,
-            account,
-            notes,
-            permlink,
-            successCallback,
-            errorCallback
-        ) => {
+        toggleMutedPost: (username, mutePost, community, account, notes, permlink, successCallback, errorCallback) => {
             const action = mutePost ? 'mutePost' : 'unmutePost';
             const payload = [
                 action,

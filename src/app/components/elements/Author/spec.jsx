@@ -1,11 +1,11 @@
 import React from 'react';
 import { Provider } from 'react-redux';
 import { createStore } from 'redux';
-import Author from './index';
 import rootReducer from 'app/redux/RootReducer';
 import { configure, shallow } from 'enzyme';
 
 import Adapter from 'enzyme-adapter-react-16';
+import Author from './index';
 
 configure({ adapter: new Adapter() });
 

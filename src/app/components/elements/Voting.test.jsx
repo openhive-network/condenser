@@ -2,16 +2,15 @@ import React from 'react';
 import { IntlProvider } from 'react-intl';
 import { Provider } from 'react-redux';
 import { createStore } from 'redux';
-import { configure, mount, shallow } from 'enzyme';
+import { configure, shallow } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
 import { fromJS, Map } from 'immutable';
 import renderer from 'react-test-renderer';
 import rootReducer from 'app/redux/RootReducer';
-import Voting from './Voting';
 import configureMockStore from 'redux-mock-store';
+import Voting from './Voting';
 
 global.window = {};
-import localStorage from 'mock-local-storage';
 window.localStorage = global.localStorage;
 
 configure({ adapter: new Adapter() });
@@ -62,10 +61,10 @@ describe('Voting', () => {
             routing: {},
             app: {},
         });
-        let wrapped = shallow(
+        const wrapped = shallow(
             <Voting
-                flag={true}
-                vote={(w, p) => {}}
+                flag
+                vote={() => {}}
                 post={voteTestObj}
                 price_per_hive={1}
                 hbd_print_rate={10000}
@@ -88,11 +87,11 @@ describe('Voting', () => {
             routing: {},
             app: {},
         });
-        let wrapped = shallow(
+        const wrapped = shallow(
             <Voting
-                flag={true}
+                flag
                 myVote={-666}
-                vote={(w, p) => {}}
+                vote={() => {}}
                 post={voteTestObj}
                 price_per_hive={1}
                 hbd_print_rate={10000}
@@ -115,10 +114,10 @@ describe('Voting', () => {
             routing: {},
             app: {},
         });
-        let wrapped = shallow(
+        const wrapped = shallow(
             <Voting
                 flag={false}
-                vote={(w, p) => {}}
+                vote={() => {}}
                 post={voteTestObj}
                 price_per_hive={1}
                 hbd_print_rate={10000}
@@ -139,10 +138,10 @@ describe('Voting', () => {
             routing: {},
             app: {},
         });
-        let wrapped = shallow(
+        const wrapped = shallow(
             <Voting
                 flag={false}
-                vote={(w, p) => {}}
+                vote={() => {}}
                 post={voteTestObj}
                 price_per_hive={1}
                 hbd_print_rate={10000}
@@ -169,7 +168,7 @@ describe('Voting', () => {
         const component = renderer.create(
             <Provider store={store}>
                 <IntlProvider locale="en">
-                    <Voting vote={(w, p) => {}} post={post_obj} price_per_hive={1} hbd_print_rate={10000} />
+                    <Voting vote={() => {}} post={post_obj} price_per_hive={1} hbd_print_rate={10000} />
                 </IntlProvider>
             </Provider>
         );
@@ -190,7 +189,7 @@ describe('Voting', () => {
         const component = renderer.create(
             <Provider store={store}>
                 <IntlProvider locale="en">
-                    <Voting vote={(w, p) => {}} post={post_obj} price_per_hive={1} hbd_print_rate={10000} />
+                    <Voting vote={() => {}} post={post_obj} price_per_hive={1} hbd_print_rate={10000} />
                 </IntlProvider>
             </Provider>
         );
@@ -211,7 +210,7 @@ describe('Voting', () => {
         const component = renderer.create(
             <Provider store={store}>
                 <IntlProvider locale="en">
-                    <Voting vote={(w, p) => {}} post={post_obj} price_per_hive={1} hbd_print_rate={5000} />
+                    <Voting vote={() => {}} post={post_obj} price_per_hive={1} hbd_print_rate={5000} />
                 </IntlProvider>
             </Provider>
         );

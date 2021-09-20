@@ -13,6 +13,7 @@ const MINIMUM_REPUTATION = 15;
 export class Memo extends PureComponent {
     static propTypes = {
         text: PropTypes.string,
+        // eslint-disable-next-line react/no-unused-prop-types
         username: PropTypes.string,
         fromAccount: PropTypes.string,
         // redux props
@@ -38,7 +39,7 @@ export class Memo extends PureComponent {
         }
     }
 
-    onRevealMemo = e => {
+    onRevealMemo = (e) => {
         e.preventDefault();
         this.setState({ revealMemo: true });
     };
@@ -46,12 +47,8 @@ export class Memo extends PureComponent {
     render() {
         const { decodeMemo } = this;
         const {
-            memo_private,
-            text,
-            myAccount,
-            fromAccount,
-            fromNegativeRepUser,
-        } = this.props;
+ memo_private, text, myAccount, fromAccount, fromNegativeRepUser
+} = this.props;
         const isEncoded = /^#/.test(text);
 
         const isFromBadActor = BadActorList.indexOf(fromAccount) > -1;
@@ -70,9 +67,7 @@ export class Memo extends PureComponent {
         if (!isEncoded) {
             renderText = text;
         } else if (memo_private) {
-            renderText = myAccount
-                ? decodeMemo(memo_private, text)
-                : tt('g.login_to_see_memo');
+            renderText = myAccount ? decodeMemo(memo_private, text) : tt('g.login_to_see_memo');
         }
 
         return <span className={classes}>{renderText}</span>;
@@ -81,15 +76,10 @@ export class Memo extends PureComponent {
 
 export default connect((state, ownProps) => {
     const currentUser = state.user.get('current');
-    const myAccount =
-        currentUser && ownProps.username === currentUser.get('username');
-    const memo_private =
-        myAccount && currentUser
-            ? currentUser.getIn(['private_keys', 'memo_private'])
-            : null;
-    const fromNegativeRepUser =
-        repLog10(
-            state.global.getIn(['accounts', ownProps.fromAccount, 'reputation'])
-        ) < MINIMUM_REPUTATION;
-    return { ...ownProps, memo_private, myAccount, fromNegativeRepUser };
+    const myAccount = currentUser && ownProps.username === currentUser.get('username');
+    const memo_private = myAccount && currentUser ? currentUser.getIn(['private_keys', 'memo_private']) : null;
+    const fromNegativeRepUser = repLog10(state.global.getIn(['accounts', ownProps.fromAccount, 'reputation'])) < MINIMUM_REPUTATION;
+    return {
+ ...ownProps, memo_private, myAccount, fromNegativeRepUser
+};
 })(Memo);

@@ -20,10 +20,8 @@ const options = {
 storiesOf('Elements', module)
     .addDecorator(withKnobs)
     .addDecorator(Center)
-    .addDecorator(getStory => <Provider store={store}>{getStory()}</Provider>)
+    .addDecorator((getStory) => <Provider store={store}>{getStory()}</Provider>)
     .add('UserList', () => {
-        let mockUsers = List(
-            Array(number('number of users', 10, options)).fill('test')
-        );
+        let mockUsers = List(Array(number('number of users', 10, options)).fill('test'));
         return <UserList users={mockUsers} title="User List" />;
     });

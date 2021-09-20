@@ -12,11 +12,10 @@ class UserTitleEditor extends Component {
         };
     }
 
-    onInput = event => {
+    onInput = (event) => {
         const newState = {};
         let newValue = event.target.value || '';
-        if (event.target.hasOwnProperty('checked'))
-            newValue = event.target.checked;
+        if (event.target.hasOwnProperty('checked')) newValue = event.target.checked;
         newState[event.target.name] = newValue;
         this.setState(newState);
     };
@@ -49,16 +48,12 @@ class UserTitleEditor extends Component {
                         maxLength={32}
                         name="title"
                         value={title}
-                        onChange={e => this.onInput(e)}
+                        onChange={(e) => this.onInput(e)}
                     />
                 </div>
 
                 <div className="text-right">
-                    <button
-                        className="button"
-                        type="submit"
-                        onClick={() => this.onSubmit()}
-                    >
+                    <button className="button" type="submit" onClick={() => this.onSubmit()}>
                         Save
                     </button>
                 </div>

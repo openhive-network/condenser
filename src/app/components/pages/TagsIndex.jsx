@@ -36,16 +36,25 @@ export default class TagsIndex extends React.Component {
     };
 
     compareTags = (a, b, type) => {
+        let response;
         switch (type) {
             case 'name':
-                return a.get('name').localeCompare(b.get('name'));
+                response = a.get('name').localeCompare(b.get('name'));
+                break;
             case 'posts':
-                return parseInt(a.get('top_posts')) <= parseInt(b.get('top_posts')) ? 1 : -1;
+                response = parseInt(a.get('top_posts')) <= parseInt(b.get('top_posts')) ? 1 : -1;
+                break;
             case 'comments':
-                return parseInt(a.get('comments')) <= parseInt(b.get('comments')) ? 1 : -1;
+                response = parseInt(a.get('comments')) <= parseInt(b.get('comments')) ? 1 : -1;
+                break;
             case 'payouts':
-                return parseInt(a.get('total_payouts')) <= parseInt(b.get('total_payouts')) ? 1 : -1;
+                response = parseInt(a.get('total_payouts')) <= parseInt(b.get('total_payouts')) ? 1 : -1;
+                break;
+            default:
+                // Nothing
         }
+
+        return response;
     };
 
     render() {
@@ -58,12 +67,12 @@ export default class TagsIndex extends React.Component {
         const rows = tags
             .filter(
                 // there is a blank tag present, as well as some starting with #. filter them out.
-                tag => /^[a-z]/.test(tag.get('name'))
+                (tag) => /^[a-z]/.test(tag.get('name'))
             )
             .sort((a, b) => {
                 return this.compareTags(a, b, order);
             })
-            .map(tag => {
+            .map((tag) => {
                 const name = tag.get('name');
                 const link = `/trending/${name}`;
                 return (
@@ -86,13 +95,13 @@ export default class TagsIndex extends React.Component {
             ['posts', tt('g.posts')],
             ['comments', tt('g.comments')],
             ['payouts', tt('g.payouts')],
-        ].map(col => {
+        ].map((col) => {
             return (
                 <th key={col[0]}>
                     {order === col[0] ? (
                         <strong>{col[1]}</strong>
                     ) : (
-                        <Link to="#" onClick={e => this.onChangeSort(e, col[0])}>
+                        <Link to="#" onClick={(e) => this.onChangeSort(e, col[0])}>
                             {col[1]}
                         </Link>
                     )}

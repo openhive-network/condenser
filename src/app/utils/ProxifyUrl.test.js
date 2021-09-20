@@ -1,3 +1,4 @@
+// eslint-disable-next-line no-unused-vars
 /*global describe, global, before:false, it*/
 import assert from 'assert';
 import { proxifyImageUrl } from './ProxifyUrl';

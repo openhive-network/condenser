@@ -19,15 +19,14 @@ const KNOWN_API_NODES = ['api.hive.blog', 'rpc.ausbit.dev', 'anyx.io', 'api.ha.d
 class Settings extends React.Component {
     constructor(props) {
         super(props);
-        let cookies = new Cookies();
+        const cookies = new Cookies();
         this.state = {
             errorMessage: '',
             successMessage: '',
             progress: {},
             expand_advanced: false,
-            cookies: cookies,
+            cookies,
             endpoint_error_message: '',
-            original_api_endpoints: '', //safety precaution for the moment
         };
         this.initForm(props);
         this.onNsfwPrefChange = this.onNsfwPrefChange.bind(this);
@@ -52,17 +51,17 @@ class Settings extends React.Component {
         //Create the cookies if they don't already exist
         let endpoints = [];
         if (!this.state.cookies.get('user_preferred_api_endpoint')) {
-            let default_endpoint = 'https://api.hive.blog';
+            const default_endpoint = 'https://api.hive.blog';
             this.state.cookies.set('user_preferred_api_endpoint', default_endpoint, { path: '/', maxAge: 1000000000 });
         }
 
         if (!this.state.cookies.get('user_api_endpoints')) {
             endpoints = api.config.get('alternative_api_endpoints');
-            for (var node of KNOWN_API_NODES) endpoints.push('https://' + node);
+            for (const node of KNOWN_API_NODES) endpoints.push('https://' + node);
             this.state.cookies.set('user_api_endpoints', endpoints, { path: '/', maxAge: 1000000000 });
         } else endpoints = this.state.cookies.get('user_api_endpoints');
 
-        let preferred = this.getPreferredApiEndpoint();
+        const preferred = this.getPreferredApiEndpoint();
         api.api.setOptions({ url: preferred });
         this.synchronizeLists();
     }
@@ -85,7 +84,7 @@ class Settings extends React.Component {
                 'muted_list_description',
             ],
             initialValues: props.profile,
-            validation: values => {
+            validation: (values) => {
                 return {
                     profile_image:
                         values.profile_image && !/^https?:\/\//.test(values.profile_image)
@@ -129,7 +128,7 @@ class Settings extends React.Component {
                 };
             },
         });
-        this.handleSubmitForm = this.state.accountSettings.handleSubmit(args => this.handleSubmit(args));
+        this.handleSubmitForm = this.state.accountSettings.handleSubmit((args) => this.handleSubmit(args));
     }
 
     onDrop = (acceptedFiles, rejectedFiles) => {
@@ -146,19 +145,19 @@ class Settings extends React.Component {
         this.upload(file, file.name);
     };
 
-    onOpenClick = imageName => {
+    onOpenClick = (imageName) => {
         this.setState({
             imageInProgress: imageName,
         });
         this.dropzone.open();
     };
 
-    upload = (file, name = '') => {
+    upload = (file = '') => {
         const { uploadImage } = this.props;
         this.setState({
             progress: { message: tt('settings_jsx.uploading_image') + '...' },
         });
-        uploadImage(file, progress => {
+        uploadImage(file, (progress) => {
             if (progress.url) {
                 this.setState({ progress: {} });
                 const { url } = progress;
@@ -231,7 +230,7 @@ class Settings extends React.Component {
             account: account.get('name'),
             json_metadata: '',
             posting_json_metadata: JSON.stringify(metaData),
-            errorCallback: e => {
+            errorCallback: (e) => {
                 if (e === 'Canceled') {
                     this.setState({
                         loading: false,
@@ -241,7 +240,6 @@ class Settings extends React.Component {
                     console.log('updateAccount ERROR', e);
                     this.setState({
                         loading: false,
-                        changed: false,
                         errorMessage: tt('g.server_returned_error'),
                     });
                 }
@@ -249,7 +247,6 @@ class Settings extends React.Component {
             successCallback: () => {
                 this.setState({
                     loading: false,
-                    changed: false,
                     errorMessage: '',
                     successMessage: tt('settings_jsx.saved'),
                 });
@@ -267,27 +264,27 @@ class Settings extends React.Component {
         });
     }
 
-    handleDefaultBlogPayoutChange = event => {
+    handleDefaultBlogPayoutChange = (event) => {
         this.props.setUserPreferences({
             ...this.props.user_preferences,
             defaultBlogPayout: event.target.value,
         });
     };
 
-    handleDefaultCommentPayoutChange = event => {
+    handleDefaultCommentPayoutChange = (event) => {
         this.props.setUserPreferences({
             ...this.props.user_preferences,
             defaultCommentPayout: event.target.value,
         });
     };
 
-    handleLanguageChange = event => {
+    handleLanguageChange = (event) => {
         const locale = event.target.value;
         const userPreferences = { ...this.props.user_preferences, locale };
         this.props.setUserPreferences(userPreferences);
     };
 
-    handleReferralSystemChange = event => {
+    handleReferralSystemChange = (event) => {
         this.props.setUserPreferences({
             ...this.props.user_preferences,
             referralSystem: event.target.value,
@@ -296,8 +293,7 @@ class Settings extends React.Component {
 
     getPreferredApiEndpoint = () => {
         let preferred_api_endpoint = 'https://api.hive.blog';
-        if (this.state.cookies.get('user_preferred_api_endpoint'))
-            preferred_api_endpoint = this.state.cookies.get('user_preferred_api_endpoint');
+        if (this.state.cookies.get('user_preferred_api_endpoint')) preferred_api_endpoint = this.state.cookies.get('user_preferred_api_endpoint');
         return preferred_api_endpoint;
     };
 
@@ -307,36 +303,36 @@ class Settings extends React.Component {
             maxAge: 1000000000,
         });
         this.state.cookies.set('user_api_endpoints', [], { path: '/', maxAge: 1000000000 });
-        let preferred_api_endpoint = 'https://api.hive.blog';
-        let alternative_api_endpoints = api.config.get('alternative_api_endpoints');
+        const preferred_api_endpoint = 'https://api.hive.blog';
+        const alternative_api_endpoints = api.config.get('alternative_api_endpoints');
         alternative_api_endpoints.length = 0;
-        for (var node of KNOWN_API_NODES) alternative_api_endpoints.push('https://' + node);
+        for (const node of KNOWN_API_NODES) alternative_api_endpoints.push('https://' + node);
         api.api.setOptions({ url: preferred_api_endpoint });
 
-        let cookies = this.state.cookies;
+        const { cookies } = this.state;
         cookies.set('user_preferred_api_endpoint', preferred_api_endpoint, { path: '/', maxAge: 1000000000 });
         cookies.set('user_api_endpoints', alternative_api_endpoints, { path: '/', maxAge: 1000000000 });
-        this.setState({ cookies: cookies, endpoint_error_message: '' });
+        this.setState({ cookies, endpoint_error_message: '' });
     };
 
     synchronizeLists = () => {
-        let preferred = this.getPreferredApiEndpoint();
-        let alternative_api_endpoints = api.config.get('alternative_api_endpoints');
-        let user_endpoints = this.state.cookies.get('user_api_endpoints');
+        const preferred = this.getPreferredApiEndpoint();
+        const alternative_api_endpoints = api.config.get('alternative_api_endpoints');
+        const user_endpoints = this.state.cookies.get('user_api_endpoints');
         api.api.setOptions({ url: preferred });
         alternative_api_endpoints.length = 0;
-        for (var user_endpoint of user_endpoints) alternative_api_endpoints.push(user_endpoint);
+        for (const user_endpoint of user_endpoints) alternative_api_endpoints.push(user_endpoint);
     };
 
-    setPreferredApiEndpoint = event => {
-        let cookies = this.state.cookies;
+    setPreferredApiEndpoint = (event) => {
+        const { cookies } = this.state;
         cookies.set('user_preferred_api_endpoint', event.target.value, { path: '/', maxAge: 1000000000 });
-        this.setState({ cookies: cookies, endpoint_error_message: '' }); //doing it this way to force a re-render, otherwise the option doesn't look updated even though it is
+        this.setState({ cookies, endpoint_error_message: '' }); //doing it this way to force a re-render, otherwise the option doesn't look updated even though it is
         api.api.setOptions({ url: event.target.value });
     };
 
     generateAPIEndpointOptions = () => {
-        let user_endpoints = this.state.cookies.get('user_api_endpoints');
+        const user_endpoints = this.state.cookies.get('user_api_endpoints');
 
         if (user_endpoints === null || user_endpoints === undefined) return;
 
@@ -344,7 +340,7 @@ class Settings extends React.Component {
         const entries = [];
         for (let ei = 0; ei < user_endpoints.length; ei += 1) {
             const endpoint = user_endpoints[ei];
-            let entry = (
+            const entry = (
                 <tr key={endpoint + 'key'}>
                     <td>{endpoint}</td>
                     <td>
@@ -352,12 +348,13 @@ class Settings extends React.Component {
                             type="radio"
                             value={endpoint}
                             checked={endpoint === preferred_api_endpoint}
-                            onChange={e => this.setPreferredApiEndpoint(e)}
+                            onChange={(e) => this.setPreferredApiEndpoint(e)}
                         />
                     </td>
                     <td style={{ fontSize: '20px' }}>
                         <button
-                            onClick={e => {
+                            type="button"
+                            onClick={() => {
                                 this.removeAPIEndpoint(endpoint);
                             }}
                         >
@@ -371,13 +368,14 @@ class Settings extends React.Component {
         return entries;
     };
 
-    toggleShowAdvancedSettings = event => {
+    toggleShowAdvancedSettings = () => {
+        // eslint-disable-next-line react/no-access-state-in-setstate
         this.setState({ expand_advanced: !this.state.expand_advanced });
     };
 
-    addAPIEndpoint = value => {
+    addAPIEndpoint = (value) => {
         this.setState({ endpoint_error_message: '' });
-        let validated = /^https?:\/\//.test(value);
+        const validated = /^https?:\/\//.test(value);
         if (!validated) {
             this.setState({
                 endpoint_error_message: tt('settings_jsx.error_bad_url'),
@@ -385,8 +383,8 @@ class Settings extends React.Component {
             return;
         }
 
-        let cookies = this.state.cookies;
-        let endpoints = cookies.get('user_api_endpoints');
+        const { cookies } = this.state;
+        const endpoints = cookies.get('user_api_endpoints');
         if (endpoints === null || endpoints === undefined) {
             this.setState({
                 endpoint_error_message: tt('settings_jsx.error_bad_cookie'),
@@ -394,7 +392,7 @@ class Settings extends React.Component {
             return;
         }
 
-        for (var endpoint of endpoints) {
+        for (const endpoint of endpoints) {
             if (endpoint === value) {
                 this.setState({
                     endpoint_error_message: tt('settings_jsx.error_already_exists'),
@@ -405,16 +403,16 @@ class Settings extends React.Component {
 
         endpoints.push(value);
         cookies.set('user_api_endpoints', endpoints, { path: '/', maxAge: 1000000000 });
-        this.setState({ cookies: cookies }, () => {
+        this.setState({ cookies }, () => {
             this.synchronizeLists();
         });
     };
 
-    removeAPIEndpoint = value => {
+    removeAPIEndpoint = (value) => {
         this.setState({ endpoint_error_message: '' });
         //don't remove the active endpoint
         //don't remove it if it is the only endpoint in the list
-        let active_endpoint = this.getPreferredApiEndpoint();
+        const active_endpoint = this.getPreferredApiEndpoint();
         if (value === active_endpoint) {
             this.setState({
                 endpoint_error_message: tt('settings_jsx.error_cant_remove_active'),
@@ -422,8 +420,8 @@ class Settings extends React.Component {
             return;
         }
 
-        let cookies = this.state.cookies;
-        let endpoints = cookies.get('user_api_endpoints');
+        const { cookies } = this.state;
+        const endpoints = cookies.get('user_api_endpoints');
         if (endpoints === null || endpoints === undefined) {
             this.setState({
                 endpoint_error_message: tt('settings_jsx.error_bad_cookie'),
@@ -438,22 +436,24 @@ class Settings extends React.Component {
             return;
         }
 
-        let new_endpoints = [];
-        for (var endpoint of endpoints) {
+        const new_endpoints = [];
+        for (const endpoint of endpoints) {
             if (endpoint !== value) {
                 new_endpoints.push(endpoint);
             }
         }
 
         cookies.set('user_api_endpoints', new_endpoints, { path: '/', maxAge: 1000000000 });
-        this.setState({ cookies: cookies }, () => {
+        this.setState({ cookies }, () => {
             this.synchronizeLists();
         });
     };
 
     render() {
         const { state, props } = this;
-        const { walletUrl, ignores, accountname, isOwnAccount, user_preferences, follow, metaData } = this.props;
+        const {
+            ignores, accountname, isOwnAccount, user_preferences,
+        } = this.props;
 
         const { submitting, valid, touched } = this.state.accountSettings;
         const disabled = !props.isOwnAccount || state.loading || submitting || !valid || !touched;
@@ -478,160 +478,162 @@ class Settings extends React.Component {
         return (
             <div className="Settings">
                 <div className="row">
-                    {isLoggedIn() &&
-                        isOwnAccount && (
-                            <form onSubmit={this.handleSubmitForm} className="large-12 columns">
-                                <h4>{tt('settings_jsx.public_profile_settings')}</h4>
-                                {progress.message && <div className="info">{progress.message}</div>}
-                                {progress.error && (
-                                    <div className="error">
-                                        {tt('reply_editor.image_upload')}
-                                        {': '}
-                                        {progress.error}
-                                    </div>
-                                )}
-                                <div className="form__fields row">
-                                    <div className="form__field column small-12 medium-6 large-4">
-                                        <label>
-                                            {tt('settings_jsx.profile_image_url')}
-                                            <Dropzone
-                                                onDrop={this.onDrop}
-                                                className={'none'}
-                                                disableClick
-                                                multiple={false}
-                                                accept="image/*"
-                                                ref={node => {
-                                                    this.dropzone = node;
-                                                }}
-                                            >
-                                                <input type="url" {...profile_image.props} autoComplete="off" />
-                                            </Dropzone>
-                                            <a onClick={() => this.onOpenClick('profile_image')}>
-                                                {tt('settings_jsx.upload_image')}
-                                            </a>
-                                        </label>
-                                        <div className="error">
-                                            {profile_image.blur && profile_image.touched && profile_image.error}
-                                        </div>
-                                    </div>
-                                    <div className="form__field column small-12 medium-6 large-4">
-                                        <label>
-                                            {tt('settings_jsx.cover_image_url')}{' '}
-                                            <small>(Optimal: 2048 x 512 pixels)</small>
-                                            <input type="url" {...cover_image.props} autoComplete="off" />
-                                            <a onClick={() => this.onOpenClick('cover_image')}>
-                                                {tt('settings_jsx.upload_image')}
-                                            </a>
-                                        </label>
-                                        <div className="error">
-                                            {cover_image.blur && cover_image.touched && cover_image.error}
-                                        </div>
-                                    </div>
-                                    <div className="form__field column small-12 medium-6 large-4">
-                                        <label>
-                                            {tt('settings_jsx.profile_name')}
-                                            <input type="text" {...name.props} maxLength="20" autoComplete="off" />
-                                        </label>
-                                        <div className="error">{name.touched && name.error}</div>
-                                    </div>
-                                    <div className="form__field column small-12 medium-6 large-4">
-                                        <label>
-                                            {tt('settings_jsx.profile_about')}
-                                            <input type="text" {...about.props} maxLength="160" autoComplete="off" />
-                                        </label>
-                                        <div className="error">{about.touched && about.error}</div>
-                                    </div>
-                                    <div className="form__field column small-12 medium-6 large-4">
-                                        <label>
-                                            {tt('settings_jsx.profile_location')}
-                                            <input type="text" {...location.props} maxLength="30" autoComplete="off" />
-                                        </label>
-                                        <div className="error">{location.touched && location.error}</div>
-                                    </div>
-                                    <div className="form__field column small-12 medium-6 large-4">
-                                        <label>
-                                            {tt('settings_jsx.profile_website')}
-                                            <input type="url" {...website.props} maxLength="100" autoComplete="off" />
-                                        </label>
-                                        <div className="error">{website.blur && website.touched && website.error}</div>
-                                    </div>
-                                    <div className="form__field column small-12 medium-6 large-4">
-                                        <label>
-                                            Blacklist Description
-                                            <input
-                                                type="text"
-                                                maxLength="256"
-                                                autoComplete="off"
-                                                {...blacklist_description.props}
-                                            />
-                                        </label>
-                                        <div className="error">{website.blur && website.touched && website.error}</div>
-                                    </div>
-                                    <div className="form__field column small-12 medium-6 large-4">
-                                        <label>
-                                            Mute List Description
-                                            <input
-                                                type="text"
-                                                maxLength="256"
-                                                autoComplete="off"
-                                                {...muted_list_description.props}
-                                            />
-                                        </label>
-                                        <div className="error">{website.blur && website.touched && website.error}</div>
-                                    </div>
-                                    {account_is_witness.value && (
-                                        <div className="form__field column small-12 medium-6 large-4">
-                                            <label>
-                                                {tt('settings_jsx.profile_witness_description')}
-                                                <input
-                                                    type="text"
-                                                    {...witness_description.props}
-                                                    maxLength="160"
-                                                    autoComplete="off"
-                                                />
-                                            </label>
-                                            <div className="error">
-                                                {witness_description.touched && witness_description.error}
-                                            </div>
-                                        </div>
-                                    )}
-                                    {account_is_witness.value && (
-                                        <div className="form__field column small-12 medium-6 large-4">
-                                            <label>
-                                                {tt('settings_jsx.profile_witness_owner')}
-                                                <input
-                                                    type="text"
-                                                    {...witness_owner.props}
-                                                    maxLength="30"
-                                                    autoComplete="off"
-                                                />
-                                            </label>
-                                            <div className="error">{witness_owner.touched && witness_owner.error}</div>
-                                        </div>
-                                    )}
+                    {isLoggedIn()
+                    && isOwnAccount && (
+                        <form onSubmit={this.handleSubmitForm} className="large-12 columns">
+                            <h4>{tt('settings_jsx.public_profile_settings')}</h4>
+                            {progress.message && <div className="info">{progress.message}</div>}
+                            {progress.error && (
+                                <div className="error">
+                                    {tt('reply_editor.image_upload')}
+                                    {': '}
+                                    {progress.error}
                                 </div>
-                                {state.loading && (
-                                    <span>
-                                        <br />
-                                        <LoadingIndicator type="circle" />
-                                        <br />
-                                    </span>
+                            )}
+                            <div className="form__fields row">
+                                <div className="form__field column small-12 medium-6 large-4">
+                                    <label>
+                                        {tt('settings_jsx.profile_image_url')}
+                                        <Dropzone
+                                            onDrop={this.onDrop}
+                                            className="none"
+                                            disableClick
+                                            multiple={false}
+                                            accept="image/*"
+                                            ref={(node) => {
+                                                this.dropzone = node;
+                                            }}
+                                        >
+                                            <input type="url" {...profile_image.props} autoComplete="off" />
+                                        </Dropzone>
+                                        <a role="link" tabIndex={0} onClick={() => this.onOpenClick('profile_image')}>
+                                            {tt('settings_jsx.upload_image')}
+                                        </a>
+                                    </label>
+                                    <div className="error">
+                                        {profile_image.blur && profile_image.touched && profile_image.error}
+                                    </div>
+                                </div>
+                                <div className="form__field column small-12 medium-6 large-4">
+                                    <label>
+                                        {tt('settings_jsx.cover_image_url')}
+                                        {' '}
+                                        <small>(Optimal: 2048 x 512 pixels)</small>
+                                        <input type="url" {...cover_image.props} autoComplete="off" />
+                                        <a role="link" tabIndex={0} onClick={() => this.onOpenClick('cover_image')}>
+                                            {tt('settings_jsx.upload_image')}
+                                        </a>
+                                    </label>
+                                    <div className="error">
+                                        {cover_image.blur && cover_image.touched && cover_image.error}
+                                    </div>
+                                </div>
+                                <div className="form__field column small-12 medium-6 large-4">
+                                    <label>
+                                        {tt('settings_jsx.profile_name')}
+                                        <input type="text" {...name.props} maxLength="20" autoComplete="off" />
+                                    </label>
+                                    <div className="error">{name.touched && name.error}</div>
+                                </div>
+                                <div className="form__field column small-12 medium-6 large-4">
+                                    <label>
+                                        {tt('settings_jsx.profile_about')}
+                                        <input type="text" {...about.props} maxLength="160" autoComplete="off" />
+                                    </label>
+                                    <div className="error">{about.touched && about.error}</div>
+                                </div>
+                                <div className="form__field column small-12 medium-6 large-4">
+                                    <label>
+                                        {tt('settings_jsx.profile_location')}
+                                        <input type="text" {...location.props} maxLength="30" autoComplete="off" />
+                                    </label>
+                                    <div className="error">{location.touched && location.error}</div>
+                                </div>
+                                <div className="form__field column small-12 medium-6 large-4">
+                                    <label>
+                                        {tt('settings_jsx.profile_website')}
+                                        <input type="url" {...website.props} maxLength="100" autoComplete="off" />
+                                    </label>
+                                    <div className="error">{website.blur && website.touched && website.error}</div>
+                                </div>
+                                <div className="form__field column small-12 medium-6 large-4">
+                                    <label>
+                                        Blacklist Description
+                                        <input
+                                            type="text"
+                                            maxLength="256"
+                                            autoComplete="off"
+                                            {...blacklist_description.props}
+                                        />
+                                    </label>
+                                    <div className="error">{website.blur && website.touched && website.error}</div>
+                                </div>
+                                <div className="form__field column small-12 medium-6 large-4">
+                                    <label>
+                                        Mute List Description
+                                        <input
+                                            type="text"
+                                            maxLength="256"
+                                            autoComplete="off"
+                                            {...muted_list_description.props}
+                                        />
+                                    </label>
+                                    <div className="error">{website.blur && website.touched && website.error}</div>
+                                </div>
+                                {account_is_witness.value && (
+                                    <div className="form__field column small-12 medium-6 large-4">
+                                        <label>
+                                            {tt('settings_jsx.profile_witness_description')}
+                                            <input
+                                                type="text"
+                                                {...witness_description.props}
+                                                maxLength="160"
+                                                autoComplete="off"
+                                            />
+                                        </label>
+                                        <div className="error">
+                                            {witness_description.touched && witness_description.error}
+                                        </div>
+                                    </div>
                                 )}
-                                {!state.loading && (
-                                    <input
-                                        type="submit"
-                                        className="button slim"
-                                        value={tt('settings_jsx.update')}
-                                        disabled={disabled}
-                                    />
-                                )}{' '}
-                                {state.errorMessage ? (
-                                    <small className="error">{state.errorMessage}</small>
-                                ) : state.successMessage ? (
-                                    <small className="success uppercase">{state.successMessage}</small>
-                                ) : null}
-                            </form>
-                        )}
+                                {account_is_witness.value && (
+                                    <div className="form__field column small-12 medium-6 large-4">
+                                        <label>
+                                            {tt('settings_jsx.profile_witness_owner')}
+                                            <input
+                                                type="text"
+                                                {...witness_owner.props}
+                                                maxLength="30"
+                                                autoComplete="off"
+                                            />
+                                        </label>
+                                        <div className="error">{witness_owner.touched && witness_owner.error}</div>
+                                    </div>
+                                )}
+                            </div>
+                            {state.loading && (
+                                <span>
+                                    <br />
+                                    <LoadingIndicator type="circle" />
+                                    <br />
+                                </span>
+                            )}
+                            {!state.loading && (
+                                <input
+                                    type="submit"
+                                    className="button slim"
+                                    value={tt('settings_jsx.update')}
+                                    disabled={disabled}
+                                />
+                            )}
+                            {' '}
+                            {state.errorMessage ? (
+                                <small className="error">{state.errorMessage}</small>
+                            ) : state.successMessage ? (
+                                <small className="success uppercase">{state.successMessage}</small>
+                            ) : null}
+                        </form>
+                    )}
                 </div>
 
                 {isOwnAccount && (
@@ -719,8 +721,11 @@ class Settings extends React.Component {
                 <br />
                 <div className="row">
                     <div className="large-12 columns">
+                        {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions */}
                         <h4 onClick={this.toggleShowAdvancedSettings}>
-                            {tt('settings_jsx.advanced') + ' '} {this.state.expand_advanced ? '\u25BC' : '\u25B2'}
+                            {tt('settings_jsx.advanced') + ' '}
+                            {' '}
+                            {this.state.expand_advanced ? '\u25BC' : '\u25B2'}
                         </h4>
                         {this.state.expand_advanced && (
                             <div>
@@ -750,7 +755,7 @@ class Settings extends React.Component {
                                     <tbody>
                                         <tr>
                                             <td style={{ width: '40%' }}>
-                                                <input type="text" ref={el => (this.new_endpoint = el)} />
+                                                <input type="text" ref={(el) => (this.new_endpoint = el)} />
                                             </td>
                                             <td
                                                 style={{
@@ -758,7 +763,7 @@ class Settings extends React.Component {
                                                     fontSize: '30px',
                                                 }}
                                             >
-                                                <button onClick={e => this.addAPIEndpoint(this.new_endpoint.value)}>
+                                                <button type="button" onClick={() => this.addAPIEndpoint(this.new_endpoint.value)}>
                                                     {'\u2713'}
                                                 </button>
                                             </td>
@@ -768,6 +773,7 @@ class Settings extends React.Component {
                                         </tr>
                                     </tbody>
                                 </table>
+                                {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions */}
                                 <span className="button" onClick={this.resetEndpointOptions}>
                                     {tt('settings_jsx.reset_endpoints')}
                                 </span>
@@ -775,16 +781,15 @@ class Settings extends React.Component {
                         )}
                     </div>
                 </div>
-                {ignores &&
-                    ignores.size > 0 && (
-                        <div className="row">
-                            <div className="small-12 medium-6 large-4 large-6 columns">
-                                <br />
-                                <h4>Muted Users</h4>
-                                <MuteList account={accountname} users={ignores} />
-                            </div>
+                {ignores && ignores.size > 0 && (
+                    <div className="row">
+                        <div className="small-12 medium-6 large-4 large-6 columns">
+                            <br />
+                            <h4>Muted Users</h4>
+                            <MuteList account={accountname} users={ignores} />
                         </div>
-                    )}
+                    </div>
+                )}
             </div>
         );
     }
@@ -813,11 +818,8 @@ export default connect(
         const { accountname } = ownProps.routeParams;
 
         const isOwnAccount = state.user.getIn(['current', 'username'], '') == accountname;
-        const ignores =
-            isOwnAccount && state.global.getIn(['follow', 'getFollowingAsync', accountname, 'ignore_result']);
+        const ignores = isOwnAccount && state.global.getIn(['follow', 'getFollowingAsync', accountname, 'ignore_result']);
         const account = state.global.getIn(['accounts', accountname]);
-        const current_user = state.user.get('current');
-        const username = current_user ? current_user.get('username') : '';
 
         const metaData = read_profile_v2(account);
         const profile = metaData && metaData.profile ? metaData.profile : {};
@@ -837,8 +839,8 @@ export default connect(
         };
     },
     // mapDispatchToProps
-    dispatch => ({
-        changeLanguage: language => {
+    (dispatch) => ({
+        changeLanguage: (language) => {
             dispatch(userActions.changeLanguage(language));
         },
         uploadImage: (file, progress) => dispatch(userActions.uploadImage({ file, progress })),
@@ -851,7 +853,7 @@ export default connect(
             };
             dispatch(transactionActions.broadcastOperation(options));
         },
-        setUserPreferences: payload => {
+        setUserPreferences: (payload) => {
             dispatch(appActions.setUserPreferences(payload));
         },
     })

@@ -21,7 +21,7 @@ function _redirect_url(operations) {
 class SubmitPost extends React.Component {
     constructor() {
         super();
-        this.success = operations => {
+        this.success = (operations) => {
             localStorage.removeItem('replyEditorData-' + formId);
             browserHistory.push(_redirect_url(operations));
         };
@@ -31,12 +31,7 @@ class SubmitPost extends React.Component {
             return <Callout>Log in to make a post.</Callout>;
         }
 
-        return (
-            <SubmitReplyEditor
-                type="submit_story"
-                successCallback={this.success}
-            />
-        );
+        return <SubmitReplyEditor type="submit_story" successCallback={this.success} />;
     }
 }
 

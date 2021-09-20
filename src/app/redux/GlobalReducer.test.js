@@ -1,4 +1,6 @@
-import { Map, OrderedMap, getIn, List, fromJS, Set, merge } from 'immutable';
+import {
+ Map, OrderedMap, List, fromJS,
+} from 'immutable';
 import * as globalActions from './GlobalReducer';
 import reducer, { defaultState } from './GlobalReducer';
 
@@ -22,9 +24,7 @@ describe('Global reducer', () => {
         // Act
         const actual = reducer(initial, globalActions.setCollapsed(payload));
         // Assert
-        expect(actual.getIn(['content', payload.post, 'collapsed'])).toEqual(
-            payload.collapsed
-        );
+        expect(actual.getIn(['content', payload.post, 'collapsed'])).toEqual(payload.collapsed);
     });
     it('should return correct state for a RECEIVE_STATE action', () => {
         // Arrange
@@ -48,28 +48,14 @@ describe('Global reducer', () => {
             },
         };
         const initial = reducer();
-        const expected = Map({
-            status: {},
-            accounts: Map({
-                foo: Map({
-                    name: 'foo',
-                    be_List: List(['alice', 'bob', 'claire']),
-                    be_orderedMap: OrderedMap({ foo: 'barman' }),
-                }),
-            }),
-        });
         // Act
         const actual = reducer(initial, globalActions.receiveAccount(payload));
         // Assert
-        expect(
-            actual.getIn(['accounts', payload.account.name, 'name'])
-        ).toEqual(payload.account.name);
-        expect(
-            actual.getIn(['accounts', payload.account.name, 'beList'])
-        ).toEqual(List(payload.account.beList));
-        expect(
-            actual.getIn(['accounts', payload.account.name, 'beOrderedMap'])
-        ).toEqual(OrderedMap(payload.account.beOrderedMap));
+        expect(actual.getIn(['accounts', payload.account.name, 'name'])).toEqual(payload.account.name);
+        expect(actual.getIn(['accounts', payload.account.name, 'beList'])).toEqual(List(payload.account.beList));
+        expect(actual.getIn(['accounts', payload.account.name, 'beOrderedMap'])).toEqual(
+            OrderedMap(payload.account.beOrderedMap)
+        );
     });
 
     it('should return correct state for a RECEIVE_ACCOUNTS action', () => {
@@ -142,25 +128,16 @@ describe('Global reducer', () => {
         };
         const { author, permlink, active_votes } = payload.content;
         // Act
-        const actual = reducer(
-            reducer(),
-            globalActions.receiveContent(payload)
-        );
+        const actual = reducer(reducer(), globalActions.receiveContent(payload));
         // Assert
-        expect(
-            actual.getIn(['content', `${author}/${permlink}`, 'author'])
-        ).toEqual(payload.content.author);
-        expect(
-            actual.getIn(['content', `${author}/${permlink}`, 'permlink'])
-        ).toEqual(payload.content.permlink);
-        expect(
-            actual.getIn(['content', `${author}/${permlink}`, 'active_votes'])
-        ).toEqual(fromJS(active_votes));
+        expect(actual.getIn(['content', `${author}/${permlink}`, 'author'])).toEqual(payload.content.author);
+        expect(actual.getIn(['content', `${author}/${permlink}`, 'permlink'])).toEqual(payload.content.permlink);
+        expect(actual.getIn(['content', `${author}/${permlink}`, 'active_votes'])).toEqual(fromJS(active_votes));
     });
 
     it('should return correct state for a LINK_REPLY action', () => {
         // Arrange
-        let payload = {
+        const payload = {
             author: 'critic',
             permlink: 'critical-comment',
             parent_author: 'Yerofeyev',
@@ -189,11 +166,11 @@ describe('Global reducer', () => {
     });
     it('should return correct state for a DELETE_CONTENT action', () => {
         // Arrange
-        let payload = {
+        const payload = {
             author: 'sebald',
             permlink: 'rings-of-saturn',
         };
-        let initial = reducer();
+        const initial = reducer();
         // Act
         // add content
         const initWithContent = initial.setIn(
@@ -208,10 +185,7 @@ describe('Global reducer', () => {
         );
         let expected = Map({});
         // Act
-        let actual = reducer(
-            initWithContent,
-            globalActions.deleteContent(payload)
-        );
+        let actual = reducer(initWithContent, globalActions.deleteContent(payload));
         // Assert
         expect(actual.get('content')).toEqual(expected);
         // Arrange
@@ -239,14 +213,9 @@ describe('Global reducer', () => {
             replies: ['dorothy-hughes/in-a-lonely-place', 'artichoke/hearts'],
         });
         // Act
-        actual = reducer(
-            initWithParentKeyContent,
-            globalActions.deleteContent(payload)
-        );
+        actual = reducer(initWithParentKeyContent, globalActions.deleteContent(payload));
         // Assert
-        expect(actual.getIn(['content', 'alice/bob', 'replies'])).toHaveLength(
-            2
-        );
+        expect(actual.getIn(['content', 'alice/bob', 'replies'])).toHaveLength(2);
         expect(actual.getIn(['content', 'alice/bob', 'replies'])).toEqual([
             'dorothy-hughes/in-a-lonely-place',
             'artichoke/hearts',
@@ -267,14 +236,9 @@ describe('Global reducer', () => {
             })
         );
         // Act
-        const actual = reducer(
-            initWithCategory,
-            globalActions.fetchingData(payload)
-        );
+        const actual = reducer(initWithCategory, globalActions.fetchingData(payload));
         // Assert
-        expect(
-            actual.getIn(['status', payload.category, payload.order])
-        ).toEqual({ fetching: true });
+        expect(actual.getIn(['status', payload.category, payload.order])).toEqual({ fetching: true });
     });
     it('should return correct state for a RECEIVE_DATA action', () => {
         //Arrange
@@ -286,7 +250,7 @@ describe('Global reducer', () => {
                 two: { percent: 70 },
             },
         };
-        let payload = {
+        const payload = {
             data: [postData],
             order: 'blog',
             category: '@smudge',
@@ -301,14 +265,10 @@ describe('Global reducer', () => {
             }),
             discussion_idx: Map({
                 [payload.category]: Map({
-                    UnusualOrder: List([
-                        { data: { author: 'ship', permlink: 'bridge' } },
-                    ]),
+                    UnusualOrder: List([{ data: { author: 'ship', permlink: 'bridge' } }]),
                 }),
                 [payload.accountname]: Map({
-                    [payload.order]: List([
-                        { data: { author: 'farm', permlink: 'barn' } },
-                    ]),
+                    [payload.order]: List([{ data: { author: 'farm', permlink: 'barn' } }]),
                 }),
                 '': Map({
                     FebrileFriday: List([]),
@@ -317,64 +277,40 @@ describe('Global reducer', () => {
         });
 
         //Act
-        const actual1 = reducer(
-            initWithData,
-            globalActions.receiveData(payload)
-        );
+        const actual1 = reducer(initWithData, globalActions.receiveData(payload));
 
         const postKey = `${postData.author}/${postData.permlink}`;
 
         //Assert
-        expect(actual1.getIn(['content', postKey, 'author'])).toEqual(
-            postData.author
-        );
-        expect(actual1.getIn(['content', postKey, 'permlink'])).toEqual(
-            postData.permlink
-        );
-        expect(actual1.getIn(['content', postKey, 'active_votes'])).toEqual(
-            fromJS(postData.active_votes)
-        );
+        expect(actual1.getIn(['content', postKey, 'author'])).toEqual(postData.author);
+        expect(actual1.getIn(['content', postKey, 'permlink'])).toEqual(postData.permlink);
+        expect(actual1.getIn(['content', postKey, 'active_votes'])).toEqual(fromJS(postData.active_votes));
 
         // Push new key to posts list, If order meets the condition.
-        expect(
-            actual1.getIn(['discussion_idx', payload.category, payload.order])
-        ).toEqual(List(['smudge/klop']));
+        expect(actual1.getIn(['discussion_idx', payload.category, payload.order])).toEqual(List(['smudge/klop']));
 
         // Arrange
         payload.order = 'UnusualOrder';
         //Act.
         // Push new key to discussion_idx list, If order does not meet the condition.
-        const actual2 = reducer(
-            initWithData,
-            globalActions.receiveData(payload)
-        );
+        const actual2 = reducer(initWithData, globalActions.receiveData(payload));
 
         // Assert
-        expect(
-            actual2.getIn(['discussion_idx', payload.category, payload.order])
-        ).toEqual(
-            List([
-                { data: { author: 'ship', permlink: 'bridge' } },
-                'smudge/klop',
-            ])
+        expect(actual2.getIn(['discussion_idx', payload.category, payload.order])).toEqual(
+            List([{ data: { author: 'ship', permlink: 'bridge' } }, 'smudge/klop'])
         );
         // Arrange
         // handle falsey payload category by setting empty string at keypath location typically occupied by category.
         payload.order = 'FebrileFriday';
         payload.category = '';
         // Act
-        const actual3 = reducer(
-            initWithData,
-            globalActions.receiveData(payload)
-        );
+        const actual3 = reducer(initWithData, globalActions.receiveData(payload));
         // Assert.
-        expect(actual3.getIn(['discussion_idx', '', payload.order])).toEqual(
-            List(['smudge/klop'])
-        );
+        expect(actual3.getIn(['discussion_idx', '', payload.order])).toEqual(List(['smudge/klop']));
     });
     it('should handle fetch status for a RECEIVE_DATA action', () => {
         //Arrange
-        let payload = {
+        const payload = {
             data: [],
             order: 'by_blog',
             category: 'blog',
@@ -394,9 +330,7 @@ describe('Global reducer', () => {
             }),
             discussion_idx: Map({
                 [payload.category]: Map({
-                    UnusualOrder: List([
-                        { data: { author: 'ship', permlink: 'bridge' } },
-                    ]),
+                    UnusualOrder: List([{ data: { author: 'ship', permlink: 'bridge' } }]),
                 }),
                 '': Map({
                     FebrileFriday: List([]),
@@ -405,68 +339,36 @@ describe('Global reducer', () => {
         });
 
         //Act
-        const actual1 = reducer(
-            initWithData,
-            globalActions.receiveData(payload)
-        );
+        const actual1 = reducer(initWithData, globalActions.receiveData(payload));
 
         //Assert
-        expect(
-            actual1.getIn(['status', payload.category, payload.order]).fetching
-        ).toBeFalsy();
-        expect(
-            actual1.getIn(['status', payload.category, payload.order])
-                .last_fetch
-        ).toBeFalsy();
+        expect(actual1.getIn(['status', payload.category, payload.order]).fetching).toBeFalsy();
+        expect(actual1.getIn(['status', payload.category, payload.order]).last_fetch).toBeFalsy();
 
         // Arrange
         payload.fetching = true;
         //Act.
-        const actual2 = reducer(
-            initWithData,
-            globalActions.receiveData(payload)
-        );
+        const actual2 = reducer(initWithData, globalActions.receiveData(payload));
 
         // Assert
-        expect(
-            actual2.getIn(['status', payload.category, payload.order]).fetching
-        ).toBeTruthy();
-        expect(
-            actual2.getIn(['status', payload.category, payload.order])
-                .last_fetch
-        ).toBeFalsy();
+        expect(actual2.getIn(['status', payload.category, payload.order]).fetching).toBeTruthy();
+        expect(actual2.getIn(['status', payload.category, payload.order]).last_fetch).toBeFalsy();
 
         // Arrange
         payload.endOfData = true;
         // Act
-        const actual3 = reducer(
-            initWithData,
-            globalActions.receiveData(payload)
-        );
+        const actual3 = reducer(initWithData, globalActions.receiveData(payload));
         // Assert.
-        expect(
-            actual3.getIn(['status', payload.category, payload.order]).fetching
-        ).toBeTruthy();
-        expect(
-            actual3.getIn(['status', payload.category, payload.order])
-                .last_fetch
-        ).toBeTruthy();
+        expect(actual3.getIn(['status', payload.category, payload.order]).fetching).toBeTruthy();
+        expect(actual3.getIn(['status', payload.category, payload.order]).last_fetch).toBeTruthy();
 
         // Arrange
         payload.fetching = false;
         // Act
-        const actual4 = reducer(
-            initWithData,
-            globalActions.receiveData(payload)
-        );
+        const actual4 = reducer(initWithData, globalActions.receiveData(payload));
         // Assert.
-        expect(
-            actual4.getIn(['status', payload.category, payload.order]).fetching
-        ).toBeFalsy();
-        expect(
-            actual4.getIn(['status', payload.category, payload.order])
-                .last_fetch
-        ).toBeTruthy();
+        expect(actual4.getIn(['status', payload.category, payload.order]).fetching).toBeFalsy();
+        expect(actual4.getIn(['status', payload.category, payload.order]).last_fetch).toBeTruthy();
     });
 
     it('should return correct state for a SET action', () => {
@@ -544,10 +446,7 @@ describe('Global reducer', () => {
             name: 'Iris',
             params: { cheap: 'seats' },
         };
-        const initial = reducer().set(
-            'active_dialogs',
-            Map({ chimney: 'smoke' })
-        );
+        const initial = reducer().set('active_dialogs', Map({ chimney: 'smoke' }));
         const actual = reducer(initial, globalActions.showDialog(payload));
         expect(actual.get('active_dialogs')).toEqual(
             Map({
@@ -559,10 +458,7 @@ describe('Global reducer', () => {
 
     it('should return correct state for a HIDE_DIALOG action', () => {
         const payload = { name: 'dolphin' };
-        const initial = reducer().set(
-            'active_dialogs',
-            Map({ [payload.name]: 'flipper' })
-        );
+        const initial = reducer().set('active_dialogs', Map({ [payload.name]: 'flipper' }));
         const actual = reducer(initial, globalActions.hideDialog(payload));
         expect(actual.get('active_dialogs')).toEqual(Map({}));
     });

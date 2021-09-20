@@ -1,4 +1,4 @@
-import { Map, fromJS } from 'immutable';
+import { fromJS } from 'immutable';
 import { DEFAULT_LANGUAGE } from 'app/client_config';
 
 // Action constants
@@ -20,8 +20,6 @@ export const SET_USER = 'user/SET_USER';
 const CLOSE_LOGIN = 'user/CLOSE_LOGIN';
 export const LOGIN_ERROR = 'user/LOGIN_ERROR';
 export const LOGOUT = 'user/LOGOUT';
-const SHOW_SIGN_UP = 'user/SHOW_SIGN_UP';
-const HIDE_SIGN_UP = 'user/HIDE_SIGN_UP';
 const KEYS_ERROR = 'user/KEYS_ERROR';
 const ACCOUNT_AUTH_LOOKUP = 'user/ACCOUNT_AUTH_LOOKUP';
 const SET_AUTHORITY = 'user/SET_AUTHORITY';
@@ -50,7 +48,8 @@ const defaultState = fromJS({
 });
 
 export default function reducer(state = defaultState, action) {
-    const payload = action.payload;
+    const { payload } = action;
+    let show_login_modal;
 
     switch (action.type) {
         case SHOW_LOGIN: {
@@ -109,7 +108,7 @@ export default function reducer(state = defaultState, action) {
         case REMOVE_HIGH_SECURITY_KEYS: {
             if (!state.hasIn(['current', 'private_keys'])) return state;
             let empty = false;
-            state = state.updateIn(['current', 'private_keys'], private_keys => {
+            state = state.updateIn(['current', 'private_keys'], (private_keys) => {
                 if (!private_keys) return null;
                 if (private_keys.has('active_private')) console.log('removeHighSecurityKeys');
                 private_keys = private_keys.delete('active_private');
@@ -142,14 +141,14 @@ export default function reducer(state = defaultState, action) {
             return state; // saga
 
         case SET_USER:
-            let show_login_modal = false;
+            show_login_modal = false;
             if (payload.show_login_modal != undefined) {
                 show_login_modal = payload.show_login_modal;
-                delete payload['show_login_modal'];
+                delete payload.show_login_modal;
             }
             return state.mergeDeep({
                 current: payload,
-                show_login_modal: show_login_modal,
+                show_login_modal,
                 show_login_warning: false,
                 loginBroadcastOperation: undefined,
                 loginDefault: undefined,
@@ -201,7 +200,7 @@ export default function reducer(state = defaultState, action) {
             return state.set('show_side_panel', false);
 
         case SHOW_POST_ADVANCED_SETTINGS:
-            return state.set('show_post_advanced_settings_modal', payload.formId);
+            return state.set('show_post_advanced_settings_modal', payload._formId);
 
         case HIDE_POST_ADVANCED_SETTINGS:
             return state.set('show_post_advanced_settings_modal', '');
@@ -220,119 +219,119 @@ export default function reducer(state = defaultState, action) {
 }
 
 // Action creators
-export const showLogin = payload => ({
+export const showLogin = (payload) => ({
     type: SHOW_LOGIN,
     payload,
 });
 
-export const showLoginWarning = payload => ({
+export const showLoginWarning = (payload) => ({
     type: SHOW_LOGIN_WARNING,
     payload,
 });
 
-export const hideLogin = payload => ({
+export const hideLogin = (payload) => ({
     type: HIDE_LOGIN,
     payload,
 });
 
-export const hideLoginWarning = payload => ({
+export const hideLoginWarning = (payload) => ({
     type: HIDE_LOGIN_WARNING,
     payload,
 });
 
-export const showTerms = payload => ({
+export const showTerms = (payload) => ({
     type: SHOW_TERMS,
     payload,
 });
 
 export const acceptTerms = () => ({ type: ACCEPT_TERMS });
 
-export const saveLoginConfirm = payload => ({
+export const saveLoginConfirm = (payload) => ({
     type: SAVE_LOGIN_CONFIRM,
     payload,
 });
 
-export const saveLogin = payload => ({
+export const saveLogin = (payload) => ({
     type: SAVE_LOGIN,
     payload,
 });
 
-export const removeHighSecurityKeys = payload => ({
+export const removeHighSecurityKeys = (payload) => ({
     type: REMOVE_HIGH_SECURITY_KEYS,
     payload,
 });
 
-export const changeLanguage = payload => ({
+export const changeLanguage = (payload) => ({
     type: CHANGE_LANGUAGE,
     payload,
 });
 
-export const showPromotePost = payload => ({
+export const showPromotePost = (payload) => ({
     type: SHOW_PROMOTE_POST,
     payload,
 });
 
-export const hidePromotePost = payload => ({
+export const hidePromotePost = (payload) => ({
     type: HIDE_PROMOTE_POST,
     payload,
 });
 
-export const checkKeyType = payload => ({
+export const checkKeyType = (payload) => ({
     type: CHECK_KEY_TYPE,
     payload,
 });
 
-export const usernamePasswordLogin = payload => ({
+export const usernamePasswordLogin = (payload) => ({
     type: USERNAME_PASSWORD_LOGIN,
     payload,
 });
 
-export const setUser = payload => ({
+export const setUser = (payload) => ({
     type: SET_USER,
     payload,
 });
 
-export const closeLogin = payload => ({
+export const closeLogin = (payload) => ({
     type: CLOSE_LOGIN,
     payload,
 });
 
-export const loginError = payload => ({
+export const loginError = (payload) => ({
     type: LOGIN_ERROR,
     payload,
 });
 
-export const logout = payload => ({
+export const logout = (payload) => ({
     type: LOGOUT,
     payload,
 });
 
-export const keysError = payload => ({
+export const keysError = (payload) => ({
     type: KEYS_ERROR,
     payload,
 });
 
-export const accountAuthLookup = payload => ({
+export const accountAuthLookup = (payload) => ({
     type: ACCOUNT_AUTH_LOOKUP,
     payload,
 });
 
-export const setAuthority = payload => ({
+export const setAuthority = (payload) => ({
     type: SET_AUTHORITY,
     payload,
 });
 
-export const hideConnectionErrorModal = payload => ({
+export const hideConnectionErrorModal = (payload) => ({
     type: HIDE_CONNECTION_ERROR_MODAL,
     payload,
 });
 
-export const set = payload => ({
+export const set = (payload) => ({
     type: SET,
     payload,
 });
 
-export const uploadImage = payload => ({
+export const uploadImage = (payload) => ({
     type: UPLOAD_IMAGE,
     payload,
 });
@@ -347,7 +346,7 @@ export const hideSidePanel = () => {
     };
 };
 
-export const showPostAdvancedSettings = payload => ({
+export const showPostAdvancedSettings = (payload) => ({
     type: SHOW_POST_ADVANCED_SETTINGS,
     payload,
 });

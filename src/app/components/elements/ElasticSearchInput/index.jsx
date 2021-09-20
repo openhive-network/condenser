@@ -11,6 +11,7 @@ class ElasticSearchInput extends React.Component {
         initValue: PropTypes.string,
         loading: PropTypes.bool,
     };
+
     static defaultProps = {
         handleSubmit: null,
         expanded: true,
@@ -42,13 +43,13 @@ class ElasticSearchInput extends React.Component {
         }
     }
 
-    onSearchSubmit = event => {
+    onSearchSubmit = (event) => {
         event.preventDefault();
         const { value: searchQuery, sortOrder } = this.state;
         this.doSearch(searchQuery, sortOrder);
     };
 
-    onSortOrderChange = event => {
+    onSortOrderChange = (event) => {
         const sortOrder = event.target.value;
         const { value: searchQuery } = this.state;
         this.setState({ value: searchQuery, sortOrder });
@@ -90,8 +91,8 @@ class ElasticSearchInput extends React.Component {
                     />
                 </form>
 
-                {expanded &&
-                    !loading && (
+                {expanded
+                    && !loading && (
                         <div className="search-sort-order">
                             <div className="search-sort-order--title">{tt('searchinput.sortBy')}</div>
                             <div className="search-sort-order--select">

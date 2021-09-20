@@ -8,11 +8,9 @@ export default function useUserJson(app) {
     const router = koa_router();
     app.use(router.routes());
 
-    router.get(routeRegex.UserJson, function*() {
+    router.get(routeRegex.UserJson, function* () {
         // validate and build user details in JSON
-        const user_name = this.url
-            .match(routeRegex.UserJson)[1]
-            .replace('@', '');
+        const user_name = this.url.match(routeRegex.UserJson)[1].replace('@', '');
         let user = '';
         let status = '';
 

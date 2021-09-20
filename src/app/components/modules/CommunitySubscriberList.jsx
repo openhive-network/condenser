@@ -31,14 +31,7 @@ class CommunitySubscriberList extends React.Component {
     }
 
     render() {
-        const {
-            loading,
-            subscribers,
-            community,
-            viewerRole,
-            username,
-            fetchSubscribers,
-        } = this.props;
+        const { loading, subscribers, community, viewerRole, username, fetchSubscribers } = this.props;
         const isMod = Role.atLeast(viewerRole, 'mod');
         const subs = subscribers.map((s, idx) => (
             <div key={idx}>
@@ -82,24 +75,17 @@ const ConnectedCommunitySubscriberList = connect(
         const communityMember = state.global
             .getIn(['community', ownProps.community.name, 'team'], List([]))
             .toJS()
-            .filter(member => member[0] === username);
+            .filter((member) => member[0] === username);
         if (username && communityMember.length > 0) {
             viewerRole = communityMember[0][1];
         }
         if (
             state.community.getIn([ownProps.community.name]) &&
             state.community.getIn([ownProps.community.name, 'subscribers']) &&
-            state.community.getIn([ownProps.community.name, 'subscribers'])
-                .length > 0
+            state.community.getIn([ownProps.community.name, 'subscribers']).length > 0
         ) {
-            subscribers = state.community.getIn([
-                ownProps.community.name,
-                'subscribers',
-            ]);
-            loading = state.community.getIn([
-                ownProps.community.name,
-                'listSubscribersPending',
-            ]);
+            subscribers = state.community.getIn([ownProps.community.name, 'subscribers']);
+            loading = state.community.getIn([ownProps.community.name, 'listSubscribersPending']);
         }
 
         return {
@@ -110,12 +96,9 @@ const ConnectedCommunitySubscriberList = connect(
         };
     },
     // mapDispatchToProps
-    dispatch => {
+    (dispatch) => {
         return {
-            fetchSubscribers: communityName =>
-                dispatch(
-                    communityActions.getCommunitySubscribers(communityName)
-                ),
+            fetchSubscribers: (communityName) => dispatch(communityActions.getCommunitySubscribers(communityName)),
         };
     }
 )(CommunitySubscriberList);

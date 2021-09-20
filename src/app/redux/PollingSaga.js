@@ -1,4 +1,6 @@
-import { put, call, take, race } from 'redux-saga/effects';
+import {
+ put, call, take, race
+} from 'redux-saga/effects';
 import { delay } from 'redux-saga';
 
 const START_POLLING = 'START_POLLING';
@@ -24,14 +26,14 @@ export function* watchPollingTasks() {
     }
 }
 
-export const startPolling = payload => {
+export const startPolling = (payload) => {
     return {
         type: START_POLLING,
         payload,
     };
 };
 
-export const stopPolling = payload => {
+export const stopPolling = (payload) => {
     return {
         type: STOP_POLLING,
         payload,

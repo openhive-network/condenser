@@ -26,9 +26,7 @@ const emptyPostsText = (section, account, isMyAccount) => {
     } else if (section == 'comments') {
         return tt('user_profile.user_hasnt_made_any_posts_yet', { name });
     } else if (section == 'replies') {
-        return (
-            tt('user_profile.user_hasnt_had_any_replies_yet', { name }) + '.'
-        );
+        return tt('user_profile.user_hasnt_had_any_replies_yet', { name }) + '.';
     } else if (section == 'payout') {
         return 'No pending payouts.';
     } else if (section == 'blog' && !isMyAccount) {
@@ -43,9 +41,7 @@ const emptyPostsText = (section, account, isMyAccount) => {
                     <strong>Explore Communities</strong>
                 </Link>
                 <br />
-                <Link to="/submit.html">
-                    {tt('user_profile.create_a_post')}
-                </Link>
+                <Link to="/submit.html">{tt('user_profile.create_a_post')}</Link>
                 <br />
                 <Link to="/trending">Trending Articles</Link>
                 <br />
@@ -105,10 +101,7 @@ export default class UserProfile extends React.Component {
             fetchPeakdBadges,
             username,
         } = this.props;
-        if (
-            prevProps.accountname != accountname ||
-            prevProps.username != username
-        ) {
+        if (prevProps.accountname != accountname || prevProps.username != username) {
             if (!profile) fetchProfile(accountname, username);
             if (!hivebuzzBadges) fetchHivebuzzBadges(accountname);
             if (!peakdBadges) fetchPeakdBadges(accountname);
@@ -173,12 +166,7 @@ export default class UserProfile extends React.Component {
         const _state = status ? status.getIn([category, order]) : null;
         const fetching = (_state && _state.fetching) || this.props.loading;
 
-        if (
-            !profile &&
-            (fetching ||
-                (this.props.section === 'notifications' &&
-                    !this.props.notifications))
-        ) {
+        if (!profile && (fetching || (this.props.section === 'notifications' && !this.props.notifications))) {
             return (
                 <center>
                     <LoadingIndicator type="circle" />
@@ -207,10 +195,7 @@ export default class UserProfile extends React.Component {
         } else if (section === 'notifications') {
             // notifications
             tab_content = (
-                <NotificationsList
-                    username={accountname}
-                    notifications={notifications && notifications.toJS()}
-                />
+                <NotificationsList username={accountname} notifications={notifications && notifications.toJS()} />
             );
         } else if (section === 'communities') {
             tab_content = (
@@ -239,24 +224,13 @@ export default class UserProfile extends React.Component {
             tab_content = <Callout>{emptyText}</Callout>;
         } else {
             // post lists -- loaded
-            tab_content = (
-                <PostsList
-                    post_refs={posts}
-                    loading={fetching}
-                    loadMore={this.loadMore}
-                />
-            );
+            tab_content = <PostsList post_refs={posts} loading={fetching} loadMore={this.loadMore} />;
         }
 
-        const _url = tab => `/@${accountname}${tab == 'blog' ? '' : '/' + tab}`;
+        const _url = (tab) => `/@${accountname}${tab == 'blog' ? '' : '/' + tab}`;
 
         const _tablink2 = (tab, label) => {
-            const item =
-                tab == section ? (
-                    <strong>{label}</strong>
-                ) : (
-                    <Link to={_url(tab)}>{label}</Link>
-                );
+            const item = tab == section ? <strong>{label}</strong> : <Link to={_url(tab)}>{label}</Link>;
             return <div key={tab}>{item}</div>;
         };
 
@@ -290,9 +264,7 @@ export default class UserProfile extends React.Component {
                         <li>{_tablink('posts', tt('g.posts'))}</li>
                         <li>{_tablink('replies', tt('g.replies'))}</li>
                         <li>{_tablink('communities', tt('g.social'))}</li>
-                        <li>
-                            {_tablink('notifications', tt('g.notifications'))}
-                        </li>
+                        <li>{_tablink('notifications', tt('g.notifications'))}</li>
                         {/*
                         <li>{_tablink('comments', tt('g.comments'))}</li>
                         <li>{_tablink('payout', tt('voting_jsx.payout'))}</li>
@@ -302,17 +274,11 @@ export default class UserProfile extends React.Component {
                 <div className="columns shrink">
                     <ul className="menu" style={{ flexWrap: 'wrap' }}>
                         <li>
-                            <a
-                                href={walletUrl}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                            >
+                            <a href={walletUrl} target="_blank" rel="noopener noreferrer">
                                 Wallet
                             </a>
                         </li>
-                        {isMyAccount && (
-                            <li>{_tablink('settings', tt('g.settings'))}</li>
-                        )}
+                        {isMyAccount && <li>{_tablink('settings', tt('g.settings'))}</li>}
                     </ul>
                 </div>
             </div>
@@ -320,22 +286,10 @@ export default class UserProfile extends React.Component {
 
         return (
             <div className="UserProfile">
-                <UserProfileHeader
-                    current_user={username}
-                    accountname={accountname}
-                    profile={profile}
-                />
-                <div className="UserProfile__top-nav row expanded">
-                    {top_menu}
-                </div>
+                <UserProfileHeader current_user={username} accountname={accountname} profile={profile} />
+                <div className="UserProfile__top-nav row expanded">{top_menu}</div>
                 <div className="row">
-                    <div
-                        className={classnames(
-                            'UserProfile__tab_content',
-                            'column',
-                            'layout-list'
-                        )}
-                    >
+                    <div className={classnames('UserProfile__tab_content', 'column', 'layout-list')}>
                         <article className="articles">
                             {tab_header}
                             {tab_content}
@@ -357,84 +311,46 @@ module.exports = {
 
             let { section } = ownProps.routeParams;
             if (!section) section = 'blog';
-            const order = [
-                'blog',
-                'posts',
-                'comments',
-                'replies',
-                'payout',
-            ].includes(section)
-                ? section
-                : null;
+            const order = ['blog', 'posts', 'comments', 'replies', 'payout'].includes(section) ? section : null;
 
             const profile = state.userProfiles.getIn(['profiles', accountname]);
 
             return {
-                posts: state.global.getIn([
-                    'discussion_idx',
-                    '@' + accountname,
-                    order,
-                ]),
+                posts: state.global.getIn(['discussion_idx', '@' + accountname, order]),
                 username,
                 loading: state.app.get('loading'),
                 status: state.global.get('status'),
                 accountname,
-                followers: state.global.getIn([
-                    'follow',
-                    'getFollowersAsync',
-                    accountname,
-                    'blog_result',
-                ]),
-                following: state.global.getIn([
-                    'follow',
-                    'getFollowingAsync',
-                    accountname,
-                    'blog_result',
-                ]),
-                notifications: state.global.getIn(
-                    ['notifications', accountname, 'notifications'],
-                    null
-                ),
+                followers: state.global.getIn(['follow', 'getFollowersAsync', accountname, 'blog_result']),
+                following: state.global.getIn(['follow', 'getFollowingAsync', accountname, 'blog_result']),
+                notifications: state.global.getIn(['notifications', accountname, 'notifications'], null),
                 blogmode: state.app.getIn(['user_preferences', 'blogmode']),
                 profile: state.userProfiles.getIn(['profiles', accountname]),
-                hivebuzzBadges: state.userProfiles.getIn([
-                    'hivebuzzBadges',
-                    accountname,
-                ]),
-                peakdBadges: state.userProfiles.getIn([
-                    'peakdBadges',
-                    accountname,
-                ]),
+                hivebuzzBadges: state.userProfiles.getIn(['hivebuzzBadges', accountname]),
+                peakdBadges: state.userProfiles.getIn(['peakdBadges', accountname]),
                 walletUrl: walletUrl + '/@' + accountname + '/transfers',
                 section,
                 order,
                 category: '@' + accountname,
-                subscriptions: state.global.getIn([
-                    'subscriptions',
-                    accountname,
-                ])
+                subscriptions: state.global.getIn(['subscriptions', accountname])
                     ? state.global.getIn(['subscriptions', accountname]).toJS()
                     : [],
             };
         },
-        dispatch => ({
+        (dispatch) => ({
             login: () => {
                 dispatch(userActions.showLogin());
             },
-            requestData: args => {
+            requestData: (args) => {
                 dispatch(fetchDataSagaActions.requestData(args));
             },
             fetchProfile: (account, observer) => {
-                dispatch(
-                    UserProfilesSagaActions.fetchProfile({ account, observer })
-                );
+                dispatch(UserProfilesSagaActions.fetchProfile({ account, observer }));
             },
-            fetchHivebuzzBadges: account => {
-                dispatch(
-                    UserProfilesSagaActions.fetchHivebuzzBadges({ account })
-                );
+            fetchHivebuzzBadges: (account) => {
+                dispatch(UserProfilesSagaActions.fetchHivebuzzBadges({ account }));
             },
-            fetchPeakdBadges: account => {
+            fetchPeakdBadges: (account) => {
                 dispatch(UserProfilesSagaActions.fetchPeakdBadges({ account }));
             },
         })

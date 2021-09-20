@@ -8,15 +8,13 @@ class TagList extends Component {
         const { post } = this.props;
         const category = post.get('category');
 
-        const link = tag => {
+        const link = (tag) => {
             if (tag == category) return null;
             return <Link to={`/trending/${tag}`} key={tag}>{` #${tag} `}</Link>;
         };
 
         return (
-            <div className="TagList__horizontal">
-                {normalizeTags(post.get('json_metadata'), category).map(link)}
-            </div>
+            <div className="TagList__horizontal">{normalizeTags(post.get('json_metadata'), category).map(link)}</div>
         );
     }
 }

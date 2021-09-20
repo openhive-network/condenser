@@ -1,6 +1,5 @@
+/*eslint global-require: "warn"*/
 // The translations in this file are added by default.
-
-'use strict';
 
 module.exports = {
     counterpart: {

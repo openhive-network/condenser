@@ -3,11 +3,10 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import tt from 'counterpart';
 import { SIGNUP_URL } from 'shared/constants';
-import Comment from 'app/components/cards/Comment';
 import PostFull from 'app/components/cards/PostFull';
 import NotFoundMessage from 'app/components/cards/NotFoundMessage';
 import { parseJsonTags } from 'app/utils/StateFunctions';
-import { sortComments } from 'app/components/cards/Comment';
+import Comment, { sortComments } from 'app/components/cards/Comment';
 import DropdownMenu from 'app/components/elements/DropdownMenu';
 import { serverApiRecordEvent } from 'app/utils/ServerApiClient';
 import GptAd from 'app/components/elements/GptAd';
@@ -28,6 +27,7 @@ class Post extends React.Component {
         sortOrder: PropTypes.string,
         loading: PropTypes.bool,
     };
+
     constructor() {
         super();
         this.state = {
@@ -39,8 +39,9 @@ class Post extends React.Component {
         };
     }
 
-    toggleNegativeReplies = e => {
+    toggleNegativeReplies = (e) => {
         this.setState({
+            // eslint-disable-next-line react/no-access-state-in-setstate
             showNegativeComments: !this.state.showNegativeComments,
         });
         e.preventDefault();
@@ -56,7 +57,9 @@ class Post extends React.Component {
 
     render() {
         const { showSignUp } = this;
-        const { content, sortOrder, post, dis, loading } = this.props;
+        const {
+            content, sortOrder, post, dis, loading,
+        } = this.props;
         const { showNegativeComments, commentHidden, showAnyway } = this.state;
 
         if (!content || !dis) {
@@ -66,7 +69,9 @@ class Post extends React.Component {
                         <LoadingIndicator type="circle" />
                     </center>
                 );
-            } else if (isEmptyPost(dis)) {
+            }
+
+            if (isEmptyPost(dis)) {
                 return <NotFoundMessage />;
             }
         }
@@ -83,9 +88,13 @@ class Post extends React.Component {
                     <div className="row">
                         <div className="column">
                             <div className="PostFull">
+                                {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions */}
                                 <p onClick={this.showAnywayClick}>
-                                    {tt('promote_post_jsx.this_post_was_hidden_due_to_low_ratings')}.{' '}
+                                    {tt('promote_post_jsx.this_post_was_hidden_due_to_low_ratings')}
+                                    .
+                                    {' '}
                                     <button
+                                        type="button"
                                         style={{ marginBottom: 0 }}
                                         className="button hollow tiny float-right"
                                         onClick={this.showAnywayClick}
@@ -112,8 +121,8 @@ class Post extends React.Component {
             replies = replies.slice(0, commentLimit);
         }
         let commentCount = 0;
-        const positiveComments = replies.map(reply => {
-            commentCount++;
+        const positiveComments = replies.map((reply) => {
+            commentCount += 1;
             const showAd = commentCount % 5 === 0 && commentCount !== replies.length && commentCount !== commentLimit;
 
             return (
@@ -140,8 +149,10 @@ class Post extends React.Component {
                 <p>
                     {showNegativeComments
                         ? tt('post_jsx.now_showing_comments_with_low_ratings')
-                        : tt('post_jsx.comments_were_hidden_due_to_low_ratings')}.{' '}
-                    <button className="button hollow tiny float-right" onClick={e => this.toggleNegativeReplies(e)}>
+                        : tt('post_jsx.comments_were_hidden_due_to_low_ratings')}
+                    .
+                    {' '}
+                    <button type="button" className="button hollow tiny float-right" onClick={(e) => this.toggleNegativeReplies(e)}>
                         {showNegativeComments ? tt('g.hide') : tt('g.show')}
                     </button>
                 </p>
@@ -157,6 +168,7 @@ class Post extends React.Component {
         const sort_menu = [];
         let sort_label;
         const selflink = `/${dis.get('category')}/@${post}`;
+        // eslint-disable-next-line no-plusplus
         for (let o = 0; o < sort_orders.length; ++o) {
             if (sort_orders[o] == sortOrder) sort_label = sort_labels[o];
             sort_menu.push({
@@ -166,29 +178,30 @@ class Post extends React.Component {
             });
         }
 
+        const enableSignup = false;
         return (
             <div className="Post">
                 <div className="row">
                     <div className="column">{postBody}</div>
                 </div>
-                {false &&
-                    !isLoggedIn() && (
-                        <div className="row">
-                            <div className="column">
-                                <div className="Post__promo">
-                                    {tt(
-                                        'g.next_7_strings_single_block.authors_get_paid_when_people_like_you_upvote_their_post'
-                                    )}.
-                                    <br />
-                                    {tt('g.next_7_strings_single_block.if_you_enjoyed_what_you_read_earn_amount')}
-                                    <br />
-                                    <button type="button" className="button e-btn" onClick={showSignUp}>
-                                        {tt('loginform_jsx.sign_up_get_hive')}
-                                    </button>
-                                </div>
+                {enableSignup && !isLoggedIn() && (
+                    <div className="row">
+                        <div className="column">
+                            <div className="Post__promo">
+                                {tt(
+                                    'g.next_7_strings_single_block.authors_get_paid_when_people_like_you_upvote_their_post'
+                                )}
+                                .
+                                <br />
+                                {tt('g.next_7_strings_single_block.if_you_enjoyed_what_you_read_earn_amount')}
+                                <br />
+                                <button type="button" className="button e-btn" onClick={showSignUp}>
+                                    {tt('loginform_jsx.sign_up_get_hive')}
+                                </button>
                             </div>
                         </div>
-                    )}
+                    </div>
+                )}
                 {this.props.gptEnabled && commentCount >= 5 ? (
                     <div className="Post_footer__ad">
                         <GptAd tags={gptTags} type="Freestar" id="bsa-zone_1566494147292-7_123456" />
@@ -199,7 +212,8 @@ class Post extends React.Component {
                         <div className="Post_comments__content">
                             {positiveComments.length ? (
                                 <div className="Post__comments_sort_order float-right">
-                                    {tt('post_jsx.sort_order')}: &nbsp;
+                                    {tt('post_jsx.sort_order')}
+                                    : &nbsp;
                                     <DropdownMenu items={sort_menu} el="li" selected={sort_label} position="left" />
                                 </div>
                             ) : null}
