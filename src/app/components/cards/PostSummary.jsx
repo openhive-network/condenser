@@ -26,7 +26,7 @@ const CURATOR_VESTS_THRESHOLD = 1.0 * 1000.0 * 1000.0;
 // TODO: document why ` ` => `%20` is needed, and/or move to base fucntion
 const proxify = (url, size) => proxifyImageUrl(url, size).replace(/ /g, '%20');
 
-const vote_weights = (post) => {
+const vote_weights = post => {
     const rshares = post.get('net_rshares');
     const dn = post.getIn(['stats', 'flag_weight']);
     const up = Math.max(String(parseInt(rshares / 2, 10)).length - 10, 0);
@@ -211,7 +211,7 @@ class PostSummary extends React.Component {
 
         let dots;
         if (net_vests >= CURATOR_VESTS_THRESHOLD) {
-            const _dots = (cnt) => {
+            const _dots = cnt => {
                 return cnt > 0 ? '•'.repeat(cnt) : null;
             };
             const { up, dn } = vote_weights(post);
@@ -291,8 +291,17 @@ class PostSummary extends React.Component {
             image_link = extractImageLink(post.get('cross_post_json_metadata'), post.get('cross_post_body'));
         }
 
-        if (!image_link) {
+        let listImgMedium;
+        let listImgLarge;
+        if (!image_link && !isReply) {
             image_link = `https://images.hive.blog/u/${author}/avatar`;
+            listImgMedium = `https://images.hive.blog/u/${
+                author
+            }/avatar/medium`;
+            listImgLarge = `https://images.hive.blog/u/${author}/avatar/large`;
+        } else if (image_link) {
+            listImgMedium = proxify(image_link, '256x512');
+            listImgLarge = proxify(image_link, '640x480');
         }
 
         let thumb = null;
