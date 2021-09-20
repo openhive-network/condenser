@@ -16,7 +16,7 @@ const plugins = [
             statsOptions: { source: false }
         }),
         function () {
-            this.plugin('done', writeStats);
+            this.hooks.done.tap('WriteStats', writeStats);
         },
         webpack_isomorphic_tools_plugin,
     ];
