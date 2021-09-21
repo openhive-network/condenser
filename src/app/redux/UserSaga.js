@@ -115,7 +115,9 @@ function* usernamePasswordLogin(action) {
     yield call(usernamePasswordLogin2, action.payload);
     const current = yield select((state) => state.user.get('current'));
     const username = current ? current.get('username') : null;
+
     if (username) {
+        yield put(userActions.generateSessionId());
         yield fork(loadFollows, 'getFollowingAsync', username, 'blog');
         yield fork(loadFollows, 'getFollowingAsync', username, 'ignore');
     }

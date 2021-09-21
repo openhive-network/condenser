@@ -26,7 +26,7 @@ const CURATOR_VESTS_THRESHOLD = 1.0 * 1000.0 * 1000.0;
 // TODO: document why ` ` => `%20` is needed, and/or move to base fucntion
 const proxify = (url, size) => proxifyImageUrl(url, size).replace(/ /g, '%20');
 
-const vote_weights = post => {
+const vote_weights = (post) => {
     const rshares = post.get('net_rshares');
     const dn = post.getIn(['stats', 'flag_weight']);
     const up = Math.max(String(parseInt(rshares / 2, 10)).length - 10, 0);
@@ -69,7 +69,9 @@ class PostSummary extends React.Component {
             }
         }
 
-        const { ignore, hideCategory, net_vests } = this.props;
+        const {
+            ignore, hideCategory, net_vests, sessionId,
+        } = this.props;
         const { post } = this.props;
         if (!post) return null;
 
@@ -211,7 +213,7 @@ class PostSummary extends React.Component {
 
         let dots;
         if (net_vests >= CURATOR_VESTS_THRESHOLD) {
-            const _dots = cnt => {
+            const _dots = (cnt) => {
                 return cnt > 0 ? '•'.repeat(cnt) : null;
             };
             const { up, dn } = vote_weights(post);
@@ -291,17 +293,8 @@ class PostSummary extends React.Component {
             image_link = extractImageLink(post.get('cross_post_json_metadata'), post.get('cross_post_body'));
         }
 
-        let listImgMedium;
-        let listImgLarge;
         if (!image_link && !isReply) {
-            image_link = `https://images.hive.blog/u/${author}/avatar`;
-            listImgMedium = `https://images.hive.blog/u/${
-                author
-            }/avatar/medium`;
-            listImgLarge = `https://images.hive.blog/u/${author}/avatar/large`;
-        } else if (image_link) {
-            listImgMedium = proxify(image_link, '256x512');
-            listImgLarge = proxify(image_link, '640x480');
+            image_link = `https://images.hive.blog/u/${author}/avatar${sessionId ? `?ord=${sessionId}` : ''}`;
         }
 
         let thumb = null;
@@ -364,6 +357,8 @@ class PostSummary extends React.Component {
 export default connect((state, props) => {
     const { post, hideCategory, nsfwPref } = props;
     const net_vests = state.user.getIn(['current', 'effective_vests'], 0.0);
+    const sessionId = state.user.get('sessionId');
+
     return {
         post,
         hideCategory,
@@ -371,5 +366,6 @@ export default connect((state, props) => {
         blogmode: state.app.getIn(['user_preferences', 'blogmode']),
         nsfwPref,
         net_vests,
+        sessionId,
     };
 })(PostSummary);
