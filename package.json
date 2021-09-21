@@ -214,7 +214,7 @@
     "npm": ">=5.4.2"
   },
   "lint-staged": {
-    "src/**/*.+(js)": [
+    "src/**/*.+(js|jsx)": [
       "eslint"
     ],
     "src/**/*.+(json|css|md)": [
