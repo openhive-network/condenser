@@ -5,7 +5,9 @@ import { Link } from 'react-router';
 import _ from 'lodash';
 import 'react-tabs/style/react-tabs.css';
 import tt from 'counterpart';
-import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
+import {
+    Tab, Tabs, TabList, TabPanel,
+} from 'react-tabs';
 import LoadingIndicator from 'app/components/elements/LoadingIndicator';
 import { actions as fetchDataSagaActions } from 'app/redux/FetchDataSaga';
 import Callout from 'app/components/elements/Callout';
@@ -26,7 +28,9 @@ class SubscriptionsList extends React.Component {
     }
 
     render() {
-        const { subscriptions, loading, badges, username } = this.props;
+        const {
+            subscriptions, loading, badges, username, sessionId,
+        } = this.props;
         const badgesTypes = {
             activity: [],
             perso: [],
@@ -60,8 +64,8 @@ class SubscriptionsList extends React.Component {
         if (peakdBadges) {
             peakdBadges.forEach((badge) => {
                 const type = badge.get('type');
-                let valid = true;
-                if (badgesTypes[type] === undefined || badgesTypes[type] === null) valid = false;
+                const valid = type in badgesTypes;
+
                 if (valid) {
                     badgesTypes[type].push(
                         <a
@@ -72,7 +76,7 @@ class SubscriptionsList extends React.Component {
                             rel="noopener noreferrer"
                         >
                             <img
-                                src={badge.get('url')}
+                                src={`${badge.get('url')}${sessionId ? `?ord=${sessionId}` : ''}`}
                                 alt={badge.get('title')}
                                 title={badge.get('title')}
                                 className="UserProfile__badge_image"
@@ -112,11 +116,12 @@ class SubscriptionsList extends React.Component {
                     {hasBadges && (
                         <div>
                             <p>
-                                {tt('g.badges_and_achievements_description')}{' '}
+                                {tt('g.badges_and_achievements_description')}
+                                {' '}
                                 <a href="https://peakd.com/" target="_blank" rel="noopener noreferrer">
                                     Peakd
-                                </a>{' '}
-                                &{' '}
+                                </a>
+                                {' & '}
                                 <a href="https://hivebuzz.me" target="_blank" rel="noopener noreferrer">
                                     Hivebuzz
                                 </a>
@@ -171,11 +176,14 @@ export default connect(
         const isOwnAccount = user.getIn(['current', 'username'], '') === username;
         const loading = global.getIn(['subscriptions', 'loading']);
         const subscriptions = global.getIn(['subscriptions', username]);
+        const sessionId = state.user.get('sessionId');
+
         return {
             ...props,
             subscriptions: subscriptions ? subscriptions.toJS() : [],
             isOwnAccount,
             loading,
+            sessionId,
         };
     },
     (dispatch) => ({
