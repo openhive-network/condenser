@@ -61,7 +61,7 @@ class SubscriptionsList extends React.Component {
                 }
             });
         }
-        if (peakdBadges && sessionId) {
+        if (peakdBadges) {
             peakdBadges.forEach((badge) => {
                 const type = badge.get('type');
                 const valid = type in badgesTypes;

@@ -15,11 +15,7 @@ class Userpic extends Component {
 
         const { account, size, sessionId } = this.props;
 
-        if (!sessionId) {
-            return null;
-        }
-
-        const url = `${imageProxy()}u/${account}/avatar${size}?ord=${sessionId}`;
+        const url = `${imageProxy()}u/${account}/avatar${size}${sessionId ? `?ord=${sessionId}` : ''}`;
         const style = { backgroundImage: `url(${url})` };
         return <div className="Userpic" style={style} />;
     }

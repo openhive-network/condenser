@@ -293,8 +293,8 @@ class PostSummary extends React.Component {
             image_link = extractImageLink(post.get('cross_post_json_metadata'), post.get('cross_post_body'));
         }
 
-        if (!image_link && !isReply && sessionId) {
-            image_link = `https://images.hive.blog/u/${author}/avatar?ord=${sessionId}`;
+        if (!image_link && !isReply) {
+            image_link = `https://images.hive.blog/u/${author}/avatar${sessionId ? `?ord=${sessionId}` : ''}`;
         }
 
         let thumb = null;
