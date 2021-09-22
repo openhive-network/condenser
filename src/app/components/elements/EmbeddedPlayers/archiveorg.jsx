@@ -131,6 +131,7 @@ export function genIframeMd(idx, id, width, height) {
             sandbox = sandboxConfig.sandboxAttributes.join(' ');
         }
     }
+    const aspectRatioPercent = (height / width) * 100;
     const iframeProps = {
         src: url,
         width,
@@ -145,7 +146,16 @@ export function genIframeMd(idx, id, width, height) {
     }
 
     return (
-        <div key={`archiveorg-${id}-${idx}`} className="videoWrapper">
+        <div
+            key={`archiveorg-${id}-${idx}`}
+            className="videoWrapper"
+            style={{
+                position: 'relative',
+                width: '100%',
+                height: 0,
+                paddingBottom: `${aspectRatioPercent}%`,
+            }}
+        >
             <iframe
                 title="Archive.org embedded player"
                 // eslint-disable-next-line react/jsx-props-no-spreading

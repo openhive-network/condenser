@@ -42,6 +42,7 @@ export function genIframeMd(idx, threespeakId, width, height) {
             sandbox = sandboxConfig.sandboxAttributes.join(' ');
         }
     }
+    const aspectRatioPercent = (height / width) * 100;
     const iframeProps = {
         key: idx,
         src: url,
@@ -55,7 +56,16 @@ export function genIframeMd(idx, threespeakId, width, height) {
     }
 
     return (
-        <div key={`threespeak-${threespeakId}-${idx}`} className="videoWrapper">
+        <div
+            key={`threespeak-${threespeakId}-${idx}`}
+            className="videoWrapper"
+            style={{
+              position: 'relative',
+              width: '100%',
+              height: 0,
+              paddingBottom: `${aspectRatioPercent}%`,
+            }}
+        >
             <iframe
                 title="3Speak embedded player"
                 // eslint-disable-next-line react/jsx-props-no-spreading

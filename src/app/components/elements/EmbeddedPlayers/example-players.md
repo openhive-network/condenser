@@ -5,7 +5,9 @@
 Video:
 
 <iframe src="https://archive.org/embed/namaz-nasil-kilinir" width="640" height="480" frameborder="0" webkitallowfullscreen="true" mozallowfullscreen="true" allowfullscreen></iframe>
+
 Music:
+
 <iframe src="https://archive.org/embed/geometry_dash_1.9" width="500" height="140" frameborder="0" webkitallowfullscreen="true" mozallowfullscreen="true" allowfullscreen></iframe>
 
 ## bandcamp direct html iframe markup
@@ -89,7 +91,7 @@ https://open.spotify.com/artist/70eAfg5WeShjPxtD9Yi6P9?si=VDDO-Ju9TOqTw_pS5piraA
 
 ## threespeak iframe embedded from link
 
-https://3speak.tv/watsch?v=threespeak/iaarkpvf
+https://3speak.tv/watch?v=threespeak/iaarkpvf
 
 ## truvvl direct html iframe markup
 
