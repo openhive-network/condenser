@@ -17,8 +17,6 @@ import { routeRegex } from 'app/ResolveRoute';
 import secureRandom from 'secure-random';
 import userIllegalContent from 'app/utils/userIllegalContent';
 import koaLocale from 'koa-locale';
-import fs from 'fs';
-// eslint-disable-next-line import/named
 import { getSupportedLocales } from './utils/misc';
 import { specialPosts } from './utils/SpecialPosts';
 import usePostJson from './json/post_json';
@@ -41,9 +39,6 @@ const env = process.env.NODE_ENV || 'development';
 // cache of a thousand days
 const cacheOpts = { maxAge: 86400000, gzip: true, buffer: true };
 
-// import ads.txt to be served statically
-const adstxt = fs.readFileSync(path.join(__dirname, '../app/assets/ads.txt'), 'utf8');
-
 // Serve static assets without fanfare
 app.use(favicon(path.join(__dirname, '../app/assets/images/favicons/favicon.ico')));
 
@@ -52,14 +47,6 @@ app.use(mount('/favicons', staticCache(path.join(__dirname, '../app/assets/image
 app.use(mount('/images', staticCache(path.join(__dirname, '../app/assets/images'), cacheOpts)));
 
 app.use(mount('/javascripts', staticCache(path.join(__dirname, '../app/assets/javascripts'), cacheOpts)));
-
-app.use(
-    // eslint-disable-next-line require-yield
-    mount('/ads.txt', function* () {
-        this.type = 'text/plain';
-        this.body = adstxt;
-    })
-);
 
 // Proxy asset folder to webpack development server in development mode
 if (env === 'development') {
