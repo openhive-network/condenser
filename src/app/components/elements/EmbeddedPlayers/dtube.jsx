@@ -40,6 +40,7 @@ export function genIframeMd(idx, dtubeId, width, height) {
             sandbox = sandboxConfig.sandboxAttributes.join(' ');
         }
     }
+    const aspectRatioPercent = (height / width) * 100;
     const iframeProps = {
         key: idx,
         src: url,
@@ -53,7 +54,16 @@ export function genIframeMd(idx, dtubeId, width, height) {
     }
 
     return (
-        <div key={`dtube-${dtubeId}-${idx}`} className="videoWrapper">
+        <div
+            key={`dtube-${dtubeId}-${idx}`}
+            className="videoWrapper"
+            style={{
+                position: 'relative',
+                width: '100%',
+                height: 0,
+                paddingBottom: `${aspectRatioPercent}%`,
+            }}
+        >
             <iframe
                 title="DTube embedded player"
                 // eslint-disable-next-line react/jsx-props-no-spreading

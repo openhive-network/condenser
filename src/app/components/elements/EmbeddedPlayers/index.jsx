@@ -14,6 +14,8 @@ import * as vimeo from 'app/components/elements/EmbeddedPlayers/vimeo';
 import * as youtube from 'app/components/elements/EmbeddedPlayers/youtube';
 import * as reddit from 'app/components/elements/EmbeddedPlayers/reddit';
 import * as gist from 'app/components/elements/EmbeddedPlayers/gist';
+import * as tiktok from 'app/components/elements/EmbeddedPlayers/tiktok';
+import * as instagram from 'app/components/elements/EmbeddedPlayers/instagram';
 
 const supportedProviders = {
     archiveorg,
@@ -31,6 +33,8 @@ const supportedProviders = {
     twitter,
     vimeo,
     youtube,
+    tiktok,
+    instagram,
 };
 
 export default supportedProviders;

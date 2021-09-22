@@ -3,6 +3,7 @@ import { normalizeEmbedUrl as normalizeEmbbeddedPlayerEmbedUrl } from 'app/compo
 
 export default class Iframe extends React.Component {
     normalizeEmbedUrl = (url) => {
+        console.log('normalizeEmbedUrl');
         const validEmbedUrl = normalizeEmbbeddedPlayerEmbedUrl(url);
         if (validEmbedUrl !== false) {
             return validEmbedUrl;
@@ -53,6 +54,7 @@ export default class Iframe extends React.Component {
     };
 
     renderFrame = () => {
+        console.log('toto');
         let src = this.props.node.data.get('src');
         src = this.normalizeEmbedUrl(src) || src;
 

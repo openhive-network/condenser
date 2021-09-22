@@ -135,7 +135,7 @@ export function genIframeMd(idx, id) {
     }
 
     return (
-        <div key={`mixcloud-${id}-${idx}`} className="videoWrapper">
+        <div key={`mixcloud-${id}-${idx}`} className="iframeWrapper">
             <iframe
                 title="mixcloud embedded player"
                 // eslint-disable-next-line react/jsx-props-no-spreading
