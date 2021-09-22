@@ -33,5 +33,5 @@ export class Role {
 
 export function ifHive(category) {
     if (category && category.match(/^(hive-)([0-9]{5,})/i) !== null) return category;
-    else return null;
+    return null;
 }
