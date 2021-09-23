@@ -12,13 +12,19 @@ import CommunityPane from 'app/components/elements/CommunityPane';
 import CommunityPaneMobile from 'app/components/elements/CommunityPaneMobile';
 import Topics from './Topics';
 
-class PostsIndexLayout extends React.Component {
-    static propTypes = {
-        username: PropTypes.string,
-        blogmode: PropTypes.bool,
-        topics: PropTypes.object,
-    };
+const propTypes = {
+    username: PropTypes.string,
+    blogmode: PropTypes.bool,
+    topics: PropTypes.object,
+};
 
+const defaultProps = {
+    username: '',
+    blogmode: true,
+    topics: {},
+};
+
+class PostsIndexLayout extends React.Component {
     componentWillMount() {
         const { subscriptions, getSubscriptions, username } = this.props;
         if (!subscriptions && username) getSubscriptions(username);
@@ -26,7 +32,7 @@ class PostsIndexLayout extends React.Component {
 
     componentDidUpdate(prevProps) {
         const { subscriptions, getSubscriptions, username } = this.props;
-        if (!subscriptions && username && username != prevProps.username) getSubscriptions(username);
+        if (!subscriptions && username && username !== prevProps.username) getSubscriptions(username);
     }
 
     render() {
@@ -61,9 +67,17 @@ class PostsIndexLayout extends React.Component {
     }
 }
 
+PostsIndexLayout.propTypes = propTypes;
+PostsIndexLayout.defaultProps = defaultProps;
+
 export default connect(
     (state, props) => {
         const username = state.user.getIn(['current', 'username']) || state.offchain.get('account');
+        let community = state.global.getIn(['community', props.category], null);
+        if (typeof community === 'string') {
+            community = null;
+        }
+
         return {
             blogmode: props.blogmode,
             community: state.global.getIn(['community', props.category], null),

@@ -131,6 +131,8 @@ export default function ServerHTML({
                         `,
                     }}
                 />
+                <script async src="https://www.tiktok.com/embed.js" charSet="UTF-8" />
+                <script async src="https://www.instagram.com/embed.js" charSet="UTF-8" />
                 <script async src="https://embed.redditmedia.com/widgets/platform.js" charSet="UTF-8" />
                 <title>{page_title}</title>
             </head>

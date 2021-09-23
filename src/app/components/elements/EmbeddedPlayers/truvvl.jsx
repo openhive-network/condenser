@@ -136,7 +136,7 @@ export function genIframeMd(idx, id, width, height) {
     }
 
     return (
-        <div key={`truvvl-${id}-${idx}`} className="videoWrapper">
+        <div key={`truvvl-${id}-${idx}`} className="iframeWrapper">
             <iframe
                 title="truvvl.com embedded player"
                 // eslint-disable-next-line react/jsx-props-no-spreading

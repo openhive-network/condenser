@@ -122,6 +122,9 @@ export default ({
                 'text-center',
                 'text-right',
                 'videoWrapper',
+                'iframeWrapper',
+                'redditWrapper',
+                'tweetWrapper',
                 'phishy',
             ];
             const validClass = classWhitelist.find((e) => attribs.class == e);
