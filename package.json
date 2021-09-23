@@ -23,7 +23,7 @@
     "storybook": "start-storybook --no-manager-cache -p 6006",
     "storybook-build": "build-storybook -c .storybook -o docs",
     "build:analyze": "webpack-bundle-analyzer --port 4200 dist/stats.json",
-    "build-storybook": "build-storybook"
+    "build:storybook": "build-storybook"
   },
   "author": "HiveBlog",
   "license": "MIT",
