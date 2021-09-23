@@ -242,7 +242,10 @@ module.exports = {
             const order = account_name ? route.category : route.order || 'trending';
 
             const hive = ifHive(category);
-            const community = state.global.getIn(['community', hive], null);
+            let community = state.global.getIn(['community', hive], null);
+            if (typeof community === 'string') {
+                community = null;
+            }
 
             const enableAds = ownProps.gptEnabled && !GptUtils.HasBannedTags([category], state.app.getIn(['googleAds', 'gptBannedTags']));
 
