@@ -9,9 +9,9 @@ import SidebarNewUsers from 'app/components/elements/SidebarNewUsers';
 import Notices from 'app/components/elements/Notices';
 import SteemMarket from 'app/components/elements/SteemMarket';
 import GptAd from 'app/components/elements/GptAd';
-import Topics from './Topics';
 import CommunityPane from 'app/components/elements/CommunityPane';
 import CommunityPaneMobile from 'app/components/elements/CommunityPaneMobile';
+import Topics from './Topics';
 
 class PostsIndexLayout extends React.Component {
     static propTypes = {
@@ -31,7 +31,9 @@ class PostsIndexLayout extends React.Component {
     }
 
     render() {
-        const { topics, subscriptions, enableAds, community, username, blogmode, isBrowser, children } = this.props;
+        const {
+ topics, subscriptions, enableAds, community, username, blogmode, isBrowser, children
+} = this.props;
 
         return (
             <div className={'PostsIndex row ' + (blogmode ? 'layout-block' : 'layout-list')}>

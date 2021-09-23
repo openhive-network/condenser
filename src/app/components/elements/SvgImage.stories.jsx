@@ -2,7 +2,7 @@ import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { withKnobs, number } from '@storybook/addon-knobs';
 import SvgImage from './SvgImage';
-import { Grid } from './Icon.story';
+import { Grid } from './Icon.stories';
 
 const svgs = ['404', 'facebook', 'reddit', 'steemit'];
 
@@ -24,7 +24,9 @@ storiesOf('Elements', module)
                         width={String(number('width', 100, options)) + 'px'}
                         height={String(number('height', 100, options)) + 'px'}
                     />
-                    <p> {svg} </p>
+                    <p>
+                        {svg}
+                    </p>
                 </div>
             ))}
         </Grid>

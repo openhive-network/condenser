@@ -2,10 +2,10 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import ReactDOM from 'react-dom';
-import * as transactionActions from 'app/redux/TransactionReducer';
-import * as globalActions from 'app/redux/GlobalReducer';
 import LoadingIndicator from 'app/components/elements/LoadingIndicator';
-import { DEBT_TOKEN, DEBT_TOKEN_SHORT, CURRENCY_SIGN, DEBT_TICKER } from 'app/client_config';
+import {
+ DEBT_TOKEN, DEBT_TOKEN_SHORT, CURRENCY_SIGN, DEBT_TICKER,
+} from 'app/client_config';
 import tt from 'counterpart';
 
 class PromotePost extends Component {
@@ -69,7 +69,9 @@ class PromotePost extends Component {
     // }
 
     render() {
-        const { amount, loading, amountError, trxError } = this.state;
+        const {
+ amount, loading, amountError, trxError
+} = this.state;
         const { currentAccount } = this.props;
         const balanceValue = currentAccount.get('sbd_balance');
         const balance = balanceValue ? balanceValue.split(' ')[0] : 0.0;
@@ -80,7 +82,10 @@ class PromotePost extends Component {
                 <div className="column small-12">
                     <form onSubmit={this.onSubmit} onChange={() => this.setState({ trxError: '' })}>
                         <h4>{tt('promote_post_jsx.promote_post')}</h4>
-                        <p>{tt('promote_post_jsx.spend_your_DEBT_TOKEN_to_advertise_this_post', { DEBT_TOKEN })}.</p>
+                        <p>
+                            {tt('promote_post_jsx.spend_your_DEBT_TOKEN_to_advertise_this_post', { DEBT_TOKEN })}
+                            .
+                        </p>
                         <hr />
                         <div className="row">
                             <div className="column small-7 medium-5 large-4">
@@ -97,7 +102,11 @@ class PromotePost extends Component {
                                         onChange={this.amountChange}
                                     />
                                     <span className="input-group-label">
-                                        {DEBT_TOKEN_SHORT + ' '} ({CURRENCY_SIGN})
+                                        {DEBT_TOKEN_SHORT + ' '}
+                                        {' '}
+                                        (
+                                        {CURRENCY_SIGN}
+                                        )
                                     </span>
                                     <div className="error">{amountError}</div>
                                 </div>
@@ -141,12 +150,14 @@ export default connect(
     },
 
     // mapDispatchToProps
-    (dispatch) => ({
-        dispatchSubmit: ({ amount, asset, author, permlink, currentUser, onClose, errorCallback }) => {
-            const username = currentUser.get('username');
+    () => ({
+        dispatchSubmit: ({
+             // eslint-disable-next-line no-unused-vars
+             amount, asset, author, permlink, currentUser
+        }) => {
             alert('Promoted posts are currently disabled');
             //window.location.replace($STM_config.wallet_url + `/transfer?to=null&memo=@${author}/${permlink}&amount=`+parseFloat(amount, 10).toFixed(3) + ' ' + asset)
-
+            /* const username = currentUser.get('username');
             const operation = {
                 from: username,
                 to: 'null',
@@ -156,6 +167,7 @@ export default connect(
                     successMessage: tt('promote_post_jsx.you_successfully_promoted_this_post') + '.',
                 },
             };
+             */
         },
     })
 )(PromotePost);
