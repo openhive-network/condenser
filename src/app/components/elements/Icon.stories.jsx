@@ -10,6 +10,7 @@ const styles = {
     gridAutoRows: 'minmax(80px, auto)',
 };
 
+// eslint-disable-next-line import/prefer-default-export
 export const Grid = ({ children }) => <div style={styles}>{children}</div>;
 
 const options = ['1x', '1_5x', '2x', '3x', '4x', '5x', '10x'];
@@ -28,7 +29,3 @@ storiesOf('Elements', module)
             ))}
         </Grid>
     ));
-
-export default {
-    Grid,
-};
