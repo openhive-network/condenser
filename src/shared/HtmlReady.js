@@ -161,6 +161,7 @@ function link(state, child) {
 
 // wrap iframes in div.videoWrapper to control size/aspect ratio
 function iframe(state, child) {
+    console.log('htmlready iframe');
     const url = child.getAttribute('src');
 
     // @TODO move this into the centralized EmbeddedPlayer code
@@ -177,12 +178,31 @@ function iframe(state, child) {
     if (!mutate) return;
 
     const tag = child.parentNode.tagName ? child.parentNode.tagName.toLowerCase() : child.parentNode.tagName;
-    if (tag === 'div' && child.parentNode.classList && child.parentNode.classList.contains('videoWrapper')) {
+    if (
+        tag === 'div'
+        && child.parentNode.classList
+        && child.parentNode.classList.contains('videoWrapper')
+        && child.parentNode.classList.contains('redditWrapper')
+        && child.parentNode.classList.contains('tweetWrapper')
+    ) {
         return;
     }
 
     const html = XMLSerializer.serializeToString(child);
-    child.parentNode.replaceChild(DOMParser.parseFromString(`<div class="videoWrapper">${html}</div>`), child);
+    const width = child.attributes.getNamedItem('width');
+    const height = child.attributes.getNamedItem('height');
+
+    let aspectRatioPercent = 100;
+    if (width && height) {
+      aspectRatioPercent = (height.value / width.value) * 100;
+    }
+
+    child.parentNode.replaceChild(DOMParser.parseFromString(
+    `<div class="iframeWrapper">${html}</div>`
+    ), child);
+    const styleAttr = document.createAttribute("style");
+    styleAttr.value = `position: relative; width: 100%; height: 0; padding-bottom: ${aspectRatioPercent}%;`;
+    child.attributes.setNamedItem(styleAttr);
 }
 
 function img(state, child) {

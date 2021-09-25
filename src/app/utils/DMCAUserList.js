@@ -9,6 +9,7 @@ gautampartapsoni
 jimreitz
 bitchminer
 nikapelex
+cpcensorshiptest
 `
     .trim()
     .split('\n');
