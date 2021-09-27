@@ -74,9 +74,6 @@ console.log('renderedText', renderedText)
 //                 '@' + user
 //             )
 //         })
-//         // unescapted ipfs links (temp, until the reply editor categorizes the image)
-//         //if(config.ipfs_prefix)
-//         //    content = content.replace(linksRe.ipfsPrefix, config.ipfs_prefix)
 //
 //         return content
 //     },
