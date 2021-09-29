@@ -6,11 +6,11 @@ import React from 'react';
  */
 const regex = {
     // eslint-disable-next-line no-useless-escape
-    sanitize: /^https:\/\/3speak\.(?:online|co|tv)\/embed\?v=([A-Za-z0-9_\-\/]+)(&.*)?$/,
+    sanitize: /^https:\/\/3speak\.(?:online|co|tv)\/embed\?v=([A-Za-z0-9_\-\/.]+)(&.*)?$/,
     // eslint-disable-next-line no-useless-escape
-    main: /(?:https?:\/\/(?:(?:3speak\.(?:online|co|tv)\/watch\?v=)|(?:3speak\.(?:online|co|tv)\/embed\?v=)))([A-Za-z0-9_\-\/]+)(&.*)?/i,
+    main: /(?:https?:\/\/(?:(?:3speak\.(?:online|co|tv)\/watch\?v=)|(?:3speak\.(?:online|co|tv)\/embed\?v=)))([A-Za-z0-9_\-\/.]+)(&.*)?/i,
     // eslint-disable-next-line no-useless-escape
-    htmlReplacement: /<a href="(https?:\/\/3speak\.(?:online|co|tv)\/watch\?v=([A-Za-z0-9_\-\/]+))".*<img.*?><\/a>/i,
+    htmlReplacement: /<a href="(https?:\/\/3speak\.(?:online|co|tv)\/watch\?v=([A-Za-z0-9_\-\/.]+))".*<img.*?><\/a>/i,
     embedShorthand: /~~~ embed:(.*?)\/(.*?) threespeak ~~~/,
 };
 export default regex;
@@ -42,6 +42,7 @@ export function genIframeMd(idx, threespeakId, width, height) {
             sandbox = sandboxConfig.sandboxAttributes.join(' ');
         }
     }
+    const aspectRatioPercent = (height / width) * 100;
     const iframeProps = {
         key: idx,
         src: url,
@@ -55,7 +56,16 @@ export function genIframeMd(idx, threespeakId, width, height) {
     }
 
     return (
-        <div key={`threespeak-${threespeakId}-${idx}`} className="videoWrapper">
+        <div
+            key={`threespeak-${threespeakId}-${idx}`}
+            className="videoWrapper"
+            style={{
+              position: 'relative',
+              width: '100%',
+              height: 0,
+              paddingBottom: `${aspectRatioPercent}%`,
+            }}
+        >
             <iframe
                 title="3Speak embedded player"
                 // eslint-disable-next-line react/jsx-props-no-spreading

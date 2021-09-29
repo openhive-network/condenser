@@ -10,9 +10,7 @@ const Notice = ({ notice }) => {
     }
 
     const url = `/${notice.category}/@${notice.author}/${notice.permlink}`;
-    const tag = notice.tag ? (
-        <p className="Notices__featured">{notice.tag}</p>
-    ) : null;
+    const tag = notice.tag ? <p className="Notices__featured">{notice.tag}</p> : null;
     const title = url ? (
         <Link className="Notices__title-link" to={url}>
             {notice.title}
@@ -20,9 +18,7 @@ const Notice = ({ notice }) => {
     ) : (
         notice.title
     );
-    const by = notice.author ? (
-        <span className="Notices__by"> {tt('g.by')}&nbsp;</span>
-    ) : null;
+    const by = notice.author ? <span className="Notices__by"> {tt('g.by')}&nbsp;</span> : null;
     const author = notice.author ? (
         <Link className="Notices__author-link" to={'/@' + notice.author}>
             {notice.author}
@@ -69,9 +65,6 @@ const SteemitNotices = ({ notices }) => {
     );
 };
 
-module.exports = connect(state => ({
-    notices: state.offchain
-        .get('special_posts')
-        .get('notices')
-        .toJS(),
+module.exports = connect((state) => ({
+    notices: state.offchain.get('special_posts').get('notices').toJS(),
 }))(SteemitNotices);

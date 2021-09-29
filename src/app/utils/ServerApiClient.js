@@ -1,4 +1,4 @@
-import { api } from '@hiveio/hive-js';
+/* global $STM_csrf */
 
 const request_base = {
     method: 'post',
@@ -12,17 +12,15 @@ const request_base = {
 
 export function serverApiLogin(account, signatures) {
     if (!process.env.BROWSER || window.$STM_ServerBusy) return;
-    const request = Object.assign({}, request_base, {
-        body: JSON.stringify({ account, signatures, csrf: $STM_csrf }),
-    });
+    const request = { ...request_base, body: JSON.stringify({ account, signatures, csrf: $STM_csrf }) };
+    // eslint-disable-next-line consistent-return
     return fetch('/api/v1/login_account', request);
 }
 
 export function serverApiLogout() {
     if (!process.env.BROWSER || window.$STM_ServerBusy) return;
-    const request = Object.assign({}, request_base, {
-        body: JSON.stringify({ csrf: $STM_csrf }),
-    });
+    const request = { ...request_base, body: JSON.stringify({ csrf: $STM_csrf }) };
+    // eslint-disable-next-line consistent-return
     return fetch('/api/v1/logout_account', request);
 }
 
@@ -31,30 +29,22 @@ export function serverApiRecordEvent(type, val, rate_limit_ms = 5000) {
     if (!process.env.BROWSER || window.$STM_ServerBusy) return;
     if (last_call && new Date() - last_call < rate_limit_ms) return;
     last_call = new Date();
+/*
     const value = val && val.stack ? `${val.toString()} | ${val.stack}` : val;
-    return;
-    api.call(
-        'overseer.collect',
-        { collection: 'event', metadata: { type, value } },
-        error => {
-            if (error) console.warn('overseer error', error, error.data);
-        }
-    );
+    api.call('overseer.collect', { collection: 'event', metadata: { type, value } }, (error) => {
+        if (error) console.warn('overseer error', error, error.data);
+    });
+ */
 }
 
 export function saveCords(x, y) {
-    const request = Object.assign({}, request_base, {
-        body: JSON.stringify({ csrf: $STM_csrf, x: x, y: y }),
-    });
+    const request = { ...request_base, body: JSON.stringify({ csrf: $STM_csrf, x, y }) };
     fetch('/api/v1/save_cords', request);
 }
 
 export function setUserPreferences(payload) {
-    if (!process.env.BROWSER || window.$STM_ServerBusy)
-        return Promise.resolve();
-    const request = Object.assign({}, request_base, {
-        body: JSON.stringify({ csrf: window.$STM_csrf, payload }),
-    });
+    if (!process.env.BROWSER || window.$STM_ServerBusy) return Promise.resolve();
+    const request = { ...request_base, body: JSON.stringify({ csrf: window.$STM_csrf, payload }) };
     return fetch('/api/v1/setUserPreferences', request);
 }
 
@@ -63,16 +53,12 @@ export function isTosAccepted() {
         // TODO: remove this. endpoint in dev currently down.
         return true;
     }
-    const request = Object.assign({}, request_base, {
-        body: JSON.stringify({ csrf: window.$STM_csrf }),
-    });
-    return fetch('/api/v1/isTosAccepted', request).then(res => res.json());
+    const request = { ...request_base, body: JSON.stringify({ csrf: window.$STM_csrf }) };
+    return fetch('/api/v1/isTosAccepted', request).then((res) => res.json());
 }
 
 export function acceptTos() {
-    const request = Object.assign({}, request_base, {
-        body: JSON.stringify({ csrf: window.$STM_csrf }),
-    });
+    const request = { ...request_base, body: JSON.stringify({ csrf: window.$STM_csrf }) };
     return fetch('/api/v1/acceptTos', request);
 }
 export function conductSearch(req) {
@@ -80,8 +66,6 @@ export function conductSearch(req) {
         ...req.body,
         csrf: window.$STM_csrf,
     };
-    const request = Object.assign({}, request_base, {
-        body: JSON.stringify(bodyWithCSRF),
-    });
+    const request = { ...request_base, body: JSON.stringify(bodyWithCSRF) };
     return fetch('/api/v1/search', request);
 }

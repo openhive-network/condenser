@@ -132,10 +132,9 @@ function generateRedditCode(metadata) {
             description = url;
         }
 
-        redditCode =
-            `<blockquote class="reddit-card" data-created="${date}">` +
-            `<a href="${url}">${description}</a>` +
-            `from <a href="http://www.reddit.com/r/${group}">r/${group}</a></blockquote>`;
+        redditCode = `<blockquote class="reddit-card" data-created="${date}">`
+            + `<a href="${url}">${description}</a>`
+            + `from <a href="http://www.reddit.com/r/${group}">r/${group}</a></blockquote>`;
     }
 
     return {

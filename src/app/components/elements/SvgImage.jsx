@@ -15,15 +15,7 @@ export default class SvgImage extends React.Component {
             height: this.props.height,
         };
         const image = require(`assets/images/${this.props.name}.svg`);
-        const cn =
-            'SvgImage' +
-            (this.props.className ? ' ' + this.props.className : '');
-        return (
-            <span
-                className={cn}
-                style={style}
-                dangerouslySetInnerHTML={{ __html: image }}
-            />
-        );
+        const cn = 'SvgImage' + (this.props.className ? ' ' + this.props.className : '');
+        return <span className={cn} style={style} dangerouslySetInnerHTML={{ __html: image }} />;
     }
 }

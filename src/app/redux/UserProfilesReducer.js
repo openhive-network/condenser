@@ -20,20 +20,14 @@ export default function reducer(state = defaultState, action) {
     switch (action.type) {
         case ADD_USER_PROFILE: {
             if (payload) {
-                return state.setIn(
-                    ['profiles', payload.username],
-                    fromJS(payload.account)
-                );
+                return state.setIn(['profiles', payload.username], fromJS(payload.account));
             }
             return state;
         }
 
         case ADD_LISTED_ACCOUNTS: {
             if (payload) {
-                return state.setIn(
-                    ['listedAccounts', payload.username],
-                    fromJS(payload.listed_accounts)
-                );
+                return state.setIn(['listedAccounts', payload.username], fromJS(payload.listed_accounts));
             }
             return state;
         }
@@ -44,10 +38,10 @@ export default function reducer(state = defaultState, action) {
                     ['hivebuzzBadges', payload.username],
                     fromJS(
                         payload.badges
-                            .filter(o => {
+                            .filter((o) => {
                                 return o.state === 'on';
                             })
-                            .map(o => {
+                            .map((o) => {
                                 return {
                                     id: o.id,
                                     type: o.type,
@@ -67,15 +61,13 @@ export default function reducer(state = defaultState, action) {
                 return state.setIn(
                     ['peakdBadges', payload.username],
                     fromJS(
-                        payload.badges.map(o => {
+                        payload.badges.map((o) => {
                             return {
                                 id: `${o.account}-${o.name}`,
                                 type: 'badges',
                                 name: o.name,
                                 title: o.title,
-                                url: `https://images.hive.blog/u/${
-                                    o.name
-                                }/avatar/small`,
+                                url: `https://images.hive.blog/u/${o.name}/avatar/small`,
                             };
                         })
                     )
@@ -99,27 +91,27 @@ export default function reducer(state = defaultState, action) {
 }
 
 // Action creators
-export const addProfile = payload => ({
+export const addProfile = (payload) => ({
     type: ADD_USER_PROFILE,
     payload,
 });
 
-export const addHivebuzzBadges = payload => ({
+export const addHivebuzzBadges = (payload) => ({
     type: ADD_HIVEBUZZ_BADGES,
     payload,
 });
 
-export const addPeakdBadges = payload => ({
+export const addPeakdBadges = (payload) => ({
     type: ADD_PEAKD_BADGES,
     payload,
 });
 
-export const setError = payload => ({
+export const setError = (payload) => ({
     type: SET_ERROR,
     payload,
 });
 
-export const addList = payload => ({
+export const addList = (payload) => ({
     type: ADD_LISTED_ACCOUNTS,
     payload,
 });

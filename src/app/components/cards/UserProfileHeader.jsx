@@ -21,15 +21,12 @@ class UserProfileHeader extends React.Component {
         const { name, location, about, website, cover_image } = profile
             ? profile.getIn(['metadata', 'profile']).toJS()
             : {};
-        const website_label = website
-            ? website.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '')
-            : null;
+        const website_label = website ? website.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '') : null;
 
         let cover_image_style = {};
         if (cover_image) {
             cover_image_style = {
-                backgroundImage:
-                    'url(' + proxifyImageUrl(cover_image, '2048x512') + ')',
+                backgroundImage: 'url(' + proxifyImageUrl(cover_image, '2048x512') + ')',
             };
         }
 
@@ -38,7 +35,7 @@ class UserProfileHeader extends React.Component {
             <DropdownMenu
                 title="Blacklisted on:"
                 className="UserProfile__blacklists"
-                items={_lists.map(list => {
+                items={_lists.map((list) => {
                     return { value: list };
                 })}
                 el="div"
@@ -59,10 +56,7 @@ class UserProfileHeader extends React.Component {
                 <div className="column" style={cover_image_style}>
                     <div style={{ position: 'relative' }}>
                         <div className="UserProfile__buttons hide-for-small-only">
-                            <Follow
-                                follower={current_user}
-                                following={accountname}
-                            />
+                            <Follow follower={current_user} following={accountname} />
                         </div>
                     </div>
                     <h1>
@@ -71,29 +65,20 @@ class UserProfileHeader extends React.Component {
                         </div>
                         {name || accountname}{' '}
                         <Tooltip
-                            t={tt(
-                                'user_profile.this_is_users_reputations_score_it_is_based_on_history_of_votes',
-                                { name: accountname }
-                            )}
+                            t={tt('user_profile.this_is_users_reputations_score_it_is_based_on_history_of_votes', {
+                                name: accountname,
+                            })}
                         >
-                            <span className="UserProfile__rep">
-                                ({Math.floor(profile.get('reputation'))})
-                            </span>
+                            <span className="UserProfile__rep">({Math.floor(profile.get('reputation'))})</span>
                         </Tooltip>
                         <Tooltip
                             t={tt('user_profile.hivebuzz_level_badge', {
                                 name: accountname,
                             })}
                         >
-                            <a
-                                href={`https://hivebuzz.me/@${accountname}`}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                            >
+                            <a href={`https://hivebuzz.me/@${accountname}`} target="_blank" rel="noopener noreferrer">
                                 <img
-                                    src={`https://hivebuzz.me/@${
-                                        accountname
-                                    }/level.png`}
+                                    src={`https://hivebuzz.me/@${accountname}/level.png`}
                                     alt="Hivebuzz level badge"
                                     className="UserProfile__badge_image_hivebuzzlevel"
                                     id="hivebuzz-level-badge"
@@ -103,12 +88,7 @@ class UserProfileHeader extends React.Component {
                         </Tooltip>
                         {blacklists}
                         {AffiliationMap[accountname] ? (
-                            <span className="affiliation">
-                                {tt(
-                                    'g.affiliation_' +
-                                        AffiliationMap[accountname]
-                                )}
-                            </span>
+                            <span className="affiliation">{tt('g.affiliation_' + AffiliationMap[accountname])}</span>
                         ) : null}
                     </h1>
 
@@ -118,10 +98,7 @@ class UserProfileHeader extends React.Component {
                             <span>
                                 <Link to={`/@${accountname}/followers`}>
                                     {tt('user_profile.follower_count', {
-                                        count: profile.getIn(
-                                            ['stats', 'followers'],
-                                            0
-                                        ),
+                                        count: profile.getIn(['stats', 'followers'], 0),
                                     })}
                                 </Link>
                             </span>
@@ -135,58 +112,30 @@ class UserProfileHeader extends React.Component {
                             <span>
                                 <Link to={`/@${accountname}/followed`}>
                                     {tt('user_profile.followed_count', {
-                                        count: profile.getIn(
-                                            ['stats', 'following'],
-                                            0
-                                        ),
+                                        count: profile.getIn(['stats', 'following'], 0),
                                     })}
                                 </Link>
                             </span>
-                            <span>
-                                {numberWithCommas(
-                                    profile.getIn(['stats', 'sp'], 0)
-                                )}{' '}
-                                HP
-                            </span>
+                            <span>{numberWithCommas(profile.getIn(['stats', 'sp'], 0))} HP</span>
                             {profile.getIn(['stats', 'rank'], 0) > 0 && (
-                                <span>
-                                    #{numberWithCommas(
-                                        profile.getIn(['stats', 'rank'])
-                                    )}
-                                </span>
+                                <span>#{numberWithCommas(profile.getIn(['stats', 'rank']))}</span>
                             )}
 
                             <span>
                                 <br />
-                                <Link to={`/@${accountname}/lists/blacklisted`}>
-                                    Blacklisted Users
-                                </Link>
+                                <Link to={`/@${accountname}/lists/blacklisted`}>Blacklisted Users</Link>
                             </span>
 
                             <span>
-                                <Link to={`/@${accountname}/lists/muted`}>
-                                    Muted Users
-                                </Link>
+                                <Link to={`/@${accountname}/lists/muted`}>Muted Users</Link>
                             </span>
 
                             <span>
-                                <Link
-                                    to={`/@${
-                                        accountname
-                                    }/lists/followed_blacklists`}
-                                >
-                                    Followed Blacklists
-                                </Link>
+                                <Link to={`/@${accountname}/lists/followed_blacklists`}>Followed Blacklists</Link>
                             </span>
 
                             <span>
-                                <Link
-                                    to={`/@${
-                                        accountname
-                                    }/lists/followed_muted_lists`}
-                                >
-                                    Followed Muted Lists
-                                </Link>
+                                <Link to={`/@${accountname}/lists/followed_muted_lists`}>Followed Muted Lists</Link>
                             </span>
                         </div>
 
@@ -198,25 +147,15 @@ class UserProfileHeader extends React.Component {
                             )}
                             {website && (
                                 <span>
-                                    <Icon name="link" />{' '}
-                                    <SanitizedLink
-                                        url={website}
-                                        text={website_label}
-                                    />
+                                    <Icon name="link" /> <SanitizedLink url={website} text={website_label} />
                                 </span>
                             )}
-                            <Icon name="calendar" />{' '}
-                            <DateJoinWrapper date={profile.get('created')} />
-                            <Icon name="calendar" /> Active{' '}
-                            <TimeAgoWrapper date={profile.get('active')} />
+                            <Icon name="calendar" /> <DateJoinWrapper date={profile.get('created')} />
+                            <Icon name="calendar" /> Active <TimeAgoWrapper date={profile.get('active')} />
                         </p>
                     </div>
                     <div className="UserProfile__buttons_mobile show-for-small-only">
-                        <Follow
-                            follower={current_user}
-                            following={accountname}
-                            what="blog"
-                        />
+                        <Follow follower={current_user} following={accountname} what="blog" />
                     </div>
                 </div>
             </div>

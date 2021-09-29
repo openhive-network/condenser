@@ -13,8 +13,9 @@ class Userpic extends Component {
     render() {
         if (this.props.hide) return null;
 
-        const { account, size } = this.props;
-        const url = imageProxy() + `u/${account}/avatar${size}`;
+        const { account, size, sessionId } = this.props;
+
+        const url = `${imageProxy()}u/${account}/avatar${size}${sessionId ? `?ord=${sessionId}` : ''}`;
         const style = { backgroundImage: `url(${url})` };
         return <div className="Userpic" style={style} />;
     }
@@ -29,16 +30,16 @@ export default connect((state, ownProps) => {
 
     let hide = false;
     if (hideIfDefault) {
-        const url = state.userProfiles.getIn(
-            ['profiles', account, 'metadata', 'profile', 'profile_image'],
-            null
-        );
+        const url = state.userProfiles.getIn(['profiles', account, 'metadata', 'profile', 'profile_image'], null);
         hide = !url || !/^(https?:)\/\//.test(url);
     }
 
+    const sessionId = state.user.get('sessionId');
+
     return {
-        account: account == 'steemitblog' ? 'steemitdev' : account,
+        account: account === 'steemitblog' ? 'steemitdev' : account,
         size: size && sizeList.indexOf(size) > -1 ? '/' + size : '',
         hide,
+        sessionId,
     };
 })(Userpic);

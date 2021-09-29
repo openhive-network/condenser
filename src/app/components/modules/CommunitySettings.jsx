@@ -34,7 +34,7 @@ class CommunitySettings extends Component {
         };
     }
 
-    onInput = event => {
+    onInput = (event) => {
         const el = event.target;
         const field = el.name;
         const value = el.hasOwnProperty('checked') ? el.checked : el.value;
@@ -43,37 +43,26 @@ class CommunitySettings extends Component {
         if (field == 'title') {
             let formError = null;
             const rx = new RegExp('^[' + Unicode.L + ']');
-            if (value && !rx.test(value))
-                formError = 'Must start with a letter.';
+            if (value && !rx.test(value)) formError = 'Must start with a letter.';
             this.setState({ formError });
         }
     };
 
-    onSubmit = e => {
+    onSubmit = (e) => {
         e.preventDefault();
         // Trim leading and trailing whitespace before submission.
         const payload = {};
-        Object.keys(this.state).forEach(k => {
+        Object.keys(this.state).forEach((k) => {
             if (k == 'formError') return;
-            if (typeof this.state[k] === 'string')
-                payload[k] = this.state[k].trim();
+            if (typeof this.state[k] === 'string') payload[k] = this.state[k].trim();
             else payload[k] = this.state[k];
         });
         this.props.onSubmit(payload);
     };
 
     render() {
-        const {
-            title,
-            about,
-            is_nsfw,
-            lang,
-            description,
-            flag_text,
-            formError,
-        } = this.state;
-        const currentLanguage = languageOptions.filter(l => l.abbr === lang)[0]
-            .name;
+        const { title, about, is_nsfw, lang, description, flag_text, formError } = this.state;
+        const currentLanguage = languageOptions.filter((l) => l.abbr === lang)[0].name;
         return (
             <span>
                 <div>
@@ -91,7 +80,7 @@ class CommunitySettings extends Component {
                             minLength={3}
                             name="title"
                             value={title}
-                            onChange={e => this.onInput(e)}
+                            onChange={(e) => this.onInput(e)}
                             required
                         />
                     </label>
@@ -103,53 +92,48 @@ class CommunitySettings extends Component {
                             maxLength={120}
                             name="about"
                             value={about}
-                            onChange={e => this.onInput(e)}
+                            onChange={(e) => this.onInput(e)}
                         />
                     </label>
                     <AutocompleteInput
                         label={'Language'}
                         values={languageOptions}
                         initialValue={currentLanguage}
-                        onSelect={v => {
-                            const selectedLanguage = languageOptions.filter(
-                                l => l.name === v
-                            )[0];
+                        onSelect={(v) => {
+                            const selectedLanguage = languageOptions.filter((l) => l.name === v)[0];
                             this.setState({
                                 lang: selectedLanguage.abbr,
                             });
                         }}
                     />
                     <label style={{ margin: '1em 0 1rem' }}>
-                        Description<br />
+                        Description
+                        <br />
                         <textarea
                             style={{ whiteSpace: 'normal' }}
                             type="text"
                             maxLength={1000}
                             rows="10"
-                            onChange={e => this.onInput(e)}
+                            onChange={(e) => this.onInput(e)}
                             name="description"
                             value={description}
                         />
                     </label>
                     <label style={{ margin: '0 0 0.5rem' }}>
-                        Rules (one per line)<br />
+                        Rules (one per line)
+                        <br />
                         <textarea
                             style={{ whiteSpace: 'normal' }}
                             type="text"
                             maxLength={1000}
                             rows="7"
-                            onChange={e => this.onInput(e)}
+                            onChange={(e) => this.onInput(e)}
                             name="flag_text"
                             value={flag_text}
                         />
                     </label>
                     <label>
-                        <input
-                            type="checkbox"
-                            name="is_nsfw"
-                            checked={is_nsfw}
-                            onChange={e => this.onInput(e)}
-                        />{' '}
+                        <input type="checkbox" name="is_nsfw" checked={is_nsfw} onChange={(e) => this.onInput(e)} />{' '}
                         NSFW
                     </label>
                     <div className="text-right">

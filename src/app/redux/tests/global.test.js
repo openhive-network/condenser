@@ -1,3 +1,5 @@
+/*eslint global-require: "warn"*/
+// eslint-disable-next-line no-unused-vars
 /*global describe, it, before, beforeEach, after, afterEach */
 import Immutable from 'immutable';
 import reducer, * as globalActions from '../GlobalReducer';

@@ -1,17 +1,11 @@
-import * as config from 'config';
 import React from 'react';
 
 export default function ServerHTML({
     body,
     assets,
-    locale,
     title,
     meta,
-    shouldSeeAds,
-    adClient,
     gptEnabled,
-    gptBannedTags,
-    gptBidding,
     shouldSeeCookieConsent,
     cookieConsentApiKey,
 }) {
@@ -21,16 +15,15 @@ export default function ServerHTML({
             <head>
                 <meta charSet="utf-8" />
                 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-                {meta &&
-                    meta.map(m => {
+                {meta
+                    && meta.map((m) => {
                         if (m.title) {
                             page_title = m.title;
                             return null;
                         }
                         if (m.canonical) return <link key="canonical" rel="canonical" href={m.canonical} />;
                         if (m.name && m.content) return <meta key={m.name} name={m.name} content={m.content} />;
-                        if (m.property && m.content)
-                            return <meta key={m.property} property={m.property} content={m.content} />;
+                        if (m.property && m.content) return <meta key={m.property} property={m.property} content={m.content} />;
                         return null;
                     })}
                 <link rel="manifest" href="/static/manifest.json" />
@@ -105,7 +98,9 @@ export default function ServerHTML({
                     rel="stylesheet"
                     type="text/css"
                 />
-                {assets.style.map((href, idx) => <link href={href} key={idx} rel="stylesheet" type="text/css" />)}
+                {assets.style.map((href) => (
+                    <link href={href} key={href} rel="stylesheet" type="text/css" />
+                ))}
                 {gptEnabled ? (
                     <script
                         dangerouslySetInnerHTML={{
@@ -156,12 +151,16 @@ export default function ServerHTML({
                         `,
                     }}
                 />
+                <script async src="https://www.tiktok.com/embed.js" charSet="UTF-8" />
+                <script async src="https://www.instagram.com/embed.js" charSet="UTF-8" />
                 <script async src="https://embed.redditmedia.com/widgets/platform.js" charSet="UTF-8" />
                 <title>{page_title}</title>
             </head>
             <body>
                 {<div id="content" dangerouslySetInnerHTML={{ __html: body }} />}
-                {assets.script.map((href, idx) => <script key={idx} src={href} />)}
+                {assets.script.map((href) => (
+                    <script key={href} src={href} />
+                ))}
                 {/* gptEnabled ? (
                     <script
                         dangerouslySetInnerHTML={{

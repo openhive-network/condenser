@@ -7,7 +7,7 @@ import _ from 'lodash';
 
 const remarkable = new Remarkable({ html: true, linkify: false });
 
-const getValidImage = array => {
+const getValidImage = (array) => {
     return array && Array.isArray(array) && array.length >= 1 && typeof array[0] === 'string' ? array[0] : null;
 };
 
@@ -37,7 +37,9 @@ export function extractImageLink(json_metadata, body = null) {
 
     try {
         image_link = jsonImage ? getValidImage(Array.from(jsonImage)) : null;
-    } catch (error) {}
+    } catch (error) {
+        // Nothing
+    }
 
     // If nothing found in json metadata, parse body and check images/links
     if (!image_link) {
@@ -72,6 +74,7 @@ export function extractBodySummary(body, stripQuotes = false) {
     desc = desc.replace(/https?:\/\/[^\s]+/g, '');
 
     // Grab only the first line (not working as expected. does rendering/sanitizing strip newlines?)
+    // eslint-disable-next-line prefer-destructuring
     desc = desc.trim().split('\n')[0];
 
     if (desc.length > 200) {
@@ -81,7 +84,7 @@ export function extractBodySummary(body, stripQuotes = false) {
         desc = desc
             .substring(0, 180)
             .trim()
-            .replace(/[,!\?]?\s+[^\s]+$/, '…');
+            .replace(/[,!?]?\s+[^\s]+$/, '…');
     }
 
     return desc;

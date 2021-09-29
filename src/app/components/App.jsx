@@ -50,12 +50,7 @@ class App extends React.Component {
     }
 
     shouldComponentUpdate(nextProps, nextState) {
-        const {
-            pathname,
-            new_visitor,
-            nightmodeEnabled,
-            showAnnouncement,
-        } = this.props;
+        const { pathname, new_visitor, nightmodeEnabled, showAnnouncement } = this.props;
         const n = nextProps;
         return (
             pathname !== n.pathname ||
@@ -72,25 +67,14 @@ class App extends React.Component {
     };
 
     render() {
-        const {
-            params,
-            children,
-            new_visitor,
-            nightmodeEnabled,
-            viewMode,
-            pathname,
-            category,
-            order,
-        } = this.props;
+        const { params, children, new_visitor, nightmodeEnabled, viewMode, pathname, category, order } = this.props;
 
         const whistleView = viewMode === VIEW_MODE_WHISTLE;
         const headerHidden = whistleView;
         const params_keys = Object.keys(params);
         const ip =
             pathname === '/' ||
-            (params_keys.length === 2 &&
-                params_keys[0] === 'order' &&
-                params_keys[1] === 'category');
+            (params_keys.length === 2 && params_keys[0] === 'order' && params_keys[1] === 'category');
         const alert = this.props.error;
         let callout = null;
         if (this.state.showCallout && alert) {
@@ -98,11 +82,7 @@ class App extends React.Component {
                 <div className="App__announcement row">
                     <div className="column">
                         <div className={classNames('callout', { alert })}>
-                            <CloseButton
-                                onClick={() =>
-                                    this.setState({ showCallout: false })
-                                }
-                            />
+                            <CloseButton onClick={() => this.setState({ showCallout: false })} />
                             <p>{alert}</p>
                         </div>
                     </div>
@@ -112,24 +92,15 @@ class App extends React.Component {
             callout = (
                 <div className="App__announcement row">
                     <div className="column">
-                        <div
-                            className={classNames(
-                                'callout success',
-                                { alert },
-                                { warning },
-                                { success }
-                            )}
-                        >
-                            <CloseButton
-                                onClick={() =>
-                                    this.setState({ showCallout: false })
-                                }
-                            />
+                        <div className={classNames('callout success', { alert }, { warning }, { success })}>
+                            <CloseButton onClick={() => this.setState({ showCallout: false })} />
                             <ul>
                                 <li>
-                                    /*<a href="https://steemit.com/steemit/@steemitblog/steemit-com-is-now-open-source">
+                                    /*
+                                    <a href="https://steemit.com/steemit/@steemitblog/steemit-com-is-now-open-source">
                                         ...STORY TEXT...
-                                    </a>*/
+                                    </a>
+                                    */
                                 </li>
                             </ul>
                         </div>
@@ -141,19 +112,8 @@ class App extends React.Component {
             callout = (
                 <div className="App__announcement row">
                     <div className="column">
-                        <div
-                            className={classNames(
-                                'callout warning',
-                                { alert },
-                                { warning },
-                                { success }
-                            )}
-                        >
-                            <CloseButton
-                                onClick={() =>
-                                    this.setState({ showCallout: false })
-                                }
-                            />
+                        <div className={classNames('callout warning', { alert }, { warning }, { success })}>
+                            <CloseButton onClick={() => this.setState({ showCallout: false })} />
                             <p>{tt('g.read_only_mode')}</p>
                         </div>
                     </div>
@@ -174,22 +134,11 @@ class App extends React.Component {
             >
                 <ConnectedSidePanel alignment="right" />
 
-                {headerHidden ? null : (
-                    <Header
-                        pathname={pathname}
-                        category={category}
-                        order={order}
-                    />
-                )}
+                {headerHidden ? null : <Header pathname={pathname} category={category} order={order} />}
 
                 <div className="App__content">
-                    {process.env.BROWSER &&
-                    ip &&
-                    new_visitor &&
-                    this.state.showBanner ? (
-                        <WelcomePanel
-                            setShowBannerFalse={this.setShowBannerFalse}
-                        />
+                    {process.env.BROWSER && ip && new_visitor && this.state.showBanner ? (
+                        <WelcomePanel setShowBannerFalse={this.setShowBannerFalse} />
                     ) : null}
                     {callout}
                     {children}
@@ -213,9 +162,7 @@ App.propTypes = {
 export default connect(
     (state, ownProps) => {
         const current_user = state.user.get('current');
-        const current_account_name = current_user
-            ? current_user.get('username')
-            : state.offchain.get('account');
+        const current_account_name = current_user ? current_user.get('username') : state.offchain.get('account');
 
         return {
             viewMode: state.app.get('viewMode'),
@@ -226,17 +173,14 @@ export default connect(
                 !state.offchain.get('account') &&
                 state.offchain.get('new_visit'),
 
-            nightmodeEnabled: state.app.getIn([
-                'user_preferences',
-                'nightmode',
-            ]),
+            nightmodeEnabled: state.app.getIn(['user_preferences', 'nightmode']),
             pathname: ownProps.location.pathname,
             order: ownProps.params.order,
             category: ownProps.params.category,
             showAnnouncement: state.user.get('showAnnouncement'),
         };
     },
-    dispatch => ({
+    (dispatch) => ({
         loginUser: () => dispatch(userActions.usernamePasswordLogin({})),
     })
 )(App);

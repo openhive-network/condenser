@@ -8,11 +8,11 @@ export default class Qr extends React.Component {
     };
     constructor(props) {
         super();
-        this.handleError = error => {
+        this.handleError = (error) => {
             console.error(error);
         };
         const { onClose, handleScan } = props;
-        this.handleScan = data => {
+        this.handleScan = (data) => {
             handleScan(data);
             if (onClose) onClose();
         };

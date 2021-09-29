@@ -101,12 +101,7 @@ export function genIframeMd(idx, id, width, height) {
 
     let sandbox = sandboxConfig.useSandbox;
     if (sandbox) {
-        if (
-            Object.prototype.hasOwnProperty.call(
-                sandboxConfig,
-                'sandboxAttributes'
-            )
-        ) {
+        if (Object.prototype.hasOwnProperty.call(sandboxConfig, 'sandboxAttributes')) {
             sandbox = sandboxConfig.sandboxAttributes.join(' ');
         }
     }
@@ -124,7 +119,7 @@ export function genIframeMd(idx, id, width, height) {
     }
 
     return (
-        <div key={`bandcamp-${id}-${idx}`} className="videoWrapper">
+        <div key={`bandcamp-${id}-${idx}`} className="iframeWrapper">
             <iframe
                 title="bandcamp.com embedded player"
                 // eslint-disable-next-line react/jsx-props-no-spreading

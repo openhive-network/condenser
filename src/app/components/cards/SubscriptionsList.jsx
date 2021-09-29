@@ -5,7 +5,9 @@ import { Link } from 'react-router';
 import _ from 'lodash';
 import 'react-tabs/style/react-tabs.css';
 import tt from 'counterpart';
-import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
+import {
+    Tab, Tabs, TabList, TabPanel,
+} from 'react-tabs';
 import LoadingIndicator from 'app/components/elements/LoadingIndicator';
 import { actions as fetchDataSagaActions } from 'app/redux/FetchDataSaga';
 import Callout from 'app/components/elements/Callout';
@@ -26,7 +28,9 @@ class SubscriptionsList extends React.Component {
     }
 
     render() {
-        const { subscriptions, loading, badges, username } = this.props;
+        const {
+            subscriptions, loading, badges, username, sessionId,
+        } = this.props;
         const badgesTypes = {
             activity: [],
             perso: [],
@@ -38,14 +42,10 @@ class SubscriptionsList extends React.Component {
         const peakdBadges = _.get(badges, 'peakd', []);
         const hasBadges = !_.isEmpty(hivebuzzBadges) || !_.isEmpty(peakdBadges);
         if (hivebuzzBadges) {
-            hivebuzzBadges.forEach(badge => {
+            hivebuzzBadges.forEach((badge) => {
                 const type = badge.get('type');
                 let valid = true;
-                if (
-                    badgesTypes[type] === undefined ||
-                    badgesTypes[type] === null
-                )
-                    valid = false;
+                if (badgesTypes[type] === undefined || badgesTypes[type] === null) valid = false;
                 if (valid) {
                     badgesTypes[type].push(
                         <a
@@ -55,25 +55,17 @@ class SubscriptionsList extends React.Component {
                             target="_blank"
                             rel="noopener noreferrer"
                         >
-                            <img
-                                src={badge.get('url')}
-                                alt={badge.get('title')}
-                                title={badge.get('title')}
-                            />
+                            <img src={badge.get('url')} alt={badge.get('title')} title={badge.get('title')} />
                         </a>
                     );
                 }
             });
         }
         if (peakdBadges) {
-            peakdBadges.forEach(badge => {
+            peakdBadges.forEach((badge) => {
                 const type = badge.get('type');
-                let valid = true;
-                if (
-                    badgesTypes[type] === undefined ||
-                    badgesTypes[type] === null
-                )
-                    valid = false;
+                const valid = type in badgesTypes;
+
                 if (valid) {
                     badgesTypes[type].push(
                         <a
@@ -84,7 +76,7 @@ class SubscriptionsList extends React.Component {
                             rel="noopener noreferrer"
                         >
                             <img
-                                src={badge.get('url')}
+                                src={`${badge.get('url')}${sessionId ? `?ord=${sessionId}` : ''}`}
                                 alt={badge.get('title')}
                                 title={badge.get('title')}
                                 className="UserProfile__badge_image"
@@ -95,7 +87,7 @@ class SubscriptionsList extends React.Component {
             });
         }
 
-        const renderItem = tuple => {
+        const renderItem = (tuple) => {
             const [hive, name, role, title] = tuple;
             return (
                 <li key={hive}>
@@ -111,21 +103,11 @@ class SubscriptionsList extends React.Component {
                 <div className="article_section">
                     <h4>{tt('g.community_subscriptions')}</h4>
                     <p>{tt('g.community_subscriptions_description')}</p>
-                    {!_.isEmpty(subscriptions) && (
-                        <ul>{subscriptions.map(item => renderItem(item))}</ul>
-                    )}
-                    {_.isEmpty(subscriptions) &&
-                        !loading && (
-                            <Callout>
-                                {tt('g.community_no_subscriptions')}
-                            </Callout>
-                        )}
+                    {!_.isEmpty(subscriptions) && <ul>{subscriptions.map((item) => renderItem(item))}</ul>}
+                    {_.isEmpty(subscriptions) && !loading && <Callout>{tt('g.community_no_subscriptions')}</Callout>}
                     {loading && (
                         <center>
-                            <LoadingIndicator
-                                style={{ marginBottom: '2rem' }}
-                                type="circle"
-                            />
+                            <LoadingIndicator style={{ marginBottom: '2rem' }} type="circle" />
                         </center>
                     )}
                 </div>
@@ -134,20 +116,13 @@ class SubscriptionsList extends React.Component {
                     {hasBadges && (
                         <div>
                             <p>
-                                {tt('g.badges_and_achievements_description')}{' '}
-                                <a
-                                    href="https://peakd.com/"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                >
+                                {tt('g.badges_and_achievements_description')}
+                                {' '}
+                                <a href="https://peakd.com/" target="_blank" rel="noopener noreferrer">
                                     Peakd
-                                </a>{' '}
-                                &{' '}
-                                <a
-                                    href="https://hivebuzz.me"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                >
+                                </a>
+                                {' & '}
+                                <a href="https://hivebuzz.me" target="_blank" rel="noopener noreferrer">
                                     Hivebuzz
                                 </a>
                                 .
@@ -156,55 +131,27 @@ class SubscriptionsList extends React.Component {
                                 <div className="BadgesAchievements_tabs_container">
                                     <Tabs>
                                         <TabList>
-                                            {!_.isEmpty(badgesTypes.badges) && (
-                                                <Tab>Badges</Tab>
-                                            )}
-                                            {!_.isEmpty(
-                                                badgesTypes.activity
-                                            ) && <Tab>Activity</Tab>}
-                                            {!_.isEmpty(badgesTypes.perso) && (
-                                                <Tab>Personal</Tab>
-                                            )}
-                                            {!_.isEmpty(badgesTypes.meetup) && (
-                                                <Tab>Meetups</Tab>
-                                            )}
-                                            {!_.isEmpty(
-                                                badgesTypes.challenge
-                                            ) && <Tab>Challenges</Tab>}
+                                            {!_.isEmpty(badgesTypes.badges) && <Tab>Badges</Tab>}
+                                            {!_.isEmpty(badgesTypes.activity) && <Tab>Activity</Tab>}
+                                            {!_.isEmpty(badgesTypes.perso) && <Tab>Personal</Tab>}
+                                            {!_.isEmpty(badgesTypes.meetup) && <Tab>Meetups</Tab>}
+                                            {!_.isEmpty(badgesTypes.challenge) && <Tab>Challenges</Tab>}
                                         </TabList>
-                                        {!_.isEmpty(badgesTypes.badges) && (
-                                            <TabPanel>
-                                                {badgesTypes.badges}
-                                            </TabPanel>
-                                        )}
+                                        {!_.isEmpty(badgesTypes.badges) && <TabPanel>{badgesTypes.badges}</TabPanel>}
                                         {!_.isEmpty(badgesTypes.activity) && (
-                                            <TabPanel>
-                                                {badgesTypes.activity}
-                                            </TabPanel>
+                                            <TabPanel>{badgesTypes.activity}</TabPanel>
                                         )}
-                                        {!_.isEmpty(badgesTypes.perso) && (
-                                            <TabPanel>
-                                                {badgesTypes.perso}
-                                            </TabPanel>
-                                        )}
-                                        {!_.isEmpty(badgesTypes.meetup) && (
-                                            <TabPanel>
-                                                {badgesTypes.meetup}
-                                            </TabPanel>
-                                        )}
+                                        {!_.isEmpty(badgesTypes.perso) && <TabPanel>{badgesTypes.perso}</TabPanel>}
+                                        {!_.isEmpty(badgesTypes.meetup) && <TabPanel>{badgesTypes.meetup}</TabPanel>}
                                         {!_.isEmpty(badgesTypes.challenge) && (
-                                            <TabPanel>
-                                                {badgesTypes.challenge}
-                                            </TabPanel>
+                                            <TabPanel>{badgesTypes.challenge}</TabPanel>
                                         )}
                                     </Tabs>
                                 </div>
                             </div>
                         </div>
                     )}
-                    {!hasBadges && (
-                        <p>{tt('g.badges_and_achievements_none')}</p>
-                    )}
+                    {!hasBadges && <p>{tt('g.badges_and_achievements_none')}</p>}
                 </div>
             </div>
         );
@@ -226,19 +173,21 @@ export default connect(
     (state, props) => {
         const { username } = props;
         const { user, global } = state;
-        const isOwnAccount =
-            user.getIn(['current', 'username'], '') === username;
+        const isOwnAccount = user.getIn(['current', 'username'], '') === username;
         const loading = global.getIn(['subscriptions', 'loading']);
         const subscriptions = global.getIn(['subscriptions', username]);
+        const sessionId = state.user.get('sessionId');
+
         return {
             ...props,
             subscriptions: subscriptions ? subscriptions.toJS() : [],
             isOwnAccount,
             loading,
+            sessionId,
         };
     },
-    dispatch => ({
-        getAccountSubscriptions: username => {
+    (dispatch) => ({
+        getAccountSubscriptions: (username) => {
             return dispatch(fetchDataSagaActions.getSubscriptions(username));
         },
     })

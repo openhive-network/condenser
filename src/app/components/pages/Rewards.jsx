@@ -25,16 +25,16 @@ function normalizeRewards(rewards) {
 }
 
 function generateTreemap(items, total, xscale) {
-    let data = items.map(item => {
+    let data = items.map((item) => {
         return { item, value: item.payout };
     });
     data.sort((a, b) => a.value > b.value);
 
     const container = { x0: 0, y0: 0, x1: 100 * xscale, y1: 100 };
 
-    return squarify(data, container).map(box => {
+    return squarify(data, container).map((box) => {
         const { x0, y0, x1, y1, item } = box;
-        const pct = (100 * item.payout / total).toFixed(2);
+        const pct = ((100 * item.payout) / total).toFixed(2);
         return {
             ...item,
             pct,
@@ -122,13 +122,12 @@ class Rewards extends Component {
         const xscale = 0.5 * (width / height); // 2:1 bias
         const boxes = generateTreemap(items, total, xscale);
 
-        const shown = (100 * (total - remainder) / total).toFixed(2);
+        const shown = ((100 * (total - remainder)) / total).toFixed(2);
         return (
             <div id="reward_wrap">
                 <div className="head">
-                    Showing top {items.length} payout buckets, representing{' '}
-                    <strong>{shown}%</strong> of all pending payouts. This
-                    report does not account for burned rewards.
+                    Showing top {items.length} payout buckets, representing <strong>{shown}%</strong> of all pending
+                    payouts. This report does not account for burned rewards.
                 </div>
                 <div id="reward_chart" style={{ height: height + 'px' }}>
                     {boxes.map(this.renderBox)}
@@ -138,17 +137,7 @@ class Rewards extends Component {
     }
 
     renderBox(item) {
-        const {
-            payout,
-            posts,
-            title,
-            url,
-            authors,
-            is_blog,
-            shape,
-            pct,
-            rank,
-        } = item;
+        const { payout, posts, title, url, authors, is_blog, shape, pct, rank } = item;
         const summary = '$' + Math.round(payout) + ' in ' + posts + ' posts';
         const link = (
             <Link to={url} className="box-inner">
@@ -173,7 +162,7 @@ class Rewards extends Component {
             </Link>
         );
 
-        const bg = row => {
+        const bg = (row) => {
             const { posts, payout, is_blog } = row;
             const per_post = posts ? payout / posts : null;
             const alpha = per_post ? Math.min(per_post / 15 + 0.1, 1) : 0.5;
@@ -206,9 +195,8 @@ module.exports = {
             };
         },
         // mapDispatchToProps
-        dispatch => ({
-            fetchRewardsData: payload =>
-                dispatch(fetchDataSagaActions.getRewardsData()),
+        (dispatch) => ({
+            fetchRewardsData: (payload) => dispatch(fetchDataSagaActions.getRewardsData()),
         })
     )(Rewards),
 };

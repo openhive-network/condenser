@@ -1,14 +1,14 @@
+/*global $STM_Config*/
 /* eslint react/prop-types: 0 */
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Map } from 'immutable';
 import * as transactionActions from 'app/redux/TransactionReducer';
 import * as globalActions from 'app/redux/GlobalReducer';
 import * as userActions from 'app/redux/UserReducer';
 import { validate_account_name } from 'app/utils/ChainValidation';
 import { hasCompatibleKeychain } from 'app/utils/HiveKeychain';
 import runTests from 'app/utils/BrowserTests';
-import shouldComponentUpdate from 'app/utils/shouldComponentUpdate';
+// import shouldComponentUpdate from 'app/utils/shouldComponentUpdate';
 import reactForm from 'app/utils/ReactForm';
 import { serverApiRecordEvent } from 'app/utils/ServerApiClient';
 import tt from 'counterpart';
@@ -19,11 +19,14 @@ import PdfDownload from 'app/components/elements/PdfDownload';
 import { hiveSignerClient } from 'app/utils/HiveSigner';
 import { getQueryStringParams } from 'app/utils/Links';
 
+import { connect } from 'react-redux';
+
 class LoginForm extends Component {
     static propTypes = {
         // Steemit.
         loginError: PropTypes.string,
         onCancel: PropTypes.func,
+        afterLoginRedirectToWelcome: PropTypes.bool,
     };
 
     static defaultProps = {
@@ -37,30 +40,25 @@ class LoginForm extends Component {
         const isHiveSigner = false;
         this.SignUp = this.SignUp.bind(this);
         if (cryptoTestResult !== undefined) {
-            console.error(
-                'CreateAccount - cryptoTestResult: ',
-                cryptoTestResult
-            );
+            console.error('CreateAccount - cryptoTestResult: ', cryptoTestResult);
             cryptographyFailure = true;
         }
         this.state = { cryptographyFailure, isHiveSigner };
-        this.usernameOnChange = e => {
+        this.usernameOnChange = (e) => {
             const value = e.target.value.toLowerCase();
             this.state.username.props.onChange(value);
         };
-        this.onCancel = e => {
+        this.onCancel = (e) => {
             if (e.preventDefault) e.preventDefault();
             const { onCancel, loginBroadcastOperation } = this.props;
-            const errorCallback =
-                loginBroadcastOperation &&
-                loginBroadcastOperation.get('errorCallback');
+            const errorCallback = loginBroadcastOperation && loginBroadcastOperation.get('errorCallback');
             if (errorCallback) errorCallback('Canceled');
             if (onCancel) onCancel();
         };
         this.qrReader = () => {
             const { qrReader } = props;
             const { password } = this.state;
-            qrReader(data => {
+            qrReader((data) => {
                 password.props.onChange(data);
             });
         };
@@ -72,43 +70,35 @@ class LoginForm extends Component {
     }
 
     componentDidMount() {
-        if (this.refs.username && !this.refs.username.value)
-            this.refs.username.focus();
-        if (this.refs.username && this.refs.username.value)
-            this.refs.pw.focus();
+        // eslint-disable-next-line react/no-string-refs
+        if (this.refs.username && !this.refs.username.value) this.refs.username.focus();
+        // eslint-disable-next-line react/no-string-refs
+        if (this.refs.username && this.refs.username.value) this.refs.pw.focus();
     }
 
-    shouldComponentUpdate = shouldComponentUpdate(this, 'LoginForm');
+    // shouldComponentUpdate = shouldComponentUpdate(this, 'LoginForm');
 
     initForm(props) {
         reactForm({
             name: 'login',
             instance: this,
-            fields: [
-                'username',
-                'password',
-                'saveLogin:checked',
-                'useKeychain:checked',
-            ],
+            fields: ['username', 'password', 'saveLogin:checked', 'useKeychain:checked'],
             initialValues: props.initialValues,
-            validation: values => ({
-                username: !values.username
-                    ? tt('g.required')
-                    : validate_account_name(values.username.split('/')[0]),
+            validation: (values) => ({
+                username: !values.username ? tt('g.required') : validate_account_name(values.username.split('/')[0]),
                 password: values.useKeychain
                     ? null
                     : !values.password
-                      ? tt('g.required')
-                      : PublicKey.fromString(values.password)
-                        ? tt('loginform_jsx.you_need_a_private_password_or_key')
-                        : null,
+                    ? tt('g.required')
+                    : PublicKey.fromString(values.password)
+                    ? tt('loginform_jsx.you_need_a_private_password_or_key')
+                    : null,
             }),
         });
     }
 
     SignUp() {
-        const onType = document.getElementsByClassName('OpAction')[0]
-            .textContent;
+        const onType = document.getElementsByClassName('OpAction')[0].textContent;
         serverApiRecordEvent('FreeMoneySignUp', onType);
         window.location.href = SIGNUP_URL;
     }
@@ -144,7 +134,9 @@ class LoginForm extends Component {
                 isHiveSigner: true,
             });
             const params = getQueryStringParams(window.location.search);
-            const { username, access_token, expires_in, state } = params;
+            const {
+                username, access_token, expires_in, state
+            } = params;
             const {
                 saveLogin,
                 afterLoginRedirectToWelcome,
@@ -170,7 +162,10 @@ class LoginForm extends Component {
             return (
                 <div className="row">
                     <div className="column">
-                        <p>{'loading'}...</p>
+                        <p>
+                            loading
+                            ...
+                        </p>
                     </div>
                 </div>
             );
@@ -180,23 +175,18 @@ class LoginForm extends Component {
                 <div className="row">
                     <div className="column">
                         <div className="callout alert">
-                            <h4>
-                                {tt('loginform_jsx.cryptography_test_failed')}
-                            </h4>
+                            <h4>{tt('loginform_jsx.cryptography_test_failed')}</h4>
                             <p>{tt('loginform_jsx.unable_to_log_you_in')}</p>
                             <p>
-                                {tt('loginform_jsx.the_latest_versions_of')}{' '}
-                                <a href="https://www.google.com/chrome/">
-                                    Chrome
-                                </a>{' '}
-                                {tt('g.and')}{' '}
-                                <a href="https://www.mozilla.org/en-US/firefox/new/">
-                                    Firefox
-                                </a>{' '}
-                                {tt(
-                                    'loginform_jsx.are_well_tested_and_known_to_work_with',
-                                    { APP_URL }
-                                )}
+                                {tt('loginform_jsx.the_latest_versions_of')}
+                                {' '}
+                                <a href="https://www.google.com/chrome/">Chrome</a>
+                                {' '}
+                                {tt('g.and')}
+                                {' '}
+                                <a href="https://www.mozilla.org/en-US/firefox/new/">Firefox</a>
+                                {' '}
+                                {tt('loginform_jsx.are_well_tested_and_known_to_work_with', { APP_URL })}
                             </p>
                         </div>
                     </div>
@@ -209,9 +199,7 @@ class LoginForm extends Component {
                 <div className="row">
                     <div className="column">
                         <div className="callout alert">
-                            <p>
-                                {tt('loginform_jsx.due_to_server_maintenance')}
-                            </p>
+                            <p>{tt('loginform_jsx.due_to_server_maintenance')}</p>
                         </div>
                     </div>
                 </div>
@@ -228,22 +216,18 @@ class LoginForm extends Component {
             afterLoginRedirectToWelcome,
             msg,
         } = this.props;
-        const { username, password, useKeychain, saveLogin } = this.state;
+        const {
+ username, password, useKeychain, saveLogin
+} = this.state;
         const { valid, handleSubmit } = this.state.login;
-        const submitting =
-            this.state.login.submitting || this.state.isHiveSigner;
+        const submitting = this.state.login.submitting || this.state.isHiveSigner;
         const { usernameOnChange, onCancel /*qrReader*/ } = this;
         const disabled = submitting || !valid;
-        const opType = loginBroadcastOperation
-            ? loginBroadcastOperation.get('type')
-            : null;
+        const opType = loginBroadcastOperation ? loginBroadcastOperation.get('type') : null;
         let postType = '';
         if (opType === 'vote') {
             postType = tt('loginform_jsx.login_to_vote');
-        } else if (
-            opType === 'custom_json' &&
-            loginBroadcastOperation.getIn(['operation', 'id']) === 'follow'
-        ) {
+        } else if (opType === 'custom_json' && loginBroadcastOperation.getIn(['operation', 'id']) === 'follow') {
             postType = 'Login to Follow Users';
         } else if (loginBroadcastOperation) {
             // check for post or comment in operation
@@ -257,41 +241,30 @@ class LoginForm extends Component {
             : tt('loginform_jsx.active_or_owner');
         const submitLabel = showLoginWarning
             ? tt('loginform_jsx.continue_anyway')
-            : loginBroadcastOperation ? tt('g.sign_in') : tt('g.login');
-        let error =
-            password.touched && password.error
-                ? password.error
-                : this.props.loginError;
+            : loginBroadcastOperation
+            ? tt('g.sign_in')
+            : tt('g.login');
+        let error = password.touched && password.error ? password.error : this.props.loginError;
         if (error === 'owner_login_blocked') {
             error = (
                 <span>
-                    {tt(
-                        'loginform_jsx.this_password_is_bound_to_your_account_owner_key'
-                    )}{' '}
+                    {tt('loginform_jsx.this_password_is_bound_to_your_account_owner_key')}
+                    {' '}
                     {tt('loginform_jsx.however_you_can_use_it_to')}
-                    {tt('loginform_jsx.update_your_password')}{' '}
+                    {tt('loginform_jsx.update_your_password')}
+                    {' '}
                     {tt('loginform_jsx.to_obtain_a_more_secure_set_of_keys')}
                 </span>
             );
         } else if (error === 'active_login_blocked') {
-            error = (
-                <span>
-                    {tt(
-                        'loginform_jsx.this_password_is_bound_to_your_account_active_key'
-                    )}
-                </span>
-            );
+            error = <span>{tt('loginform_jsx.this_password_is_bound_to_your_account_active_key')}</span>;
         }
         let message = null;
         if (msg) {
             if (msg === 'accountcreated') {
                 message = (
                     <div className="callout primary">
-                        <p>
-                            {tt(
-                                'loginform_jsx.you_account_has_been_successfully_created'
-                            )}
-                        </p>
+                        <p>{tt('loginform_jsx.you_account_has_been_successfully_created')}</p>
                     </div>
                 );
             } else if (msg === 'passwordupdated') {
@@ -306,9 +279,7 @@ class LoginForm extends Component {
                 );
             }
         }
-        const password_info =
-            !useKeychain.value &&
-            checkPasswordChecksum(password.value) === false
+        const password_info = !useKeychain.value && checkPasswordChecksum(password.value) === false
                 ? tt('loginform_jsx.password_info')
                 : null;
         const titleText = (
@@ -318,23 +289,20 @@ class LoginForm extends Component {
             </h3>
         );
 
+/*
         const signupLink = (
             <div className="sign-up">
                 <hr />
                 <p>
-                    {tt('loginform_jsx.join_our')}{' '}
-                    <em>{tt('loginform_jsx.amazing_community')}</em>
+                    {tt('loginform_jsx.join_our')} <em>{tt('loginform_jsx.amazing_community')}</em>
                     {tt('loginform_jsx.to_comment_and_reward_others')}
                 </p>
-                <button
-                    type="button"
-                    className="button hollow"
-                    onClick={this.SignUp}
-                >
+                <button type="button" className="button hollow" onClick={this.SignUp}>
                     {tt('loginform_jsx.sign_up_get_hive')}
                 </button>
             </div>
         );
+ */
 
         const form = (
             <form
@@ -366,12 +334,20 @@ class LoginForm extends Component {
                     />
                 </div>
                 {username.touched && username.blur && username.error ? (
-                    <div className="error">{username.error}&nbsp;</div>
+                    <div className="error">
+                        {username.error}
+                        &nbsp;
+                    </div>
                 ) : null}
 
                 {useKeychain.value ? (
                     <div>
-                        {error && <div className="error">{error}&nbsp;</div>}
+                        {error && (
+                            <div className="error">
+                                {error}
+                                &nbsp;
+                            </div>
+                        )}
                     </div>
                 ) : (
                     <div>
@@ -384,31 +360,30 @@ class LoginForm extends Component {
                             autoComplete="on"
                             disabled={submitting}
                         />
-                        {error && <div className="error">{error}&nbsp;</div>}
-                        {error &&
-                            password_info && (
-                                <div className="warning">
-                                    {password_info}&nbsp;
-                                </div>
-                            )}
+                        {error && (
+                            <div className="error">
+                                {error}
+                                &nbsp;
+                            </div>
+                        )}
+                        {error && password_info && (
+                            <div className="warning">
+                                {password_info}
+                                &nbsp;
+                            </div>
+                        )}
                     </div>
                 )}
                 {loginBroadcastOperation && (
                     <div>
                         <div className="info">
-                            {tt(
-                                'loginform_jsx.this_operation_requires_your_key_or_master_password',
-                                { authType }
-                            )}
+                            {tt('loginform_jsx.this_operation_requires_your_key_or_master_password', { authType })}
                         </div>
                     </div>
                 )}
                 {hasCompatibleKeychain() && (
                     <div>
-                        <label
-                            className="LoginForm__save-login"
-                            htmlFor="useKeychain"
-                        >
+                        <label className="LoginForm__save-login" htmlFor="useKeychain">
                             <input
                                 id="useKeychain"
                                 type="checkbox"
@@ -416,15 +391,14 @@ class LoginForm extends Component {
                                 {...useKeychain.props}
                                 onChange={this.useKeychainToggle}
                                 disabled={submitting}
-                            />&nbsp;{tt('loginform_jsx.use_keychain')}
+                            />
+                            &nbsp;
+                            {tt('loginform_jsx.use_keychain')}
                         </label>
                     </div>
                 )}
                 <div>
-                    <label
-                        className="LoginForm__save-login"
-                        htmlFor="saveLogin"
-                    >
+                    <label className="LoginForm__save-login" htmlFor="saveLogin">
                         <input
                             id="saveLogin"
                             type="checkbox"
@@ -432,23 +406,21 @@ class LoginForm extends Component {
                             {...saveLogin.props}
                             onChange={this.saveLoginToggle}
                             disabled={submitting}
-                        />&nbsp;{tt('loginform_jsx.keep_me_logged_in')}
+                        />
+                        &nbsp;
+                        {tt('loginform_jsx.keep_me_logged_in')}
                     </label>
                 </div>
                 <div className="login-modal-buttons">
                     <br />
-                    <button
-                        type="submit"
-                        disabled={submitting || disabled}
-                        className="button"
-                    >
+                    <button type="submit" disabled={submitting || disabled} className="button">
                         {submitLabel}
                     </button>
                     {this.props.onCancel && (
                         <button
-                            type="button float-right"
+                            type="button"
                             disabled={submitting}
-                            className="button hollow"
+                            className="button hollow float-right"
                             onClick={onCancel}
                         >
                             {tt('g.cancel')}
@@ -459,9 +431,7 @@ class LoginForm extends Component {
             </form>
         );
 
-        const loginWarningTitleText = (
-            <h3>{tt('loginform_jsx.login_warning_title')}</h3>
-        );
+        const loginWarningTitleText = <h3>{tt('loginform_jsx.login_warning_title')}</h3>;
 
         const loginWarningForm = (
             <form
@@ -471,7 +441,7 @@ class LoginForm extends Component {
                         username: username.value,
                         password: password.value,
                         saveLogin: saveLogin.value,
-                        loginBroadcastOperation: loginBroadcastOperation,
+                        loginBroadcastOperation,
                     };
                     reallySubmit(data, afterLoginRedirectToWelcome);
                 })}
@@ -486,11 +456,7 @@ class LoginForm extends Component {
                         heightInches={11.0}
                         label="Download a PDF with keys and instructions"
                     />
-                    <a
-                        href={`${walletUrl}/@${username.value}/permissions`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                    >
+                    <a href={`${walletUrl}/@${username.value}/permissions`} target="_blank" rel="noopener noreferrer">
                         {tt('loginform_jsx.login_warning_link_text')}
                     </a>
                 </div>
@@ -500,7 +466,7 @@ class LoginForm extends Component {
                         type="submit"
                         disabled={submitting}
                         className="button"
-                        onClick={e => {
+                        onClick={(e) => {
                             e.preventDefault();
                             console.log('Login\thideWarning');
                             hideWarning();
@@ -515,13 +481,8 @@ class LoginForm extends Component {
         const moreLoginMethods = (
             <div className="row buttons">
                 <div className="column">
-                    <a
-                        id="btn-hivesigner"
-                        className="button"
-                        onClick={this.onClickHiveSignerBtn}
-                        disabled={submitting}
-                    >
-                        <img src="/images/hivesigner.svg" />
+                    <a role="link" id="btn-hivesigner" className="button" onClick={this.onClickHiveSignerBtn} disabled={submitting}>
+                        <img src="/images/hivesigner.svg" alt="Hive Signer" />
                     </a>
                 </div>
             </div>
@@ -555,9 +516,8 @@ if (process.env.BROWSER) {
 
 function urlAccountName() {
     let suggestedAccountName = '';
-    const account_match = window.location.hash.match(/account\=([\w\d\-\.]+)/);
-    if (account_match && account_match.length > 1)
-        suggestedAccountName = account_match[1];
+    const account_match = window.location.hash.match(/account=([\w\d\-.]+)/);
+    if (account_match && account_match.length > 1) suggestedAccountName = account_match[1];
     return suggestedAccountName;
 }
 
@@ -574,33 +534,25 @@ function checkPasswordChecksum(password) {
 
     return PrivateKey.isWif(wif);
 }
-
-import { connect } from 'react-redux';
 export default connect(
     // mapStateToProps
-    state => {
+    (state) => {
         const walletUrl = state.app.get('walletUrl');
         const showLoginWarning = state.user.get('show_login_warning');
         const loginError = state.user.get('login_error');
         const currentUser = state.user.get('current');
-        const loginBroadcastOperation = state.user.get(
-            'loginBroadcastOperation'
-        );
+        const loginBroadcastOperation = state.user.get('loginBroadcastOperation');
         const initialValues = {
             useKeychain: !!hasCompatibleKeychain(),
             saveLogin: saveLoginDefault,
         };
 
         // The username input has a value prop, so it should not use initialValues
-        const initialUsername =
-            currentUser && currentUser.has('username')
-                ? currentUser.get('username')
-                : urlAccountName();
+        const initialUsername = currentUser && currentUser.has('username') ? currentUser.get('username') : urlAccountName();
         const loginDefault = state.user.get('loginDefault');
         if (loginDefault) {
             const { username, authType } = loginDefault.toJS();
-            if (username && authType)
-                initialValues.username = username + '/' + authType;
+            if (username && authType) initialValues.username = username + '/' + authType;
         } else if (initialUsername) {
             initialValues.username = initialUsername;
         }
@@ -609,7 +561,7 @@ export default connect(
             initialValues.username = offchainUser.get('account');
         }
         let msg = '';
-        const msg_match = window.location.hash.match(/msg\=([\w]+)/);
+        const msg_match = window.location.hash.match(/msg=([\w]+)/);
         if (msg_match && msg_match.length > 1) msg = msg_match[1];
         hasError = !!loginError;
         return {
@@ -625,21 +577,13 @@ export default connect(
     },
 
     // mapDispatchToProps
-    dispatch => ({
-        dispatchSubmit: (
-            data,
-            useKeychain,
-            loginBroadcastOperation,
-            afterLoginRedirectToWelcome
-        ) => {
+    (dispatch) => ({
+        dispatchSubmit: (data, useKeychain, loginBroadcastOperation, afterLoginRedirectToWelcome) => {
             const { password, saveLogin } = data;
             const username = data.username.trim().toLowerCase();
             if (loginBroadcastOperation) {
                 const {
-                    type,
-                    operation,
-                    successCallback,
-                    errorCallback,
+                    type, operation, successCallback, errorCallback
                 } = loginBroadcastOperation.toJS();
                 dispatch(
                     transactionActions.broadcastOperation({
@@ -691,9 +635,7 @@ export default connect(
             },
             afterLoginRedirectToWelcome
         ) => {
-            const { type } = loginBroadcastOperation
-                ? loginBroadcastOperation.toJS()
-                : {};
+            const { type } = loginBroadcastOperation ? loginBroadcastOperation.toJS() : {};
 
             serverApiRecordEvent('SignIn', type);
 
@@ -716,7 +658,7 @@ export default connect(
         clearError: () => {
             if (hasError) dispatch(userActions.loginError({ error: null }));
         },
-        qrReader: dataCallback => {
+        qrReader: (dataCallback) => {
             dispatch(
                 globalActions.showDialog({
                     name: 'qr_reader',

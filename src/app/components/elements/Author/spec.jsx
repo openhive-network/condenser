@@ -1,19 +1,20 @@
 import React from 'react';
-import { mount, configure, shallow } from 'enzyme';
 import { Provider } from 'react-redux';
 import { createStore } from 'redux';
-import Follow from './index';
 import rootReducer from 'app/redux/RootReducer';
-import Adapter from 'enzyme-adapter-react-15';
+import { configure, shallow } from 'enzyme';
 
-const store = createStore(rootReducer);
+import Adapter from 'enzyme-adapter-react-16';
+import Author from './index';
 
 configure({ adapter: new Adapter() });
 
-describe('<Follow />', () => {
+const store = createStore(rootReducer);
+
+describe('<Author />', () => {
     const wrapper = shallow(
         <Provider store={store}>
-            <Follow />
+            <Author />
         </Provider>
     );
     const container = wrapper.instance();

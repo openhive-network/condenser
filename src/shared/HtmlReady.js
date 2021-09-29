@@ -1,3 +1,4 @@
+/* global $STM_Config */
 import xmldom from 'xmldom';
 import tt from 'counterpart';
 import linksRe, { any as linksAny } from 'app/utils/Links';
@@ -80,7 +81,7 @@ const XMLSerializer = new xmldom.XMLSerializer();
     If hideImages and mutate is set to true all images will be replaced
     by <pre> elements containing just the image url.
 */
-export default function(html, { mutate = true, hideImages = false } = {}) {
+export default function (html, { mutate = true, hideImages = false } = {}) {
     const state = { mutate };
     state.hashtags = new Set();
     state.usertags = new Set();
@@ -92,6 +93,7 @@ export default function(html, { mutate = true, hideImages = false } = {}) {
         traverse(doc, state);
         if (mutate) {
             if (hideImages) {
+                // eslint-disable-next-line no-restricted-syntax
                 for (const image of Array.from(doc.getElementsByTagName('img'))) {
                     const pre = doc.createElement('pre');
                     pre.setAttribute('class', 'image-url-only');
@@ -102,7 +104,6 @@ export default function(html, { mutate = true, hideImages = false } = {}) {
                 proxifyImages(doc);
             }
         }
-        // console.log('state', state)
         if (!mutate) return state;
         return {
             html: doc ? XMLSerializer.serializeToString(doc) : '',
@@ -117,7 +118,7 @@ export default function(html, { mutate = true, hideImages = false } = {}) {
 
 function traverse(node, state, depth = 0) {
     if (!node || !node.childNodes) return;
-    Array.from(node.childNodes).forEach(child => {
+    Array.from(node.childNodes).forEach((child) => {
         // console.log(depth, 'child.tag,data', child.tagName, child.data)
         const tag = child.tagName ? child.tagName.toLowerCase() : null;
         if (tag) state.htmltags.add(tag);
@@ -143,10 +144,10 @@ function link(state, child) {
 
             // Unlink potential phishing attempts
             if (
-                (url.indexOf('#') !== 0 && // Allow in-page links
-                    child.textContent.match(/(www\.)?hive\.blog/i) &&
-                    !url.match(/https?:\/\/(.*@)?(www\.)?hive\.blog/i)) ||
-                Phishing.looksPhishy(url)
+                (url.indexOf('#') !== 0 // Allow in-page links
+                    && child.textContent.match(/(www\.)?hive\.blog/i)
+                    && !url.match(/https?:\/\/(.*@)?(www\.)?hive\.blog/i))
+                || Phishing.looksPhishy(url)
             ) {
                 const phishyDiv = child.ownerDocument.createElement('div');
                 phishyDiv.textContent = `${child.textContent} / ${url}`;
@@ -160,6 +161,7 @@ function link(state, child) {
 
 // wrap iframes in div.videoWrapper to control size/aspect ratio
 function iframe(state, child) {
+    console.log('htmlready iframe');
     const url = child.getAttribute('src');
 
     // @TODO move this into the centralized EmbeddedPlayer code
@@ -176,12 +178,31 @@ function iframe(state, child) {
     if (!mutate) return;
 
     const tag = child.parentNode.tagName ? child.parentNode.tagName.toLowerCase() : child.parentNode.tagName;
-    if (tag === 'div' && child.parentNode.classList && child.parentNode.classList.contains('videoWrapper')) {
+    if (
+        tag === 'div'
+        && child.parentNode.classList
+        && child.parentNode.classList.contains('videoWrapper')
+        && child.parentNode.classList.contains('redditWrapper')
+        && child.parentNode.classList.contains('tweetWrapper')
+    ) {
         return;
     }
 
     const html = XMLSerializer.serializeToString(child);
-    child.parentNode.replaceChild(DOMParser.parseFromString(`<div class="videoWrapper">${html}</div>`), child);
+    const width = child.attributes.getNamedItem('width');
+    const height = child.attributes.getNamedItem('height');
+
+    let aspectRatioPercent = 100;
+    if (width && height) {
+      aspectRatioPercent = (height.value / width.value) * 100;
+    }
+
+    child.parentNode.replaceChild(DOMParser.parseFromString(
+    `<div class="iframeWrapper">${html}</div>`
+    ), child);
+    const styleAttr = document.createAttribute("style");
+    styleAttr.value = `position: relative; width: 100%; height: 0; padding-bottom: ${aspectRatioPercent}%;`;
+    child.attributes.setNamedItem(styleAttr);
 }
 
 function img(state, child) {
@@ -204,7 +225,7 @@ function img(state, child) {
 function proxifyImages(doc) {
     if (!doc) return;
 
-    Array.from(doc.getElementsByTagName('img')).forEach(node => {
+    Array.from(doc.getElementsByTagName('img')).forEach((node) => {
         const url = node.getAttribute('src');
 
         if (!linksRe.local.test(url)) {
@@ -230,6 +251,7 @@ function linkifyNode(child, state) {
         if (mutate && content !== data) {
             const newChild = DOMParser.parseFromString(`<span>${content}</span>`);
             child.parentNode.replaceChild(newChild, child);
+            // eslint-disable-next-line consistent-return
             return newChild;
         }
     } catch (error) {
@@ -239,7 +261,7 @@ function linkifyNode(child, state) {
 
 function linkify(content, mutate, hashtags, usertags, images, links) {
     // hashtag
-    content = content.replace(/(^|\s)(#[-a-z\d]+)/gi, tag => {
+    content = content.replace(/(^|\s)(#[-a-z\d]+)/gi, (tag) => {
         if (/#[\d]+$/.test(tag)) return tag; // Don't allow numbers to be tags
         const space = /^\s/.test(tag) ? tag[0] : '';
         const tag2 = tag.trim().substring(1);
@@ -252,7 +274,7 @@ function linkify(content, mutate, hashtags, usertags, images, links) {
     // usertag (mention)
     // Cribbed from https://github.com/twitter/twitter-text/blob/v1.14.7/js/twitter-text.js#L90
     content = content.replace(
-        /(^|[^a-zA-Z0-9_!#$%&*@＠\/=]|(^|[^a-zA-Z0-9_+~.-\/#=]))[@＠]([a-z][-\.a-z\d]+[a-z\d])/gi,
+        /(^|[^a-zA-Z0-9_!#$%&*@＠/=]|(^|[^a-zA-Z0-9_+~.-/#=]))[@＠]([a-z][-.a-z\d]+[a-z\d])/gi,
         (match, preceeding1, preceeding2, user) => {
             const userLower = user.toLowerCase();
             const valid = validate_account_name(userLower) == null;
@@ -267,7 +289,7 @@ function linkify(content, mutate, hashtags, usertags, images, links) {
         }
     );
 
-    content = content.replace(linksAny('gi'), ln => {
+    content = content.replace(linksAny('gi'), (ln) => {
         if (linksRe.image.test(ln)) {
             if (images) images.add(ln);
             return `<img src="${ipfsPrefix(ln)}" />`;

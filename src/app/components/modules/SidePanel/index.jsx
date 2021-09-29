@@ -8,22 +8,17 @@ import Icon from 'app/components/elements/Icon';
 import { Link } from 'react-router';
 
 const SidePanel = ({
-    alignment,
-    visible,
-    hideSidePanel,
-    username,
-    walletUrl,
-    toggleNightmode,
+ alignment, visible, hideSidePanel, username, walletUrl, toggleNightmode
 }) => {
     if (process.env.BROWSER) {
-        visible && document.addEventListener('click', hideSidePanel);
-        !visible && document.removeEventListener('click', hideSidePanel);
+        if (visible) {
+            document.addEventListener('click', hideSidePanel);
+        } else {
+            document.removeEventListener('click', hideSidePanel);
+        }
     }
 
-    const loggedIn =
-        username === undefined
-            ? 'show-for-small-only'
-            : 'SidePanel__hide-signup';
+    const loggedIn = username === undefined ? 'show-for-small-only' : 'SidePanel__hide-signup';
 
     const makeLink = (i, ix, arr) => {
         // A link is internal if it begins with a slash
@@ -33,7 +28,8 @@ const SidePanel = ({
             return (
                 <li key={ix} className={cn}>
                     <a href={i.link} target="_blank" rel="noopener noreferrer">
-                        {i.label}&nbsp;
+                        {i.label}
+                        &nbsp;
                         <Icon name="extlink" />
                     </a>
                 </li>
@@ -42,7 +38,7 @@ const SidePanel = ({
         if (i.onClick) {
             return (
                 <li key={ix} className={cn}>
-                    <a onClick={i.onClick}>{i.label}</a>
+                    <a role="link" tabIndex={0} onClick={i.onClick}>{i.label}</a>
                 </li>
             );
         }
@@ -154,24 +150,12 @@ const SidePanel = ({
         <div className="SidePanel">
             <div className={(visible ? 'visible ' : '') + alignment}>
                 <CloseButton onClick={hideSidePanel} />
-                <ul className={`vertical menu ${loggedIn}`}>
-                    {sidePanelLinks.extras.map(makeLink)}
-                </ul>
-                <ul className="vertical menu">
-                    {sidePanelLinks.internal.map(makeLink)}
-                </ul>
-                <ul className="vertical menu">
-                    {sidePanelLinks.wallet.map(makeLink)}
-                </ul>
-                <ul className="vertical menu">
-                    {sidePanelLinks.external.map(makeLink)}
-                </ul>
-                <ul className="vertical menu">
-                    {sidePanelLinks.organizational.map(makeLink)}
-                </ul>
-                <ul className="vertical menu">
-                    {sidePanelLinks.legal.map(makeLink)}
-                </ul>
+                <ul className={`vertical menu ${loggedIn}`}>{sidePanelLinks.extras.map(makeLink)}</ul>
+                <ul className="vertical menu">{sidePanelLinks.internal.map(makeLink)}</ul>
+                <ul className="vertical menu">{sidePanelLinks.wallet.map(makeLink)}</ul>
+                <ul className="vertical menu">{sidePanelLinks.external.map(makeLink)}</ul>
+                <ul className="vertical menu">{sidePanelLinks.organizational.map(makeLink)}</ul>
+                <ul className="vertical menu">{sidePanelLinks.legal.map(makeLink)}</ul>
             </div>
         </div>
     );

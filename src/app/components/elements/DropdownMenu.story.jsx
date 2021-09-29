@@ -35,11 +35,7 @@ storiesOf('Elements', module)
                 key="_others"
                 items={mockMenu}
                 el={'div'}
-                selected={select(
-                    'Currently Selected',
-                    selectOptions,
-                    'power up'
-                )}
+                selected={select('Currently Selected', selectOptions, 'power up')}
             />
         </div>
     ));

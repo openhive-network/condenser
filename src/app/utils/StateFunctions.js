@@ -1,19 +1,14 @@
 import constants from 'app/redux/constants';
 import { formatter } from '@hiveio/hive-js';
 
-export const numberWithCommas = x =>
-    String(x).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+export const numberWithCommas = (x) => String(x).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 
 export function isFetchingOrRecentlyUpdated(global_status, order, category) {
-    const status = global_status
-        ? global_status.getIn([category || '', order])
-        : null;
+    const status = global_status ? global_status.getIn([category || '', order]) : null;
     if (!status) return false;
     if (status.fetching) return true;
     if (status.last_fetch) {
-        const res =
-            new Date() - status.last_fetch <
-            constants.FETCH_DATA_EXPIRE_SEC * 1000;
+        const res = new Date() - status.last_fetch < constants.FETCH_DATA_EXPIRE_SEC * 1000;
         return res;
     }
     return false;
@@ -48,12 +43,12 @@ export function parseJsonTags(post) {
 }
 
 export function hasNsfwTag(content) {
-    return parseJsonTags(content).filter(t => t.match(/^nsfw$/i)).length > 0;
+    return parseJsonTags(content).filter((t) => t.match(/^nsfw$/i)).length > 0;
 }
 
 export function filterTags(tags) {
     return tags
-        .filter(tag => typeof tag === 'string')
+        .filter((tag) => typeof tag === 'string')
         .filter((value, index, self) => value && self.indexOf(value) === index);
 }
 
@@ -67,10 +62,10 @@ export function pricePerHive(state) {
 
 export function settlePromises(arr) {
     return Promise.all(
-        arr.map(promise => {
+        arr.map((promise) => {
             return promise.then(
-                value => ({ state: 'resolved', value }),
-                value => ({ state: 'rejected', value })
+                (value) => ({ state: 'resolved', value }),
+                (value) => ({ state: 'rejected', value })
             );
         })
     );

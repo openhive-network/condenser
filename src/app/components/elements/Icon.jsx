@@ -74,16 +74,7 @@ const rem_sizes = {
 export default class Icon extends React.Component {
     static propTypes = {
         name: PropTypes.string.isRequired,
-        size: PropTypes.oneOf([
-            '0_8x',
-            '1x',
-            '1_5x',
-            '2x',
-            '3x',
-            '4x',
-            '5x',
-            '10x',
-        ]),
+        size: PropTypes.oneOf(['0_8x', '1x', '1_5x', '2x', '3x', '4x', '5x', '10x']),
         inverse: PropTypes.bool,
         className: PropTypes.string,
     };
@@ -108,12 +99,6 @@ export default class Icon extends React.Component {
             classes += ' ' + className;
         }
 
-        return (
-            <span
-                className={classes}
-                style={style}
-                dangerouslySetInnerHTML={{ __html: icons_map[name] }}
-            />
-        );
+        return <span className={classes} style={style} dangerouslySetInnerHTML={{ __html: icons_map[name] }} />;
     }
 }

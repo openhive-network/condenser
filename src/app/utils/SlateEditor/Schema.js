@@ -41,47 +41,23 @@ export const schema = {
     // sidebarTypes: [],
 
     nodes: {
-        paragraph: ({ children, attributes }) => (
-            <p {...attributes}>{children}</p>
-        ),
+        paragraph: ({ children, attributes }) => <p {...attributes}>{children}</p>,
         'code-block': ({ children, attributes }) => (
             <pre {...attributes}>
                 <code>{children}</code>
             </pre>
         ),
-        'block-quote': ({ children, attributes }) => (
-            <blockquote {...attributes}>{children}</blockquote>
-        ),
-        'bulleted-list': ({ children, attributes }) => (
-            <ul {...attributes}>{children}</ul>
-        ),
-        'numbered-list': ({ children, attributes }) => (
-            <ol {...attributes}>{children}</ol>
-        ),
-        'heading-one': ({ children, attributes }) => (
-            <h1 {...attributes}>{children}</h1>
-        ),
-        'heading-two': ({ children, attributes }) => (
-            <h2 {...attributes}>{children}</h2>
-        ),
-        'heading-three': ({ children, attributes }) => (
-            <h3 {...attributes}>{children}</h3>
-        ),
-        'heading-four': ({ children, attributes }) => (
-            <h4 {...attributes}>{children}</h4>
-        ),
-        'list-item': ({ children, attributes }) => (
-            <li {...attributes}>{children}</li>
-        ),
-        table: ({ children, attributes }) => (
-            <table {...attributes}>{children}</table>
-        ),
-        thead: ({ children, attributes }) => (
-            <thead {...attributes}>{children}</thead>
-        ),
-        tbody: ({ children, attributes }) => (
-            <tbody {...attributes}>{children}</tbody>
-        ),
+        'block-quote': ({ children, attributes }) => <blockquote {...attributes}>{children}</blockquote>,
+        'bulleted-list': ({ children, attributes }) => <ul {...attributes}>{children}</ul>,
+        'numbered-list': ({ children, attributes }) => <ol {...attributes}>{children}</ol>,
+        'heading-one': ({ children, attributes }) => <h1 {...attributes}>{children}</h1>,
+        'heading-two': ({ children, attributes }) => <h2 {...attributes}>{children}</h2>,
+        'heading-three': ({ children, attributes }) => <h3 {...attributes}>{children}</h3>,
+        'heading-four': ({ children, attributes }) => <h4 {...attributes}>{children}</h4>,
+        'list-item': ({ children, attributes }) => <li {...attributes}>{children}</li>,
+        table: ({ children, attributes }) => <table {...attributes}>{children}</table>,
+        thead: ({ children, attributes }) => <thead {...attributes}>{children}</thead>,
+        tbody: ({ children, attributes }) => <tbody {...attributes}>{children}</tbody>,
         tr: ({ children, attributes }) => <tr {...attributes}>{children}</tr>,
         td: ({ children, attributes }) => <td {...attributes}>{children}</td>,
         th: ({ children, attributes }) => <th {...attributes}>{children}</th>,
@@ -93,13 +69,13 @@ export const schema = {
     },
 
     marks: {
-        bold: props => <strong>{props.children}</strong>,
-        code: props => <code>{props.children}</code>,
-        italic: props => <em>{props.children}</em>,
-        underline: props => <u>{props.children}</u>,
-        strike: props => <del>{props.children}</del>,
-        sub: props => <sub>{props.children}</sub>,
-        sup: props => <sup>{props.children}</sup>,
+        bold: (props) => <strong>{props.children}</strong>,
+        code: (props) => <code>{props.children}</code>,
+        italic: (props) => <em>{props.children}</em>,
+        underline: (props) => <u>{props.children}</u>,
+        strike: (props) => <del>{props.children}</del>,
+        sub: (props) => <sub>{props.children}</sub>,
+        sup: (props) => <sup>{props.children}</sup>,
     },
 };
 
@@ -141,14 +117,7 @@ const MARK_TAGS = {
     sub: 'sub',
 };
 
-const validAligns = [
-    'pull-right',
-    'pull-left',
-    'text-justify',
-    'text-rtl',
-    'text-center',
-    'text-right',
-];
+const validAligns = ['pull-right', 'pull-left', 'text-justify', 'text-rtl', 'text-center', 'text-right'];
 
 /**
  * Rules for converting from and to HTML. The first rules are highest priority,
@@ -199,14 +168,13 @@ export const HtmlRules = [
 
             // Special case for <pre>: ignore its inner <code> element.
             const code = el.tagName == 'pre' ? el.children[0] : null;
-            let children =
-                code && code.tagName == 'code' ? code.children : el.children;
+            let children = code && code.tagName == 'code' ? code.children : el.children;
 
             // due to disabled/broken whitespace normalization in cheerio/htmlparser2, perform basic cleaning...
             //   i.e. removal of text nodes where they are invalid -- otherwise they may convert to <br />s in bad places
             const noTextChildren = 'ol,ul,table,thead,tbody,tr'.split(',');
             if (noTextChildren.includes(el.tagName)) {
-                children = children.filter(el => el.type !== 'text');
+                children = children.filter((el) => el.type !== 'text');
             }
 
             // If this block-level node contains *any* <center> tags, strip them out and wrap-align node
@@ -384,11 +352,7 @@ export const HtmlRules = [
             if (object.kind == 'inline' && object.type == 'image') {
                 const src = object.data.get('src');
                 const alt = object.data.get('alt');
-                if (!src)
-                    console.log(
-                        '** ERR: serializing image with no src...',
-                        JSON.stringify(object)
-                    );
+                if (!src) console.log('** ERR: serializing image with no src...', JSON.stringify(object));
                 return <img src={src} alt={alt} />;
             }
         },
@@ -397,26 +361,16 @@ export const HtmlRules = [
     // debug uncaught nodes/elements
     {
         deserialize: (el, next) => {
-            if (el.type !== 'text')
-                console.log(
-                    '** no deserializer for: ',
-                    $.html(el).replace(/\n/g, '\\n')
-                );
+            if (el.type !== 'text') console.log('** no deserializer for: ', $.html(el).replace(/\n/g, '\\n'));
         },
         serialize: (object, children) => {
             if (object.kind != 'string')
-                console.log(
-                    '** no serializer for:',
-                    object.type,
-                    object.kind,
-                    'data:',
-                    JSON.stringify(object)
-                );
+                console.log('** no serializer for:', object.type, object.kind, 'data:', JSON.stringify(object));
         },
     },
 ];
 
-export const getMarkdownType = chars => {
+export const getMarkdownType = (chars) => {
     switch (chars) {
         case '1.':
         case '*':

@@ -1,11 +1,8 @@
-const getBadges = async payload => {
+const getBadges = async (payload) => {
     return new Promise((resolve, reject) => {
         const xhr = new XMLHttpRequest();
         // Little hack until Peakd opens up by adding CORS headers
-        xhr.open(
-            'GET',
-            `https://peakd.com/api/public/badge/${payload.account}`
-        );
+        xhr.open('GET', `https://peakd.com/api/public/badge/${payload.account}`);
         xhr.onload = () => {
             if (xhr.status === 200) {
                 try {
@@ -26,7 +23,7 @@ const getBadges = async payload => {
                 reject(xhr.status);
             }
         };
-        xhr.onerror = function(error) {
+        xhr.onerror = function (error) {
             console.error('Peakd badges', error);
             reject(error);
         };

@@ -19,7 +19,7 @@ storiesOf('Elements', module)
     .addDecorator(withKnobs)
     .add('Icon', () => (
         <Grid>
-            {icons.map(icon => (
+            {icons.map((icon) => (
                 <div key={'icon_' + icon}>
                     <Icon name={icon} size={select('size', options, '2x')} />
                     <p> {icon} </p>

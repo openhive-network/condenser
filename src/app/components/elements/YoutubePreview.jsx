@@ -1,7 +1,7 @@
 /* eslint react/prop-types: 0 */
 import React from 'react';
 import PropTypes from 'prop-types';
-import shouldComponentUpdate from 'app/utils/shouldComponentUpdate';
+// import shouldComponentUpdate from 'app/utils/shouldComponentUpdate';
 
 const { string, number } = PropTypes;
 
@@ -27,22 +27,23 @@ export default class YoutubePreview extends React.Component {
         this.state = {};
     }
 
-    shouldComponentUpdate = shouldComponentUpdate(this, 'YoutubePreview');
+    // shouldComponentUpdate = shouldComponentUpdate(this, 'YoutubePreview');
 
     onPlay = () => {
         this.setState({ play: true });
     };
 
     render() {
-        const { youTubeId, width, height, startTime, dataParams } = this.props;
+        const {
+ youTubeId, width, height, startTime, dataParams
+} = this.props;
         const { play } = this.state;
 
         if (!play) {
             // mqdefault.jpg (medium quality version, 320px × 180px)
             // hqdefault.jpg (high quality version, 480px × 360px
             // sddefault.jpg (standard definition version, 640px × 480px)
-            const thumbnail =
-                width <= 320
+            const thumbnail = width <= 320
                     ? 'mqdefault.jpg'
                     : width <= 480
                     ? 'hqdefault.jpg'

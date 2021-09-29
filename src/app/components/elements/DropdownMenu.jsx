@@ -9,11 +9,7 @@ export default class DropdownMenu extends React.Component {
     static propTypes = {
         items: PropTypes.arrayOf(PropTypes.object).isRequired,
         selected: PropTypes.string,
-        children: PropTypes.oneOfType([
-            PropTypes.object,
-            PropTypes.array,
-            PropTypes.element,
-        ]),
+        children: PropTypes.oneOfType([PropTypes.object, PropTypes.array, PropTypes.element]),
         className: PropTypes.string,
         title: PropTypes.string,
         href: PropTypes.string,
@@ -32,19 +28,19 @@ export default class DropdownMenu extends React.Component {
         document.removeEventListener('click', this.hide);
     }
 
-    toggle = e => {
+    toggle = (e) => {
         const { shown } = this.state;
         if (shown) this.hide(e);
         else this.show(e);
     };
 
-    show = e => {
+    show = (e) => {
         e.preventDefault();
         this.setState({ shown: true });
         document.addEventListener('click', this.hide);
     };
 
-    hide = e => {
+    hide = (e) => {
         // Do not hide the dropdown if there was a click within it.
         const inside_dropdown = !!findParent(e.target, 'VerticalMenu');
         if (inside_dropdown) return;
@@ -54,11 +50,8 @@ export default class DropdownMenu extends React.Component {
         document.removeEventListener('click', this.hide);
     };
 
-    navigate = e => {
-        const a =
-            e.target.nodeName.toLowerCase() === 'a'
-                ? e.target
-                : e.target.parentNode;
+    navigate = (e) => {
+        const a = e.target.nodeName.toLowerCase() === 'a' ? e.target : e.target.parentNode;
         this.setState({ show: false });
         if (a.host !== window.location.host) return;
         e.preventDefault();
@@ -66,25 +59,13 @@ export default class DropdownMenu extends React.Component {
     };
 
     getSelectedLabel = (items, selected) => {
-        const selectedEntry = items.find(i => i.value === selected);
-        const selectedLabel =
-            selectedEntry && selectedEntry.label
-                ? selectedEntry.label
-                : selected;
+        const selectedEntry = items.find((i) => i.value === selected);
+        const selectedLabel = selectedEntry && selectedEntry.label ? selectedEntry.label : selected;
         return selectedLabel;
     };
 
     render() {
-        const {
-            el,
-            items,
-            selected,
-            children,
-            className,
-            title,
-            href,
-            position,
-        } = this.props;
+        const { el, items, selected, children, className, title, href, position } = this.props;
         const hasDropdown = items.length > 0;
 
         let entry = children || (
@@ -101,14 +82,7 @@ export default class DropdownMenu extends React.Component {
                 </a>
             );
 
-        const menu = (
-            <VerticalMenu
-                key="menu"
-                title={title}
-                items={items}
-                hideValue={selected}
-            />
-        );
+        const menu = <VerticalMenu key="menu" title={title} items={items} hideValue={selected} />;
         const cls =
             'DropdownMenu' +
             (this.state.shown ? ' show' : '') +

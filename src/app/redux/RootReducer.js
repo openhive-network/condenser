@@ -1,7 +1,7 @@
 import { Map, fromJS } from 'immutable';
 import { routerReducer } from 'react-router-redux';
 import { combineReducers } from 'redux';
-import { reducer as formReducer } from 'redux-form'; // @deprecated, instead use: app/utils/ReactForm.js
+// import { reducer as formReducer } from 'redux-form'; // @deprecated, instead use: app/utils/ReactForm.js
 import appReducer from './AppReducer';
 import globalReducer from './GlobalReducer';
 import userReducer from './UserReducer';
@@ -41,7 +41,7 @@ export default combineReducers({
     discussion: initReducer((state = {}) => state),
     routing: initReducer(routerReducer),
     app: initReducer(appReducer),
-    form: formReducer,
+    // form: formReducer,
     userProfiles: initReducer(userProfilesReducer),
     search: initReducer(searchReducer),
 });

@@ -10,11 +10,7 @@ import Icon from 'app/components/elements/Icon';
 import Reblog from 'app/components/elements/Reblog';
 import resolveRoute from 'app/ResolveRoute';
 import Voting from 'app/components/elements/Voting';
-import {
-    getPostSummary,
-    extractBodySummary,
-    extractImageLink,
-} from 'app/utils/ExtractContent';
+import { getPostSummary, extractBodySummary, extractImageLink } from 'app/utils/ExtractContent';
 import VotesAndComments from 'app/components/elements/VotesAndComments';
 import Author from 'app/components/elements/Author';
 import Tag from 'app/components/elements/Tag';
@@ -40,7 +36,6 @@ const vote_weights = (post) => {
 class PostSummary extends React.Component {
     static propTypes = {
         post: PropTypes.object.isRequired,
-        onClose: PropTypes.func,
         nsfwPref: PropTypes.string,
     };
 
@@ -52,11 +47,11 @@ class PostSummary extends React.Component {
 
     shouldComponentUpdate(props, state) {
         return (
-            props.username !== this.props.username ||
-            props.nsfwPref !== this.props.nsfwPref ||
-            props.blogmode !== this.props.blogmode ||
-            state.revealNsfw !== this.state.revealNsfw ||
-            props.post != this.props.post
+            props.username !== this.props.username
+            || props.nsfwPref !== this.props.nsfwPref
+            || props.blogmode !== this.props.blogmode
+            || state.revealNsfw !== this.state.revealNsfw
+            || props.post != this.props.post
         );
     }
 
@@ -74,7 +69,9 @@ class PostSummary extends React.Component {
             }
         }
 
-        const { ignore, hideCategory, net_vests } = this.props;
+        const {
+            ignore, hideCategory, net_vests, sessionId,
+        } = this.props;
         const { post } = this.props;
         if (!post) return null;
 
@@ -90,7 +87,8 @@ class PostSummary extends React.Component {
                         <span className="articles__resteem-icon">
                             <Icon name="reblog" />
                         </span>
-                        <UserNames names={reblogged_by} />{' '}
+                        <UserNames names={reblogged_by} />
+                        {' '}
                         {tt('postsummary_jsx.reblogged')}
                     </p>
                 </div>
@@ -110,12 +108,15 @@ class PostSummary extends React.Component {
                         <span className="articles__crosspost-icon">
                             <Icon name="cross-post" />
                         </span>
-                        <UserNames names={[crossPostedBy]} />{' '}
-                        {tt('postsummary_jsx.crossposted')}{' '}
-                        <Link
-                            to={`${crossPostCategory}/@${crossPostAuthor}/${crossPostPermlink}`}
-                        >
-                            @{crossPostAuthor}/{crossPostPermlink}
+                        <UserNames names={[crossPostedBy]} />
+                        {' '}
+                        {tt('postsummary_jsx.crossposted')}
+                        {' '}
+                        <Link to={`${crossPostCategory}/@${crossPostAuthor}/${crossPostPermlink}`}>
+                            @
+                            {crossPostAuthor}
+                            /
+                            {crossPostPermlink}
                         </Link>
                     </div>
                 </div>
@@ -138,11 +139,7 @@ class PostSummary extends React.Component {
         if (crossPostedBy) {
             summary = extractBodySummary(post.get('cross_post_body'), isReply);
         } else {
-            summary = getPostSummary(
-                post.get('json_metadata'),
-                post.get('body'),
-                isReply
-            );
+            summary = getPostSummary(post.get('json_metadata'), post.get('body'), isReply);
         }
 
         const content_body = (
@@ -160,9 +157,7 @@ class PostSummary extends React.Component {
             </h2>
         );
 
-        const summaryAuthor = crossPostedBy
-            ? post.get('cross_post_author')
-            : post.get('author');
+        const summaryAuthor = crossPostedBy ? post.get('cross_post_author') : post.get('author');
 
         // New Post Summary heading
         const summary_header = (
@@ -170,14 +165,8 @@ class PostSummary extends React.Component {
                 <div className="user">
                     {!isNsfw ? (
                         <div className="user__col user__col--left">
-                            <a
-                                className="user__link"
-                                href={`/@${summaryAuthor}`}
-                            >
-                                <Userpic
-                                    account={summaryAuthor}
-                                    size={SIZE_SMALL}
-                                />
+                            <a className="user__link" href={`/@${summaryAuthor}`}>
+                                <Userpic account={summaryAuthor} size={SIZE_SMALL} />
                             </a>
                         </div>
                     ) : null}
@@ -186,7 +175,7 @@ class PostSummary extends React.Component {
                             <Author
                                 post={post}
                                 follow={false}
-                                hideEditor={true}
+                                hideEditor
                                 resolveCrossPost
                                 showRole={showCommunityLabels}
                             />
@@ -194,37 +183,28 @@ class PostSummary extends React.Component {
 
                         {hideCategory || (
                             <span className="articles__tag-link">
-                                {tt('g.in')}&nbsp;
+                                {tt('g.in')}
+&nbsp;
                                 <Tag post={post} />
                                 &nbsp;•&nbsp;
                             </span>
                         )}
                         <Link className="timestamp__link" to={post_url}>
                             <span className="timestamp__time">
-                                {this.props.order == 'payout' && (
-                                    <span>payout </span>
-                                )}
+                                {this.props.order == 'payout' && <span>payout </span>}
                                 <TimeAgoWrapper
-                                    date={
-                                        this.props.order == 'payout'
-                                            ? post.get('payout_at')
-                                            : post.get('created')
-                                    }
+                                    date={this.props.order == 'payout' ? post.get('payout_at') : post.get('created')}
                                     className="updated"
                                 />
                             </span>
                             {full_power && (
-                                <span
-                                    className="articles__icon-100"
-                                    title={tt('g.powered_up_100')}
-                                >
+                                <span className="articles__icon-100" title={tt('g.powered_up_100')}>
                                     <Icon name="hivepower" />
                                 </span>
                             )}
-                            {showCommunityLabels &&
-                                post.getIn(['stats', 'is_pinned'], false) && (
-                                    <span className="FeaturedTag">Pinned</span>
-                                )}
+                            {showCommunityLabels && post.getIn(['stats', 'is_pinned'], false) && (
+                                <span className="FeaturedTag">Pinned</span>
+                            )}
                         </Link>
                     </div>
                 </div>
@@ -237,12 +217,11 @@ class PostSummary extends React.Component {
                 return cnt > 0 ? '•'.repeat(cnt) : null;
             };
             const { up, dn } = vote_weights(post);
-            dots =
-                up || dn ? (
-                    <span className="vote_weights">
-                        {_dots(up)}
-                        {<span>{_dots(dn)}</span>}
-                    </span>
+            dots = up || dn ? (
+                <span className="vote_weights">
+                    {_dots(up)}
+                    {<span>{_dots(dn)}</span>}
+                </span>
                 ) : null;
         }
 
@@ -250,17 +229,9 @@ class PostSummary extends React.Component {
             <div className="articles__summary-footer">
                 {dots}
                 <Voting post={post} showList={false} />
-                <VotesAndComments
-                    post={post}
-                    commentsLink={post_url + '#comments'}
-                />
+                <VotesAndComments post={post} commentsLink={post_url + '#comments'} />
                 <span className="PostSummary__time_author_category">
-                    {showReblog && (
-                        <Reblog
-                            author={post.get('author')}
-                            permlink={post.get('permlink')}
-                        />
-                    )}
+                    {showReblog && <Reblog author={post.get('author')} permlink={post.get('permlink')} />}
                 </span>
             </div>
         );
@@ -272,28 +243,26 @@ class PostSummary extends React.Component {
             if (nsfwPref === 'hide') {
                 // user wishes to hide these posts entirely
                 return null;
-            } else if (nsfwPref === 'warn' && !revealNsfw) {
+            } if (nsfwPref === 'warn' && !revealNsfw) {
                 // user wishes to be warned, and has not revealed this post
                 return (
-                    <article
-                        className={'PostSummary hentry'}
-                        itemScope
-                        itemType="http://schema.org/blogPost"
-                    >
+                    <article className="PostSummary hentry" itemScope itemType="http://schema.org/blogPost">
                         <div className="PostSummary__nsfw-warning">
                             {summary_header}
-                            <span className="nsfw-flag">nsfw</span>&nbsp;&nbsp;
+                            <span className="nsfw-flag">nsfw</span>
+                            &nbsp;&nbsp;
+                            {/* eslint-disable-next-line jsx-a11y/interactive-supports-focus */}
                             <span role="button" onClick={this.onRevealNsfw}>
                                 <a>{tt('postsummary_jsx.reveal_it')}</a>
-                            </span>{' '}
+                            </span>
+                            {' '}
                             {tt('g.or') + ' '}
                             {username ? (
                                 <span>
-                                    {tt('postsummary_jsx.adjust_your')}{' '}
+                                    {tt('postsummary_jsx.adjust_your')}
+                                    {' '}
                                     <Link to={`/@${username}/settings`}>
-                                        {tt(
-                                            'postsummary_jsx.display_preferences'
-                                        )}
+                                        {tt('postsummary_jsx.display_preferences')}
                                     </Link>
                                     .
                                 </span>
@@ -303,7 +272,8 @@ class PostSummary extends React.Component {
                                         {tt(
                                             'postsummary_jsx.create_an_account'
                                         )}
-                                    </a>{' '}
+                                    </a>
+                                    {' '}
                                     {tt(
                                         'postsummary_jsx.to_save_your_preferences'
                                     )}
@@ -317,20 +287,14 @@ class PostSummary extends React.Component {
             }
         }
 
-        let image_link = extractImageLink(
-            post.get('json_metadata'),
-            post.get('body')
-        );
+        let image_link = extractImageLink(post.get('json_metadata'), post.get('body'));
 
         if (crossPostedBy) {
-            image_link = extractImageLink(
-                post.get('cross_post_json_metadata'),
-                post.get('cross_post_body')
-            );
+            image_link = extractImageLink(post.get('cross_post_json_metadata'), post.get('cross_post_body'));
         }
 
-        if (!image_link) {
-            image_link = `https://images.hive.blog/u/${author}/avatar`;
+        if (!image_link && !isReply) {
+            image_link = `https://images.hive.blog/u/${author}/avatar${sessionId ? `?ord=${sessionId}` : ''}`;
         }
 
         let thumb = null;
@@ -343,20 +307,18 @@ class PostSummary extends React.Component {
             if (this.props.blogmode) {
                 image_link = proxify(image_link, '640x480');
                 thumb = (
-                    <img className="articles__feature-img" src={image_link} />
+                    <img className="articles__feature-img" src={image_link} alt="featured" />
                 );
             } else {
                 const listImg = proxify(image_link, '256x512');
                 thumb = (
                     <picture className="articles__feature-img">
                         <source srcSet={listImg} media="(min-width: 1000px)" />
-                        <img srcSet={image_link} />
+                        <img srcSet={image_link} alt="featured" />
                     </picture>
                 );
             }
-            thumb = (
-                <span className="articles__feature-img-container">{thumb}</span>
-            );
+            thumb = <span className="articles__feature-img-container">{thumb}</span>;
         }
 
         return (
@@ -366,9 +328,9 @@ class PostSummary extends React.Component {
                 {summary_header}
                 <div
                     className={
-                        'articles__content hentry' +
-                        (thumb ? ' with-image ' : ' ') +
-                        (gray || ignore ? ' downvoted' : '')
+                        'articles__content hentry'
+                        + (thumb ? ' with-image ' : ' ')
+                        + (gray || ignore ? ' downvoted' : '')
                     }
                     itemScope
                     itemType="http://schema.org/blogPost"
@@ -383,11 +345,7 @@ class PostSummary extends React.Component {
                     <div className="articles__content-block articles__content-block--text">
                         {content_title}
                         {content_body}
-                        {this.props.blogmode ? null : (
-                            <div className="articles__footer">
-                                {summary_footer}
-                            </div>
-                        )}
+                        {this.props.blogmode ? null : <div className="articles__footer">{summary_footer}</div>}
                     </div>
                     {this.props.blogmode ? summary_footer : null}
                 </div>
@@ -399,14 +357,15 @@ class PostSummary extends React.Component {
 export default connect((state, props) => {
     const { post, hideCategory, nsfwPref } = props;
     const net_vests = state.user.getIn(['current', 'effective_vests'], 0.0);
+    const sessionId = state.user.get('sessionId');
+
     return {
         post,
         hideCategory,
-        username:
-            state.user.getIn(['current', 'username']) ||
-            state.offchain.get('account'),
+        username: state.user.getIn(['current', 'username']) || state.offchain.get('account'),
         blogmode: state.app.getIn(['user_preferences', 'blogmode']),
         nsfwPref,
         net_vests,
+        sessionId,
     };
 })(PostSummary);

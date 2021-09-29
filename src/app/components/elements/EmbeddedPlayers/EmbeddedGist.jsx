@@ -20,7 +20,7 @@ class EmbeddedGist extends React.Component {
     // The Gist JSON data includes a stylesheet to add to the page
     // to make it look correct. `addStylesheet` ensures we only add
     // the stylesheet one time.
-    addStylesheet = href => {
+    addStylesheet = (href) => {
         if (!this.stylesheetAdded) {
             this.stylesheetAdded = true;
             const link = document.createElement('link');
@@ -38,7 +38,7 @@ class EmbeddedGist extends React.Component {
         // Create a JSONP callback that will set our state
         // with the data that comes back from the Gist site
         const gistCallback = EmbeddedGist.nextGistCallback();
-        window[gistCallback] = function(gistData) {
+        window[gistCallback] = function (gistData) {
             this.setState({
                 loading: false,
                 src: gistData.div,
