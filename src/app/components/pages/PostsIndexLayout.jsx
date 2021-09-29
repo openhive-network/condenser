@@ -21,7 +21,7 @@ const propTypes = {
 
 const defaultProps = {
     username: '',
-    blogmode: true,
+    blogmode: false,
     topics: {},
 };
 
