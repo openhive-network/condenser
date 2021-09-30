@@ -240,7 +240,10 @@ module.exports = {
             const order = account_name ? route.category : route.order || 'trending';
 
             const hive = ifHive(category);
-            const community = state.global.getIn(['community', hive], null);
+            let community = state.global.getIn(['community', hive], null);
+            if (typeof community === 'string') {
+                community = null;
+            }
 
             const key = ['discussion_idx', category || '', order];
             let posts = state.global.getIn(key, List());
