@@ -24,7 +24,7 @@ const defaultProps = {
     username: '',
     accountname: '',
     list_type: '',
-    profile: {},
+    profile: null,
 };
 
 class ListManagement extends React.Component {
@@ -852,7 +852,7 @@ class ListManagement extends React.Component {
                         <span
                             className="button slim hollow secondary"
                             // onClick={this.handle_reset_list.bind(this, true)}
-                            disabled="true"
+                            disabled
                         >
                             {this.state.is_busy ? tt('list_management_jsx.button_busy') : reset_all_button_text}
                         </span>
