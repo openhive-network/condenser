@@ -40,6 +40,8 @@ find node_modules/eslint-config-airbnb -name '*.js'|xargs sed -i "s/': 2/': 1/"
         "no-nested-ternary": [
             0
         ],
+        "import/no-dynamic-require": 1,
+        "global-require": 1,
         "prefer-destructuring": 0,
         "react/no-unused-state": 1,
         "no-unused-expressions": 1,
@@ -48,6 +50,7 @@ find node_modules/eslint-config-airbnb -name '*.js'|xargs sed -i "s/': 2/': 1/"
         "no-undef": 2,
         "no-case-declarations": 0,
         "no-underscore-dangle": 0,
+        "no-inner-declarations": 1,
         "camelcase": [
             0
         ],

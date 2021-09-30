@@ -1,6 +1,6 @@
 import * as config from 'config';
 import * as https from 'https';
-import { callBridge } from 'app/utils/steemApi';
+import { callBridge } from '../../app/utils/steemApi';
 
 /**
  * Load special posts - including notices, featured, and promoted.

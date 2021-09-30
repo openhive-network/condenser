@@ -42,6 +42,7 @@ class UserList extends React.Component {
         }
 
         let idx = 0;
+        // eslint-disable-next-line no-plusplus
         let user_list = users.map((user) => <UserListRow user={user} key={idx++} />);
         user_list = user_list.toArray();
 
@@ -49,7 +50,7 @@ class UserList extends React.Component {
         const usersLength = users.size;
         const limitedIndex = Math.min(historyIndex, usersLength - PER_PAGE);
         user_list = user_list.reverse().filter(() => {
-            currentIndex++;
+            currentIndex += 1;
             return currentIndex >= limitedIndex && currentIndex < limitedIndex + PER_PAGE;
         });
 
@@ -58,23 +59,34 @@ class UserList extends React.Component {
                 <ul className="pager">
                     <li>
                         <div
+                            role="link"
+                            tabIndex={0}
                             className={'button tiny hollow float-left ' + (historyIndex === 0 ? ' disabled' : '')}
                             onClick={this._setHistoryPagePrevious}
                             aria-label={tt('g.previous')}
                         >
-                            <span aria-hidden="true">&larr; {tt('g.previous')}</span>
+                            <span aria-hidden="true">
+                                &larr;
+                                {tt('g.previous')}
+                            </span>
                         </div>
                     </li>
                     <li>
                         <div
+                            role="link"
+                            tabIndex={0}
                             className={
-                                'button tiny hollow float-right ' +
-                                (historyIndex >= usersLength - PER_PAGE ? ' disabled' : '')
+                                'button tiny hollow float-right '
+                                + (historyIndex >= usersLength - PER_PAGE ? ' disabled' : '')
                             }
                             onClick={historyIndex >= usersLength - PER_PAGE ? null : this._setHistoryPageNext}
                             aria-label={tt('g.next')}
                         >
-                            <span aria-hidden="true">{tt('g.next')} &rarr;</span>
+                            <span aria-hidden="true">
+                                {tt('g.next')}
+                                {' '}
+                                &rarr;
+                            </span>
                         </div>
                     </li>
                 </ul>

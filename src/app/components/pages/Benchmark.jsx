@@ -16,8 +16,12 @@ class Benchmark extends React.Component {
             <Grid>
                 {icons.map((icon) => (
                     <div key={'icon_' + icon}>
-                        <Icon name={icon} size={'2x'} />
-                        <p> {icon} </p>
+                        <Icon name={icon} size="2x" />
+                        <p>
+                            {' '}
+                            {icon}
+                            {' '}
+                        </p>
                     </div>
                 ))}
             </Grid>

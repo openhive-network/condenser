@@ -9,3 +9,5 @@ vendor/*
 tmp/*
 .vagrant
 lib
+*.bk
+docs
