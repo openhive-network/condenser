@@ -1,5 +1,7 @@
 import React from 'react';
-import Slate, { Editor, Mark, Raw, Html } from 'slate';
+import {
+ Editor, Raw, Html
+} from 'slate';
 import Portal from 'react-portal';
 import position from 'selection-position';
 import Icon from 'app/components/elements/Icon';
@@ -9,9 +11,11 @@ import { getCollapsedClientRect } from 'app/utils/SlateEditor/Helpers';
 import demoState from 'app/utils/SlateEditor/DemoState';
 import { HtmlRules, schema, getMarkdownType } from 'app/utils/SlateEditor/Schema';
 
+import InsertBlockOnEnter from 'slate-insert-block-on-enter';
+import TrailingBlock from 'slate-trailing-block';
+
 const serializer = new Html({ rules: HtmlRules });
-export const serializeHtml = (state) =>
-    serializer
+export const serializeHtml = (state) => serializer
         .serialize(state, { render: false })
         .map((el) => ReactDOMServer.renderToStaticMarkup(el))
         .join('\n');
@@ -20,10 +24,7 @@ export const getDemoState = () => Raw.deserialize(demoState, { terse: true });
 
 const DEFAULT_NODE = 'paragraph';
 
-let plugins = [];
-
-import InsertBlockOnEnter from 'slate-insert-block-on-enter';
-import TrailingBlock from 'slate-trailing-block';
+const plugins = [];
 
 if (process.env.BROWSER) {
     //import InsertImages from 'slate-drop-or-paste-images'
@@ -211,6 +212,8 @@ export default class SlateEditor extends React.Component {
                 return this.onBackspace(e, state);
             case 'enter':
                 return data.isShift ? this.onShiftEnter(e, state) : this.onEnter(e, state);
+            default:
+                // nothing
         }
     };
 
@@ -228,6 +231,8 @@ export default class SlateEditor extends React.Component {
                 break;
             case 'k':
                 return this.onClickLink(e);
+            default:
+                // nothing
         }
 
         if (!mark) return;
@@ -241,8 +246,7 @@ export default class SlateEditor extends React.Component {
     // If space was entered, check if it was a markdown sequence
     onSpace = (e, state) => {
         if (state.isExpanded) return;
-        let { selection } = state;
-        const { startText, startBlock, startOffset } = state;
+        const { startBlock, startOffset } = state;
         const chars = startBlock.text.slice(0, startOffset); //.replace(/\s*/g, '')
         const type = getMarkdownType(chars);
 
@@ -271,8 +275,7 @@ export default class SlateEditor extends React.Component {
 
         let transform = state.transform().setBlock('paragraph');
 
-        if (startBlock.type == 'list-item')
-            transform = transform.unwrapBlock('bulleted-list').unwrapBlock('numbered-list');
+        if (startBlock.type == 'list-item') transform = transform.unwrapBlock('bulleted-list').unwrapBlock('numbered-list');
 
         state = transform.apply();
         return state;
@@ -280,7 +283,7 @@ export default class SlateEditor extends React.Component {
 
     onShiftEnter = (e, state) => {
         if (state.isExpanded) return;
-        const { startBlock, startOffset, endOffset } = state;
+        const { startBlock } = state;
 
         // Allow soft returns for certain block types
         if (startBlock.type == 'paragraph' || startBlock.type == 'code-block' || startBlock.type == 'block-quote') {
@@ -300,14 +303,13 @@ export default class SlateEditor extends React.Component {
         if (endOffset != startBlock.length) return; //not at end of block
 
         if (
-            startBlock.type != 'heading-one' &&
-            startBlock.type != 'heading-two' &&
-            startBlock.type != 'heading-three' &&
-            startBlock.type != 'heading-four' &&
-            startBlock.type != 'block-quote' &&
-            startBlock.type != 'code-block'
-        )
-            return;
+            startBlock.type != 'heading-one'
+            && startBlock.type != 'heading-two'
+            && startBlock.type != 'heading-three'
+            && startBlock.type != 'heading-four'
+            && startBlock.type != 'block-quote'
+            && startBlock.type != 'code-block'
+        ) return;
 
         e.preventDefault();
         return state.transform().splitBlock().setBlock('paragraph').apply();
@@ -322,8 +324,6 @@ export default class SlateEditor extends React.Component {
     };
 
     renderSidebar = () => {
-        const { state } = this.state;
-        const isOpen = state.isExpanded && state.isFocused;
         return (
             <Portal isOpened onOpen={this.onSidebarOpen}>
                 <div className="SlateEditor__sidebar">
@@ -365,7 +365,7 @@ export default class SlateEditor extends React.Component {
         this.setState({ state });
     };
 
-    onClickInsertVideo = (e, type) => {
+    onClickInsertVideo = (e) => {
         e.preventDefault();
         let { state } = this.state;
 
@@ -378,7 +378,7 @@ export default class SlateEditor extends React.Component {
         this.setState({ state });
     };
 
-    onClickInsertHr = (e, type) => {
+    onClickInsertHr = (e) => {
         e.preventDefault();
         let { state } = this.state;
 
@@ -396,16 +396,13 @@ export default class SlateEditor extends React.Component {
         const onMouseDown = (e) => handler(e);
 
         return (
-            <span key={type} className="SlateEditor__sidebar-button" onMouseDown={onMouseDown}>
+            <span role="button" tabIndex={0} key={type} className="SlateEditor__sidebar-button" onMouseDown={onMouseDown}>
                 {label}
             </span>
         );
     };
 
     renderMenu = () => {
-        const { state } = this.state;
-        const isOpen = state.isExpanded && state.isFocused;
-
         return (
             <Portal isOpened onOpen={this.onMenuOpen}>
                 <div className="SlateEditor__menu SlateEditor__menu">
@@ -445,6 +442,8 @@ export default class SlateEditor extends React.Component {
         return (
             <span
                 key={type}
+                role="button"
+                tabIndex={0}
                 className={'SlateEditor__menu-button SlateEditor__menu-button-' + type}
                 onMouseDown={onMouseDown}
                 data-active={isActive}
@@ -462,6 +461,8 @@ export default class SlateEditor extends React.Component {
         return (
             <span
                 key={type}
+                role="button"
+                tabIndex={0}
                 className={'SlateEditor__menu-button SlateEditor__menu-button-' + type}
                 onMouseDown={onMouseDown}
                 data-active={isActive}
@@ -479,6 +480,8 @@ export default class SlateEditor extends React.Component {
         return (
             <span
                 key={type}
+                role="button"
+                tabIndex={0}
                 className={'SlateEditor__menu-button SlateEditor__menu-button-' + type}
                 onMouseDown={onMouseDown}
                 data-active={isActive}
@@ -536,7 +539,6 @@ export default class SlateEditor extends React.Component {
     };
 
     render = () => {
-        const { state } = this.state;
         return (
             <div>
                 {this.renderMenu()}

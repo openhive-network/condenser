@@ -37,6 +37,7 @@ class CommunityRoles extends React.Component {
             updateRoleModal: showModal,
         });
     }
+
     toggleAddUserToCommunityModal(showModal) {
         this.setState({
             addUserToCommunityModal: showModal,
@@ -70,7 +71,9 @@ class CommunityRoles extends React.Component {
     }
 
     render() {
-        const { community, loading, updating, roles, communityMetadata } = this.props;
+        const {
+ community, loading, updating, roles, communityMetadata
+} = this.props;
 
         const canEdit = {
             owner: ['admin', 'mod', 'member', 'guest', 'muted'],
@@ -86,13 +89,15 @@ class CommunityRoles extends React.Component {
             availableRoles = canEdit[communityMetadata.context.role];
         }
 
-        const tableRows = roles.toJS().map((tuple, index) => {
+        const tableRows = roles.toJS().map((tuple) => {
             const name = tuple[0];
             const title = tuple[2];
             let role = tuple[1];
             if (availableRoles && availableRoles.includes(tuple[1])) {
                 role = (
                     <a
+                        role="link"
+                        tabIndex={0}
                         className="community-user--role"
                         aria-labelledby="Community User Role"
                         onClick={(e) => {
@@ -108,7 +113,10 @@ class CommunityRoles extends React.Component {
             return (
                 <tr key={name}>
                     <td>
-                        <Link to={`/@${name}`}>@{name}</Link>
+                        <Link to={`/@${name}`}>
+                            @
+                            {name}
+                        </Link>
                     </td>
                     <td>{role}</td>
                     <td>{title}</td>
@@ -199,6 +207,7 @@ class CommunityRoles extends React.Component {
                         <div>
                             {table}
                             <button
+                                type="button"
                                 onClick={() => {
                                     this.toggleAddUserToCommunityModal(true);
                                 }}

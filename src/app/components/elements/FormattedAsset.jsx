@@ -16,7 +16,9 @@ const FormattedAsset = ({ amount, asset, classname }) => {
     ) : (
         <span className="FormattedAsset">
             <span className="integer">{amnt[0]}</span>
-            <span className="decimal">{amnt[1]}</span> <span className="asset">{asset}</span>
+            <span className="decimal">{amnt[1]}</span>
+            {' '}
+            <span className="asset">{asset}</span>
         </span>
     );
 };

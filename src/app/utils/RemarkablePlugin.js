@@ -1,10 +1,10 @@
-// import {validate_account_name} from 'app/utils/ChainValidation'
-// import linksRe from 'app/utils/Links'
+// import {validate_account_name}  from 'app/utils/ChainValidation'
+// import linksRe  from 'app/utils/Links'
 // import config from 'config'
 
 /** usage
 <code>
-import {plugin, tagRules} from 'app/utils/RemarkablePlugin'
+import {plugin, tagRules}  from 'app/utils/RemarkablePlugin'
 import Remarkable from 'remarkable'
 const remarkable = new Remarkable()
 remarkable.use(plugin(tagRules))

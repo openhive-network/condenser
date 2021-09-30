@@ -5,7 +5,7 @@ import CloseButton from 'app/components/elements/CloseButton';
 import Reveal from 'app/components/elements/Reveal';
 import { Map, List } from 'immutable';
 import * as globalActions from 'app/redux/GlobalReducer';
-// import shouldComponentUpdate from 'app/utils/shouldComponentUpdate';
+// import shouldComponentUpdate  from 'app/utils/shouldComponentUpdate';
 import QrReader from 'app/components/elements/QrReader';
 import CheckLoginOwner from 'app/components/elements/CheckLoginOwner';
 import PromotePost from 'app/components/modules/PromotePost';

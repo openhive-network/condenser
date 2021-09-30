@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
 import links from 'app/utils/Links';
 import { browserHistory } from 'react-router';
-// import shouldComponentUpdate from 'app/utils/shouldComponentUpdate';
+// import shouldComponentUpdate  from 'app/utils/shouldComponentUpdate';
 
 export default class Link extends PureComponent {
     static propTypes = {

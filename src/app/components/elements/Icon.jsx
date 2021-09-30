@@ -58,6 +58,7 @@ export const icons = [
     'pin-disabled',
 ];
 const icons_map = {};
+// eslint-disable-next-line global-require,import/no-dynamic-require
 for (const i of icons) icons_map[i] = require(`assets/icons/${i}.svg`);
 
 const rem_sizes = {
@@ -75,7 +76,6 @@ export default class Icon extends React.Component {
     static propTypes = {
         name: PropTypes.string.isRequired,
         size: PropTypes.oneOf(['0_8x', '1x', '1_5x', '2x', '3x', '4x', '5x', '10x']),
-        inverse: PropTypes.bool,
         className: PropTypes.string,
     };
 

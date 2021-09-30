@@ -17,36 +17,46 @@ class ConfirmTransactionForm extends Component {
         confirmErrorCallback: PropTypes.func,
         okClick: PropTypes.func,
     };
+
     constructor() {
         super();
         this.state = { checkboxChecked: false };
     }
+
     componentDidMount() {
         document.body.addEventListener('click', this.closeOnOutsideClick);
     }
+
     componentWillUnmount() {
         document.body.removeEventListener('click', this.closeOnOutsideClick);
     }
+
     closeOnOutsideClick = (e) => {
         const inside_dialog = findParent(e.target, 'ConfirmTransactionForm');
         if (!inside_dialog) this.onCancel();
     };
+
     onCancel = () => {
         const { confirmErrorCallback, onCancel } = this.props;
         if (confirmErrorCallback) confirmErrorCallback();
         if (onCancel) onCancel();
     };
+
     okClick = () => {
         const { okClick, confirmBroadcastOperation } = this.props;
         okClick(confirmBroadcastOperation);
     };
+
     onCheckbox = (e) => {
         const checkboxChecked = e.target.checked;
         this.setState({ checkboxChecked });
     };
+
     render() {
-        const { onCancel, okClick, onCheckbox } = this;
-        const { confirm, confirmBroadcastOperation, warning, checkbox } = this.props;
+        const { onCancel, okClick } = this;
+        const {
+            confirm, confirmBroadcastOperation, warning, checkbox
+        } = this.props;
         const { checkboxChecked } = this.state;
         const conf = typeof confirm === 'function' ? confirm() : confirm;
         return (
@@ -68,10 +78,10 @@ class ConfirmTransactionForm extends Component {
                     </div>
                 ) : null}
                 <br />
-                <button className="button" onClick={okClick} disabled={!(checkbox === undefined || checkboxChecked)}>
+                <button type="button" className="button" onClick={okClick} disabled={!(checkbox === undefined || checkboxChecked)}>
                     {tt('g.ok')}
                 </button>
-                <button type="button hollow" className="button hollow" onClick={onCancel}>
+                <button type="button" className="button hollow" onClick={onCancel}>
                     {tt('g.cancel')}
                 </button>
             </div>

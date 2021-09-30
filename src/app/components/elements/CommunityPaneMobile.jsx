@@ -43,7 +43,8 @@ class CommunityPaneMobile extends Component {
                         <div className="column large-10 medium-8 small-12" style={{ textAlign: 'left' }}>
                             {roles && (
                                 <div style={{ float: 'right' }}>
-                                    Mod{': '}
+                                    Mod
+                                    {': '}
                                     {roles}
                                     {settings && (
                                         <span>
@@ -60,7 +61,7 @@ class CommunityPaneMobile extends Component {
                                     opacity: '0.65',
                                 }}
                             >
-                                <span onClick={handleSubscriberClick} className="pointer">
+                                <span role="link" tabIndex={0} onClick={handleSubscriberClick} className="pointer">
                                     {numberWithCommas(subs)}
                                     {subs == 1 ? ' subscriber' : ' subscribers'}
                                 </span>
@@ -70,10 +71,12 @@ class CommunityPaneMobile extends Component {
                                         fontSize: '0.8em',
                                     }}
                                 >
-                                    <a onClick={handleModerationLogCLick}>Activity Log</a>
+                                    <a role="link" tabIndex={0} onClick={handleModerationLogCLick}>Activity Log</a>
                                 </div>
                                 &nbsp;&nbsp;&bull;&nbsp;&nbsp;
-                                {numberWithCommas(community.get('num_authors'))} active
+                                {numberWithCommas(community.get('num_authors'))}
+                                {' '}
+                                active
                             </div>
                             {community.get('is_nsfw') && <span className="affiliation">nsfw</span>}
                             <div style={{ margin: '0 0 12px' }}>{community.get('about')}</div>

@@ -6,16 +6,17 @@ import TimeAgoWrapper from 'app/components/elements/TimeAgoWrapper';
 import { browserHistory } from 'react-router';
 import tt from 'counterpart';
 import { FormattedDate } from 'react-intl';
+import { connect } from 'react-redux';
 
 class CheckLoginOwner extends React.Component {
     constructor() {
         super();
         this.state = {};
     }
+
     componentWillReceiveProps(nextProps) {
         const { login_owner_pubkey } = nextProps;
-        if (login_owner_pubkey && this.props.login_owner_pubkey !== login_owner_pubkey)
-            this.props.lookupPreviousOwnerAuthority();
+        if (login_owner_pubkey && this.props.login_owner_pubkey !== login_owner_pubkey) this.props.lookupPreviousOwnerAuthority();
 
         const { previous_owner_authority } = nextProps;
         if (previous_owner_authority && this.props.previous_owner_authority !== previous_owner_authority) {
@@ -30,6 +31,7 @@ class CheckLoginOwner extends React.Component {
             }
         }
     }
+
     hide = () => {
         const { understood } = this.state;
         if (understood) {
@@ -38,21 +40,25 @@ class CheckLoginOwner extends React.Component {
         }
         this.setState({ last_valid_time: null, last_valid_date: null });
     };
+
     getKey = (props = this.props) => {
         const { previous_owner_authority } = props;
         const username = previous_owner_authority.get('account');
         const key = `${username}_previous_owner_authority_last_valid_time`;
         return key;
     };
+
     recover = () => {
         this.hide();
         browserHistory.push('/recover_account_step_1');
     };
+
     onUnderstood = (e) => {
         const understood = e.target.checked;
         console.log('understood', understood);
         this.setState({ understood });
     };
+
     render() {
         const { last_valid_time, last_valid_date } = this.state;
         if (!last_valid_time) return <span />;
@@ -67,17 +73,26 @@ class CheckLoginOwner extends React.Component {
                     <CloseButton onClick={this.hide} />
                     <h3>{tt('g.account_updated')}</h3>
                     <p>
-                        <span className="warning uppercase">{tt('g.warning')}:</span>
+                        <span className="warning uppercase">
+                            {tt('g.warning')}
+                            :
+                        </span>
                         {tt('checkloginowner_jsx.your_password_permissions_were_reduced')}
-                        <TimeAgoWrapper date={last_valid_time} />.{' '}
+                        <TimeAgoWrapper date={last_valid_time} />
+                        .
+                        {' '}
                         {tt('checkloginowner_jsx.if_you_did_not_make_this_change') + ' '}
-                        <a onClick={this.recover}>{tt('g.recover_your_account')}</a>.
+                        <a role="link" tabIndex={0} onClick={this.recover}>{tt('g.recover_your_account')}</a>
+                        .
                     </p>
                     <p>
-                        {tt('checkloginowner_jsx.ownership_changed_on')} <FormattedDate value={last_valid_date} />
+                        {tt('checkloginowner_jsx.ownership_changed_on')}
+                        {' '}
+                        <FormattedDate value={last_valid_date} />
                     </p>
                     <p>
-                        {tt('checkloginowner_jsx.deadline_for_recovery_is')}{' '}
+                        {tt('checkloginowner_jsx.deadline_for_recovery_is')}
+                        {' '}
                         <b>
                             <TimeAgoWrapper date={deadline} />
                         </b>
@@ -88,7 +103,7 @@ class CheckLoginOwner extends React.Component {
                         &nbsp;&nbsp;
                         {tt('checkloginowner_jsx.i_understand_dont_show_again')}
                     </p>
-                    <div className="button" onClick={this.hide}>
+                    <div role="button" tabIndex={0} className="button" onClick={this.hide}>
                         {tt('g.ok')}
                     </div>
                 </Reveal>
@@ -96,7 +111,6 @@ class CheckLoginOwner extends React.Component {
         );
     }
 }
-import { connect } from 'react-redux';
 export default connect(
     // mapStateToProps
     (state, ownProps) => {

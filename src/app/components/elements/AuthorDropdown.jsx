@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 import { Link } from 'react-router';
 import Userpic from 'app/components/elements/Userpic';
 import Follow from 'app/components/elements/Follow';
@@ -12,22 +11,28 @@ import DateJoinWrapper from 'app/components/elements/DateJoinWrapper';
 
 class AuthorDropdown extends Component {
     static propTypes = {};
+
     static defaultProps = {};
 
     componentWillMount() {
-        const { profile, fetchProfile, author, username } = this.props;
+        const {
+ profile, fetchProfile, author, username
+} = this.props;
         if (!profile) fetchProfile(author, username);
     }
 
     render() {
-        const { author, simple, profile, blacklists } = this.props;
+        const {
+ author, simple, profile, blacklists
+} = this.props;
 
         if (simple) {
             return (
                 <span className="author" itemProp="author" itemScope itemType="http://schema.org/Person">
                     <Link to={'/@' + author}>
                         <strong>{author}</strong>
-                    </Link>{' '}
+                    </Link>
+                    {' '}
                     <Reputation value={this.props.authorRep} />
                 </span>
             );
@@ -35,7 +40,9 @@ class AuthorDropdown extends Component {
 
         const { name, about } = profile ? profile.getIn(['metadata', 'profile']).toJS() : {};
 
-        const { following, followers, sp, rank } = profile ? profile.getIn(['stats']).toJS() : {};
+        const {
+ following, followers, sp, rank
+} = profile ? profile.getIn(['stats']).toJS() : {};
 
         const { created, active } = profile ? profile.toJS() : {};
 
@@ -60,7 +67,8 @@ class AuthorDropdown extends Component {
                         </Link>
                     )}
                     <Link to={'/@' + author} className="Author__username">
-                        @{author}
+                        @
+                        {author}
                     </Link>
                     <div>
                         <Follow
@@ -95,7 +103,9 @@ class AuthorDropdown extends Component {
                             </div>
                             <div className="columns small-4">
                                 {spv}
-                                {unit} HP
+                                {unit}
+                                {' '}
+                                HP
                                 <br />
                                 <small>{rank > 0 ? `#${numberWithCommas(rank)}` : ''}</small>
                             </div>
@@ -104,7 +114,10 @@ class AuthorDropdown extends Component {
                     {<div className="Author__bio">{about}</div>}
                     {profile && (
                         <div style={{ fontSize: '0.8em', textAlign: 'center' }}>
-                            <DateJoinWrapper date={created} /> &bull; last seen <TimeAgoWrapper date={active} />
+                            <DateJoinWrapper date={created} />
+                            {' '}
+                            &bull; last seen
+                            <TimeAgoWrapper date={active} />
                         </div>
                     )}
                     {blacklists && (
@@ -112,7 +125,10 @@ class AuthorDropdown extends Component {
                             <br />
                             <strong>Blacklists</strong>
                             {blacklists.map((item) => (
-                                <div key={item}>❗️ {item}</div>
+                                <div key={item}>
+                                    ❗️
+                                    {item}
+                                </div>
                             ))}
                         </div>
                     )}
@@ -124,7 +140,9 @@ class AuthorDropdown extends Component {
 
 export default connect(
     (state, props) => {
-        const { author, authorRep, username, follow, mute } = props;
+        const {
+ author, authorRep, username, follow, mute
+} = props;
         const simple = !(follow || mute);
 
         return {

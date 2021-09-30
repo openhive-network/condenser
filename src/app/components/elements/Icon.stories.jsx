@@ -1,8 +1,7 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { withKnobs, select } from '@storybook/addon-knobs';
-import Icon from './Icon';
-import { icons } from './Icon';
+import Icon, { icons } from './Icon';
 
 const styles = {
     textAlign: 'center',
@@ -11,6 +10,7 @@ const styles = {
     gridAutoRows: 'minmax(80px, auto)',
 };
 
+// eslint-disable-next-line import/prefer-default-export
 export const Grid = ({ children }) => <div style={styles}>{children}</div>;
 
 const options = ['1x', '1_5x', '2x', '3x', '4x', '5x', '10x'];
@@ -22,7 +22,9 @@ storiesOf('Elements', module)
             {icons.map((icon) => (
                 <div key={'icon_' + icon}>
                     <Icon name={icon} size={select('size', options, '2x')} />
-                    <p> {icon} </p>
+                    <p>
+                        {icon}
+                    </p>
                 </div>
             ))}
         </Grid>

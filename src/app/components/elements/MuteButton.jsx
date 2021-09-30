@@ -24,7 +24,9 @@ class MuteButton extends React.Component {
     };
 
     onSubmit = (isMuted, notes) => {
-        const { account, community, username, permlink } = this.props;
+        const {
+            account, community, username, permlink,
+        } = this.props;
         if (!notes || !community || !username) return false; // Fail Fast
 
         const postref = account + '/' + permlink;
@@ -38,7 +40,7 @@ class MuteButton extends React.Component {
         const { isMuted } = this.props;
         return (
             <span>
-                <a onClick={() => this.showDialog()}>{isMuted ? 'Unmute' : 'Mute'}</a>
+                <a role="link" tabIndex={0} onClick={() => this.showDialog()}>{isMuted ? 'Unmute' : 'Mute'}</a>
                 {this.state.showDialog && (
                     <Reveal onHide={() => null} show>
                         <CloseButton onClick={() => this.hideDialog()} />

@@ -4,7 +4,7 @@ import {
 } from '@hiveio/hive-js/lib/auth/ecc';
 
 // import secureRandom from 'secure-random'
-// import links from 'app/utils/Links'
+// import links  from 'app/utils/Links'
 // import assert from 'assert'
 
 module.exports = {

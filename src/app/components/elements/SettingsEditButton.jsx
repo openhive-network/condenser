@@ -21,6 +21,7 @@ class SettingsEditButton extends React.Component {
 
     onToggleDialog = (e) => {
         if (e) e.preventDefault();
+        // eslint-disable-next-line react/no-access-state-in-setstate
         this.setState({ showDialog: !this.state.showDialog });
     };
 
@@ -40,8 +41,8 @@ class SettingsEditButton extends React.Component {
         );
 
         //-- Simulate a "receiveState" action to feed new title into post state
-        let newstate = { community: {}, simulation: true };
-        newstate['community'][community] = newSettings;
+        const newstate = { community: {}, simulation: true };
+        newstate.community[community] = newSettings;
         this.props.pushState(newstate);
     };
 
