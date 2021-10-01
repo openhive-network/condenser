@@ -1,5 +1,4 @@
 import React from 'react';
-import YoutubePreview from 'app/components/elements/YoutubePreview';
 
 /**
  * Regular expressions for detecting and validating provider URLs
@@ -115,21 +114,51 @@ export function embedNode(child, links, images) {
 /**
  * Generates the Markdown/HTML code to override the detected URL with an iFrame
  * @param idx
- * @param threespeakId
+ * @param id
  * @param width
  * @param height
+ * @param startTime
  * @returns {*}
  */
-export function genIframeMd(idx, id, width, height, startTime) {
+export function genIframeMd(idx, id, width, height, startTime = 0) {
+    const url = `https://www.youtube.com/embed/${id}?autoplay=1&autohide=1&enablejsapi=0&rel=0&origin=https://hive.blog&start=${startTime}`;
+
+    let sandbox = sandboxConfig.useSandbox;
+    if (sandbox) {
+        if (Object.prototype.hasOwnProperty.call(sandboxConfig, 'sandboxAttributes')) {
+            sandbox = sandboxConfig.sandboxAttributes.join(' ');
+        }
+    }
+    const aspectRatioPercent = (height / width) * 100;
+    const iframeProps = {
+        src: url,
+        width,
+        height,
+        frameBorder: '0',
+        webkitallowfullscreen: 'webkitallowfullscreen',
+        mozallowfullscreen: 'mozallowfullscreen',
+        allowFullScreen: 'allowFullScreen',
+    };
+    if (sandbox) {
+        iframeProps.sandbox = sandbox;
+    }
+
     return (
-        <YoutubePreview
+        <div
             key={`youtube-${id}-${idx}`}
-            width={parseInt(width)}
-            height={parseInt(height)}
-            youTubeId={id}
-            startTime={startTime}
-            frameBorder="0"
-            allowFullScreen="true"
-        />
+            className="videoWrapper"
+            style={{
+                position: 'relative',
+                width: '100%',
+                height: 0,
+                paddingBottom: `${aspectRatioPercent}%`,
+            }}
+        >
+            <iframe
+                title="Youtube embedded player"
+                // eslint-disable-next-line react/jsx-props-no-spreading
+                {...iframeProps}
+            />
+        </div>
     );
 }
