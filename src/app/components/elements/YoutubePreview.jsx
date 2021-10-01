@@ -5,23 +5,23 @@ import PropTypes from 'prop-types';
 
 const { string, number } = PropTypes;
 
+const propTypes = {
+    youTubeId: string.isRequired,
+    width: number,
+    height: number,
+    startTime: number,
+    dataParams: string,
+};
+
+const defaultProps = {
+    width: 640,
+    height: 360,
+    startTime: 0,
+    dataParams: 'enablejsapi=0&rel=0&origin=https://hive.blog',
+};
+
 /** Lots of iframes in a post can be very slow.  This component only inserts the iframe when it is actually needed. */
 export default class YoutubePreview extends React.Component {
-    static propTypes = {
-        youTubeId: string.isRequired,
-        width: number,
-        height: number,
-        startTime: number,
-        dataParams: string,
-    };
-
-    static defaultProps = {
-        width: 640,
-        height: 360,
-        startTime: 0,
-        dataParams: 'enablejsapi=0&rel=0&origin=https://hive.blog',
-    };
-
     constructor() {
         super();
         this.state = {};
@@ -35,8 +35,8 @@ export default class YoutubePreview extends React.Component {
 
     render() {
         const {
- youTubeId, width, height, startTime, dataParams
-} = this.props;
+            youTubeId, width, height, startTime, dataParams
+        } = this.props;
         const { play } = this.state;
 
         if (!play) {
@@ -44,8 +44,8 @@ export default class YoutubePreview extends React.Component {
             // hqdefault.jpg (high quality version, 480px × 360px
             // sddefault.jpg (standard definition version, 640px × 480px)
             const thumbnail = width <= 320
-                    ? 'mqdefault.jpg'
-                    : width <= 480
+                ? 'mqdefault.jpg'
+                : width <= 480
                     ? 'hqdefault.jpg'
                     : '0.jpg';
             const previewLink = `https://img.youtube.com/vi/${youTubeId}/${thumbnail}`;
@@ -67,8 +67,17 @@ export default class YoutubePreview extends React.Component {
         }
         const autoPlaySrc = `https://www.youtube.com/embed/${youTubeId}?autoplay=1&autohide=1&${dataParams}&start=${startTime}`;
 
+        const aspectRatioPercent = (height / width) * 100;
         return (
-            <div className="videoWrapper">
+            <div
+                className="videoWrapper"
+                style={{
+                    position: 'relative',
+                    width: '100%',
+                    height: 0,
+                    paddingBottom: `${aspectRatioPercent}%`,
+                }}
+            >
                 <iframe
                     width={width}
                     height={height}
@@ -81,3 +90,6 @@ export default class YoutubePreview extends React.Component {
         );
     }
 }
+
+YoutubePreview.propTypes = propTypes;
+YoutubePreview.defaultProps = defaultProps;
