@@ -13,10 +13,12 @@ import session from '@steem/crypto-session';
 import csrf from 'koa-csrf';
 import minimist from 'minimist';
 import config from 'config';
-import { routeRegex } from 'app/ResolveRoute';
 import secureRandom from 'secure-random';
-import userIllegalContent from 'app/utils/userIllegalContent';
 import koaLocale from 'koa-locale';
+import fs from 'fs';
+import { routeRegex } from 'app/ResolveRoute';
+import userIllegalContent from 'app/utils/userIllegalContent';
+// eslint-disable-next-line import/named
 import { getSupportedLocales } from './utils/misc';
 import { specialPosts } from './utils/SpecialPosts';
 import usePostJson from './json/post_json';

@@ -9,7 +9,7 @@ import Icon from 'app/components/elements/Icon';
 import { DEBT_TOKEN_SHORT, LIQUID_TOKEN_UPPERCASE, INVEST_TOKEN_SHORT } from 'app/client_config';
 import FormattedAsset from 'app/components/elements/FormattedAsset';
 import { pricePerHive } from 'app/utils/StateFunctions';
-// import shouldComponentUpdate from 'app/utils/shouldComponentUpdate';
+// import shouldComponentUpdate  from 'app/utils/shouldComponentUpdate';
 import { formatDecimal, parsePayoutAmount } from 'app/utils/ParsersAndFormatters';
 import DropdownMenu from 'app/components/elements/DropdownMenu';
 import TimeAgoWrapper from 'app/components/elements/TimeAgoWrapper';

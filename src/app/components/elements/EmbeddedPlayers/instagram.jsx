@@ -55,7 +55,6 @@ export function extractMetadata(data) {
     if (!data) return null;
 
     const match = data.match(regex.main);
-    console.log('match', match);
     if (match) {
         const url = match[0];
         const id = match[1];

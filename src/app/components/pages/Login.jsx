@@ -8,7 +8,10 @@ class Login extends React.Component {
             // don't render this page on the server
             return (
                 <div className="row">
-                    <div className="column">{tt('g.loading')}..</div>
+                    <div className="column">
+                        {tt('g.loading')}
+                        ..
+                    </div>
                 </div>
             );
         }

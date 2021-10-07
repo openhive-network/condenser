@@ -47,7 +47,8 @@ const highlightText = (text, highlight) => {
                 <span key={i} style={part.toLowerCase() === highlight.toLowerCase() ? { fontWeight: 'bold' } : {}}>
                     {part}
                 </span>
-            ))}{' '}
+            ))}
+            {' '}
         </span>
     );
 };
@@ -88,10 +89,6 @@ class NotificationsList extends React.Component {
         resteems: ['reblog'],
         mentions: ['mention'],
     };
-
-    constructor() {
-        super();
-    }
 
     componentWillMount() {
         const { username, getAccountNotifications } = this.props;
@@ -137,7 +134,7 @@ class NotificationsList extends React.Component {
                 } else {
                     notificationElement.classList.remove('even');
                 }
-            } else if (this.notificationFilterToTypes.hasOwnProperty(notificationFilter)) {
+            } else if (Object.prototype.hasOwnProperty.call(this.notificationFilterToTypes, notificationFilter)) {
                 const notificationTypes = this.notificationFilterToTypes[notificationFilter];
                 let matchType = false;
 
@@ -196,13 +193,13 @@ class NotificationsList extends React.Component {
 
         const renderItem = (item) => {
             const unRead = Date.parse(`${lastRead}Z`) <= Date.parse(`${item.date}Z`);
-            const usernamePattern = /\B@[a-z0-9\.-]+/gi;
+            const usernamePattern = /\B@[a-z0-9.-]+/gi;
             const mentions = item.msg.match(usernamePattern);
             const participants = mentions
                 ? mentions.map((m) => (
-                      <a href={'/' + m}>
-                          <Userpic account={m.substring(1)} />
-                      </a>
+                    <a href={'/' + m}>
+                        <Userpic account={m.substring(1)} />
+                    </a>
                   ))
                 : null;
             return (
@@ -319,7 +316,7 @@ class NotificationsList extends React.Component {
                     <div style={{ lineHeight: '1rem' }}>{notifications.map((item) => renderItem(item))}</div>
                 )}
                 {!notifications && !notificationActionPending && process.env.BROWSER && (
-                    <Callout>Welcome! You don't have any notifications yet.</Callout>
+                    <Callout>Welcome! You don&aquote;t have any notifications yet.</Callout>
                 )}
 
                 {!notificationActionPending && notifications && !isLastPage && (

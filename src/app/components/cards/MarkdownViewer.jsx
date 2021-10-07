@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { Component } from 'react';
+
 import Remarkable from 'remarkable';
 import sanitizeConfig, { noImageText } from 'app/utils/SanitizeConfig';
 import sanitize from 'sanitize-html';
@@ -134,6 +134,7 @@ class MarkdownViewer extends Component {
                 chk += s.charCodeAt(i) * (i + 1);
             }
 
+            // eslint-disable-next-line no-bitwise
             return (chk & 0xffffffff).toString(16);
         }
 
@@ -146,6 +147,7 @@ class MarkdownViewer extends Component {
                 sections.push(markdown);
 
                 if (section === '') {
+                    // eslint-disable-next-line no-continue
                     continue;
                 }
             }
@@ -155,23 +157,24 @@ class MarkdownViewer extends Component {
             idx += 1;
         }
 
-        const cn =
-            'Markdown' +
-            (this.props.className ? ` ${this.props.className}` : '') +
-            (html ? ' html' : '') +
-            (large ? '' : ' MarkdownViewer--small');
+        const cn = 'Markdown'
+            + (this.props.className ? ` ${this.props.className}` : '')
+            + (html ? ' html' : '')
+            + (large ? '' : ' MarkdownViewer--small');
 
         return (
             <div className={'MarkdownViewer ' + cn}>
                 {sections}
                 {noImageActive && allowNoImage && (
                     <div
-                        key={'hidden-content'}
+                        role="link"
+                        tabIndex={0}
+                        key="hidden-content"
                         onClick={this.onAllowNoImage}
                         className="MarkdownViewer__negative_group"
                     >
                         {tt('markdownviewer_jsx.images_were_hidden_due_to_low_ratings')}
-                        <button style={{ marginBottom: 0 }} className="button hollow tiny float-right">
+                        <button type="button" style={{ marginBottom: 0 }} className="button hollow tiny float-right">
                             {tt('g.show')}
                         </button>
                     </div>

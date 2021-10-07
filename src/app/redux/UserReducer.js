@@ -1,5 +1,5 @@
 import { fromJS } from 'immutable';
-import { DEFAULT_LANGUAGE } from 'app/client_config';
+import { DEFAULT_LANGUAGE } from 'app//client_config';
 
 // Action constants
 const SHOW_LOGIN = 'user/SHOW_LOGIN';

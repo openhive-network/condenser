@@ -1,7 +1,6 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
 import NativeSelect from './index';
-import { Center } from 'decorators';
 
 const opts = (topic) => [
     {
@@ -27,10 +26,9 @@ const opts = (topic) => [
 ];
 
 storiesOf('Elements', module)
-    .addDecorator(Center)
     .add('NativeSelect', () => (
         <NativeSelect
-            className={'Rat'}
+            className="Rat"
             onChange={(e) => {
                 console.log('arg:', e.value);
             }}

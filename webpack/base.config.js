@@ -96,7 +96,7 @@ module.exports = {
         rules: [
             {
                 test: /\.(jpe?g|png)/,
-use: [
+                use: [
                     {
                         loader: 'url-loader',
                         options: {
@@ -137,7 +137,7 @@ use: [
     resolve: {
         alias: {
             react: path.join(__dirname, '../node_modules', 'react'),
-            assets: path.join(__dirname, '../src/app/assets')
+            assets: path.join(__dirname, '../src/app/assets'),
         },
         extensions: ['.js', '.json', '.jsx'],
         modules: [
@@ -145,6 +145,5 @@ use: [
             'node_modules'
         ]
     },
-    externals: {
-    }
+    externals: {},
 };

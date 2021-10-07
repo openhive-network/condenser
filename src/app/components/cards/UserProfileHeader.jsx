@@ -18,7 +18,9 @@ import DropdownMenu from 'app/components/elements/DropdownMenu';
 class UserProfileHeader extends React.Component {
     render() {
         const { current_user, accountname, profile } = this.props;
-        const { name, location, about, website, cover_image } = profile
+        const {
+ name, location, about, website, cover_image
+} = profile
             ? profile.getIn(['metadata', 'profile']).toJS()
             : {};
         const website_label = website ? website.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '') : null;
@@ -40,7 +42,11 @@ class UserProfileHeader extends React.Component {
                 })}
                 el="div"
             >
-                <span className="account_warn">({_lists.length})</span>
+                <span className="account_warn">
+                    (
+                    {_lists.length}
+                    )
+                </span>
             </DropdownMenu>
         );
 
@@ -63,13 +69,18 @@ class UserProfileHeader extends React.Component {
                         <div className="UserProfile__Userpic">
                             <Userpic account={accountname} hideIfDefault />
                         </div>
-                        {name || accountname}{' '}
+                        {name || accountname}
+                        {' '}
                         <Tooltip
                             t={tt('user_profile.this_is_users_reputations_score_it_is_based_on_history_of_votes', {
                                 name: accountname,
                             })}
                         >
-                            <span className="UserProfile__rep">({Math.floor(profile.get('reputation'))})</span>
+                            <span className="UserProfile__rep">
+                                (
+                                {Math.floor(profile.get('reputation'))}
+                                )
+                            </span>
                         </Tooltip>
                         <Tooltip
                             t={tt('user_profile.hivebuzz_level_badge', {
@@ -116,9 +127,16 @@ class UserProfileHeader extends React.Component {
                                     })}
                                 </Link>
                             </span>
-                            <span>{numberWithCommas(profile.getIn(['stats', 'sp'], 0))} HP</span>
+                            <span>
+                                {numberWithCommas(profile.getIn(['stats', 'sp'], 0))}
+                                {' '}
+                                HP
+                            </span>
                             {profile.getIn(['stats', 'rank'], 0) > 0 && (
-                                <span>#{numberWithCommas(profile.getIn(['stats', 'rank']))}</span>
+                                <span>
+                                    #
+                                    {numberWithCommas(profile.getIn(['stats', 'rank']))}
+                                </span>
                             )}
 
                             <span>
@@ -142,16 +160,25 @@ class UserProfileHeader extends React.Component {
                         <p className="UserProfile__info">
                             {location && (
                                 <span>
-                                    <Icon name="location" /> {location}
+                                    <Icon name="location" />
+                                    {' '}
+                                    {location}
                                 </span>
                             )}
                             {website && (
                                 <span>
-                                    <Icon name="link" /> <SanitizedLink url={website} text={website_label} />
+                                    <Icon name="link" />
+                                    {' '}
+                                    <SanitizedLink url={website} text={website_label} />
                                 </span>
                             )}
-                            <Icon name="calendar" /> <DateJoinWrapper date={profile.get('created')} />
-                            <Icon name="calendar" /> Active <TimeAgoWrapper date={profile.get('active')} />
+                            <Icon name="calendar" />
+                            {' '}
+                            <DateJoinWrapper date={profile.get('created')} />
+                            <Icon name="calendar" />
+                            {' '}
+                            Active
+                            <TimeAgoWrapper date={profile.get('active')} />
                         </p>
                     </div>
                     <div className="UserProfile__buttons_mobile show-for-small-only">

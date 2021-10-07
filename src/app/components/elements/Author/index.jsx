@@ -7,12 +7,12 @@ import tt from 'counterpart';
 import { List } from 'immutable';
 import { findDOMNode } from 'react-dom';
 import Overlay from 'react-overlays/lib/Overlay';
-// import shouldComponentUpdate from 'app/utils/shouldComponentUpdate';
-import Icon from 'app/components/elements/Icon';
-import Reputation from 'app/components/elements/Reputation';
-import AffiliationMap from 'app/utils/AffiliationMap';
-import UserTitle from 'app/components/elements/UserTitle';
-import Sanitizer from 'app/utils/Sanitizer';
+// import shouldComponentUpdate from 'app//utils/shouldComponentUpdate';
+import Icon from 'app//components/elements/Icon';
+import Reputation from 'app//components/elements/Reputation';
+import AffiliationMap from 'app//utils/AffiliationMap';
+import UserTitle from 'app//components/elements/UserTitle';
+import Sanitizer from 'app//utils/Sanitizer';
 import AuthorDropdown from '../AuthorDropdown';
 
 const { string, bool, number } = PropTypes;
