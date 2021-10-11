@@ -237,7 +237,11 @@ const CommunityRolesWrapped = connect(
     (state, ownProps) => {
         const { community } = ownProps.params;
         const tree = state.community.get(community, Map());
-        const roles = tree.get('roles', List());
+        let roles = tree.get('roles', List());
+        if (typeof roles === 'string') {
+            roles = List();
+        }
+        console.log('roles', roles);
         const loading = roles.size == 0;
         const updating = tree.get('updatePending', false);
         const communityMetadata = state.global.getIn(['community', community]);
