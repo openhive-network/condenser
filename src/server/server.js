@@ -15,10 +15,8 @@ import minimist from 'minimist';
 import config from 'config';
 import secureRandom from 'secure-random';
 import koaLocale from 'koa-locale';
-import fs from 'fs';
 import { routeRegex } from 'app/ResolveRoute';
 import userIllegalContent from 'app/utils/userIllegalContent';
-// eslint-disable-next-line import/named
 import { getSupportedLocales } from './utils/misc';
 import { specialPosts } from './utils/SpecialPosts';
 import usePostJson from './json/post_json';
