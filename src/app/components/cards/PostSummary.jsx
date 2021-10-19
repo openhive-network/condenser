@@ -70,7 +70,7 @@ class PostSummary extends React.Component {
         }
 
         const {
-            ignore, hideCategory, net_vests, sessionId,
+            ignore, hideCategory, net_vests,
         } = this.props;
         const { post } = this.props;
         if (!post) return null;
@@ -294,7 +294,7 @@ class PostSummary extends React.Component {
         }
 
         if (!image_link && !isReply) {
-            image_link = `https://images.hive.blog/u/${author}/avatar${sessionId ? `?ord=${sessionId}` : ''}`;
+            image_link = `https://images.hive.blog/u/${author}/avatar`;
         }
 
         let thumb = null;
@@ -357,7 +357,6 @@ class PostSummary extends React.Component {
 export default connect((state, props) => {
     const { post, hideCategory, nsfwPref } = props;
     const net_vests = state.user.getIn(['current', 'effective_vests'], 0.0);
-    const sessionId = state.user.get('sessionId');
 
     return {
         post,
@@ -366,6 +365,5 @@ export default connect((state, props) => {
         blogmode: state.app.getIn(['user_preferences', 'blogmode']),
         nsfwPref,
         net_vests,
-        sessionId,
     };
 })(PostSummary);
