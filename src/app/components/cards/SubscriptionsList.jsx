@@ -29,7 +29,7 @@ class SubscriptionsList extends React.Component {
 
     render() {
         const {
-            subscriptions, loading, badges, username, sessionId,
+            subscriptions, loading, badges, username,
         } = this.props;
         const badgesTypes = {
             activity: [],
@@ -76,7 +76,7 @@ class SubscriptionsList extends React.Component {
                             rel="noopener noreferrer"
                         >
                             <img
-                                src={`${badge.get('url')}${sessionId ? `?ord=${sessionId}` : ''}`}
+                                src={`${badge.get('url')}`}
                                 alt={badge.get('title')}
                                 title={badge.get('title')}
                                 className="UserProfile__badge_image"
@@ -176,14 +176,12 @@ export default connect(
         const isOwnAccount = user.getIn(['current', 'username'], '') === username;
         const loading = global.getIn(['subscriptions', 'loading']);
         const subscriptions = global.getIn(['subscriptions', username]);
-        const sessionId = state.user.get('sessionId');
 
         return {
             ...props,
             subscriptions: subscriptions ? subscriptions.toJS() : [],
             isOwnAccount,
             loading,
-            sessionId,
         };
     },
     (dispatch) => ({
