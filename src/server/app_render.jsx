@@ -1,23 +1,21 @@
+/*global $STM_Config*/
 import React from 'react';
 import config from 'config';
 import { renderToString } from 'react-dom/server';
-import { VIEW_MODE_WHISTLE, PARAM_VIEW_MODE } from '../shared/constants';
-import ServerHTML from './server-html';
-import { serverRender } from '../shared/UniversalRender';
 import secureRandom from 'secure-random';
 import ErrorPage from 'server/server-error';
+import ServerHTML from './server-html';
+import { serverRender } from '../shared/UniversalRender';
 import { determineViewMode } from '../app/utils/Links';
 import { getSupportedLocales } from './utils/misc';
 
 const path = require('path');
-const ROOT = path.join(__dirname, '../..');
-const DB_RECONNECT_TIMEOUT = process.env.NODE_ENV === 'development' ? 1000 * 60 * 60 : 1000 * 60 * 10;
 
-const supportedLocales = getSupportedLocales();
+const ROOT = path.join(__dirname, '../..');
+
 
 async function appRender(ctx, locales = false, resolvedAssets = false) {
     ctx.state.requestTimer.startTimer('appRender_ms');
-    const store = {};
     // This is the part of SSR where we make session-specific changes:
     try {
         let userPreferences = {};
@@ -49,19 +47,6 @@ async function appRender(ctx, locales = false, resolvedAssets = false) {
             login_challenge,
         };
 
-        const googleAds = {
-            enabled: !!config.google_ad_enabled,
-            test: !!config.google_ad_test,
-            client: config.google_ad_client,
-            adSlots: config.google_ad_slots,
-            gptEnabled: !!config.gpt_enabled,
-            gptBidding: config.gpt_bidding,
-            gptBasicSlots: config.gpt_basic_slots,
-            gptCategorySlots: config.gpt_category_slots,
-            gptBiddingSlots: config.gpt_bidding_slots,
-            gptBannedTags: config.gpt_banned_tags,
-            videoAdsEnabled: !!config.video_ads_enabled,
-        };
         const cookieConsent = {
             enabled: !!config.cookie_consent_enabled,
             api_key: config.cookie_consent_api_key,
@@ -70,14 +55,15 @@ async function appRender(ctx, locales = false, resolvedAssets = false) {
         const initial_state = {
             app: {
                 viewMode: determineViewMode(ctx.request.search),
-                googleAds: googleAds,
                 env: process.env.NODE_ENV,
                 walletUrl: config.wallet_url,
                 steemMarket: ctx.steemMarketData,
             },
         };
 
-        const { body, title, statusCode, meta, redirectUrl } = await serverRender(
+        const {
+            body, title, statusCode, meta, redirectUrl,
+        } = await serverRender(
             ctx.request.url,
             initial_state,
             ErrorPage,
@@ -99,6 +85,7 @@ async function appRender(ctx, locales = false, resolvedAssets = false) {
         if (!resolvedAssets) {
             // Assets name are found in `webpack-stats` file
             const assets_filename = ROOT + '/tmp/webpack-stats-dev.json';
+            // eslint-disable-next-line global-require,import/no-dynamic-require
             assets = require(assets_filename);
             delete require.cache[require.resolve(assets_filename)];
         } else {
@@ -109,11 +96,6 @@ async function appRender(ctx, locales = false, resolvedAssets = false) {
             assets,
             title,
             meta,
-            shouldSeeAds: googleAds.enabled,
-            gptEnabled: googleAds.gptEnabled,
-            adClient: googleAds.client,
-            videoAdsEnabled: googleAds.videoAdsEnabled,
-            gptBidding: googleAds.gptBidding,
             shouldSeeCookieConsent: cookieConsent.enabled,
             cookieConsentApiKey: cookieConsent.api_key,
         };

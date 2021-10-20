@@ -18,7 +18,6 @@ class CommunityRoles extends React.Component {
             title: '',
             updateRoleModal: false,
             addUserToCommunityModal: false,
-            updatedRole: '',
         };
         this.onAccountChange = this.onAccountChange.bind(this);
         this.onRoleChange = this.onRoleChange.bind(this);
@@ -72,8 +71,8 @@ class CommunityRoles extends React.Component {
 
     render() {
         const {
- community, loading, updating, roles, communityMetadata
-} = this.props;
+            community, loading, updating, roles, communityMetadata,
+        } = this.props;
 
         const canEdit = {
             owner: ['admin', 'mod', 'member', 'guest', 'muted'],
@@ -222,7 +221,7 @@ class CommunityRoles extends React.Component {
         }
 
         return (
-            <PostsIndexLayout category={community} enableAds={false} blogmode={false}>
+            <PostsIndexLayout category={community} blogmode={false}>
                 <div className="CommunityRoles">
                     <div className="row">
                         <div className="column large-9 medium-12 small-12">{body}</div>
