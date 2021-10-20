@@ -114,7 +114,7 @@ export default class CommunitiesIndex extends React.Component {
         const { searchQuery, searchOrder } = this.state;
 
         return (
-            <PostsIndexLayout category={null} enableAds={false} blogmode={false}>
+            <PostsIndexLayout category={null} blogmode={false}>
                 <div className="CommunitiesIndex c-sidebar__module">
                     {username && (
                         <div style={{ float: 'right' }}>

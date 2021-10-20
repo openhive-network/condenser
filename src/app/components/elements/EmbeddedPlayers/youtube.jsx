@@ -121,7 +121,7 @@ export function embedNode(child, links, images) {
  * @returns {*}
  */
 export function genIframeMd(idx, id, width, height, startTime = 0) {
-    const url = `https://www.youtube.com/embed/${id}?autoplay=1&autohide=1&enablejsapi=0&rel=0&origin=https://hive.blog&start=${startTime}`;
+    const url = `https://www.youtube.com/embed/${id}?enablejsapi=0&rel=0&origin=https://hive.blog&start=${startTime}`;
 
     let sandbox = sandboxConfig.useSandbox;
     if (sandbox) {

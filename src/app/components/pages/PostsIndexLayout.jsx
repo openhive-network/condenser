@@ -8,7 +8,6 @@ import SidebarLinks from 'app/components/elements/SidebarLinks';
 import SidebarNewUsers from 'app/components/elements/SidebarNewUsers';
 import Notices from 'app/components/elements/Notices';
 import SteemMarket from 'app/components/elements/SteemMarket';
-import GptAd from 'app/components/elements/GptAd';
 import CommunityPane from 'app/components/elements/CommunityPane';
 import CommunityPaneMobile from 'app/components/elements/CommunityPaneMobile';
 import Topics from './Topics';
@@ -38,7 +37,7 @@ class PostsIndexLayout extends React.Component {
 
     render() {
         const {
-            topics, subscriptions, enableAds, community, username, blogmode, isBrowser, children
+            topics, subscriptions, community, username, blogmode, isBrowser, children,
         } = this.props;
 
         return (
@@ -58,25 +57,10 @@ class PostsIndexLayout extends React.Component {
                     {isBrowser && !community && username && <SidebarLinks username={username} topics={topics} />}
                     {false && !community && <Notices />}
                     {!community && <SteemMarket />}
-                    {enableAds && (
-                        <div className="sidebar-ad">
-                            <GptAd type="Freestar" id="bsa-zone_1566495004689-0_123456" />
-                        </div>
-                    )}
                 </aside>
 
                 <aside className="c-sidebar c-sidebar--left">
                     <Topics compact={false} username={username} subscriptions={subscriptions} topics={topics} />
-                    {enableAds && (
-                        <div>
-                            <div className="sidebar-ad">
-                                <GptAd type="Freestar" slotName="bsa-zone_1566494461953-7_123456" />
-                            </div>
-                            <div className="sidebar-ad" style={{ marginTop: 20 }}>
-                                <GptAd type="Freestar" slotName="bsa-zone_1566494856923-9_123456" />
-                            </div>
-                        </div>
-                    )}
                 </aside>
             </div>
         );
@@ -96,7 +80,6 @@ export default connect(
 
         return {
             blogmode: props.blogmode,
-            enableAds: props.enableAds,
             community,
             subscriptions: state.global.getIn(['subscriptions', username], null),
             topics: state.global.getIn(['topics'], List()),

@@ -1,14 +1,14 @@
 import path from 'path';
 import fs from 'fs';
 
-function getRemoteIp(req) {
+export function getRemoteIp(req) {
     const remote_address = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
     const ip_match = remote_address ? remote_address.match(/(\d+\.\d+\.\d+\.\d+)/) : null;
     return ip_match ? ip_match[1] : remote_address;
 }
 
 const ip_last_hit = new Map();
-function rateLimitReq(ctx, req) {
+export function rateLimitReq(ctx, req) {
     const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
     const now = Date.now();
 
@@ -36,7 +36,7 @@ function rateLimitReq(ctx, req) {
     return result;
 }
 
-function checkCSRF(ctx, csrf) {
+export function checkCSRF(ctx, csrf) {
     try {
         ctx.assertCSRF(csrf);
     } catch (e) {
@@ -48,7 +48,7 @@ function checkCSRF(ctx, csrf) {
     return true;
 }
 
-function getSupportedLocales() {
+export function getSupportedLocales() {
     const locales = [];
     const files = fs.readdirSync(path.join(__dirname, '../../..', 'src/app/locales'));
     // eslint-disable-next-line no-restricted-syntax
@@ -59,7 +59,7 @@ function getSupportedLocales() {
     return locales;
 }
 
-module.exports = {
+export default {
     getRemoteIp,
     rateLimitReq,
     checkCSRF,
