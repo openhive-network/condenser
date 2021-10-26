@@ -316,7 +316,7 @@ class NotificationsList extends React.Component {
                     <div style={{ lineHeight: '1rem' }}>{notifications.map((item) => renderItem(item))}</div>
                 )}
                 {!notifications && !notificationActionPending && process.env.BROWSER && (
-                    <Callout>Welcome! You don&aquote;t have any notifications yet.</Callout>
+                    <Callout>Welcome! You do not have any notifications yet.</Callout>
                 )}
 
                 {!notificationActionPending && notifications && !isLastPage && (

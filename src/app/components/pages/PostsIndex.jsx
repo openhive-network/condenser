@@ -10,7 +10,6 @@ import { actions as fetchDataSagaActions } from 'app/redux/FetchDataSaga';
 import PostsList from 'app/components/cards/PostsList';
 import { isFetchingOrRecentlyUpdated } from 'app/utils/StateFunctions';
 import Callout from 'app/components/elements/Callout';
-import { GptUtils } from 'app/utils/GptUtils';
 import SortOrder from 'app/components/elements/SortOrder';
 import { ifHive } from 'app/utils/Community';
 import PostsIndexLayout from 'app/components/pages/PostsIndexLayout';
@@ -101,7 +100,6 @@ class PostsIndex extends PureComponent {
         const {
             topics,
             subscriptions,
-            enableAds,
             community,
             category,
             account_name, // TODO: for feed
@@ -176,7 +174,7 @@ class PostsIndex extends PureComponent {
         }
 
         return (
-            <PostsIndexLayout category={category} enableAds={enableAds} blogmode={this.props.blogmode}>
+            <PostsIndexLayout category={category} blogmode={this.props.blogmode}>
                 <div className="articles__header row">
                     <div className="small-8 medium-7 large-8 column">
                         <h1 className="articles__h1 show-for-mq-large articles__h1--no-wrap">{page_title}</h1>
@@ -247,8 +245,6 @@ module.exports = {
                 community = null;
             }
 
-            const enableAds = ownProps.gptEnabled && !GptUtils.HasBannedTags([category], state.app.getIn(['googleAds', 'gptBannedTags']));
-
             const key = ['discussion_idx', category || '', order];
             let posts = state.global.getIn(key, List());
 
@@ -275,7 +271,6 @@ module.exports = {
                 blogmode: state.app.getIn(['user_preferences', 'blogmode']),
                 topics: state.global.getIn(['topics'], List()),
                 isBrowser: process.env.BROWSER,
-                enableAds,
             };
         },
         (dispatch) => ({
