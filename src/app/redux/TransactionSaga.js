@@ -10,7 +10,9 @@ import base58 from 'bs58';
 import secureRandom from 'secure-random';
 import { PrivateKey } from '@hiveio/hive-js/lib/auth/ecc';
 import { broadcast } from '@hiveio/hive-js';
+import { dispatcher } from 'react-dispatch';
 
+import { EVENT_OPERATION_BROADCAST } from 'shared/constants';
 import { getContent } from 'app/redux/SagaShared';
 import { postingOps, findSigningKey } from 'app/redux/AuthSaga';
 import * as appActions from 'app/redux/AppReducer';
@@ -338,11 +340,14 @@ function* broadcastPayload({
                 );
             }
         }
-        if (successCallback) { try {
+        if (successCallback) {
+            try {
                 successCallback(operations);
             } catch (error) {
                 console.error('defaultErrorCallback', error);
-            } }
+            }
+        }
+        dispatcher.dispatch(EVENT_OPERATION_BROADCAST);
     } catch (error) {
         console.error('TransactionSaga\tbroadcastPayload', error);
         // status: error
