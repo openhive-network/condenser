@@ -314,17 +314,18 @@ class NotificationsList extends React.Component {
                         </a>
                     </div>
                 </center>
-                {(notificationActionPending || !process.env.BROWSER) && (
-                    <center>
-                        <LoadingIndicator type="circle" />
-                    </center>
-                )}
 
                 {notifications && notifications.length > 0 && (
                     <div style={{ lineHeight: '1rem' }}>{notifications.map((item) => renderItem(item))}</div>
                 )}
                 {!notifications && !notificationActionPending && process.env.BROWSER && (
                     <Callout>Welcome! You do not have any notifications yet.</Callout>
+                )}
+
+                {(notificationActionPending || !process.env.BROWSER) && (
+                    <center>
+                        <LoadingIndicator type="circle" />
+                    </center>
                 )}
 
                 {!notificationActionPending && notifications && !isLastPage && (
