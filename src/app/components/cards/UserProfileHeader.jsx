@@ -67,12 +67,8 @@ class UserProfileHeader extends React.Component {
             top_active = 'posts';
         }
 
-        console.log('section', section);
         const _tablink = (tab, label) => {
-            console.log('tab', tab);
-            console.log('top_active', top_active);
             const cls = tab === top_active ? 'active' : null;
-            console.log('cls', cls);
             return (
                 <Link to={_url(tab)} className={cls}>
                     {label}
@@ -255,7 +251,6 @@ export default connect((state, props) => {
             section = 'blog';
         }
     }
-    console.log('section', section);
 
     return {
         current_user: state.user.getIn(['current', 'username']),
