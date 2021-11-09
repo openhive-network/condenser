@@ -5,6 +5,7 @@ import reactForm from 'app/utils/ReactForm';
 import _ from 'lodash';
 import { connect } from 'react-redux';
 import classnames from 'classnames';
+import Tooltip from 'react-tooltip-lite';
 import * as transactionActions from 'app/redux/TransactionReducer';
 import * as userActions from 'app/redux/UserReducer';
 import MarkdownViewer from 'app/components/cards/MarkdownViewer';
@@ -12,7 +13,6 @@ import TagInput, { validateTagInput } from 'app/components/cards/TagInput';
 import { extractRtags } from 'app/utils/ExtractContent';
 import LoadingIndicator from 'app/components/elements/LoadingIndicator';
 import PostCategoryBanner from 'app/components/elements/PostCategoryBanner';
-import Tooltip from 'app/components/elements/Tooltip';
 import sanitizeConfig, { allowedTags } from 'app/utils/SanitizeConfig';
 import sanitize from 'sanitize-html';
 import HtmlReady from 'shared/HtmlReady';
@@ -22,7 +22,11 @@ import Dropzone from 'react-dropzone';
 import tt from 'counterpart';
 import { loadUserTemplates, saveUserTemplates } from 'app/utils/UserTemplates';
 import BadActorList from 'app/utils/BadActorList';
+import { FormattedHTMLMessage } from 'app/Translator';
+import { api } from "@hiveio/hive-js";
+import HumanizeDuration from "humanize-duration";
 import VisualEditor from './VisualEditor';
+import { calculateRcStats } from "../../utils/UserUtil";
 
 const remarkable = new Remarkable({ html: true, linkify: false, breaks: true });
 
@@ -87,8 +91,18 @@ class ReplyEditor extends React.Component {
             progress: {},
             imagesUploadCount: 0,
             enableSideBySide: true,
+            userRc: undefined,
         };
         this.initForm(props);
+    }
+
+    async getUserRc(username) {
+        const res = await api.callAsync('rc_api.find_rc_accounts', { accounts: [username] });
+        const rcAccounts = _.get(res, 'rc_accounts');
+
+        if (rcAccounts) {
+            this.setState({ userRc: rcAccounts[0] });
+        }
     }
 
     componentWillMount() {
@@ -194,6 +208,9 @@ class ReplyEditor extends React.Component {
     }
 
     componentDidMount() {
+        const { username } = this.props;
+        this.getUserRc(username);
+
         setTimeout(() => {
             if (this.refs.rte) this.refs.rte._focus();
             else if (this.props.isStory) this.refs.titleRef.focus();
@@ -606,12 +623,24 @@ class ReplyEditor extends React.Component {
             maxAcceptedPayout,
         } = this.props;
         const {
-            submitting, valid, handleSubmit, resetForm
+            submitting, valid, handleSubmit, resetForm,
         } = this.state.replyForm;
-        const { postError, rte } = this.state;
+        const { postError, rte, userRc } = this.state;
         const { progress, noClipboardData } = this.state;
         const disabled = submitting || !valid;
         const loading = submitting || this.state.loading;
+
+        let accountStats;
+        let rcStats = '';
+        if (userRc) {
+            accountStats = calculateRcStats(userRc);
+            const { resourceCreditsPercent, resourceCreditsWaitTime } = accountStats;
+            rcStats = tt('g.rcLevel', { rc_percent: resourceCreditsPercent });
+
+            if (resourceCreditsWaitTime > 0) {
+                rcStats += ` ${tt('g.rcFullIn', { duration: HumanizeDuration(resourceCreditsWaitTime * 1000, { largest: 2 }) })}`;
+            }
+        }
 
         let selectedCoverImage = '';
         const jsonMetadataImages = _.get(jsonMetadata, 'image', []);
@@ -659,7 +688,7 @@ class ReplyEditor extends React.Component {
             errorCallback,
         };
         const postLabel = username ? (
-            <Tooltip t={tt('g.post_as_user', { username })}>{tt('g.post')}</Tooltip>
+            <Tooltip content={tt('g.post_as_user', { username })}>{tt('g.post')}</Tooltip>
         ) : (
             tt('g.post')
         );
@@ -985,16 +1014,39 @@ class ReplyEditor extends React.Component {
                                                         </span>
                                                     )}
                                             </div>
-                                            <a href="#" onClick={this.showAdvancedSettings}>
-                                                {tt('reply_editor.advanced_settings')}
-                                            </a>
+                                            <Tooltip
+                                                content={<FormattedHTMLMessage id="reply_editor.advanced_tooltip" />}
+                                                arrow={false}
+                                            >
+                                                <a href="#" onClick={this.showAdvancedSettings}>
+                                                    {tt('reply_editor.advanced_settings')}
+                                                </a>
+                                            </Tooltip>
                                             {' '}
                                             <br />
-                                            &nbsp;
                                         </div>
                                     </div>
                             )}
                         </div>
+                        {rcStats && (
+                            <div className={vframe_section_shrink_class} style={{ marginTop: '0.5rem' }}>
+                                <div className="ReplyEditor__options">
+                                    <h5>
+                                        Account stats:
+                                    </h5>
+                                    <div>
+                                        <Tooltip
+                                            content={<FormattedHTMLMessage id="reply_editor.rc_tooltip" />}
+                                            arrow={false}
+                                        >
+                                            {rcStats}
+                                        </Tooltip>
+                                    </div>
+                                    {' '}
+                                    <br />
+                                </div>
+                            </div>
+                        )}
 
                         <div className={vframe_section_shrink_class}>
                             {postError && <div className="error">{postError}</div>}

@@ -240,11 +240,14 @@ export default function reducer(state = defaultState, action = {}) {
 
         case VOTED: {
             const {
- voter, author, permlink, weight
-} = payload;
+                voter, author, permlink, weight
+            } = payload;
             const vote = Map({ voter, percent: weight });
             const _key = ['content', author + '/' + permlink, 'active_votes'];
             let votes = state.getIn(_key, List());
+            if (votes === null) {
+                votes = List();
+            }
 
             const idx = votes.findIndex((v) => v.get('voter') === voter);
             votes = idx === -1 ? votes.push(vote) : votes.set(idx, vote);

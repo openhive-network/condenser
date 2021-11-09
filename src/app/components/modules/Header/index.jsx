@@ -15,6 +15,7 @@ import * as appActions from 'app/redux/AppReducer';
 import { startPolling } from 'app/redux/PollingSaga';
 import { actions as fetchDataSagaActions } from 'app/redux/FetchDataSaga';
 import Userpic from 'app/components/elements/Userpic';
+import UserpicInfoWrapper from 'app/components/elements/UserpicInfoWrapper';
 import { SIGNUP_URL } from 'shared/constants';
 import SteemLogo from 'app/components/elements/SteemLogo';
 import Announcement from 'app/components/elements/Announcement';
@@ -301,7 +302,9 @@ class Header extends React.Component {
                                     position="left"
                                 >
                                     <li className="Header__userpic ">
-                                        <Userpic account={username} />
+                                        <UserpicInfoWrapper>
+                                            <Userpic account={username} />
+                                        </UserpicInfoWrapper>
                                     </li>
                                     {!notificationActionPending && unreadNotificationCount > 0 && (
                                         <div className="Header__notification">
