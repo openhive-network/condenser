@@ -8,7 +8,7 @@ const reg = (pattern) => {
             '(blog|posts|comments|replies|payout|feed|followed|followers|settings|notifications|communities)'
         )
         .replace('<sort>', '(hot|trending|promoted|payout|payout_comments|muted|created)')
-        .replace('<tag>', '([\\w\\W\\d-]{1,32})')
+        .replace('<tag>', '([\\w\\W\\d-]{1,255})')
         .replace('<permlink>', '([\\w\\d-]+)')
         .replace('/', '\\/')
         .replace('<list_type>', '(blacklisted|muted|followed_blacklists|followed_muted_lists)');
