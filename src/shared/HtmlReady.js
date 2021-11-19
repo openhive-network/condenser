@@ -161,13 +161,13 @@ function link(state, child) {
 
 // wrap iframes in div.videoWrapper to control size/aspect ratio
 function iframe(state, child) {
-    console.log('htmlready iframe');
     const url = child.getAttribute('src');
 
     // @TODO move this into the centralized EmbeddedPlayer code
     if (url) {
         const { images, links } = state;
         const yt = youTubeId(url);
+
         if (yt && images && links) {
             links.add(yt.url);
             images.add('https://img.youtube.com/vi/' + yt.id + '/0.jpg');
