@@ -439,6 +439,10 @@
             "reputation": "Reputation"
         }
     },
+    "pagination_jsx": {
+        "numberOfPages": "There are %(count)s pages",
+        "pages": "Pages"
+    },
     "voting_jsx": {
         "flagging_post_can_remove_rewards_the_flag_should_be_used_for_the_following": "Flagging a post can remove rewards and make this material less visible. Some common reasons to flag",
         "disagreement_on_rewards": "Disagreement on rewards",
