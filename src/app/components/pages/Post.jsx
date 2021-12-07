@@ -10,6 +10,7 @@ import DropdownMenu from 'app/components/elements/DropdownMenu';
 import { serverApiRecordEvent } from 'app/utils/ServerApiClient';
 import { isLoggedIn } from 'app/utils/UserUtil';
 import LoadingIndicator from 'app/components/elements/LoadingIndicator';
+import Pagination from "../cards/Pagination";
 
 function isEmptyPost(post) {
     // check if the post doesn't exist
@@ -30,6 +31,7 @@ class Post extends React.Component {
         super();
         this.state = {
             showNegativeComments: false,
+            currentReplyPage: 1,
         };
         this.showSignUp = () => {
             serverApiRecordEvent('SignUp', 'Post Promo');
@@ -58,7 +60,9 @@ class Post extends React.Component {
         const {
             content, sortOrder, post, dis, loading,
         } = this.props;
-        const { showNegativeComments, commentHidden, showAnyway } = this.state;
+        const {
+            showNegativeComments, commentHidden, showAnyway, currentReplyPage,
+        } = this.state;
 
         if (!content || !dis) {
             if (loading) {
@@ -78,7 +82,7 @@ class Post extends React.Component {
         // anyway", and is designated "gray".
         let postBody;
         const special = dis.get('special');
-        if (!special && !showAnyway && dis.getIn(['stats', 'gray'], false)) {
+        if (!special && !showAnyway && dis.getIn(['statshasMoreReplies', 'gray'], false)) {
             postBody = (
                 <div className="Post">
                     <div className="row">
@@ -111,11 +115,17 @@ class Post extends React.Component {
 
         sortComments(content, replies, sortOrder);
 
-        // Don't render too many comments on server-side
-        const commentLimit = 100;
-        if (global.process !== undefined && replies.length > commentLimit) {
-            replies = replies.slice(0, commentLimit);
-        }
+        const nbRepliesPerPage = 100;
+        const replyStartIndex = (currentReplyPage - 1) * nbRepliesPerPage;
+        const replyEndIndex = replyStartIndex + (nbRepliesPerPage - 1);
+        const nbReplies = replies.length;
+        replies = replies.slice(replyStartIndex, replyEndIndex);
+
+        const handlePaginationClick = (page) => {
+            this.setState({ currentReplyPage: page });
+            document.getElementById('comments').scrollIntoView();
+        };
+
         const positiveComments = replies.map((reply) => {
             return (
                 <div key={post + reply}>
@@ -188,7 +198,7 @@ class Post extends React.Component {
                         </div>
                     </div>
                 )}
-                <div id="#comments" className="Post_comments row hfeed">
+                <div id="comments" className="Post_comments row hfeed">
                     <div className="column large-12">
                         <div className="Post_comments__content">
                             {positiveComments.length ? (
@@ -198,7 +208,23 @@ class Post extends React.Component {
                                     <DropdownMenu items={sort_menu} el="li" selected={sort_label} position="left" />
                                 </div>
                             ) : null}
+                            <Pagination
+                                nbReplies={nbReplies}
+                                currentReplyPage={currentReplyPage}
+                                nbRepliesPerPage={nbRepliesPerPage}
+                                replyStartIndex={replyStartIndex}
+                                replyEndIndex={replyEndIndex}
+                                onClick={handlePaginationClick}
+                            />
                             {positiveComments}
+                            <Pagination
+                                nbReplies={nbReplies}
+                                currentReplyPage={currentReplyPage}
+                                nbRepliesPerPage={nbRepliesPerPage}
+                                replyStartIndex={replyStartIndex}
+                                replyEndIndex={replyEndIndex}
+                                onClick={handlePaginationClick}
+                            />
                             {negativeGroup}
                         </div>
                     </div>
