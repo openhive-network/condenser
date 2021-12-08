@@ -3,13 +3,12 @@ import { normalizeEmbedUrl as normalizeEmbbeddedPlayerEmbedUrl }  from 'app/comp
 
 export default class Iframe extends React.Component {
     normalizeEmbedUrl = (url) => {
-        console.log('normalizeEmbedUrl');
         const validEmbedUrl = normalizeEmbbeddedPlayerEmbedUrl(url);
         if (validEmbedUrl !== false) {
             return validEmbedUrl;
         }
 
-        console.log('unable to auto-detect embed url', url);
+        console.error('unable to auto-detect embed url', url);
         return null;
     };
 
@@ -54,7 +53,6 @@ export default class Iframe extends React.Component {
     };
 
     renderFrame = () => {
-        console.log('toto');
         let src = this.props.node.data.get('src');
         src = this.normalizeEmbedUrl(src) || src;
 

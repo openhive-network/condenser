@@ -58,7 +58,7 @@ const emptyPostsText = (section, account, isMyAccount) => {
             </div>
         );
     }
-        console.error('unhandled emptytext case', section, name, isMyAccount);
+    console.error('unhandled emptytext case', section, name, isMyAccount);
 
 };
 
@@ -128,8 +128,8 @@ export default class UserProfile extends React.Component {
         if (!last_post) return;
         //if (last_post == this.props.pending) return; // if last post is 'pending', its an invalid start token
         const {
- username, status, order, category
-} = this.props;
+            username, status, order, category,
+        } = this.props;
 
         if (isFetchingOrRecentlyUpdated(status, order, category)) return;
 
@@ -151,7 +151,6 @@ export default class UserProfile extends React.Component {
                 following,
                 followers,
                 accountname,
-                walletUrl,
                 category,
                 section,
                 order,
@@ -161,6 +160,7 @@ export default class UserProfile extends React.Component {
                 peakdBadges,
                 notifications,
                 subscriptions,
+                routeParams,
             },
         } = this;
 
@@ -237,9 +237,7 @@ export default class UserProfile extends React.Component {
         };
 
         let tab_header;
-        let top_active = section;
         if (['posts', 'comments', 'payout'].includes(section)) {
-            top_active = 'posts';
             tab_header = (
                 <div className="UserProfile__postmenu">
                     {_tablink2('posts', tt('g.posts'))}
@@ -249,47 +247,14 @@ export default class UserProfile extends React.Component {
             );
         }
 
-        const _tablink = (tab, label) => {
-            const cls = tab === top_active ? 'active' : null;
-            return (
-                <Link to={_url(tab)} className={cls}>
-                    {label}
-                </Link>
-            );
-        };
-
-        const top_menu = (
-            <div className="row UserProfile__top-menu">
-                <div className="columns small-9 medium-12 medium-expand">
-                    <ul className="menu" style={{ flexWrap: 'wrap' }}>
-                        <li>{_tablink('blog', tt('g.blog'))}</li>
-                        <li>{_tablink('posts', tt('g.posts'))}</li>
-                        <li>{_tablink('replies', tt('g.replies'))}</li>
-                        <li>{_tablink('communities', tt('g.social'))}</li>
-                        <li>{_tablink('notifications', tt('g.notifications'))}</li>
-                        {/*
-                        <li>{_tablink('comments', tt('g.comments'))}</li>
-                        <li>{_tablink('payout', tt('voting_jsx.payout'))}</li>
-                        */}
-                    </ul>
-                </div>
-                <div className="columns shrink">
-                    <ul className="menu" style={{ flexWrap: 'wrap' }}>
-                        <li>
-                            <a href={walletUrl} target="_blank" rel="noopener noreferrer">
-                                Wallet
-                            </a>
-                        </li>
-                        {isMyAccount && <li>{_tablink('settings', tt('g.settings'))}</li>}
-                    </ul>
-                </div>
-            </div>
-        );
-
         return (
             <div className="UserProfile">
-                <UserProfileHeader current_user={username} accountname={accountname} profile={profile} />
-                <div className="UserProfile__top-nav row expanded">{top_menu}</div>
+                <UserProfileHeader
+                    current_user={username}
+                    accountname={accountname}
+                    profile={profile}
+                    routeParams={routeParams}
+                />
                 <div className="row">
                     <div className={classnames('UserProfile__tab_content', 'column', 'layout-list')}>
                         <article className="articles">

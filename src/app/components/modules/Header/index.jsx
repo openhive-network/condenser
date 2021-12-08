@@ -221,10 +221,7 @@ class Header extends React.Component {
             },
         ];
         return (
-            <Headroom
-                onUnpin={(e) => this.headroomOnUnpin(e)}
-                onUnfix={(e) => this.headroomOnUnfix(e)}
-            >
+            <Headroom>
                 <header className="Header">
                     {showAnnouncement && (
                         <Announcement

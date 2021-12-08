@@ -174,15 +174,17 @@ describe('Performance', () => {
         match(youtubeRegex.main, 'https://youtu.be/xG7ajrbj4zs?t=7s');
         match(youtubeRegex.main, 'https://www.youtube.com/watch?v=xG7ajrbj4zs&t=14s');
         match(youtubeRegex.main, 'https://www.youtube.com/watch?v=xG7ajrbj4zs&feature=youtu.be&t=14s');
+        match(youtubeRegex.main, 'https://www.youtube.com/embed/xG7ajrbj4zs');
+        match(youtubeRegex.main, 'https://www.youtube.com/shorts/xG7ajrbj4zs');
     });
     it('youTubeId', () => {
-        match(youtubeRegex.contentId, 'https://youtu.be/xG7ajrbj4zs?t=7s', 'xG7ajrbj4zs', 1);
-        match(youtubeRegex.contentId, 'https://www.youtube.com/watch?v=xG7ajrbj4zs&t=14s', 'xG7ajrbj4zs', 1);
+        match(youtubeRegex.contentId, 'https://youtu.be/xG7ajrbj4zs?t=7s', 'xG7ajrbj4zs', 2);
+        match(youtubeRegex.contentId, 'https://www.youtube.com/watch?v=xG7ajrbj4zs&t=14s', 'xG7ajrbj4zs', 2);
         match(
             youtubeRegex.contentId,
             'https://www.youtube.com/watch?v=xG7ajrbj4zs&feature=youtu.be&t=14s',
             'xG7ajrbj4zs',
-            1
+            2
         );
     });
     it('threespeak', () => {

@@ -5,12 +5,12 @@ import React from 'react';
  * @type {{htmlReplacement: RegExp, main: RegExp, sanitize: RegExp}}
  */
 const regex = {
-    sanitize: /^(https?:)?\/\/www\.youtube\.com\/embed\/.*/i,
+    sanitize: /^(https?:)?\/\/www\.youtube\.com\/(embed|shorts)\/.*/i,
     //main: new RegExp(urlSet({ domain: '(?:(?:.*.)?youtube.com|youtu.be)' }), flags),
     // eslint-disable-next-line no-useless-escape
-    main: /(?:https?:\/\/)(?:www\.)?(?:(?:youtube\.com\/watch\?v=)|(?:youtu.be\/)|(?:youtube\.com\/embed\/))([A-Za-z0-9_\-]+)[^ ]*/i,
+    main: /(?:https?:\/\/)(?:www\.)?(?:(?:youtube\.com\/watch\?v=)|(?:youtu.be\/)|(?:youtube\.com\/(embed|shorts)\/))([A-Za-z0-9_\-]+)[^ ]*/i,
     // eslint-disable-next-line no-useless-escape
-    contentId: /(?:(?:youtube\.com\/watch\?v=)|(?:youtu.be\/)|(?:youtube\.com\/embed\/))([A-Za-z0-9_\-]+)/i,
+    contentId: /(?:(?:youtube\.com\/watch\?v=)|(?:youtu.be\/)|(?:youtube\.com\/(embed|shorts)\/))([A-Za-z0-9_\-]+)/i,
 };
 export default regex;
 
@@ -69,12 +69,12 @@ export function extractMetadata(data) {
     if (!url) return null;
 
     const m2 = url.match(regex.contentId);
-    const id = m2 && m2.length >= 2 ? m2[1] : null;
+    const id = m2 && m2.length >= 2 ? m2[2] : null;
+    console.log('m2', m2);
 
     if (!id) return null;
 
     const startTime = url.match(/t=(\d+)s?/);
-
     return {
         id,
         url,

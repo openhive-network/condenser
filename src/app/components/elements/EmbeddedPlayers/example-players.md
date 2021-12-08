@@ -125,6 +125,12 @@ https://player.vimeo.com/video/179213493
 
 https://www.youtube.com/embed/KOnk7Nbqkhs
 
+https://www.youtube.com/watch?v=KOnk7Nbqkhs
+
+## Youtube shorts
+
+https://www.youtube.com/shorts/xG7ajrbj4zs
+
 ## Tiktok embed code
 
 <blockquote class="tiktok-embed" cite="https://www.tiktok.com/@quochuync/video/7009483703462202625" data-video-id="7009483703462202625" style="max-width: 605px;min-width: 325px;" > <section> <a target="_blank" title="@quochuync" href="https://www.tiktok.com/@quochuync">@quochuync</a> <p>Making an aluminium flat bar mark tree. <a title="chime" target="_blank" href="https://www.tiktok.com/tag/chime">##chime</a> <a title="windchime" target="_blank" href="https://www.tiktok.com/tag/windchime">##windchime</a> <a title="marktree" target="_blank" href="https://www.tiktok.com/tag/marktree">##marktree</a> <a title="percussion" target="_blank" href="https://www.tiktok.com/tag/percussion">##percussion</a> <a title="musicinstrument" target="_blank" href="https://www.tiktok.com/tag/musicinstrument">##musicinstrument</a> <a title="music" target="_blank" href="https://www.tiktok.com/tag/music">##music</a> <a title="crafts" target="_blank" href="https://www.tiktok.com/tag/crafts">##crafts</a> <a title="diy" target="_blank" href="https://www.tiktok.com/tag/diy">##diy</a></p> <a target="_blank" title="♬ original sound - Quốc Huy" href="https://www.tiktok.com/music/original-sound-7009483610071845634">♬ original sound - Quốc Huy</a> </section> </blockquote> <script async src="https://www.tiktok.com/embed.js"></script>

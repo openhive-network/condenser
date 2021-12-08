@@ -235,9 +235,9 @@ class ListManagement extends React.Component {
         const all_users = text.split(',');
         if (this.state.error_message !== '') this.setState({ error_message: '' });
         if (all_users.length > 100) { this.setState({
-                warning_message:
-                    'You are adding a large number of accounts. Numerous brodcast operations will be required.',
-            }); }
+            warning_message:
+                'You are adding a large number of accounts. Numerous brodcast operations will be required.',
+        }); }
         else this.setState({ warning_message: '' });
 
         const names_only = this.state.all_listed_accounts.map((item) => {
@@ -514,7 +514,7 @@ class ListManagement extends React.Component {
             <center>
                 <LoadingIndicator type="circle" />
             </center>
-            ); }
+        ); }
 
         let blacklist_description = this.props.profile
             .get('metadata')
@@ -585,6 +585,7 @@ class ListManagement extends React.Component {
                         current_user={this.props.username}
                         accountname={this.props.accountname}
                         profile={this.props.profile}
+                        routeParams={this.props.routeParams}
                     />
                 </div>
                 <p />
@@ -607,54 +608,54 @@ class ListManagement extends React.Component {
                                 <thead />
 
                                 <tbody>
-                                    <tr>
-                                        <td>
-                                            <center>
-                                                {this.state.first_time_user && viewing_own_page && (
-                                                    <h5>{tt('list_management_jsx.welcome_header')}</h5>
-                                                )}
-                                            </center>
-                                        </td>
-                                    </tr>
+                                <tr>
+                                    <td>
+                                        <center>
+                                            {this.state.first_time_user && viewing_own_page && (
+                                                <h5>{tt('list_management_jsx.welcome_header')}</h5>
+                                            )}
+                                        </center>
+                                    </td>
+                                </tr>
 
-                                    <tr>
-                                        <td>
-                                            <center>
-                                                {tt('list_management_jsx.info1')}
-                                                {' '}
-                                                {tt('list_management_jsx.info2')}
-                                                {' '}
-                                                <Link to={'/@' + this.props.username + '/settings'}>
-                                                    {tt('list_management_jsx.info3')}
-                                                </Link>
-                                                {tt('list_management_jsx.info4')}
-                                                {' '}
-                                                {tt('list_management_jsx.info5')}
-                                                <p />
-                                                {tt('list_management_jsx.info6')}
-                                            </center>
-                                        </td>
-                                    </tr>
+                                <tr>
+                                    <td>
+                                        <center>
+                                            {tt('list_management_jsx.info1')}
+                                            {' '}
+                                            {tt('list_management_jsx.info2')}
+                                            {' '}
+                                            <Link to={'/@' + this.props.username + '/settings'}>
+                                                {tt('list_management_jsx.info3')}
+                                            </Link>
+                                            {tt('list_management_jsx.info4')}
+                                            {' '}
+                                            {tt('list_management_jsx.info5')}
+                                            <p />
+                                            {tt('list_management_jsx.info6')}
+                                        </center>
+                                    </td>
+                                </tr>
                                 </tbody>
                             </table>
                             {viewing_own_page
-                                && this.state.first_time_user && (
-                                    <div>
-                                        {tt('list_management_jsx.info7')}
-                                        {' '}
-                                        <br />
-                                        <span
-                                            role="button"
-                                            tabIndex={0}
-                                            className="button slim hollow secondary"
-                                            onClick={() => {
-                                                this.dismiss_intro();
-                                            }}
-                                        >
-                                            {tt('list_management_jsx.acknowledge')}
-                                        </span>
-                                    </div>
-                                )}
+                            && this.state.first_time_user && (
+                                <div>
+                                    {tt('list_management_jsx.info7')}
+                                    {' '}
+                                    <br />
+                                    <span
+                                        role="button"
+                                        tabIndex={0}
+                                        className="button slim hollow secondary"
+                                        onClick={() => {
+                                            this.dismiss_intro();
+                                        }}
+                                    >
+                                        {tt('list_management_jsx.acknowledge')}
+                                    </span>
+                                </div>
+                            )}
                         </center>
                     </div>
                 )}
@@ -761,50 +762,50 @@ class ListManagement extends React.Component {
                                     <table style={{ width: '35%' }}>
                                         <thead />
                                         <tbody>
-                                            <tr>
-                                                <td
-                                                    style={{
-                                                        whiteSpace: 'nowrap',
-                                                    }}
-                                                >
-                                                    <center>
-                                                        <input
-                                                            style={{
-                                                                width: '60%',
-                                                                whiteSpace: 'nowrap',
-                                                            }}
-                                                            type="text"
-                                                            name="multiadd"
-                                                            ref={(el) => (this.multiadd = el)}
-                                                            onChange={(e) => {
-                                                                this.validate_accounts_to_add(e.target.value);
-                                                            }}
-                                                        />
-                                                    </center>
-                                                </td>
-                                            </tr>
+                                        <tr>
+                                            <td
+                                                style={{
+                                                    whiteSpace: 'nowrap',
+                                                }}
+                                            >
+                                                <center>
+                                                    <input
+                                                        style={{
+                                                            width: '60%',
+                                                            whiteSpace: 'nowrap',
+                                                        }}
+                                                        type="text"
+                                                        name="multiadd"
+                                                        ref={(el) => (this.multiadd = el)}
+                                                        onChange={(e) => {
+                                                            this.validate_accounts_to_add(e.target.value);
+                                                        }}
+                                                    />
+                                                </center>
+                                            </td>
+                                        </tr>
 
-                                            <tr>
-                                                <td
-                                                    style={{
-                                                        width: '60%',
-                                                        whiteSpace: 'nowrap',
-                                                    }}
-                                                >
-                                                    <center>
-                                                        {this.state.validated_accounts.length > 0 && (
-                                                            <span
-                                                                role="button"
-                                                                tabIndex={0}
-                                                                className="button slim hollow secondary"
-                                                                onClick={this.broadcastFollowOperation}
-                                                            >
-                                                                {button_text}
-                                                            </span>
-                                                        )}
-                                                    </center>
-                                                </td>
-                                            </tr>
+                                        <tr>
+                                            <td
+                                                style={{
+                                                    width: '60%',
+                                                    whiteSpace: 'nowrap',
+                                                }}
+                                            >
+                                                <center>
+                                                    {this.state.validated_accounts.length > 0 && (
+                                                        <span
+                                                            role="button"
+                                                            tabIndex={0}
+                                                            className="button slim hollow secondary"
+                                                            onClick={this.broadcastFollowOperation}
+                                                        >
+                                                            {button_text}
+                                                        </span>
+                                                    )}
+                                                </center>
+                                            </td>
+                                        </tr>
                                         </tbody>
                                     </table>
 
@@ -827,18 +828,18 @@ class ListManagement extends React.Component {
                         <table style={{ width: '35%' }}>
                             <thead />
                             <tbody>
-                                <tr>
-                                    <td colSpan="2" style={{ textAlign: 'right' }}>
-                                        <center>
-                                            <input
-                                                type="text"
-                                                ref={(el) => (this.searchbox = el)}
-                                                style={{ width: '350px' }}
-                                                onChange={this.handle_filter_change}
-                                            />
-                                        </center>
-                                    </td>
-                                </tr>
+                            <tr>
+                                <td colSpan="2" style={{ textAlign: 'right' }}>
+                                    <center>
+                                        <input
+                                            type="text"
+                                            ref={(el) => (this.searchbox = el)}
+                                            style={{ width: '350px' }}
+                                            onChange={this.handle_filter_change}
+                                        />
+                                    </center>
+                                </td>
+                            </tr>
                             </tbody>
                         </table>
 

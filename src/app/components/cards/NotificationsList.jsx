@@ -90,18 +90,21 @@ class NotificationsList extends React.Component {
         mentions: ['mention'],
     };
 
-    componentWillMount() {
+    componentDidMount() {
         const { username, getAccountNotifications } = this.props;
         if (username) {
             getAccountNotifications(username);
         }
     }
 
-    componentDidUpdate(prevProps) {
-        const { username, getAccountNotifications } = this.props;
-        if (prevProps.username !== username) {
-            getAccountNotifications(username);
-        }
+    shouldComponentUpdate(nextProps) {
+        return (
+            JSON.stringify(this.props.notifications) !== JSON.stringify(nextProps.notifications)
+            || this.props.notificationActionPending !== nextProps.notificationActionPending
+        );
+    }
+
+    componentDidUpdate() {
         this.applyFilter();
     }
 
@@ -197,11 +200,16 @@ class NotificationsList extends React.Component {
             const mentions = item.msg.match(usernamePattern);
             const participants = mentions
                 ? mentions.map((m) => (
-                    <a href={'/' + m}>
+                    <a key={m} href={'/' + m}>
                         <Userpic account={m.substring(1)} />
                     </a>
                   ))
                 : null;
+
+            if (item.date === '1970-01-01T00:00:00') {
+                return null;
+            }
+
             return (
                 <div key={item.id} className={`notification__item flex-body notification__${item.type}`}>
                     <div className="notification__score">
@@ -306,17 +314,18 @@ class NotificationsList extends React.Component {
                         </a>
                     </div>
                 </center>
-                {(notificationActionPending || !process.env.BROWSER) && (
-                    <center>
-                        <LoadingIndicator type="circle" />
-                    </center>
-                )}
 
                 {notifications && notifications.length > 0 && (
                     <div style={{ lineHeight: '1rem' }}>{notifications.map((item) => renderItem(item))}</div>
                 )}
                 {!notifications && !notificationActionPending && process.env.BROWSER && (
                     <Callout>Welcome! You do not have any notifications yet.</Callout>
+                )}
+
+                {(notificationActionPending || !process.env.BROWSER) && (
+                    <center>
+                        <LoadingIndicator type="circle" />
+                    </center>
                 )}
 
                 {!notificationActionPending && notifications && !isLastPage && (

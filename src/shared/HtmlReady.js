@@ -1,4 +1,3 @@
-/* global $STM_Config */
 import xmldom from 'xmldom';
 import tt from 'counterpart';
 import linksRe, { any as linksAny } from 'app/utils/Links';
@@ -33,7 +32,6 @@ const XMLSerializer = new xmldom.XMLSerializer();
  *  - iframe()
  *    - wrap all <iframe>s in <div class="videoWrapper"> for responsive sizing
  *  - img()
- *    - convert any <img> src IPFS prefixes to standard URL
  *    - change relative protocol to https://
  *  - linkifyNode()
  *    - scans text content to be turned into rich content
@@ -62,11 +60,10 @@ const XMLSerializer = new xmldom.XMLSerializer();
  *    - proxify images
  *
  * TODO:
- *  - change ipfsPrefix(url) to normalizeUrl(url)
- *    - rewrite IPFS prefixes to valid URLs
  *    - schema normalization
  *    - gracefully handle protocols like ftp, mailto
  */
+
 
 /** Split the HTML on top-level elements. This allows react to compare separately, preventing excessive re-rendering.
  * Used in MarkdownViewer.jsx
@@ -161,13 +158,13 @@ function link(state, child) {
 
 // wrap iframes in div.videoWrapper to control size/aspect ratio
 function iframe(state, child) {
-    console.log('htmlready iframe');
     const url = child.getAttribute('src');
 
     // @TODO move this into the centralized EmbeddedPlayer code
     if (url) {
         const { images, links } = state;
         const yt = youTubeId(url);
+
         if (yt && images && links) {
             links.add(yt.url);
             images.add('https://img.youtube.com/vi/' + yt.id + '/0.jpg');
@@ -210,7 +207,7 @@ function img(state, child) {
     if (url) {
         state.images.add(url);
         if (state.mutate) {
-            let url2 = ipfsPrefix(url);
+            let url2 = url;
             if (/^\/\//.test(url2)) {
                 // Change relative protocol imgs to https
                 url2 = 'https:' + url2;
@@ -292,7 +289,7 @@ function linkify(content, mutate, hashtags, usertags, images, links) {
     content = content.replace(linksAny('gi'), (ln) => {
         if (linksRe.image.test(ln)) {
             if (images) images.add(ln);
-            return `<img src="${ipfsPrefix(ln)}" />`;
+            return `<img src="${ln}" />`;
         }
 
         // do not linkify .exe or .zip urls
@@ -302,19 +299,7 @@ function linkify(content, mutate, hashtags, usertags, images, links) {
         if (Phishing.looksPhishy(ln)) return `<div title='${getPhishingWarningMessage()}' class='phishy'>${ln}</div>`;
 
         if (links) links.add(ln);
-        return `<a href="${ipfsPrefix(ln)}">${ln}</a>`;
+        return `<a href="${ln}">${ln}</a>`;
     });
     return content;
-}
-
-function ipfsPrefix(url) {
-    if ($STM_Config.ipfs_prefix) {
-        // Convert //ipfs/xxx  or /ipfs/xxx  into  https://hive.blog/ipfs/xxxxx
-        if (/^\/?\/ipfs\//.test(url)) {
-            const slash = url.charAt(1) === '/' ? 1 : 0;
-            url = url.substring(slash + '/ipfs/'.length); // start with only 1 /
-            return $STM_Config.ipfs_prefix + '/' + url;
-        }
-    }
-    return url;
 }
