@@ -27,7 +27,6 @@ global.$STM_Config = {
     steemd_use_appbase: config.get('steemd_use_appbase'),
     address_prefix: config.get('address_prefix'),
     img_proxy_prefix: config.get('img_proxy_prefix'),
-    ipfs_prefix: config.get('ipfs_prefix'),
     read_only_mode: config.get('read_only_mode'),
     upload_image: config.get('upload_image'),
     site_domain: config.get('site_domain'),
