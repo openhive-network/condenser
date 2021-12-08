@@ -7,7 +7,6 @@ import stateCleaner from 'app/redux/stateCleaner';
 import { fetchCrossPosts, augmentContentWithCrossPost } from 'app/utils/CrossPosts';
 
 export async function callBridge(method, params) {
-    console.log('callbrdige', method, params);
     // [JES] Hivemind throws an exception if you call for my/[trending/payouts/new/etc] with a null observer
     // so just delete the 'my' tag if there is no observer specified
     if (
@@ -32,8 +31,6 @@ export async function callBridge(method, params) {
         && method !== 'list_community_roles'
         && (params.observer === null || params.observer === undefined)
     ) params.observer = $STM_Config.default_observer;
-
-    console.log('call bridge', method, params && JSON.stringify(params).substring(0, 200));
 
     return new Promise(((resolve, reject) => {
         api.call('bridge.' + method, params, (err, data) => {
