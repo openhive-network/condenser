@@ -98,7 +98,7 @@
     "react-dispatch": "^1.2.0",
     "react-dom": "16.8",
     "react-dropzone": "3.13.4",
-    "react-headroom": "2.2.7",
+    "react-headroom": "^3.2.0",
     "react-intl": "2.4.0",
     "react-mde": "^11.0.6",
     "react-notification": "6.8.5",
