@@ -89,10 +89,10 @@ class LoginForm extends Component {
                 password: values.useKeychain
                     ? null
                     : !values.password
-                    ? tt('g.required')
-                    : PublicKey.fromString(values.password)
-                    ? tt('loginform_jsx.you_need_a_private_password_or_key')
-                    : null,
+                        ? tt('g.required')
+                        : PublicKey.fromString(values.password)
+                            ? tt('loginform_jsx.you_need_a_private_password_or_key')
+                            : null,
             }),
         });
     }
@@ -217,8 +217,8 @@ class LoginForm extends Component {
             msg,
         } = this.props;
         const {
- username, password, useKeychain, saveLogin
-} = this.state;
+            username, password, useKeychain, saveLogin
+        } = this.state;
         const { valid, handleSubmit } = this.state.login;
         const submitting = this.state.login.submitting || this.state.isHiveSigner;
         const { usernameOnChange, onCancel /*qrReader*/ } = this;
@@ -242,8 +242,8 @@ class LoginForm extends Component {
         const submitLabel = showLoginWarning
             ? tt('loginform_jsx.continue_anyway')
             : loginBroadcastOperation
-            ? tt('g.sign_in')
-            : tt('g.login');
+                ? tt('g.sign_in')
+                : tt('g.login');
         let error = password.touched && password.error ? password.error : this.props.loginError;
         if (error === 'owner_login_blocked') {
             error = (
@@ -280,8 +280,8 @@ class LoginForm extends Component {
             }
         }
         const password_info = !useKeychain.value && checkPasswordChecksum(password.value) === false
-                ? tt('loginform_jsx.password_info')
-                : null;
+            ? tt('loginform_jsx.password_info')
+            : null;
         const titleText = (
             <h3>
                 {tt('loginform_jsx.returning_users')}
@@ -289,20 +289,20 @@ class LoginForm extends Component {
             </h3>
         );
 
-/*
-        const signupLink = (
-            <div className="sign-up">
-                <hr />
-                <p>
-                    {tt('loginform_jsx.join_our')} <em>{tt('loginform_jsx.amazing_community')}</em>
-                    {tt('loginform_jsx.to_comment_and_reward_others')}
-                </p>
-                <button type="button" className="button hollow" onClick={this.SignUp}>
-                    {tt('loginform_jsx.sign_up_get_hive')}
-                </button>
-            </div>
-        );
- */
+        /*
+                const signupLink = (
+                    <div className="sign-up">
+                        <hr />
+                        <p>
+                            {tt('loginform_jsx.join_our')} <em>{tt('loginform_jsx.amazing_community')}</em>
+                            {tt('loginform_jsx.to_comment_and_reward_others')}
+                        </p>
+                        <button type="button" className="button hollow" onClick={this.SignUp}>
+                            {tt('loginform_jsx.sign_up_get_hive')}
+                        </button>
+                    </div>
+                );
+         */
 
         const form = (
             <form

@@ -1,7 +1,7 @@
 /*eslint no-shadow: "warn", no-underscore-dangle: "warn" */
 /* global $STM_Config */
 import {
- call, put, select, takeEvery
+    call, put, select, takeEvery
 } from 'redux-saga/effects';
 import { Set, Map } from 'immutable';
 import tt from 'counterpart';
@@ -60,20 +60,20 @@ export function* lazyUpdate(payload) {
 
 /** Keys, username, and password are not needed for the initial call.  This will check the login and may trigger an action to prompt for the password / key. */
 export function* broadcastOperation({
-    payload: {
-        type,
-        operation,
-        confirm,
-        warning,
-        keys,
-        username,
-        password,
-        useKeychain,
-        successCallback,
-        errorCallback,
-        allowPostUnsafe,
-    },
-}) {
+                                        payload: {
+                                            type,
+                                            operation,
+                                            confirm,
+                                            warning,
+                                            keys,
+                                            username,
+                                            password,
+                                            useKeychain,
+                                            successCallback,
+                                            errorCallback,
+                                            allowPostUnsafe,
+                                        },
+                                    }) {
     const operationParam = {
         type,
         operation,
@@ -201,10 +201,10 @@ function hasPrivateKeys(payload) {
 }
 
 function* broadcastPayload({
- payload: {
- operations, keys, username, successCallback, errorCallback
-}
-}) {
+                               payload: {
+                                   operations, keys, username, successCallback, errorCallback
+                               }
+                           }) {
     let needsActiveAuth = false;
 
     console.log('broadcastPayload', operations, username);
@@ -424,8 +424,8 @@ function* accepted_delete_comment({ operation }) {
 }
 
 const wait = (ms) => new Promise((resolve) => {
-        setTimeout(() => resolve(), ms);
-    });
+    setTimeout(() => resolve(), ms);
+});
 
 function* accepted_vote({ operation: { author, permlink, weight } }) {
     console.log('Vote accepted, weight', weight, 'on', author + '/' + permlink, 'weight');

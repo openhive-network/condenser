@@ -1,7 +1,7 @@
 /*global $STM_Config*/
 import { fromJS, Set } from 'immutable';
 import {
- call, put, select, fork, take, takeLatest
+    call, put, select, fork, take, takeLatest
 } from 'redux-saga/effects';
 import { api, auth } from '@hiveio/hive-js';
 import { PrivateKey, Signature, hash } from '@hiveio/hive-js/lib/auth/ecc';
@@ -75,12 +75,12 @@ function* shouldShowLoginWarning({ username, password }) {
 }
 
 /**
-    @arg {object} action.username - Unless a WIF is provided, this is hashed
-        with the password and key_type to create private keys.
-    @arg {object} action.password - Password or WIF private key. A WIF becomes
-        the posting key, a password can create all three key_types: active,
-        owner, posting keys.
-*/
+ @arg {object} action.username - Unless a WIF is provided, this is hashed
+ with the password and key_type to create private keys.
+ @arg {object} action.password - Password or WIF private key. A WIF becomes
+ the posting key, a password can create all three key_types: active,
+ owner, posting keys.
+ */
 function* checkKeyType(action) {
     if (yield call(shouldShowLoginWarning, action.payload)) {
         yield put(userActions.showLoginWarning(action.payload));
@@ -90,12 +90,12 @@ function* checkKeyType(action) {
 }
 
 /**
-    @arg {object} action.username - Unless a WIF is provided, this is hashed
-        with the password and key_type to create private keys.
-    @arg {object} action.password - Password or WIF private key. A WIF becomes
-        the posting key, a password can create all three key_types: active,
-        owner, posting keys.
-*/
+ @arg {object} action.username - Unless a WIF is provided, this is hashed
+ with the password and key_type to create private keys.
+ @arg {object} action.password - Password or WIF private key. A WIF becomes
+ the posting key, a password can create all three key_types: active,
+ owner, posting keys.
+ */
 function* usernamePasswordLogin(action) {
     // This is a great place to mess with session-related user state (:
     // If the user hasn't previously hidden the announcement in this session,
@@ -126,17 +126,17 @@ function* usernamePasswordLogin(action) {
 const clean = (value) => (value == null || value === '' || /null|undefined/.test(value) ? undefined : value);
 
 function* usernamePasswordLogin2({
-    username,
-    password,
-    useKeychain,
-    access_token,
-    expires_in,
-    useHiveSigner,
-    lastPath,
-    saveLogin,
-    operationType /*high security*/,
-    afterLoginRedirectToWelcome,
-}) {
+                                     username,
+                                     password,
+                                     useKeychain,
+                                     access_token,
+                                     expires_in,
+                                     useHiveSigner,
+                                     lastPath,
+                                     saveLogin,
+                                     operationType /*high security*/,
+                                     afterLoginRedirectToWelcome,
+                                 }) {
     const user = yield select((state) => state.user);
     const loginType = user.get('login_type');
     const justLoggedIn = loginType === 'basic';
@@ -352,7 +352,7 @@ function* usernamePasswordLogin2({
 
         if (account.get('memo_key') !== memo_pubkey || memo_pubkey === owner_pubkey || memo_pubkey === active_pubkey)
             // provided password did not yield memo key, or matched active/owner
-            { private_keys = private_keys.remove('memo_private'); }
+        { private_keys = private_keys.remove('memo_private'); }
 
         if (posting_pubkey === owner_pubkey || posting_pubkey === active_pubkey) {
             yield put(
@@ -500,39 +500,39 @@ function* promptTosAcceptance(username) {
 function* getFeatureFlags(/*username, posting_private*/) {
     // not yet in use
     return null;
-/*
-    try {
-        let flags;
-        if (!posting_private && hasCompatibleKeychain()) {
-            flags = yield new Promise((resolve, reject) => {
-                window.hive_keychain.requestSignedCall(
-                    username,
+    /*
+        try {
+            let flags;
+            if (!posting_private && hasCompatibleKeychain()) {
+                flags = yield new Promise((resolve, reject) => {
+                    window.hive_keychain.requestSignedCall(
+                        username,
+                        'conveyor.get_feature_flags',
+                        { account: username },
+                        'posting',
+                        (response) => {
+                            if (!response.success) {
+                                reject(response.message);
+                            } else {
+                                resolve(response.result);
+                            }
+                        }
+                    );
+                });
+            } else {
+                flags = yield call(
+                    [api, api.signedCallAsync],
                     'conveyor.get_feature_flags',
                     { account: username },
-                    'posting',
-                    (response) => {
-                        if (!response.success) {
-                            reject(response.message);
-                        } else {
-                            resolve(response.result);
-                        }
-                    }
+                    username,
+                    posting_private
                 );
-            });
-        } else {
-            flags = yield call(
-                [api, api.signedCallAsync],
-                'conveyor.get_feature_flags',
-                { account: username },
-                username,
-                posting_private
-            );
+            }
+            yield put(receiveFeatureFlags(flags));
+        } catch (error) {
+            // Do nothing; feature flags are not ready yet. Or posting_private is not available.
         }
-        yield put(receiveFeatureFlags(flags));
-    } catch (error) {
-        // Do nothing; feature flags are not ready yet. Or posting_private is not available.
-    }
- */
+     */
 }
 
 function* saveLogin_localStorage() {
@@ -621,19 +621,19 @@ function* logout(action) {
 
 // eslint-disable-next-line require-yield
 function* loginError({
-    // eslint-disable-next-line no-empty-pattern
-    payload: {
-        /*error*/
-    },
-}) {
+                         // eslint-disable-next-line no-empty-pattern
+                         payload: {
+                             /*error*/
+                         },
+                     }) {
     serverApiLogout();
 }
 
 /**
-    If the owner key was changed after the login owner key, this function will
-    find the next owner key history record after the change and store it under
-    user.previous_owner_authority.
-*/
+ If the owner key was changed after the login owner key, this function will
+ find the next owner key history record after the change and store it under
+ user.previous_owner_authority.
+ */
 // eslint-disable-next-line no-empty-pattern
 function* lookupPreviousOwnerAuthority({ payload: {} }) {
     const current = yield select((state) => state.user.getIn(['current']));
@@ -673,10 +673,10 @@ function* lookupPreviousOwnerAuthority({ payload: {} }) {
 }
 
 function* uploadImage({
-    payload: {
-       file, dataUrl, filename = 'image.txt', progress
-    }
-}) {
+                          payload: {
+                              file, dataUrl, filename = 'image.txt', progress
+                          }
+                      }) {
     // eslint-disable-next-line no-underscore-dangle
     const _progress = progress;
     progress = (msg) => {
