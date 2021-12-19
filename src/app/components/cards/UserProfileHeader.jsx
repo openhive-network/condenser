@@ -94,7 +94,7 @@ class UserProfileHeader extends React.Component {
                 <div className="columns shrink">
                     <ul className="menu" style={{ flexWrap: 'wrap' }}>
                         <li>
-                            <a href={walletUrl} target="_blank" rel="noopener noreferrer">
+                            <a href={`${walletUrl}/@${accountname}`} target="_blank" rel="noopener noreferrer">
                                 Wallet
                             </a>
                         </li>
