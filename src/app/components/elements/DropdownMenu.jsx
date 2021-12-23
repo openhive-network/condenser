@@ -5,17 +5,25 @@ import Icon from 'app/components/elements/Icon';
 import { findParent } from 'app/utils/DomUtils';
 import VerticalMenu from './VerticalMenu';
 
-export default class DropdownMenu extends React.Component {
-    static propTypes = {
-        items: PropTypes.arrayOf(PropTypes.object).isRequired,
-        selected: PropTypes.string,
-        children: PropTypes.oneOfType([PropTypes.object, PropTypes.array, PropTypes.element]),
-        className: PropTypes.string,
-        title: PropTypes.string,
-        href: PropTypes.string,
-        el: PropTypes.string.isRequired,
-    };
+const propTypes = {
+    items: PropTypes.arrayOf(PropTypes.object).isRequired,
+    selected: PropTypes.string,
+    children: PropTypes.oneOfType([PropTypes.object, PropTypes.array, PropTypes.element]),
+    className: PropTypes.string,
+    title: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
+    href: PropTypes.string,
+    el: PropTypes.string.isRequired,
+};
 
+const defaultProps = {
+    selected: undefined,
+    children: undefined,
+    className: undefined,
+    title: undefined,
+    href: undefined,
+};
+
+export default class DropdownMenu extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -91,3 +99,6 @@ export default class DropdownMenu extends React.Component {
         return React.createElement(el, { className: cls }, [entry, menu]);
     }
 }
+
+DropdownMenu.propTypes = propTypes;
+DropdownMenu.defaultProps = defaultProps;

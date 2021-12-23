@@ -16,12 +16,16 @@ export const packLoginData = (
     login_with_keychain,
     login_with_hive_signer,
     access_token,
-    expires_in
+    expires_in,
+    login_with_hiveauth,
+    hiveauth_key,
+    hiveauth_token,
+    hiveauth_token_expires,
 ) => Buffer.from(
-        `${username}\t${password}\t${memoWif || ''}\t${login_owner_pubkey || ''}\t${login_with_keychain || ''}\t${
-            login_with_hive_signer || ''
-        }\t${access_token || ''}\t${expires_in || ''}`
-    ).toString('hex');
+    `${username}\t${password}\t${memoWif || ''}\t${login_owner_pubkey || ''}\t${login_with_keychain || ''}`
+        + `\t${login_with_hive_signer || ''}\t${access_token || ''}\t${expires_in || ''}`
+        + `\t${login_with_hiveauth || ''}\t${hiveauth_key || ''}\t${hiveauth_token || ''}\t${hiveauth_token_expires || ''}`
+).toString('hex');
 
 export const calculateRcStats = (userRc) => {
     const manaRegenerationTime = 432000;
@@ -47,9 +51,17 @@ export const calculateRcStats = (userRc) => {
 /**
  *
  * @returns {array} [username, password, memoWif, login_owner_pubkey, login_with_keychain,
- * login_with_hive_signer]
+ *                   login_with_hive_signer, access_token, expires_in,
+ *                   login_with_hiveauth, hiveauth_key, hiveauth_token, hiveauth_token_expires]
  */
-export const extractLoginData = (data) => Buffer.from(data, 'hex').toString().split('\t');
+export const extractLoginData = (data) => {
+    if (data) {
+        const buffer = Buffer.from(data, 'hex');
+        return buffer.toString().split('\t');
+    }
+
+    return [];
+};
 
 export default {
     isLoggedIn,

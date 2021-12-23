@@ -608,7 +608,8 @@
         "login_warning_link_text": "Open my Hive Wallet to access and view my posting key",
         "join_our": "Join our",
         "sign_transfer": "Sign to complete transfer",
-        "use_keychain": "Use keychain extension",
+        "use_keychain": "Use Hive Keychain extension",
+        "use_hiveauth": "Use Hive Authentication Services",
         "more_login_methods": "more login methods"
     },
     "chainvalidation_js": {
