@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import { Link, browserHistory } from 'react-router';
 import { connect } from 'react-redux';
 import Headroom from 'react-headroom';
+import Tooltip from 'react-tooltip-lite';
 import resolveRoute from 'app/ResolveRoute';
 import tt from 'counterpart';
 import { APP_NAME } from 'app/client_config';
@@ -20,6 +21,7 @@ import { SIGNUP_URL } from 'shared/constants';
 import SteemLogo from 'app/components/elements/SteemLogo';
 import Announcement from 'app/components/elements/Announcement';
 import { Map } from 'immutable';
+import { extractLoginData } from 'app/utils/UserUtil';
 
 class Header extends React.Component {
     static propTypes = {
@@ -85,6 +87,9 @@ class Header extends React.Component {
             walletUrl,
             unreadNotificationCount,
             notificationActionPending,
+            login_with_keychain,
+            login_with_hivesigner,
+            login_with_hiveauth,
         } = this.props;
 
         const { showAnnouncement } = this.state;
@@ -220,6 +225,31 @@ class Header extends React.Component {
                 value: tt('g.logout'),
             },
         ];
+
+        let loginProvider;
+        let loginProviderLogo;
+        switch(true) {
+            case !!login_with_keychain:
+                loginProvider = 'Hive Keychain';
+                loginProviderLogo = '/images/hivekeychain.png';
+                break;
+
+            case !!login_with_hiveauth:
+                loginProvider = 'Hive Authentication Services';
+                loginProviderLogo = '/images/hiveauth.png';
+                break;
+
+            case !!login_with_hivesigner:
+                loginProvider = 'Hive Signer';
+                loginProviderLogo = '/images/hivesigner.svg';
+                break;
+
+            default:
+                loginProvider = 'Hive private key';
+                loginProviderLogo = '/images/hive-blog-logo.svg';
+                break;
+        }
+
         return (
             <Headroom>
                 <header className="Header">
@@ -294,7 +324,23 @@ class Header extends React.Component {
                                 <DropdownMenu
                                     className="Header__usermenu"
                                     items={user_menu}
-                                    title={username}
+                                    title={(
+                                        <div>
+                                            {username}
+                                            {' '}
+                                            <Tooltip
+                                                content={`Logged in with ${loginProvider}`}
+                                                eventOff="onClick"
+                                                className="login-provider-tooltip"
+                                            >
+                                                <img
+                                                    alt={loginProvider}
+                                                    width="16"
+                                                    src={loginProviderLogo}
+                                                />
+                                            </Tooltip>
+                                        </div>
+                                    )}
                                     el="span"
                                     position="left"
                                 >
@@ -359,6 +405,12 @@ const mapStateToProps = (state, ownProps) => {
         ]);
     }
 
+    const loginData = localStorage.getItem('autopost2');
+    const [,,,,
+        login_with_keychain, login_with_hivesigner,,,
+        login_with_hiveauth,,,,
+    ] = extractLoginData(loginData);
+
     return {
         username,
         loggedIn,
@@ -372,6 +424,9 @@ const mapStateToProps = (state, ownProps) => {
         unreadNotificationCount,
         notificationActionPending: state.global.getIn(['notifications', 'loading']),
         ...ownProps,
+        login_with_keychain,
+        login_with_hivesigner,
+        login_with_hiveauth,
     };
 };
 

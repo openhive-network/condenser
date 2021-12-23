@@ -46,29 +46,39 @@ function abs(value) {
     return Math.abs(parseInt(value));
 }
 
+const propTypes = {
+    // HTML properties
+    showList: PropTypes.bool,
+
+    // Redux connect properties
+    vote: PropTypes.func.isRequired,
+    author: PropTypes.string, // post was deleted
+    permlink: PropTypes.string,
+    username: PropTypes.string,
+    is_comment: PropTypes.bool,
+    active_votes: PropTypes.object,
+    post: PropTypes.object,
+    enable_slider: PropTypes.bool,
+    voting: PropTypes.bool,
+    price_per_hive: PropTypes.number,
+    hbd_print_rate: PropTypes.number,
+};
+
+const defaultProps = {
+    showList: true,
+    author: undefined,
+    permlink: undefined,
+    username: undefined,
+    is_comment: false,
+    active_votes: [],
+    post: undefined,
+    enable_slider: true,
+    voting: false,
+    price_per_hive: undefined,
+    hbd_print_rate: undefined,
+};
+
 class Voting extends PureComponent {
-    static propTypes = {
-        // HTML properties
-        showList: PropTypes.bool,
-
-        // Redux connect properties
-        vote: PropTypes.func.isRequired,
-        author: PropTypes.string, // post was deleted
-        permlink: PropTypes.string,
-        username: PropTypes.string,
-        is_comment: PropTypes.bool,
-        active_votes: PropTypes.object,
-        post: PropTypes.object,
-        enable_slider: PropTypes.bool,
-        voting: PropTypes.bool,
-        price_per_hive: PropTypes.number,
-        hbd_print_rate: PropTypes.number,
-    };
-
-    static defaultProps = {
-        showList: true,
-    };
-
     constructor(props) {
         super(props);
         this.state = {
@@ -536,6 +546,9 @@ class Voting extends PureComponent {
     }
 }
 
+Voting.propTypes = propTypes;
+Voting.defaultProps = defaultProps;
+
 export default connect(
     // mapStateToProps
     (state, ownProps) => {
@@ -597,8 +610,8 @@ export default connect(
     // mapDispatchToProps
     (dispatch) => ({
         vote: (weight, {
- author, permlink, username, myVote, isFlag, rshares
-}) => {
+         author, permlink, username, myVote, isFlag, rshares
+        }) => {
             const confirm = () => {
                 // new vote
                 if (myVote == null) return null;

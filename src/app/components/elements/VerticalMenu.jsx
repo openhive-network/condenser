@@ -3,13 +3,18 @@ import PropTypes from 'prop-types';
 import { Link } from 'react-router';
 import Icon from 'app/components/elements/Icon';
 
-export default class VerticalMenu extends React.Component {
-    static propTypes = {
-        items: PropTypes.arrayOf(PropTypes.object).isRequired,
-        title: PropTypes.string,
-        hideValue: PropTypes.oneOfType([PropTypes.string, PropTypes.element]),
-    };
+const propTypes = {
+    items: PropTypes.arrayOf(PropTypes.object).isRequired,
+    title: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
+    hideValue: PropTypes.oneOfType([PropTypes.string, PropTypes.element]),
+};
 
+const defaultProps = {
+    title: undefined,
+    hideValue: undefined,
+};
+
+export default class VerticalMenu extends React.Component {
     closeMenu = (e) => {
         // If this was not a left click, or if CTRL or CMD were held, do not close the menu.
         if (e.button !== 0 || e.ctrlKey || e.metaKey) return;
@@ -52,3 +57,6 @@ export default class VerticalMenu extends React.Component {
         );
     }
 }
+
+VerticalMenu.propTypes = propTypes;
+VerticalMenu.defaultProps = defaultProps;

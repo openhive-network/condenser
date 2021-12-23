@@ -10,6 +10,7 @@ import { accountAuthLookup } from 'app/redux/AuthSaga';
 import { getAccount } from 'app/redux/SagaShared';
 import * as userActions from 'app/redux/UserReducer';
 import { isLoggedInWithKeychain } from 'app/utils/HiveKeychain';
+import HiveAuthClient from 'app/utils/HiveAuthenticationServices.js';
 import { packLoginData, extractLoginData } from 'app/utils/UserUtil';
 import { browserHistory } from 'react-router';
 import {
@@ -126,17 +127,21 @@ function* usernamePasswordLogin(action) {
 const clean = (value) => (value == null || value === '' || /null|undefined/.test(value) ? undefined : value);
 
 function* usernamePasswordLogin2({
-                                     username,
-                                     password,
-                                     useKeychain,
-                                     access_token,
-                                     expires_in,
-                                     useHiveSigner,
-                                     lastPath,
-                                     saveLogin,
-                                     operationType /*high security*/,
-                                     afterLoginRedirectToWelcome,
-                                 }) {
+     username,
+     password,
+     useKeychain,
+     access_token,
+     expires_in,
+     useHiveSigner,
+     useHiveAuth,
+     hiveauth_key,
+     hiveauth_token,
+     hiveauth_token_expires,
+     lastPath,
+     saveLogin,
+     operationType /*high security*/,
+     afterLoginRedirectToWelcome,
+}) {
     const user = yield select((state) => state.user);
     const loginType = user.get('login_type');
     const justLoggedIn = loginType === 'basic';
@@ -144,9 +149,11 @@ function* usernamePasswordLogin2({
 
     // login, using saved password
     let feedURL = false;
-    let autopost, memoWif, login_owner_pubkey, login_wif_owner_pubkey, login_with_keychain, login_with_hivesigner;
+    let autopost, memoWif, login_owner_pubkey, login_wif_owner_pubkey, login_with_keychain, login_with_hivesigner,
+        login_with_hiveauth;
     if (!username && !password) {
         const data = localStorage.getItem('autopost2');
+
         if (data) {
             // auto-login with a low security key (like a posting key)
             autopost = true; // must use semi-colon
@@ -160,14 +167,29 @@ function* usernamePasswordLogin2({
                 login_with_hivesigner,
                 access_token,
                 expires_in,
+                login_with_hiveauth,
+                hiveauth_key,
+                hiveauth_token,
+                hiveauth_token_expires,
             ] = extractLoginData(data);
             memoWif = clean(memoWif);
             login_owner_pubkey = clean(login_owner_pubkey);
         }
     }
+
     // no saved password
-    if (!username || !(password || useKeychain || login_with_keychain || useHiveSigner || login_with_hivesigner)) {
-        console.log('No saved password');
+    if (
+        !username
+        || !(
+            password
+            || useKeychain
+            || login_with_keychain
+            || useHiveAuth
+            || login_with_hiveauth
+            || useHiveSigner
+            || login_with_hivesigner
+        )
+    ) {
         const offchain_account = yield select((state) => state.offchain.get('account'));
         if (offchain_account) serverApiLogout();
         return;
@@ -184,13 +206,11 @@ function* usernamePasswordLogin2({
 
     const account = yield call(getAccount, username);
     if (!account) {
-        console.log('No account');
         yield put(userActions.loginError({ error: 'Username does not exist' }));
         return;
     }
     //dmca user block
     if (username && DMCAUserList.includes(username)) {
-        console.log('DMCA list');
         yield put(userActions.loginError({ error: translate('terms_violation') }));
         return;
     }
@@ -226,6 +246,23 @@ function* usernamePasswordLogin2({
         return;
     }
 
+    // return if already logged in using Hive Authentication Services
+    if (login_with_hiveauth) {
+        console.log('Logged in using Hive Authentication Services');
+        HiveAuthClient.setUsername(username);
+        HiveAuthClient.setKey(hiveauth_key);
+        HiveAuthClient.setToken(hiveauth_token);
+        HiveAuthClient.setExpire(hiveauth_token_expires);
+        yield put(
+            userActions.setUser({
+                username,
+                login_with_hiveauth: true,
+                effective_vests: effectiveVests(account),
+            })
+        );
+        return;
+    }
+
     // return if already logged in using HiveSigner
     if (login_with_hivesigner) {
         console.log('Logged in using HiveSigner');
@@ -245,7 +282,7 @@ function* usernamePasswordLogin2({
     }
 
     let private_keys;
-    if (!useKeychain && !useHiveSigner) {
+    if (!useKeychain && !useHiveSigner && !useHiveAuth) {
         try {
             const private_key = PrivateKey.fromWif(password);
             login_wif_owner_pubkey = private_key.toPublicKey().toString();
@@ -409,7 +446,7 @@ function* usernamePasswordLogin2({
                 if (response.success) {
                     signatures.posting = response.result;
                 } else {
-                    yield put(userActions.loginError({ error: response.message }));
+                    yield put(userActions.loginError({error: response.message}));
                     return;
                 }
                 feedURL = '/@' + username + '/feed';
@@ -420,6 +457,45 @@ function* usernamePasswordLogin2({
                         effective_vests: effectiveVests(account),
                     })
                 );
+            } else if (useHiveAuth) {
+                const authResponse = yield new Promise((resolve) => {
+                    HiveAuthClient.login(username, (res) => {
+                        resolve(res);
+                    });
+                });
+
+                let challengeResponse;
+                if (authResponse.success) {
+                    challengeResponse = yield new Promise((resolve) => {
+                        HiveAuthClient.requestAndVerifyChallenge('posting', (res) => {
+                            resolve(res);
+                        });
+                    });
+                } else {
+                    yield put(userActions.loginError({
+                        error: authResponse.error,
+                    }));
+                    return;
+                }
+
+                if (challengeResponse.success) {
+                    const { token, expire, key } = authResponse.hiveAuthData;
+                    yield put(
+                        userActions.setUser({
+                            username,
+                            login_with_hiveauth: true,
+                            hiveauth_key: key,
+                            hiveauth_token: token,
+                            hiveauth_token_expires: expire,
+                            effective_vests: effectiveVests(account),
+                        })
+                    );
+                } else {
+                    yield put(userActions.loginError({
+                        error: authResponse.error,
+                    }));
+                    return;
+                }
             } else if (useHiveSigner) {
                 if (access_token) {
                     // redirect url
@@ -439,9 +515,7 @@ function* usernamePasswordLogin2({
                 }
             } else {
                 const sign = (role, d) => {
-                    console.log('Sign before');
                     if (!d) return;
-                    console.log('Sign after');
                     const sig = Signature.signBufferSha256(bufSha, d);
                     signatures[role] = sig.toHex();
                 };
@@ -460,11 +534,11 @@ function* usernamePasswordLogin2({
 
     if (!autopost && saveLogin) yield put(userActions.saveLogin());
     // Feature Flags
-    if (useKeychain || useHiveSigner || private_keys.get('posting_private')) {
+    if (useKeychain || useHiveSigner || useHiveAuth || private_keys.get('posting_private')) {
         yield fork(
             getFeatureFlags,
             username,
-            useKeychain || useHiveSigner ? null : private_keys.get('posting_private').toString()
+            useKeychain || useHiveSigner || useHiveAuth ? null : private_keys.get('posting_private').toString()
         );
     }
     // TOS acceptance
@@ -549,6 +623,10 @@ function* saveLogin_localStorage() {
         login_with_hivesigner,
         access_token,
         expires_in,
+        login_with_hiveauth,
+        hiveauth_key,
+        hiveauth_token,
+        hiveauth_token_expires,
     ] = yield select((state) => [
         state.user.getIn(['current', 'username']),
         state.user.getIn(['current', 'private_keys']),
@@ -557,6 +635,10 @@ function* saveLogin_localStorage() {
         state.user.getIn(['current', 'login_with_hivesigner']),
         state.user.getIn(['current', 'access_token']),
         state.user.getIn(['current', 'expires_in']),
+        state.user.getIn(['current', 'login_with_hiveauth']),
+        state.user.getIn(['current', 'hiveauth_key']),
+        state.user.getIn(['current', 'hiveauth_token']),
+        state.user.getIn(['current', 'hiveauth_token_expires']),
     ]);
     if (!username) {
         console.error('Not logged in');
@@ -564,7 +646,7 @@ function* saveLogin_localStorage() {
     }
     // Save the lowest security key
     const posting_private = private_keys && private_keys.get('posting_private');
-    if (!login_with_keychain && !login_with_hivesigner && !posting_private) {
+    if (!login_with_keychain && !login_with_hivesigner && !login_with_hiveauth && !posting_private) {
         console.error('No posting key to save?');
         return;
     }
@@ -597,7 +679,11 @@ function* saveLogin_localStorage() {
         login_with_keychain,
         login_with_hivesigner,
         access_token,
-        expires_in
+        expires_in,
+        login_with_hiveauth,
+        hiveauth_key,
+        hiveauth_token,
+        hiveauth_token_expires,
     );
     // autopost is a auto login for a low security key (like the posting key)
     localStorage.setItem('autopost2', data);
