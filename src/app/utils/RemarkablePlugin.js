@@ -1,10 +1,10 @@
-// import {validate_account_name} from 'app/utils/ChainValidation'
-// import linksRe from 'app/utils/Links'
+// import {validate_account_name}  from 'app/utils/ChainValidation'
+// import linksRe  from 'app/utils/Links'
 // import config from 'config'
 
 /** usage
 <code>
-import {plugin, tagRules} from 'app/utils/RemarkablePlugin'
+import {plugin, tagRules}  from 'app/utils/RemarkablePlugin'
 import Remarkable from 'remarkable'
 const remarkable = new Remarkable()
 remarkable.use(plugin(tagRules))
@@ -74,9 +74,6 @@ console.log('renderedText', renderedText)
 //                 '@' + user
 //             )
 //         })
-//         // unescapted ipfs links (temp, until the reply editor categorizes the image)
-//         //if(config.ipfs_prefix)
-//         //    content = content.replace(linksRe.ipfsPrefix, config.ipfs_prefix)
 //
 //         return content
 //     },

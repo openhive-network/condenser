@@ -12,9 +12,13 @@ class ReactMutationObserver extends React.Component {
     };
 
     observer = null;
+
     onChildListChanged = null;
+
     onAttributesChanged = null;
+
     onSubtreeChanged = null;
+
     onCharacterDataChanged = null;
 
     constructor(props) {
@@ -54,7 +58,7 @@ class ReactMutationObserver extends React.Component {
 
         if (typeof MutationObserver !== 'undefined') {
             this.observer = new MutationObserver((mutations) => {
-                mutations.forEach(function (mutation) {
+                mutations.forEach((mutation) => {
                     if (mutation.type === 'childList' && typeof me.onChildListChanged === 'function') {
                         me.onChildListChanged(mutation, me.disconnect);
                     }

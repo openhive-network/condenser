@@ -54,7 +54,9 @@ class UserRole extends Component {
 
     render() {
         const { newRole, message, newUsername } = this.state;
-        const { username, community, role, availableRoles, addUser } = this.props;
+        const {
+            username, community, availableRoles, addUser
+        } = this.props;
 
         const roleSelector = availableRoles.map((role) => <option value={role}>{role}</option>);
         const editUserModalHeader = (
@@ -110,17 +112,29 @@ class UserRole extends Component {
                 <div>
                     <h5>Role Permissions</h5>
                     <p>
-                        <strong>Owner</strong> - assign admins
+                        <strong>Owner</strong>
+                        {' '}
+                        - assign admins
                         <br />
-                        <strong>Admin</strong> - edit settings, assign mods
+                        <strong>Admin</strong>
+                        {' '}
+                        - edit settings, assign mods
                         <br />
-                        <strong>Moderator</strong> - mute, pin, set user titles
+                        <strong>Moderator</strong>
+                        {' '}
+                        - mute, pin, set user titles
                         <br />
-                        <strong>Member</strong> - listed on leadership team
+                        <strong>Member</strong>
+                        {' '}
+                        - listed on leadership team
                         <br />
-                        <strong>Guest</strong> - default; can post and comment
+                        <strong>Guest</strong>
+                        {' '}
+                        - default; can post and comment
                         <br />
-                        <strong>Muted</strong> - new posts automatically muted
+                        <strong>Muted</strong>
+                        {' '}
+                        - new posts automatically muted
                     </p>
                 </div>
             </span>

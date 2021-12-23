@@ -1,7 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-const NativeSelect = ({ options, className, currentlySelected, onChange }) => {
+const NativeSelect = ({
+ options, className, currentlySelected, onChange
+}) => {
     const handleChange = (event) => {
         onChange(event.target);
     };

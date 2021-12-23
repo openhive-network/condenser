@@ -63,8 +63,8 @@ class ExplorePost extends Component {
         const ecency = 'https://ecency.com' + link;
         const hiveblog = 'https://hive.blog' + link;
         const hiveblogMd = '[' + title + '](https://hive.blog' + link + ')';
-        let text = this.state.copied == true ? tt('explorepost_jsx.copied') : tt('explorepost_jsx.copy');
-        let textMD = this.state.copiedMD == true ? tt('explorepost_jsx.copied') : tt('explorepost_jsx.copy');
+        const text = this.state.copied == true ? tt('explorepost_jsx.copied') : tt('explorepost_jsx.copy');
+        const textMD = this.state.copiedMD == true ? tt('explorepost_jsx.copied') : tt('explorepost_jsx.copy');
         return (
             <span className="ExplorePost">
                 <h4>{tt('g.share_this_post')}</h4>
@@ -105,22 +105,30 @@ class ExplorePost extends Component {
                 <ul>
                     <li>
                         <a href={hiveblocks} onClick={this.Hiveblocks} target="_blank" rel="noopener noreferrer">
-                            hiveblocks.com <Icon name="extlink" />
+                            hiveblocks.com
+                            {' '}
+                            <Icon name="extlink" />
                         </a>
                     </li>
                     <li>
                         <a href={hivedb} onClick={this.Hivedb} target="_blank" rel="noopener noreferrer">
-                            hive-db.com <Icon name="extlink" />
+                            hive-db.com
+                            {' '}
+                            <Icon name="extlink" />
                         </a>
                     </li>
                     <li>
                         <a href={peakd} onClick={this.Peakd} target="_blank" rel="noopener noreferrer">
-                            peakd.com <Icon name="extlink" />
+                            peakd.com
+                            {' '}
+                            <Icon name="extlink" />
                         </a>
                     </li>
                     <li>
                         <a href={ecency} onClick={this.Ecency} target="_blank" rel="noopener noreferrer">
-                            ecency.com <Icon name="extlink" />
+                            ecency.com
+                            {' '}
+                            <Icon name="extlink" />
                         </a>
                     </li>
                 </ul>

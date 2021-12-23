@@ -6,8 +6,6 @@ import debounce from 'lodash.debounce';
 import { actions as fetchDataSagaActions } from 'app/redux/FetchDataSaga';
 import PostSummary from 'app/components/cards/PostSummary';
 import LoadingIndicator from 'app/components/elements/LoadingIndicator';
-import GptAd from 'app/components/elements/GptAd';
-import VideoAd from 'app/components/elements/VideoAd';
 // import shouldComponentUpdate from 'app/utils/shouldComponentUpdate';
 
 function topPosition(domElt) {
@@ -21,7 +19,6 @@ class PostsList extends PureComponent {
     static propTypes = {
         posts: PropTypes.object,
         loading: PropTypes.bool,
-        category: PropTypes.string,
         loadMore: PropTypes.func,
         nsfwPref: PropTypes.string.isRequired,
     };
@@ -96,7 +93,7 @@ class PostsList extends PureComponent {
 
     render() {
         const {
-            posts, loading, category, order, nsfwPref, hideCategory
+            posts, loading, order, nsfwPref, hideCategory
         } = this.props;
         const { thumbSize } = this.state;
 
@@ -113,23 +110,6 @@ class PostsList extends PureComponent {
 
                 const summary = [];
                 summary.push(<li key={i}>{ps}</li>);
-
-                const every = this.props.adSlots.in_feed_1.every;
-                if (false && this.props.videoAdsEnabled && i === 4) {
-                    summary.push(
-                        <div key={`id-${i}`}>
-                            <div className="articles__content-block--ad video-ad">
-                                <VideoAd id="bsa-zone_1572296522077-3_123456" />
-                            </div>
-                        </div>
-                    );
-                } else if (this.props.shouldSeeAds && i >= every && i % every === 0) {
-                    summary.push(
-                        <div key={`ad-${i}`} className="articles__content-block--ad">
-                            <GptAd tags={[category]} type="Freestar" id="bsa-zone_1566495089502-1_123456" />
-                        </div>
-                    );
-                }
 
                 return summary;
             });
@@ -153,9 +133,6 @@ export default connect(
     (state, props) => {
         const userPreferences = state.app.get('user_preferences').toJS();
         const nsfwPref = userPreferences.nsfwPref || 'warn';
-        const shouldSeeAds = state.app.getIn(['googleAds', 'enabled']);
-        const videoAdsEnabled = state.app.getIn(['googleAds', 'videoAdsEnabled']);
-        const adSlots = state.app.getIn(['googleAds', 'adSlots']).toJS();
 
         const current = state.user.get('current');
         const username = current ? current.get('username') : state.offchain.get('account');
@@ -186,9 +163,6 @@ export default connect(
             ...props, //loading,category,order,hideCategory
             posts,
             nsfwPref,
-            shouldSeeAds,
-            videoAdsEnabled,
-            adSlots,
         };
     },
     (dispatch) => ({

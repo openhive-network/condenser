@@ -4,7 +4,7 @@ class ServerError extends Component {
     render() {
         return (
             <div className="float-center" style={{ width: '640px', textAlign: 'center' }}>
-                <img width="640px" height="480px" src="/images/500.jpg" />
+                <img width="640px" height="480px" src="/images/500.jpg" alt="error 500" />
                 <div
                     style={{
                         width: '300px',
@@ -17,7 +17,11 @@ class ServerError extends Component {
                     <h4>Sorry.</h4>
                     <p>Looks like something went wrong on our end.</p>
                     <p>
-                        Head back to <a href="/">Hive</a> homepage.
+                        Head back to
+                        {' '}
+                        <a href="/">Hive</a>
+                        {' '}
+                        homepage.
                     </p>
                 </div>
             </div>

@@ -69,7 +69,9 @@ class PostSummary extends React.Component {
             }
         }
 
-        const { ignore, hideCategory, net_vests } = this.props;
+        const {
+            ignore, hideCategory, net_vests,
+        } = this.props;
         const { post } = this.props;
         if (!post) return null;
 
@@ -291,7 +293,7 @@ class PostSummary extends React.Component {
             image_link = extractImageLink(post.get('cross_post_json_metadata'), post.get('cross_post_body'));
         }
 
-        if (!image_link) {
+        if (!image_link && !isReply) {
             image_link = `https://images.hive.blog/u/${author}/avatar`;
         }
 
@@ -355,6 +357,7 @@ class PostSummary extends React.Component {
 export default connect((state, props) => {
     const { post, hideCategory, nsfwPref } = props;
     const net_vests = state.user.getIn(['current', 'effective_vests'], 0.0);
+
     return {
         post,
         hideCategory,

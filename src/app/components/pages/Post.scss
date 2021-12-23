@@ -1,14 +1,14 @@
 .Post__comments_sort_order {
   margin: 0.5rem 0;
   @include themify($themes) {
-    color: themed('textColorSecondary');  
-  }  
+    color: themed('textColorSecondary');
+  }
   font-size: 94%;
   svg polygon {
     fill: $dark-gray;
     @include themify($themes) {
-        fill: themed('textColorSecondary');  
-    } 
+        fill: themed('textColorSecondary');
+    }
   }
   > span {
     font-weight: bold;
@@ -23,9 +23,9 @@
   margin: 0 auto;
   padding: 1rem 0;
   @include themify($themes) {
-    border-bottom: themed('border');  
-  } 
-  .button { 
+    border-bottom: themed('border');
+  }
+  .button {
       margin-top: 1rem;
       text-transform: none;
   }
@@ -35,4 +35,40 @@
   max-width: 54rem;
   margin: 0 auto 3.5rem;
   font-size: 92%;
+}
+
+.Post__reply_pagination {
+    width: 100%;
+    text-align: center;
+    margin-top: 25px;
+    margin-bottom: 10px;
+}
+
+.Post__reply_pagelink {
+    cursor: pointer;
+    padding: 2px 4px;
+    border-radius: 2px 4px;
+
+    @include themify($themes) {
+        color: themed('buttonText');
+        background-color: themed('buttonBackground');
+
+        &:hover {
+            color: themed('buttonTextHover');
+            background-color: themed('buttonBackgroundHover');
+        }
+
+        &.current_page {
+            font-weight: bold;
+            background-color: themed('alertBackgroundColor');
+        }
+    }
+}
+
+.Post_reply_pagelink_separator {
+    margin-right: 15px;
+}
+
+.Post__reply_label {
+    margin-right: 15px;
 }

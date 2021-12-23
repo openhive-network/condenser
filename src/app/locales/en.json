@@ -255,7 +255,9 @@
             "confirm": "You are about to publish a HIVE private key or master password. You will probably lose control of the associated account and all its funds.",
             "warning": "Legitimate users, including employees of Hive, will never ask you for a private key or master password.",
             "checkbox": "I understand"
-        }
+        },
+        "rcLevel": "Resource Credits (RC) level: %(rc_percent)s%%.",
+        "rcFullIn": "Full in %(duration)s"
     },
     "navigation": {
         "about": "About Hive",
@@ -331,7 +333,9 @@
         "select_cover_image": "Select your cover image",
         "alt_author": "Author (if different from current account)",
         "shorten_alt_author": "Shorten the author name",
-        "invalid_username": "Invalid username (no @ required)"
+        "invalid_username": "Invalid username (no @ required)",
+        "rc_tooltip": "Resource Credits are required to perform any operation on the blockchain.<br/>They progressively recharge at a rate of 20%% per day.",
+        "advanced_tooltip": "Here you can set post options such as author rewards split,<br/>max accepted payout, beneficiaries & post templates"
     },
     "beneficiary_selector_jsx": {
         "header": "Who should receive any rewards?",
@@ -434,6 +438,10 @@
             "age": "Age",
             "reputation": "Reputation"
         }
+    },
+    "pagination_jsx": {
+        "numberOfPages": "There are %(count)s pages",
+        "pages": "Pages"
     },
     "voting_jsx": {
         "flagging_post_can_remove_rewards_the_flag_should_be_used_for_the_following": "Flagging a post can remove rewards and make this material less visible. Some common reasons to flag",
@@ -600,7 +608,8 @@
         "login_warning_link_text": "Open my Hive Wallet to access and view my posting key",
         "join_our": "Join our",
         "sign_transfer": "Sign to complete transfer",
-        "use_keychain": "Use keychain extension",
+        "use_keychain": "Use Hive Keychain extension",
+        "use_hiveauth": "Use Hive Authentication Services",
         "more_login_methods": "more login methods"
     },
     "chainvalidation_js": {

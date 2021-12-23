@@ -1,9 +1,9 @@
 import React from 'react';
-import Link from 'app/utils/SlateEditor/Link';
-import Image from 'app/utils/SlateEditor/Image';
-import Iframe from 'app/utils/SlateEditor/Iframe';
-import HRule from 'app/utils/SlateEditor/HRule';
-import Align from 'app/utils/SlateEditor/Align';
+import Link  from 'app/utils/SlateEditor/Link';
+import Image  from 'app/utils/SlateEditor/Image';
+import Iframe  from 'app/utils/SlateEditor/Iframe';
+import HRule  from 'app/utils/SlateEditor/HRule';
+import Align  from 'app/utils/SlateEditor/Align';
 
 const $ = require('cheerio');
 

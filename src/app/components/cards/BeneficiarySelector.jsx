@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import Autocomplete from 'react-autocomplete';
-// import shouldComponentUpdate from 'app/utils/shouldComponentUpdate';
+// import shouldComponentUpdate  from 'app/utils/shouldComponentUpdate';
 import { validate_account_name } from 'app/utils/ChainValidation';
 import { List, Set } from 'immutable';
 import tt from 'counterpart';

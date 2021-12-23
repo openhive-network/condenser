@@ -3,8 +3,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Link, browserHistory } from 'react-router';
 import { connect } from 'react-redux';
-import { parseJsonTags } from 'app/utils/StateFunctions';
 import Headroom from 'react-headroom';
+import Tooltip from 'react-tooltip-lite';
 import resolveRoute from 'app/ResolveRoute';
 import tt from 'counterpart';
 import { APP_NAME } from 'app/client_config';
@@ -16,12 +16,12 @@ import * as appActions from 'app/redux/AppReducer';
 import { startPolling } from 'app/redux/PollingSaga';
 import { actions as fetchDataSagaActions } from 'app/redux/FetchDataSaga';
 import Userpic from 'app/components/elements/Userpic';
+import UserpicInfoWrapper from 'app/components/elements/UserpicInfoWrapper';
 import { SIGNUP_URL } from 'shared/constants';
 import SteemLogo from 'app/components/elements/SteemLogo';
 import Announcement from 'app/components/elements/Announcement';
-import GptAd from 'app/components/elements/GptAd';
 import { Map } from 'immutable';
-import ReactMutationObserver from '../../utils/ReactMutationObserver';
+import { extractLoginData } from 'app/utils/UserUtil';
 
 class Header extends React.Component {
     static propTypes = {
@@ -39,9 +39,6 @@ class Header extends React.Component {
         super(props);
 
         this.state = {
-            // eslint-disable-next-line react/no-unused-state
-            gptAdRendered: false,
-            showAd: false,
             showAnnouncement: this.props.showAnnouncement,
         };
     }
@@ -50,20 +47,6 @@ class Header extends React.Component {
         const { loggedIn, current_account_name, startNotificationsPolling } = this.props;
         if (loggedIn) {
             startNotificationsPolling(current_account_name);
-        }
-    }
-
-    componentDidMount() {
-        if (!this.props.gptEnabled || !process.env.BROWSER || !window.googletag || !window.googletag.pubads) {
-            return null;
-        }
-
-        window.addEventListener('gptadshown', (e) => this.gptAdRendered(e));
-    }
-
-    componentWillUnmount() {
-        if (!this.props.gptEnabled || !process.env.BROWSER || !window.googletag || !window.googletag.pubads) {
-            return null;
         }
     }
 
@@ -83,18 +66,6 @@ class Header extends React.Component {
         }
     }
 
-    headroomOnUnpin() {
-        this.setState({ showAd: false });
-    }
-
-    headroomOnUnfix() {
-        this.setState({ showAd: true });
-    }
-
-    gptAdRendered() {
-        this.setState({ showAd: true, gptAdRendered: true });
-    }
-
     hideAnnouncement() {
         this.setState({ showAnnouncement: false });
         this.props.hideAnnouncement();
@@ -112,17 +83,19 @@ class Header extends React.Component {
             showSidePanel,
             navigate,
             display_name,
-            content,
+            // content,
             walletUrl,
             unreadNotificationCount,
             notificationActionPending,
+            login_with_keychain,
+            login_with_hivesigner,
+            login_with_hiveauth,
         } = this.props;
 
         const { showAnnouncement } = this.state;
 
         /*Set the document.title on each header render.*/
         const route = resolveRoute(pathname);
-        let gptTags = [];
         let page_title = route.page;
         let sort_order = '';
         let topic = '';
@@ -132,7 +105,6 @@ class Header extends React.Component {
                 page_title = 'My Friends'; //tt('header_jsx.home');
             } else {
                 topic = route.params.length > 1 ? route.params[1] || '' : '';
-                gptTags = [topic];
 
                 let prefix = route.params[0];
                 if (prefix == 'created') prefix = 'New';
@@ -149,14 +121,7 @@ class Header extends React.Component {
                 }
             }
         } else if (route.page === 'Post') {
-            if (content) {
-                const user = `${route.params[1]}`.replace('@', '');
-                const slug = `${route.params[2]}`;
-                const post = content.get(`${user}/${slug}`);
-                gptTags = post ? parseJsonTags(post) : [];
-            }
-            sort_order = '';
-            topic = route.params[0];
+            // @TODO check what this should be
         } else if (route.page == 'SubmitPost') {
             page_title = tt('header_jsx.create_a_post');
         } else if (route.page == 'Privacy') {
@@ -260,120 +225,145 @@ class Header extends React.Component {
                 value: tt('g.logout'),
             },
         ];
-        const showAd = false; // TODO: fix header ad overlap bug
-        const headerMutated = (mutation, discconnectObserver) => {
-            if (mutation.target.id.indexOf('google_ads_iframe_') !== -1) {
-                this.gptAdRendered();
-                if (typeof discconnectObserver === 'function') {
-                    discconnectObserver();
-                }
-            }
-        };
+
+        let loginProvider;
+        let loginProviderLogo;
+        switch(true) {
+            case !!login_with_keychain:
+                loginProvider = 'Hive Keychain';
+                loginProviderLogo = '/images/hivekeychain.png';
+                break;
+
+            case !!login_with_hiveauth:
+                loginProvider = 'Hive Authentication Services';
+                loginProviderLogo = '/images/hiveauth.png';
+                break;
+
+            case !!login_with_hivesigner:
+                loginProvider = 'Hive Signer';
+                loginProviderLogo = '/images/hivesigner.svg';
+                break;
+
+            default:
+                loginProvider = 'Hive private key';
+                loginProviderLogo = '/images/hive-blog-logo.svg';
+                break;
+        }
+
         return (
-            <ReactMutationObserver onChildListChanged={headerMutated}>
-                <Headroom
-                    onUnpin={(e) => this.headroomOnUnpin(e)}
-                    onUnfix={(e) => this.headroomOnUnfix(e)}
-                >
-                    <header className="Header">
-                        {showAnnouncement && (
-                            <Announcement
-                                onClose={(e) => this.hideAnnouncement(e)}
-                            />
-                        )}
-                        {/*<div className="beta-disclaimer">
+            <Headroom>
+                <header className="Header">
+                    {showAnnouncement && (
+                        <Announcement
+                            onClose={(e) => this.hideAnnouncement(e)}
+                        />
+                    )}
+                    {/*<div className="beta-disclaimer">
                             Viewing <strong>Hive.blog beta</strong>. Note that
                             availability of features or service may change at
                             any time.
                         </div>*/}
-                        {/* If announcement is shown, ad will not render unless it's in a parent div! */}
-                        <div style={showAd ? {} : { display: 'none' }}>
-                            <GptAd tags={gptTags} type="Freestar" id="bsa-zone_1566493796250-1_123456" />
+
+                    <nav className="row Header__nav">
+                        <div className="small-6 medium-4 large-3 columns Header__logotype">
+                            <Link to={logo_link}>
+                                <SteemLogo nightmodeEnabled={nightmodeEnabled} />
+                            </Link>
                         </div>
 
-                        <nav className="row Header__nav">
-                            <div className="small-6 medium-4 large-3 columns Header__logotype">
-                                <Link to={logo_link}>
-                                    <SteemLogo nightmodeEnabled={nightmodeEnabled} />
-                                </Link>
-                            </div>
+                        <div className="large-5 columns show-for-large large-centered Header__sort">
+                            <ul className="nav__block-list">
+                                <li className="nav__block-list-item">
+                                    <Link to="/">Posts</Link>
+                                </li>
+                                <li className="nav__block-list-item">
+                                    <Link to={`${walletUrl}/proposals`} target="_blank" rel="noopener noreferrer">
+                                        Proposals
+                                    </Link>
+                                </li>
+                                <li className="nav__block-list-item">
+                                    <Link to={`${walletUrl}/~witnesses`} target="_blank" rel="noopener noreferrer">
+                                        Witnesses
+                                    </Link>
+                                </li>
+                                <li className="nav__block-list-item">
+                                    <Link to="https://hive.io/eco/" target="_blank" rel="noopener noreferrer">
+                                        Our dApps
+                                    </Link>
+                                </li>
+                            </ul>
+                        </div>
 
-                            <div className="large-5 columns show-for-large large-centered Header__sort">
-                                <ul className="nav__block-list">
-                                    <li className="nav__block-list-item">
-                                        <Link to="/">Posts</Link>
-                                    </li>
-                                    <li className="nav__block-list-item">
-                                        <Link to={`${walletUrl}/proposals`} target="_blank" rel="noopener noreferrer">
-                                            Proposals
-                                        </Link>
-                                    </li>
-                                    <li className="nav__block-list-item">
-                                        <Link to={`${walletUrl}/~witnesses`} target="_blank" rel="noopener noreferrer">
-                                            Witnesses
-                                        </Link>
-                                    </li>
-                                    <li className="nav__block-list-item">
-                                        <Link to="https://hive.io/eco/" target="_blank" rel="noopener noreferrer">
-                                            Our dApps
-                                        </Link>
-                                    </li>
-                                </ul>
-                            </div>
-
-                            <div className="small-6 medium-8 large-4 columns Header__buttons">
-                                {/*NOT LOGGED IN SIGN IN AND SIGN UP LINKS*/}
-                                {!loggedIn && (
-                                    <span className="Header__user-signup show-for-medium">
-                                        <a className="Header__login-link" href="/login.html" onClick={showLogin}>
-                                            {tt('g.login')}
-                                        </a>
-                                        <a className="Header__signup-link" href={SIGNUP_URL}>
-                                            {tt('g.sign_up')}
-                                        </a>
-                                    </span>
-                                )}
-
-                                {/*CUSTOM SEARCH*/}
-                                <span className="Header__search--desktop">
-                                    <ElasticSearchInput redirect />
-                                </span>
-                                <span className="Header__search">
-                                    <a href="/search">
-                                        <IconButton icon="magnifyingGlass" />
+                        <div className="small-6 medium-8 large-4 columns Header__buttons">
+                            {/*NOT LOGGED IN SIGN IN AND SIGN UP LINKS*/}
+                            {!loggedIn && (
+                                <span className="Header__user-signup show-for-medium">
+                                    <a className="Header__login-link" href="/login.html" onClick={showLogin}>
+                                        {tt('g.login')}
+                                    </a>
+                                    <a className="Header__signup-link" href={SIGNUP_URL}>
+                                        {tt('g.sign_up')}
                                     </a>
                                 </span>
+                            )}
 
-                                {/*SUBMIT STORY*/}
-                                {submit_story}
-                                {/*USER AVATAR */}
-                                {loggedIn && (
-                                    <DropdownMenu
-                                        className="Header__usermenu"
-                                        items={user_menu}
-                                        title={username}
-                                        el="span"
-                                        position="left"
-                                    >
-                                        <li className="Header__userpic ">
+                            {/*CUSTOM SEARCH*/}
+                            <span className="Header__search--desktop">
+                                <ElasticSearchInput redirect />
+                            </span>
+                            <span className="Header__search">
+                                <a href="/search">
+                                    <IconButton icon="magnifyingGlass" />
+                                </a>
+                            </span>
+
+                            {/*SUBMIT STORY*/}
+                            {submit_story}
+                            {/*USER AVATAR */}
+                            {loggedIn && (
+                                <DropdownMenu
+                                    className="Header__usermenu"
+                                    items={user_menu}
+                                    title={(
+                                        <div>
+                                            {username}
+                                            {' '}
+                                            <Tooltip
+                                                content={`Logged in with ${loginProvider}`}
+                                                eventOff="onClick"
+                                                className="login-provider-tooltip"
+                                            >
+                                                <img
+                                                    alt={loginProvider}
+                                                    width="16"
+                                                    src={loginProviderLogo}
+                                                />
+                                            </Tooltip>
+                                        </div>
+                                    )}
+                                    el="span"
+                                    position="left"
+                                >
+                                    <li className="Header__userpic ">
+                                        <UserpicInfoWrapper>
                                             <Userpic account={username} />
-                                        </li>
-                                        {!notificationActionPending && unreadNotificationCount > 0 && (
-                                            <div className="Header__notification">
-                                                <span>{unreadNotificationCount}</span>
-                                            </div>
-                                        )}
-                                    </DropdownMenu>
-                                )}
-                                {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions */}
-                                <span onClick={showSidePanel} className="toggle-menu Header__hamburger">
-                                    <span className="hamburger" />
-                                </span>
-                            </div>
-                        </nav>
-                    </header>
-                </Headroom>
-            </ReactMutationObserver>
+                                        </UserpicInfoWrapper>
+                                    </li>
+                                    {!notificationActionPending && unreadNotificationCount > 0 && (
+                                        <div className="Header__notification">
+                                            <span>{unreadNotificationCount}</span>
+                                        </div>
+                                    )}
+                                </DropdownMenu>
+                            )}
+                            {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions */}
+                            <span onClick={showSidePanel} className="toggle-menu Header__hamburger">
+                                <span className="hamburger" />
+                            </span>
+                        </div>
+                    </nav>
+                </header>
+            </Headroom>
         );
     }
 }
@@ -404,7 +394,6 @@ const mapStateToProps = (state, ownProps) => {
     const loggedIn = !!username;
     const current_account_name = username ? username : state.offchain.get('account');
 
-    const gptEnabled = state.app.getIn(['googleAds', 'gptEnabled']);
     const content = state.global.get('content'); // TODO: needed for SSR?
     let unreadNotificationCount = 0;
     if (loggedIn && state.global.getIn(['notifications', current_account_name, 'unreadNotifications'])) {
@@ -416,6 +405,12 @@ const mapStateToProps = (state, ownProps) => {
         ]);
     }
 
+    const loginData = localStorage.getItem('autopost2');
+    const [,,,,
+        login_with_keychain, login_with_hivesigner,,,
+        login_with_hiveauth,,,,
+    ] = extractLoginData(loginData);
+
     return {
         username,
         loggedIn,
@@ -425,11 +420,13 @@ const mapStateToProps = (state, ownProps) => {
         current_account_name,
         showAnnouncement: state.user.get('showAnnouncement'),
         walletUrl: state.app.get('walletUrl'),
-        gptEnabled,
         content,
         unreadNotificationCount,
         notificationActionPending: state.global.getIn(['notifications', 'loading']),
         ...ownProps,
+        login_with_keychain,
+        login_with_hivesigner,
+        login_with_hiveauth,
     };
 };
 

@@ -1,18 +1,13 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import tt from 'counterpart';
-import * as globalActions from 'app/redux/GlobalReducer';
 import * as transactionActions from 'app/redux/TransactionReducer';
 
 const nothingToClaim = 'No rewards pending redemption.';
 
 const getRewardsString = (account) => {
-    const reward_hive =
-        parseFloat(account.get('reward_hive_balance').split(' ')[0]) > 0 ? account.get('reward_hive_balance') : null;
-    const reward_hbd =
-        parseFloat(account.get('reward_hbd_balance').split(' ')[0]) > 0 ? account.get('reward_hbd_balance') : null;
-    const reward_hp =
-        parseFloat(account.get('reward_vesting_hive').split(' ')[0]) > 0
+    const reward_hive = parseFloat(account.get('reward_hive_balance').split(' ')[0]) > 0 ? account.get('reward_hive_balance') : null;
+    const reward_hbd = parseFloat(account.get('reward_hbd_balance').split(' ')[0]) > 0 ? account.get('reward_hbd_balance') : null;
+    const reward_hp = parseFloat(account.get('reward_vesting_hive').split(' ')[0]) > 0
             ? account.get('reward_vesting_hive').replace('HIVE', 'HP')
             : null;
 
@@ -49,9 +44,10 @@ class ClaimBox extends React.Component {
         };
     }
 
-    componentDidUpdate(prevProps, prevState) {
+    componentDidUpdate(prevProps) {
         if (this.props.account !== prevProps.account) {
             const rewards_str = this.props.account ? getRewardsString(this.props.account) : 'Loading...';
+            // eslint-disable-next-line react/no-did-update-set-state
             this.setState({
                 rewards_str,
                 empty: rewards_str == nothingToClaim,
@@ -89,8 +85,12 @@ class ClaimBox extends React.Component {
 
         return (
             <div className="UserWallet__claimbox">
-                <strong>Unclaimed rewards: {rewards_str}</strong>
+                <strong>
+                    Unclaimed rewards:
+                    {rewards_str}
+                </strong>
                 <button
+                    type="button"
                     disabled={this.state.claimInProgress}
                     className="button"
                     onClick={(e) => {

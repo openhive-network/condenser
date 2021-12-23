@@ -5,7 +5,6 @@ export default function ServerHTML({
     assets,
     title,
     meta,
-    gptEnabled,
     shouldSeeCookieConsent,
     cookieConsentApiKey,
 }) {
@@ -101,25 +100,6 @@ export default function ServerHTML({
                 {assets.style.map((href) => (
                     <link href={href} key={href} rel="stylesheet" type="text/css" />
                 ))}
-                {gptEnabled ? (
-                    <script
-                        dangerouslySetInnerHTML={{
-                            __html: `
-                            (function() {
-                              var bsa_optimize = document.createElement('script');
-                              window.optimize = { queue: [] };
-                              bsa_optimize.type = 'text/javascript';
-                              bsa_optimize.async = true;
-                              bsa_optimize.src = 'https://cdn-s2s.buysellads.net/pub/steemit.js?' + (new Date() - new Date() % 3600000);
-                              (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(bsa_optimize);
-                            })();
-                        `,
-                        }}
-                    />
-                ) : null}
-                {gptEnabled ? (
-                    <script src="//m.servedby-buysellads.com/monetization.js" type="text/javascript" />
-                ) : null}
                 {shouldSeeCookieConsent ? (
                     <script
                         id="Cookiebot"
@@ -151,6 +131,8 @@ export default function ServerHTML({
                         `,
                     }}
                 />
+                <script async src="https://www.tiktok.com/embed.js" charSet="UTF-8" />
+                <script async src="https://www.instagram.com/embed.js" charSet="UTF-8" />
                 <script async src="https://embed.redditmedia.com/widgets/platform.js" charSet="UTF-8" />
                 <title>{page_title}</title>
             </head>
@@ -159,19 +141,6 @@ export default function ServerHTML({
                 {assets.script.map((href) => (
                     <script key={href} src={href} />
                 ))}
-                {/* gptEnabled ? (
-                    <script
-                        dangerouslySetInnerHTML={{
-                            __html: `
-                            (function(){
-                              if(typeof _bsa !== 'undefined' && _bsa) {
-                                _bsa.init('fancybar', 'CE7D653L', 'placement:steemitcom');
-                              }
-                            })();
-                        `,
-                        }}
-                    />
-                      ) : null*/}
             </body>
         </html>
     );

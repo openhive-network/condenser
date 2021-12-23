@@ -1,7 +1,7 @@
 /*eslint no-shadow: "warn", no-underscore-dangle: "warn" */
 /* global $STM_Config */
 import {
- call, put, select, takeEvery
+    call, put, select, takeEvery
 } from 'redux-saga/effects';
 import { Set, Map } from 'immutable';
 import tt from 'counterpart';
@@ -10,7 +10,9 @@ import base58 from 'bs58';
 import secureRandom from 'secure-random';
 import { PrivateKey } from '@hiveio/hive-js/lib/auth/ecc';
 import { broadcast } from '@hiveio/hive-js';
+import { dispatcher } from 'react-dispatch';
 
+import { EVENT_OPERATION_BROADCAST } from 'shared/constants';
 import { getContent } from 'app/redux/SagaShared';
 import { postingOps, findSigningKey } from 'app/redux/AuthSaga';
 import * as appActions from 'app/redux/AppReducer';
@@ -22,6 +24,7 @@ import { serverApiRecordEvent } from 'app/utils/ServerApiClient';
 import { isLoggedInWithKeychain } from 'app/utils/HiveKeychain';
 import { callBridge } from 'app/utils/steemApi';
 import { isLoggedInWithHiveSigner, hiveSignerClient } from 'app/utils/HiveSigner';
+import HiveAuthService from 'app/utils/HiveAuthenticationServices';
 
 import diff_match_patch from 'diff-match-patch';
 
@@ -67,6 +70,7 @@ export function* broadcastOperation({
         username,
         password,
         useKeychain,
+        useHiveAuth,
         successCallback,
         errorCallback,
         allowPostUnsafe,
@@ -79,6 +83,7 @@ export function* broadcastOperation({
         username,
         password,
         useKeychain,
+        useHiveAuth,
         successCallback,
         errorCallback,
         allowPostUnsafe,
@@ -122,7 +127,11 @@ export function* broadcastOperation({
         return;
     }
     try {
-        if (!isLoggedInWithKeychain() && !isLoggedInWithHiveSigner()) {
+        if (
+            !isLoggedInWithKeychain()
+            && !isLoggedInWithHiveSigner()
+            && !HiveAuthService.isLoggedInWithHiveAuth()
+        ) {
             if (!keys || keys.length === 0) {
                 payload.keys = [];
                 // user may already be logged in, or just enterend a signing passowrd or wif
@@ -149,8 +158,9 @@ export function* broadcastOperation({
                 }
             }
         }
+
         // if the customJsonPayload has a 'required_posting_auths' key, that has value undefined, and the user is logged in. Update it.
-        const updatedOps = payload.operations.map((op) => {
+        payload.operations = payload.operations.map((op) => {
             if (op[0] === 'custom_json') {
                 if (
                     op[1].required_posting_auths
@@ -162,8 +172,6 @@ export function* broadcastOperation({
             }
             return op;
         });
-
-        payload.operations = updatedOps;
 
         yield call(broadcastPayload, { payload });
         let eventType = type
@@ -199,9 +207,9 @@ function hasPrivateKeys(payload) {
 }
 
 function* broadcastPayload({
- payload: {
- operations, keys, username, successCallback, errorCallback
-}
+   payload: {
+       operations, keys, username, successCallback, errorCallback
+   }
 }) {
     let needsActiveAuth = false;
 
@@ -306,6 +314,17 @@ function* broadcastPayload({
                         }
                     });
                 }
+            } else if (HiveAuthService.isLoggedInWithHiveAuth()) {
+                // Nothing requires Active Key at the moment, to revisit if we ever merge wallet back.
+                HiveAuthService.broadcast(operations, 'posting', (response) => {
+                    console.log('HAS broadcast response', response);
+                    if (!response.success) {
+                        reject(response.error);
+                    } else {
+                        broadcastedEvent();
+                        resolve();
+                    }
+                });
             } else {
                 broadcast.send({ extensions: [], operations }, keys, (err) => {
                     if (err) {
@@ -338,11 +357,14 @@ function* broadcastPayload({
                 );
             }
         }
-        if (successCallback) { try {
+        if (successCallback) {
+            try {
                 successCallback(operations);
             } catch (error) {
                 console.error('defaultErrorCallback', error);
-            } }
+            }
+        }
+        dispatcher.dispatch(EVENT_OPERATION_BROADCAST);
     } catch (error) {
         console.error('TransactionSaga\tbroadcastPayload', error);
         // status: error
@@ -419,8 +441,8 @@ function* accepted_delete_comment({ operation }) {
 }
 
 const wait = (ms) => new Promise((resolve) => {
-        setTimeout(() => resolve(), ms);
-    });
+    setTimeout(() => resolve(), ms);
+});
 
 function* accepted_vote({ operation: { author, permlink, weight } }) {
     console.log('Vote accepted, weight', weight, 'on', author + '/' + permlink, 'weight');

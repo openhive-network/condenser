@@ -115,8 +115,7 @@ export function normalizeEmbedUrl(url) {
 }
 
 function generateTwitterCode(metadata) {
-    let twitterCode =
-        '<blockquote className="twitter-tweet"><p lang="en" dir="ltr"></p>&mdash; <a href=""></a></blockquote>';
+    let twitterCode = '<blockquote className="twitter-tweet"><p lang="en" dir="ltr"></p>&mdash; <a href=""></a></blockquote>';
     if (metadata) {
         let [author, date, url, description] = Buffer.from(metadata, 'base64').toString().split('|');
 
@@ -129,11 +128,10 @@ function generateTwitterCode(metadata) {
             description = url;
         }
 
-        twitterCode =
-            '<blockquote class="twitter-tweet">' +
-            `<p lang="en" dir="ltr">${description}</p>` +
-            `&mdash; ${author} <a href="${url}">${date}</a>` +
-            '</blockquote>';
+        twitterCode = '<blockquote class="twitter-tweet">'
+            + `<p lang="en" dir="ltr">${description}</p>`
+            + `&mdash; ${author} <a href="${url}">${date}</a>`
+            + '</blockquote>';
 
         const twttr = _.get(window, 'twttr');
         if (twttr && twttr.widgets) {

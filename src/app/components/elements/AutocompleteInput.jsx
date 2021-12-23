@@ -4,8 +4,8 @@ import PropTypes from 'prop-types';
 
 function matchInputToItem(item, input) {
     return (
-        item.name.toLowerCase().indexOf(input.toLowerCase()) !== -1 ||
-        item.abbr.toLowerCase().indexOf(input.toLowerCase()) !== -1
+        item.name.toLowerCase().indexOf(input.toLowerCase()) !== -1
+        || item.abbr.toLowerCase().indexOf(input.toLowerCase()) !== -1
     );
 }
 
@@ -44,11 +44,10 @@ class AutocompleteInput extends React.Component {
 
     constructor(props) {
         super(props);
+        this.state = {
+            value: this.props.initialValue,
+        };
     }
-
-    state = {
-        value: this.props.initialValue,
-    };
 
     render() {
         return (

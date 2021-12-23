@@ -1,4 +1,4 @@
-FROM node:12.16.2 as development
+FROM node:12.22.6 as development
 
 WORKDIR /var/app
 
@@ -18,7 +18,7 @@ FROM development as dependencies
 RUN yarn install --non-interactive --frozen-lockfile --ignore-optional --production
 
 ### BUILD MINIFIED PRODUCTION ##
-FROM node:12.16.2-alpine as production
+FROM node:12.22.6-alpine as production
 
 WORKDIR /var/app
 

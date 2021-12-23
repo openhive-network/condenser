@@ -1,5 +1,5 @@
 import React from 'react';
-import { normalizeEmbedUrl as normalizeEmbbeddedPlayerEmbedUrl } from 'app/components/elements/EmbeddedPlayers';
+import { normalizeEmbedUrl as normalizeEmbbeddedPlayerEmbedUrl }  from 'app/components/elements/EmbeddedPlayers';
 
 export default class Iframe extends React.Component {
     normalizeEmbedUrl = (url) => {
@@ -8,7 +8,7 @@ export default class Iframe extends React.Component {
             return validEmbedUrl;
         }
 
-        console.log('unable to auto-detect embed url', url);
+        console.error('unable to auto-detect embed url', url);
         return null;
     };
 

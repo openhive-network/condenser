@@ -40,8 +40,6 @@ const IconButton = ({ icon, size, fill }) => {
             viewBox = '0 0 32 32';
     }
 
-    const fillColor = `icon-button__svg--${fill}`;
-
     return (
         <svg
             className={`icon-button__svg icon-button__svg--${fill} icon-button__svg--${size}`}

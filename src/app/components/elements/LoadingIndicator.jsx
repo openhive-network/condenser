@@ -38,7 +38,7 @@ class LoadingIndicator extends React.Component {
             //'strong' may be an evolving load indicator.
             case 'circle-strong':
                 return (
-                    <div style={style} className={'LoadingIndicator circle circle-strong'}>
+                    <div style={style} className="LoadingIndicator circle circle-strong">
                         <div />
                     </div>
                 );

@@ -1,11 +1,11 @@
-import React from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { Component } from 'react';
+
 import Remarkable from 'remarkable';
 import sanitizeConfig, { noImageText } from 'app/utils/SanitizeConfig';
 import sanitize from 'sanitize-html';
-import HtmlReady from 'shared/HtmlReady';
+import HtmlReady, { highlightCodes } from 'shared/HtmlReady';
 import tt from 'counterpart';
 import { generateMd as EmbeddedPlayerGenerateMd } from 'app/components/elements/EmbeddedPlayers';
 
@@ -120,6 +120,12 @@ class MarkdownViewer extends Component {
             return <div />;
         }
 
+        // Needs to be done here so that the tags added by HighlightJS won't be filtered of by the sanitizer
+        const higlightedText = highlightCodes(cleanText).html;
+        if (higlightedText) {
+            cleanText = higlightedText;
+        }
+
         const noImageActive = cleanText.indexOf(noImageText) !== -1;
 
         // In addition to inserting the youtube component, this allows
@@ -134,6 +140,7 @@ class MarkdownViewer extends Component {
                 chk += s.charCodeAt(i) * (i + 1);
             }
 
+            // eslint-disable-next-line no-bitwise
             return (chk & 0xffffffff).toString(16);
         }
 
@@ -146,6 +153,7 @@ class MarkdownViewer extends Component {
                 sections.push(markdown);
 
                 if (section === '') {
+                    // eslint-disable-next-line no-continue
                     continue;
                 }
             }
@@ -155,23 +163,24 @@ class MarkdownViewer extends Component {
             idx += 1;
         }
 
-        const cn =
-            'Markdown' +
-            (this.props.className ? ` ${this.props.className}` : '') +
-            (html ? ' html' : '') +
-            (large ? '' : ' MarkdownViewer--small');
+        const cn = 'Markdown'
+            + (this.props.className ? ` ${this.props.className}` : '')
+            + (html ? ' html' : '')
+            + (large ? '' : ' MarkdownViewer--small');
 
         return (
             <div className={'MarkdownViewer ' + cn}>
                 {sections}
                 {noImageActive && allowNoImage && (
                     <div
-                        key={'hidden-content'}
+                        role="link"
+                        tabIndex={0}
+                        key="hidden-content"
                         onClick={this.onAllowNoImage}
                         className="MarkdownViewer__negative_group"
                     >
                         {tt('markdownviewer_jsx.images_were_hidden_due_to_low_ratings')}
-                        <button style={{ marginBottom: 0 }} className="button hollow tiny float-right">
+                        <button type="button" style={{ marginBottom: 0 }} className="button hollow tiny float-right">
                             {tt('g.show')}
                         </button>
                     </div>
