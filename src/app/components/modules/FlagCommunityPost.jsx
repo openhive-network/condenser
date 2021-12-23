@@ -3,8 +3,8 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
 import tt from 'counterpart';
-const nl2li = text =>
-    text.split('\n').map((item, key) => <li key={key}>{item}</li>);
+
+const nl2li = (text) => text.split('\n').map((item, key) => <li key={key}>{item}</li>);
 
 class FlagCommunityPost extends Component {
     constructor(props) {
@@ -14,11 +14,12 @@ class FlagCommunityPost extends Component {
 
     componentWillUpdate = (nextProps, nextState) => {
         if (nextState.notes != this.state.notes) {
+            // eslint-disable-next-line react/no-will-update-set-state
             this.setState({ disableSubmit: nextState.notes == '' });
         }
     };
 
-    onInput = e => {
+    onInput = (e) => {
         this.setState({ notes: `${e.target.value || ''}`.trim() });
     };
 
@@ -42,13 +43,12 @@ class FlagCommunityPost extends Component {
                             type: isComment ? 'comment' : 'post',
                         })}
                     </p>
-                    {flagText &&
-                        flagText.length > 0 && (
-                            <span>
-                                <strong>Community Rules</strong>
-                                <ol>{nl2li(flagText)}</ol>
-                            </span>
-                        )}
+                    {flagText && flagText.length > 0 && (
+                        <span>
+                            <strong>Community Rules</strong>
+                            <ol>{nl2li(flagText)}</ol>
+                        </span>
+                    )}
                 </div>
                 <hr />
                 <div className="input-group">
@@ -57,7 +57,7 @@ class FlagCommunityPost extends Component {
                         className="input-group-field"
                         type="text"
                         maxLength={120}
-                        onKeyUp={e => {
+                        onKeyUp={(e) => {
                             if (e.key === 'Enter') {
                                 this.onSubmit();
                             }

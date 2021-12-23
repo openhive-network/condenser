@@ -1,4 +1,4 @@
-export const loadUserTemplates = username => {
+export const loadUserTemplates = (username) => {
     const lsEntryName = `hivePostTemplates-${username}`;
     let userTemplates = window.localStorage.getItem(lsEntryName);
     if (userTemplates) {

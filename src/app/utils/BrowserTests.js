@@ -5,6 +5,7 @@ import { config } from '@hiveio/hive-js';
 
 export const browserTests = {};
 
+// eslint-disable-next-line consistent-return
 export default function runTests() {
     let rpt = '';
     let pass = true;
@@ -23,9 +24,7 @@ export default function runTests() {
 
     let private_key, public_key;
     const wif = '5JdeC9P7Pbd1uGdFVEsJ41EkEnADbbHGq6p1BwFxm6txNBsQnsw';
-    const pubkey =
-        config.get('address_prefix') +
-        '8m5UgaFAAYQRuaNejYdS8FVLVp9Ss3K1qAVk5de6F8s3HnVbvA';
+    const pubkey = config.get('address_prefix') + '8m5UgaFAAYQRuaNejYdS8FVLVp9Ss3K1qAVk5de6F8s3HnVbvA';
 
     it('create private key', () => {
         private_key = PrivateKey.fromSeed('1');

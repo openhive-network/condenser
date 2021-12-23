@@ -24,22 +24,18 @@ class FlagButton extends React.Component {
         this.setState({ showDialog: false });
     };
 
-    onSubmit = notes => {
-        const { account, community, username, permlink, flagPost } = this.props;
+    onSubmit = (notes) => {
+        const {
+ account, community, username, permlink, flagPost
+} = this.props;
         if (!notes || !community || !username) return false; // Fail Fast
         flagPost(username, community, account, notes, permlink);
     };
 
     render() {
         return (
-            <span
-                className={` flag__button ${
-                    this.props.isComment
-                        ? 'flag__button--comment'
-                        : 'flag__button--post'
-                } `}
-            >
-                <a onClick={() => this.showDialog()}>
+            <span className={` flag__button ${this.props.isComment ? 'flag__button--comment' : 'flag__button--post'} `}>
+                <a role="link" tabIndex={0} onClick={() => this.showDialog()}>
                     <Icon name="flag1" />
                     <Icon name="flag2" />
                 </a>
@@ -47,7 +43,7 @@ class FlagButton extends React.Component {
                     <Reveal onHide={() => null} show>
                         <CloseButton onClick={() => this.hideDialog()} />
                         <FlagCommunityPost
-                            onSubmit={notes => {
+                            onSubmit={(notes) => {
                                 this.hideDialog();
                                 this.onSubmit(notes);
                             }}
@@ -80,11 +76,7 @@ export default connect(
         const account = post.get('author');
         const permlink = post.get('permlink');
         const community = post.get('category');
-        const flagText = state.global.getIn([
-            'community',
-            community,
-            'flag_text',
-        ]);
+        const flagText = state.global.getIn(['community', community, 'flag_text']);
         return {
             account,
             permlink,
@@ -93,19 +85,11 @@ export default connect(
             flagText,
         };
     },
-    dispatch => ({
+    (dispatch) => ({
         stateSet: (key, value) => {
             dispatch(globalActions.set({ key, value }));
         },
-        flagPost: (
-            username,
-            community,
-            account,
-            notes,
-            permlink,
-            successCallback,
-            errorCallback
-        ) => {
+        flagPost: (username, community, account, notes, permlink, successCallback, errorCallback) => {
             const action = 'flagPost';
             const payload = [
                 action,

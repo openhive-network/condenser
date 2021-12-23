@@ -23,10 +23,7 @@ class LoadingIndicator extends React.Component {
         switch (type) {
             case 'dots':
                 return (
-                    <div
-                        style={style}
-                        className="LoadingIndicator three-bounce"
-                    >
+                    <div style={style} className="LoadingIndicator three-bounce">
                         <div className="bounce1" />
                         <div className="bounce2" />
                         <div className="bounce3" />
@@ -34,33 +31,21 @@ class LoadingIndicator extends React.Component {
                 );
             case 'circle':
                 return (
-                    <div
-                        style={style}
-                        className={
-                            'LoadingIndicator circle' +
-                            (inline ? ' inline' : '')
-                        }
-                    >
+                    <div style={style} className={'LoadingIndicator circle' + (inline ? ' inline' : '')}>
                         <div />
                     </div>
                 );
             //'strong' may be an evolving load indicator.
             case 'circle-strong':
                 return (
-                    <div
-                        style={style}
-                        className={'LoadingIndicator circle circle-strong'}
-                    >
+                    <div style={style} className="LoadingIndicator circle circle-strong">
                         <div />
                     </div>
                 );
             default:
                 return (
                     <div
-                        className={
-                            'LoadingIndicator loading-overlay' +
-                            (this.progress > 0 ? ' with-progress' : '')
-                        }
+                        className={'LoadingIndicator loading-overlay' + (this.progress > 0 ? ' with-progress' : '')}
                         style={style}
                     >
                         <div className="loading-panel">

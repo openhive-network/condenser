@@ -5,15 +5,15 @@ import PropTypes from 'prop-types';
 import { Link } from 'react-router';
 import tt from 'counterpart';
 import { List } from 'immutable';
-import ReactDOM, { findDOMNode } from 'react-dom';
+import { findDOMNode } from 'react-dom';
 import Overlay from 'react-overlays/lib/Overlay';
-import shouldComponentUpdate from 'app/utils/shouldComponentUpdate';
-import Icon from 'app/components/elements/Icon';
-import Reputation from 'app/components/elements/Reputation';
-import AffiliationMap from 'app/utils/AffiliationMap';
-import UserTitle from 'app/components/elements/UserTitle';
+// import shouldComponentUpdate from 'app//utils/shouldComponentUpdate';
+import Icon from 'app//components/elements/Icon';
+import Reputation from 'app//components/elements/Reputation';
+import AffiliationMap from 'app//utils/AffiliationMap';
+import UserTitle from 'app//components/elements/UserTitle';
+import Sanitizer from 'app//utils/Sanitizer';
 import AuthorDropdown from '../AuthorDropdown';
-import Sanitizer from 'app/utils/Sanitizer';
 
 const { string, bool, number } = PropTypes;
 
@@ -37,11 +37,9 @@ class Author extends React.Component {
         role: string,
         title: string,
         community: string,
-        crossPostedBy: string,
-        crossPostAuthor: string,
-        resolveCrossPost: bool,
         showRole: bool,
     };
+
     static defaultProps = {
         follow: true,
         mute: true,
@@ -49,9 +47,6 @@ class Author extends React.Component {
         role: '',
         title: '',
         community: '',
-        crossPostedBy: null,
-        crossPostAuthor: null,
-        resolveCrossPost: true,
     };
 
     constructor(...args) {
@@ -65,7 +60,7 @@ class Author extends React.Component {
         if (!this.authorProfileLink) {
             return;
         }
-        const node = ReactDOM.findDOMNode(this.authorProfileLink);
+        const node = findDOMNode(this.authorProfileLink);
         if (node.addEventListener) {
             node.addEventListener('click', this.toggle, false);
         } else {
@@ -77,7 +72,7 @@ class Author extends React.Component {
         if (!this.authorProfileLink) {
             return;
         }
-        const node = ReactDOM.findDOMNode(this.authorProfileLink);
+        const node = findDOMNode(this.authorProfileLink);
         if (node.removeEventListener) {
             node.removeEventListener('click', this.toggle);
         } else {
@@ -85,7 +80,7 @@ class Author extends React.Component {
         }
     }
 
-    toggle = e => {
+    toggle = (e) => {
         if (!(e.metaKey || e.ctrlKey)) {
             e.preventDefault();
             e.stopPropagation();
@@ -104,7 +99,7 @@ class Author extends React.Component {
         });
     };
 
-    shouldComponentUpdate = shouldComponentUpdate(this, 'Author');
+    // shouldComponentUpdate = shouldComponentUpdate(this, 'Author');
 
     render() {
         const {
@@ -124,7 +119,9 @@ class Author extends React.Component {
 
         const warn = blacklists && (
             <span className="account_warn" title={blacklists.join(', ')}>
-                ({blacklists.length})
+                (
+                {blacklists.length}
+                )
             </span>
         );
 
@@ -152,7 +149,8 @@ class Author extends React.Component {
                 <span className="author" itemProp="author" itemScope itemType="http://schema.org/Person">
                     <strong>
                         <Link to={'/@' + author}>{author}</Link>
-                    </strong>{' '}
+                    </strong>
+                    {' '}
                     <Reputation value={authorRep} />
                     {warn}
                     {userTitle}
@@ -165,12 +163,14 @@ class Author extends React.Component {
                 <span itemProp="author" itemScope itemType="http://schema.org/Person">
                     <strong>
                         <Link
-                            ref={link => {
+                            ref={(link) => {
                                 this.authorProfileLink = link;
                             }}
                             to={'/@' + author}
                         >
-                            {author} <Reputation value={authorRep} />
+                            {author}
+                            {' '}
+                            <Reputation value={authorRep} />
                             <Icon name="dropdown-arrow" />
                         </Link>
                     </strong>
@@ -222,8 +222,6 @@ export default connect((state, props) => {
         role: Sanitizer.getTextOnly(post.get('author_role')),
         title: Sanitizer.getTextOnly(post.get('author_title')),
         blacklists: blacklists.length > 0 ? blacklists : null,
-        crossPostedBy: post.get('cross_posted_by'),
-        crossPostAuthor: post.get('cross_post_author'),
         showRole: props.showRole,
     };
 })(Author);

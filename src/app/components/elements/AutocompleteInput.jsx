@@ -4,8 +4,8 @@ import PropTypes from 'prop-types';
 
 function matchInputToItem(item, input) {
     return (
-        item.name.toLowerCase().indexOf(input.toLowerCase()) !== -1 ||
-        item.abbr.toLowerCase().indexOf(input.toLowerCase()) !== -1
+        item.name.toLowerCase().indexOf(input.toLowerCase()) !== -1
+        || item.abbr.toLowerCase().indexOf(input.toLowerCase()) !== -1
     );
 }
 
@@ -44,11 +44,10 @@ class AutocompleteInput extends React.Component {
 
     constructor(props) {
         super(props);
+        this.state = {
+            value: this.props.initialValue,
+        };
     }
-
-    state = {
-        value: this.props.initialValue,
-    };
 
     render() {
         return (
@@ -62,26 +61,17 @@ class AutocompleteInput extends React.Component {
                         display: 'inline-block',
                     }}
                     items={this.props.values}
-                    getItemValue={item => item.name}
+                    getItemValue={(item) => item.name}
                     shouldItemRender={matchInputToItem}
                     sortItems={sortInput}
                     onChange={(event, value) => this.setState({ value })}
-                    onSelect={value => {
+                    onSelect={(value) => {
                         this.setState({ value });
                         this.props.onSelect(value);
                     }}
-                    renderMenu={children => (
-                        <div className="react-autocomplete-input">
-                            {children}
-                        </div>
-                    )}
+                    renderMenu={(children) => <div className="react-autocomplete-input">{children}</div>}
                     renderItem={(item, isHighlighted) => (
-                        <div
-                            className={`item ${
-                                isHighlighted ? 'item-highlighted' : ''
-                            }`}
-                            key={item.abbr}
-                        >
+                        <div className={`item ${isHighlighted ? 'item-highlighted' : ''}`} key={item.abbr}>
                             {item.name}
                         </div>
                     )}

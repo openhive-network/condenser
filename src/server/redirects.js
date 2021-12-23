@@ -14,8 +14,9 @@ export default function useRedirects(app) {
 
     app.use(router.routes());
 
-    redirects.forEach(redirectConfig => {
-        router.get(redirectConfig[0], function*() {
+    redirects.forEach((redirectConfig) => {
+        // eslint-disable-next-line require-yield
+        router.get(redirectConfig[0], function* () {
             const dest = Object.keys(this.params).reduce((value, key) => {
                 return value.replace('$' + key, this.params[key]);
             }, redirectConfig[1]);

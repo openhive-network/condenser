@@ -12,11 +12,12 @@ class MutePost extends Component {
 
     componentWillUpdate = (nextProps, nextState) => {
         if (nextState.notes != this.state.notes) {
+            // eslint-disable-next-line react/no-will-update-set-state
             this.setState({ disableSubmit: nextState.notes == '' });
         }
     };
 
-    onInput = e => {
+    onInput = (e) => {
         this.setState({ notes: `${e.target.value || ''}`.trim() });
     };
 
@@ -25,15 +26,19 @@ class MutePost extends Component {
     };
 
     render() {
-        const { notes, disableSubmit } = this.state;
+        const { disableSubmit } = this.state;
         const { isMuted } = this.props;
 
         return (
             <span>
                 {isMuted ? (
                     <div>
-                        <h4>{tt('g.unmute_this_post')}</h4>{' '}
-                        <p> {tt('g.unmute_this_post_description')}</p>
+                        <h4>{tt('g.unmute_this_post')}</h4>
+                        {' '}
+                        <p>
+                            {' '}
+                            {tt('g.unmute_this_post_description')}
+                        </p>
                     </div>
                 ) : (
                     <div>
@@ -48,7 +53,7 @@ class MutePost extends Component {
                         className="input-group-field"
                         type="text"
                         maxLength={120}
-                        onKeyUp={e => {
+                        onKeyUp={(e) => {
                             if (e.key === 'Enter') {
                                 this.onSubmit();
                             }

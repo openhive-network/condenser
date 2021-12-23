@@ -21,12 +21,16 @@ export default class CommunitiesIndex extends React.Component {
     }
 
     componentWillMount = () => {
-        const { performSearch, username, searchQuery, searchOrder } = this.props;
+        const {
+ performSearch, username, searchQuery, searchOrder
+} = this.props;
         performSearch(username, searchQuery, searchOrder);
     };
 
-    componentDidUpdate = prevProps => {
-        const { performSearch, username, searchQuery, searchOrder } = this.props;
+    componentDidUpdate = (prevProps) => {
+        const {
+ performSearch, username, searchQuery, searchOrder
+} = this.props;
 
         if (prevProps.username !== username) {
             performSearch(username, searchQuery, searchOrder);
@@ -34,10 +38,11 @@ export default class CommunitiesIndex extends React.Component {
     };
 
     render() {
-        const { communities, communities_idx, username, walletUrl, performSearch } = this.props;
-        const ordered =
-            communities_idx !== null
-                ? communities_idx.map(name => {
+        const {
+ communities, communities_idx, username, walletUrl, performSearch
+} = this.props;
+        const ordered = communities_idx !== null
+                ? communities_idx.map((name) => {
                       return communities.get(name);
                   })
                 : [];
@@ -57,13 +62,13 @@ export default class CommunitiesIndex extends React.Component {
             },
         ];
 
-        const role = comm => {
+        const role = (comm) => {
             return (
                 comm.context && comm.context.role !== 'guest' && <span className="user_role">{comm.context.role}</span>
             );
         };
 
-        const communityAdmins = admins => {
+        const communityAdmins = (admins) => {
             if (!admins || admins.length === 0) return null;
 
             return (
@@ -74,7 +79,7 @@ export default class CommunitiesIndex extends React.Component {
             );
         };
 
-        const row = comm => {
+        const row = (comm) => {
             const admins = communityAdmins(comm.admins);
             return (
                 <tr key={comm.name}>
@@ -87,7 +92,15 @@ export default class CommunitiesIndex extends React.Component {
                         {comm.about}
                         <small>
                             {comm.subscribers}
-                            subscribers &bull; {comm.num_authors} posters &bull; {comm.num_pending} posts
+                            subscribers &bull;
+                            {' '}
+                            {comm.num_authors}
+                            {' '}
+                            posters &bull;
+                            {' '}
+                            {comm.num_pending}
+                            {' '}
+                            posts
                             {admins}
                         </small>
                     </th>
@@ -101,7 +114,7 @@ export default class CommunitiesIndex extends React.Component {
         const { searchQuery, searchOrder } = this.state;
 
         return (
-            <PostsIndexLayout category={null} enableAds={false} blogmode={false}>
+            <PostsIndexLayout category={null} blogmode={false}>
                 <div className="CommunitiesIndex c-sidebar__module">
                     {username && (
                         <div style={{ float: 'right' }}>
@@ -117,7 +130,7 @@ export default class CommunitiesIndex extends React.Component {
                         <div className="small-8 medium-7 large-8 column">
                             <ElasticSearchInput
                                 expanded
-                                handleSubmit={q => {
+                                handleSubmit={(q) => {
                                     this.setState({
                                         searchQuery: q,
                                     });
@@ -130,7 +143,7 @@ export default class CommunitiesIndex extends React.Component {
                             <NativeSelect
                                 options={sortOptions}
                                 currentlySelected={searchOrder}
-                                onChange={opt => {
+                                onChange={(opt) => {
                                     this.setState({
                                         searchOrder: opt.value,
                                     });
@@ -144,7 +157,7 @@ export default class CommunitiesIndex extends React.Component {
                         <div>
                             <table>
                                 <tbody>
-                                    {ordered.map(comm => {
+                                    {ordered.map((comm) => {
                                         return row(comm.toJS());
                                     })}
                                 </tbody>
@@ -166,7 +179,7 @@ export default class CommunitiesIndex extends React.Component {
 module.exports = {
     path: 'communities(/:username)',
     component: connect(
-        state => {
+        (state) => {
             // Get current sort and query from the url.
             return {
                 walletUrl: state.app.get('walletUrl'),
@@ -175,7 +188,7 @@ module.exports = {
                 communities_idx: state.global.get('community_idx', List()),
             };
         },
-        dispatch => {
+        (dispatch) => {
             return {
                 performSearch: (observer, query, sort = 'rank') => {
                     console.log('search', query);

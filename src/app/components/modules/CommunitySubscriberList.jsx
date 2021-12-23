@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import { List } from 'immutable';
 import { connect } from 'react-redux';
 import * as communityActions from 'app/redux/CommunityReducer';
-import * as transactionActions from 'app/redux/TransactionReducer';
 import { Role } from 'app/utils/Community';
 import UserTitle from 'app/components/elements/UserTitle';
 import LoadingIndicator from 'app/components/elements/LoadingIndicator';
@@ -20,10 +19,6 @@ class CommunitySubscriberList extends React.Component {
         username: undefined,
     };
 
-    constructor(props) {
-        super(props);
-    }
-
     componentDidMount() {
         if (this.props.subscribers.length === 0) {
             this.props.fetchSubscribers(this.props.community.name);
@@ -32,22 +27,20 @@ class CommunitySubscriberList extends React.Component {
 
     render() {
         const {
-            loading,
-            subscribers,
-            community,
-            viewerRole,
-            username,
-            fetchSubscribers,
-        } = this.props;
+ loading, subscribers, community, viewerRole, username, fetchSubscribers
+} = this.props;
         const isMod = Role.atLeast(viewerRole, 'mod');
         const subs = subscribers.map((s, idx) => (
             <div key={idx}>
-                <a href={`/@${s[0]}`}>@{s[0]} </a>
+                <a href={`/@${s[0]}`}>
+                    @
+                    {s[0]}
+                </a>
                 <UserTitle
                     username={username}
                     community={community.name}
                     author={s[0]}
-                    permlink={'/'}
+                    permlink="/"
                     role={s[1]}
                     title={s[2]}
                     hideEdit={!isMod}
@@ -57,7 +50,12 @@ class CommunitySubscriberList extends React.Component {
         ));
         return (
             <div>
-                <strong>Latest {community.title} Subscribers</strong>
+                <strong>
+                    Latest
+                    {community.title}
+                    {' '}
+                    Subscribers
+                </strong>
                 <hr />
                 {loading && (
                     <center>
@@ -82,24 +80,17 @@ const ConnectedCommunitySubscriberList = connect(
         const communityMember = state.global
             .getIn(['community', ownProps.community.name, 'team'], List([]))
             .toJS()
-            .filter(member => member[0] === username);
+            .filter((member) => member[0] === username);
         if (username && communityMember.length > 0) {
             viewerRole = communityMember[0][1];
         }
         if (
-            state.community.getIn([ownProps.community.name]) &&
-            state.community.getIn([ownProps.community.name, 'subscribers']) &&
-            state.community.getIn([ownProps.community.name, 'subscribers'])
-                .length > 0
+            state.community.getIn([ownProps.community.name])
+            && state.community.getIn([ownProps.community.name, 'subscribers'])
+            && state.community.getIn([ownProps.community.name, 'subscribers']).length > 0
         ) {
-            subscribers = state.community.getIn([
-                ownProps.community.name,
-                'subscribers',
-            ]);
-            loading = state.community.getIn([
-                ownProps.community.name,
-                'listSubscribersPending',
-            ]);
+            subscribers = state.community.getIn([ownProps.community.name, 'subscribers']);
+            loading = state.community.getIn([ownProps.community.name, 'listSubscribersPending']);
         }
 
         return {
@@ -110,12 +101,9 @@ const ConnectedCommunitySubscriberList = connect(
         };
     },
     // mapDispatchToProps
-    dispatch => {
+    (dispatch) => {
         return {
-            fetchSubscribers: communityName =>
-                dispatch(
-                    communityActions.getCommunitySubscribers(communityName)
-                ),
+            fetchSubscribers: (communityName) => dispatch(communityActions.getCommunitySubscribers(communityName)),
         };
     }
 )(CommunitySubscriberList);

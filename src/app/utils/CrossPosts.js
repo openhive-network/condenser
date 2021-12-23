@@ -11,23 +11,24 @@ export async function fetchCrossPosts(posts, observer) {
     if (Array.isArray(posts)) {
         for (let idx = 0; idx < posts.length; idx += 1) {
             const post = posts[idx];
-            if (!post || !post.body) continue;
-            const crossPostMatches = crossPostRegex.exec(post.body);
+            if (post && post.body) {
+                const crossPostMatches = crossPostRegex.exec(post.body);
 
-            if (crossPostMatches) {
-                const [, crossPostAuthor, crossPostPermlink] = crossPostMatches;
-                const crossPostParams = {
-                    author: crossPostAuthor,
-                    permlink: crossPostPermlink,
-                    observer,
-                };
-                crossPostPromises.push(callBridge('get_post', crossPostParams));
-                post.cross_post_key = `${crossPostAuthor}/${crossPostPermlink}`;
+                if (crossPostMatches) {
+                    const [, crossPostAuthor, crossPostPermlink] = crossPostMatches;
+                    const crossPostParams = {
+                        author: crossPostAuthor,
+                        permlink: crossPostPermlink,
+                        observer,
+                    };
+                    crossPostPromises.push(callBridge('get_post', crossPostParams));
+                    post.cross_post_key = `${crossPostAuthor}/${crossPostPermlink}`;
+                }
+
+                const key = post.author + '/' + post.permlink;
+                content[key] = post;
+                keys.push(key);
             }
-
-            const key = post.author + '/' + post.permlink;
-            content[key] = post;
-            keys.push(key);
         }
     }
 

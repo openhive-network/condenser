@@ -13,7 +13,7 @@ import Userpic from 'app/components/elements/Userpic';
 import tt from 'counterpart';
 import classNames from 'classnames';
 
-const notificationsIcon = type => {
+const notificationsIcon = (type) => {
     const types = {
         reply: 'chatbox',
         reply_post: 'chatbox',
@@ -44,17 +44,11 @@ const highlightText = (text, highlight) => {
         <span>
             {' '}
             {parts.map((part, i) => (
-                <span
-                    key={i}
-                    style={
-                        part.toLowerCase() === highlight.toLowerCase()
-                            ? { fontWeight: 'bold' }
-                            : {}
-                    }
-                >
+                <span key={i} style={part.toLowerCase() === highlight.toLowerCase() ? { fontWeight: 'bold' } : {}}>
                     {part}
                 </span>
-            ))}{' '}
+            ))}
+            {' '}
         </span>
     );
 };
@@ -96,42 +90,39 @@ class NotificationsList extends React.Component {
         mentions: ['mention'],
     };
 
-    constructor() {
-        super();
-    }
-
-    componentWillMount() {
+    componentDidMount() {
         const { username, getAccountNotifications } = this.props;
         if (username) {
             getAccountNotifications(username);
         }
     }
 
-    componentDidUpdate(prevProps) {
-        const { username, getAccountNotifications } = this.props;
-        if (prevProps.username !== username) {
-            getAccountNotifications(username);
-        }
+    shouldComponentUpdate(nextProps) {
+        return (
+            JSON.stringify(this.props.notifications) !== JSON.stringify(nextProps.notifications)
+            || this.props.notificationActionPending !== nextProps.notificationActionPending
+        );
+    }
+
+    componentDidUpdate() {
         this.applyFilter();
     }
 
-    onClickLoadMore = e => {
+    onClickLoadMore = (e) => {
         e.preventDefault();
         const { username, notifications, getAccountNotifications } = this.props;
         const lastId = notifications.slice(-1)[0].id;
         getAccountNotifications(username, lastId);
     };
 
-    onClickMarkAsRead = e => {
+    onClickMarkAsRead = (e) => {
         e.preventDefault();
         const { username, markAsRead } = this.props;
         markAsRead(username, new Date().toISOString().slice(0, 19));
     };
 
     applyFilter = () => {
-        const notificationElements = document.getElementsByClassName(
-            'notification__item'
-        );
+        const notificationElements = document.getElementsByClassName('notification__item');
 
         let visibleCount = 0;
         for (let ni = 0; ni < notificationElements.length; ni += 1) {
@@ -146,23 +137,13 @@ class NotificationsList extends React.Component {
                 } else {
                     notificationElement.classList.remove('even');
                 }
-            } else if (
-                this.notificationFilterToTypes.hasOwnProperty(
-                    notificationFilter
-                )
-            ) {
-                const notificationTypes = this.notificationFilterToTypes[
-                    notificationFilter
-                ];
+            } else if (Object.prototype.hasOwnProperty.call(this.notificationFilterToTypes, notificationFilter)) {
+                const notificationTypes = this.notificationFilterToTypes[notificationFilter];
                 let matchType = false;
 
                 for (let ti = 0; ti < notificationTypes.length; ti += 1) {
                     const notificationType = notificationTypes[ti];
-                    if (
-                        notificationElement.classList.contains(
-                            `notification__${notificationType}`
-                        )
-                    ) {
+                    if (notificationElement.classList.contains(`notification__${notificationType}`)) {
                         matchType = true;
                     }
                 }
@@ -183,13 +164,11 @@ class NotificationsList extends React.Component {
         }
     };
 
-    onClickFilter = e => {
+    onClickFilter = (e) => {
         e.preventDefault();
         const target = e.target;
 
-        const filterElements = document.getElementsByClassName(
-            'notification__filter'
-        );
+        const filterElements = document.getElementsByClassName('notification__filter');
 
         // reset
         for (let fi = 0; fi < filterElements.length; fi += 1) {
@@ -215,55 +194,40 @@ class NotificationsList extends React.Component {
             lastRead,
         } = this.props;
 
-        const renderItem = item => {
-            const unRead =
-                Date.parse(`${lastRead}Z`) <= Date.parse(`${item.date}Z`);
-            const usernamePattern = /\B@[a-z0-9\.-]+/gi;
+        const renderItem = (item) => {
+            const unRead = Date.parse(`${lastRead}Z`) <= Date.parse(`${item.date}Z`);
+            const usernamePattern = /\B@[a-z0-9.-]+/gi;
             const mentions = item.msg.match(usernamePattern);
             const participants = mentions
-                ? mentions.map(m => (
-                      <a href={'/' + m}>
-                          <Userpic account={m.substring(1)} />
-                      </a>
+                ? mentions.map((m) => (
+                    <a key={m} href={'/' + m}>
+                        <Userpic account={m.substring(1)} />
+                    </a>
                   ))
                 : null;
+
+            if (item.date === '1970-01-01T00:00:00') {
+                return null;
+            }
+
             return (
-                <div
-                    key={item.id}
-                    className={`notification__item flex-body notification__${
-                        item.type
-                    }`}
-                >
+                <div key={item.id} className={`notification__item flex-body notification__${item.type}`}>
                     <div className="notification__score">
-                        <div
-                            className="notification__score_bar"
-                            style={{ width: `${item.score}%` }}
-                        />
+                        <div className="notification__score_bar" style={{ width: `${item.score}%` }} />
                     </div>
-                    <div className="flex-row">
-                        {mentions && participants && participants[0]}
-                    </div>
+                    <div className="flex-row">{mentions && participants && participants[0]}</div>
                     <div className="flex-column">
                         <div className="notification__message">
-                            <a href={`/${item.url}`}>
-                                {highlightText(
-                                    item.msg,
-                                    mentions ? mentions[0] : null
-                                )}
-                            </a>
+                            <a href={`/${item.url}`}>{highlightText(item.msg, mentions ? mentions[0] : null)}</a>
                         </div>
                         <div className="flex-row">
-                            <div className="notification__icon">
-                                {notificationsIcon(item.type)}
-                            </div>
+                            <div className="notification__icon">{notificationsIcon(item.type)}</div>
                             <div className="notification__date">
                                 <TimeAgoWrapper date={item.date + 'Z'} />
                             </div>
                         </div>
                     </div>
-                    {unRead && (
-                        <span className="notification__unread">&bull;</span>
-                    )}
+                    {unRead && <span className="notification__unread">&bull;</span>}
                 </div>
             );
         };
@@ -271,22 +235,15 @@ class NotificationsList extends React.Component {
         return (
             <div className="">
                 {isOwnAccount && <ClaimBox accountName={accountName} />}
-                {notifications &&
-                    notifications.length > 0 &&
-                    unreadNotifications !== 0 &&
-                    !notificationActionPending && (
-                        <center>
-                            <br />
-                            <a href="#" onClick={this.onClickMarkAsRead}>
-                                <strong>
-                                    {tt(
-                                        'notificationslist_jsx.mark_all_as_read'
-                                    )}
-                                </strong>
-                            </a>
-                            <br />
-                        </center>
-                    )}
+                {notifications && notifications.length > 0 && unreadNotifications !== 0 && !notificationActionPending && (
+                    <center>
+                        <br />
+                        <a href="#" onClick={this.onClickMarkAsRead}>
+                            <strong>{tt('notificationslist_jsx.mark_all_as_read')}</strong>
+                        </a>
+                        <br />
+                    </center>
+                )}
                 <center>
                     <div className="notification__filter_select">
                         <a
@@ -357,38 +314,28 @@ class NotificationsList extends React.Component {
                         </a>
                     </div>
                 </center>
+
+                {notifications && notifications.length > 0 && (
+                    <div style={{ lineHeight: '1rem' }}>{notifications.map((item) => renderItem(item))}</div>
+                )}
+                {!notifications && !notificationActionPending && process.env.BROWSER && (
+                    <Callout>Welcome! You do not have any notifications yet.</Callout>
+                )}
+
                 {(notificationActionPending || !process.env.BROWSER) && (
                     <center>
                         <LoadingIndicator type="circle" />
                     </center>
                 )}
 
-                {notifications &&
-                    notifications.length > 0 && (
-                        <div style={{ lineHeight: '1rem' }}>
-                            {notifications.map(item => renderItem(item))}
-                        </div>
-                    )}
-                {!notifications &&
-                    !notificationActionPending &&
-                    process.env.BROWSER && (
-                        <Callout>
-                            Welcome! You don't have any notifications yet.
-                        </Callout>
-                    )}
-
-                {!notificationActionPending &&
-                    notifications &&
-                    !isLastPage && (
-                        <center>
-                            <br />
-                            <a href="#" onClick={this.onClickLoadMore}>
-                                <strong>
-                                    {tt('notificationslist_jsx.load_more')}
-                                </strong>
-                            </a>
-                        </center>
-                    )}
+                {!notificationActionPending && notifications && !isLastPage && (
+                    <center>
+                        <br />
+                        <a href="#" onClick={this.onClickLoadMore}>
+                            <strong>{tt('notificationslist_jsx.load_more')}</strong>
+                        </a>
+                    </center>
+                )}
             </div>
         );
     }
@@ -397,38 +344,26 @@ class NotificationsList extends React.Component {
 export default connect(
     (state, props) => {
         const accountName = props.username;
-        const isOwnAccount =
-            state.user.getIn(['current', 'username'], '') == accountName;
-        const notifications = state.global
-            .getIn(['notifications', accountName, 'notifications'], List())
-            .toJS();
+        const isOwnAccount = state.user.getIn(['current', 'username'], '') == accountName;
+        const notifications = state.global.getIn(['notifications', accountName, 'notifications'], List()).toJS();
         const unreadNotifications = state.global.getIn(
             ['notifications', accountName, 'unreadNotifications', 'unread'],
             0
         );
-        const lastRead = state.global.getIn(
-            ['notifications', accountName, 'unreadNotifications', 'lastread'],
-            ''
-        );
-        const isNotificationsLastPage = state.global.getIn(
-            ['notifications', accountName, 'isLastPage'],
-            null
-        );
+        const lastRead = state.global.getIn(['notifications', accountName, 'unreadNotifications', 'lastread'], '');
+        const isNotificationsLastPage = state.global.getIn(['notifications', accountName, 'isLastPage'], null);
         return {
             ...props,
             isOwnAccount,
             accountName,
             unreadNotifications,
-            notificationActionPending: state.global.getIn([
-                'notifications',
-                'loading',
-            ]),
+            notificationActionPending: state.global.getIn(['notifications', 'loading']),
             lastRead,
             notifications,
             isLastPage: isNotificationsLastPage,
         };
     },
-    dispatch => ({
+    (dispatch) => ({
         getAccountNotifications: (username, last_id) => {
             const query = {
                 account: username,
@@ -437,9 +372,7 @@ export default connect(
             if (last_id) {
                 query.last_id = last_id;
             }
-            return dispatch(
-                fetchDataSagaActions.getAccountNotifications(query)
-            );
+            return dispatch(fetchDataSagaActions.getAccountNotifications(query));
         },
         markAsRead: (username, timeNow) => {
             const successCallback = (user, time) => {

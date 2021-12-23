@@ -1,3 +1,4 @@
+/* global jsPDF */
 import React, { Component } from 'react';
 import { PrivateKey } from '@hiveio/hive-js/lib/auth/ecc';
 import QRious from 'qrious';
@@ -25,7 +26,7 @@ export default class PdfDownload extends Component {
     // Generate a list of public and private keys from a master password
     generateKeys(name, password) {
         return ['active', 'owner', 'posting', 'memo'].reduce(
-            (accum, kind, i) => {
+            (accum, kind) => {
                 const rawKey = PrivateKey.fromSeed(`${name}${kind}${password}`);
                 accum[`${kind}Private`] = rawKey.toString();
                 accum[`${kind}Public`] = rawKey.toPublicKey().toString();
@@ -47,35 +48,38 @@ export default class PdfDownload extends Component {
         // Load jsPDF. It does not work with webpack, so it must be loaded here.
         // On the plus side, it is only loaded when the warning page is shown.
         this.setState({ loaded: false });
-        await new Promise((res, rej) => {
+        await new Promise((res) => {
             const s = document.createElement('script');
             s.type = 'text/javascript';
-            s.src = 'https://staticfiles.steemit.com/jspdf.min.js';
+
+            // There is something going on with Babel and plugin-transform-runtime
+            // For now we have to load from this CDN
+            s.src = 'https://unpkg.com/jspdf@1.5.3/dist/jspdf.min.js';
+
             document.body.appendChild(s);
             s.addEventListener('load', res);
         });
 
-        await new Promise((res, rej) => {
+        await new Promise((res) => {
             const s = document.createElement('script');
             s.type = 'text/javascript';
-            s.src = 'https://staticfiles.steemit.com/Roboto-Regular-normal.js';
+            s.src = '/static/Roboto-Regular-normal.js';
             document.body.appendChild(s);
             s.addEventListener('load', res);
         });
 
-        await new Promise((res, rej) => {
+        await new Promise((res) => {
             const s = document.createElement('script');
             s.type = 'text/javascript';
-            s.src = 'https://staticfiles.steemit.com/Roboto-Bold-normal.js';
+            s.src = '/static/Roboto-Bold-normal.js';
             document.body.appendChild(s);
             s.addEventListener('load', res);
         });
 
-        await new Promise((res, rej) => {
+        await new Promise((res) => {
             const s = document.createElement('script');
             s.type = 'text/javascript';
-            s.src =
-                'https://staticfiles.steemit.com/RobotoMono-Regular-normal.js';
+            s.src = '/static/RobotoMono-Regular-normal.js';
             document.body.appendChild(s);
             s.addEventListener('load', res);
         });
@@ -85,15 +89,12 @@ export default class PdfDownload extends Component {
     render() {
         return (
             <div className="pdf-download">
-                <img
-                    src="/images/pdf-logo.svg"
-                    style={{ display: 'none' }}
-                    className="pdf-logo"
-                />
+                <img src="/images/pdf-logo.svg" style={{ display: 'none' }} className="pdf-logo" alt="PDF logo" />
                 {this.state.loaded && (
                     <button
+                        type="button"
                         style={{ display: 'block' }}
-                        onClick={e => {
+                        onClick={(e) => {
                             this.downloadPdf();
                             e.preventDefault();
                         }}
@@ -105,12 +106,10 @@ export default class PdfDownload extends Component {
         );
     }
 
-    renderText(
-        ctx,
-        text,
-        { scale, x, y, lineHeight, maxWidth, color, fontSize, font }
-    ) {
-        var textLines = ctx
+    renderText(ctx, text, {
+ scale, x, y, lineHeight, maxWidth, color, fontSize, font
+}) {
+        const textLines = ctx
             .setFont(font)
             .setFontSize(fontSize * scale)
             .setTextColor(color)
@@ -138,12 +137,12 @@ export default class PdfDownload extends Component {
 
     drawQr(ctx, data, x, y, size, bgcolor) {
         const canvas = document.createElement('canvas');
-        var qr = new QRious({
+        const qr = new QRious({
             element: canvas,
-            size: 250,
-            value: data,
-            background: bgcolor,
         });
+        qr.size = 250;
+        qr.value = data;
+        qr.background = bgcolor;
         ctx.addImage(canvas, 'PNG', x, y, size, size);
     }
 
@@ -152,15 +151,13 @@ export default class PdfDownload extends Component {
             lineHeight = 1.2,
             margin = 0.3,
             maxLineWidth = widthInches - margin * 2.0,
-            fontSize = 24,
             scale = 72, //ptsPerInch
-            oneLineHeight = fontSize * lineHeight / scale,
             qrSize = 1.1;
 
         const ctx = new jsPDF({
             orientation: 'portrait',
             unit: 'in',
-            lineHeight: lineHeight,
+            lineHeight,
             format: 'letter',
         }).setProperties({ title: filename });
 
@@ -175,15 +172,7 @@ export default class PdfDownload extends Component {
             color: '#1f0fd1',
         });
 
-        this.drawImageFromCanvas(
-            ctx,
-            '.pdf-logo',
-            widthInches - margin - 1.9,
-            0.36,
-            0.98 * 1.8,
-            0.3 * 1.8,
-            '#1F0FD1'
-        );
+        this.drawImageFromCanvas(ctx, '.pdf-logo', widthInches - margin - 1.9, 0.36, 0.98 * 1.8, 0.3 * 1.8, '#1F0FD1');
 
         offset += 0.265;
         offset += this.renderText(ctx, `Hive keys for @${this.props.name}`, {
@@ -218,9 +207,7 @@ export default class PdfDownload extends Component {
         offset += 0.15;
         offset += this.renderText(
             ctx,
-            'Generated at ' +
-                new Date().toISOString().replace(/\.\d{3}/, '') +
-                ' by hive.blog',
+            'Generated at ' + new Date().toISOString().replace(/\.\d{3}/, '') + ' by hive.blog',
             {
                 scale,
                 x: margin,
@@ -266,7 +253,7 @@ export default class PdfDownload extends Component {
             scale,
             x: margin,
             y: offset,
-            lineHeight: lineHeight,
+            lineHeight,
             maxWidth: maxLineWidth,
             color: 'black',
             fontSize: 0.18,
@@ -276,15 +263,15 @@ export default class PdfDownload extends Component {
         offset += 0.1;
         offset += this.renderText(
             ctx,
-            'Instead of password based authentication, blockchain accounts ' +
-                'have a set of public and private key pairs that are used for ' +
-                'authentication as well as the encryption and decryption of ' +
-                'data. Do not share this file with anyone.',
+            'Instead of password based authentication, blockchain accounts '
+                + 'have a set of public and private key pairs that are used for '
+                + 'authentication as well as the encryption and decryption of '
+                + 'data. Do not share this file with anyone.',
             {
                 scale,
                 x: margin,
                 y: offset,
-                lineHeight: lineHeight,
+                lineHeight,
                 maxWidth: maxLineWidth,
                 color: 'black',
                 fontSize: 0.14,
@@ -304,10 +291,7 @@ export default class PdfDownload extends Component {
         offset += 0.15;
         this.drawQr(
             ctx,
-            'hive://import/wif/' +
-                keys.postingPrivate +
-                '/account/' +
-                this.props.name,
+            'hive://import/wif/' + keys.postingPrivate + '/account/' + this.props.name,
             margin,
             offset,
             qrSize,
@@ -319,7 +303,7 @@ export default class PdfDownload extends Component {
             scale,
             x: margin + qrSize + 0.1,
             y: offset,
-            lineHeight: lineHeight,
+            lineHeight,
             maxWidth: maxLineWidth,
             color: 'black',
             fontSize: 0.14,
@@ -328,13 +312,13 @@ export default class PdfDownload extends Component {
 
         offset += this.renderText(
             ctx,
-            'Used to log in to apps such as hive.blog and perform social ' +
-                'actions such as posting, commenting, and voting.',
+            'Used to log in to apps such as hive.blog and perform social '
+                + 'actions such as posting, commenting, and voting.',
             {
                 scale,
                 x: margin + qrSize + 0.1,
                 y: offset,
-                lineHeight: lineHeight,
+                lineHeight,
                 maxWidth: maxLineWidth - (qrSize + 0.1),
                 color: 'black',
                 fontSize: 0.14,
@@ -347,7 +331,7 @@ export default class PdfDownload extends Component {
             scale,
             x: margin + qrSize + 0.1,
             y: sectionStart + sectionHeight - 0.6,
-            lineHeight: lineHeight,
+            lineHeight,
             maxWidth: maxLineWidth,
             color: 'black',
             fontSize: 0.14,
@@ -365,10 +349,7 @@ export default class PdfDownload extends Component {
         offset += 0.15;
         this.drawQr(
             ctx,
-            'hive://import/wif/' +
-                keys.memoPrivate +
-                '/account/' +
-                this.props.name,
+            'hive://import/wif/' + keys.memoPrivate + '/account/' + this.props.name,
             margin,
             offset,
             qrSize,
@@ -381,34 +362,30 @@ export default class PdfDownload extends Component {
             scale,
             x: margin + qrSize + 0.1,
             y: offset,
-            lineHeight: lineHeight,
+            lineHeight,
             maxWidth: maxLineWidth,
             color: 'black',
             fontSize: 0.14,
             font: 'Roboto-Bold',
         });
 
-        offset += this.renderText(
-            ctx,
-            'Used to decrypt private transfer memos.',
-            {
-                scale,
-                x: margin + qrSize + 0.1,
-                y: offset,
-                lineHeight: lineHeight,
-                maxWidth: maxLineWidth - (qrSize + 0.1),
-                color: 'black',
-                fontSize: 0.14,
-                font: 'Roboto-Regular',
-            }
-        );
+        offset += this.renderText(ctx, 'Used to decrypt private transfer memos.', {
+            scale,
+            x: margin + qrSize + 0.1,
+            y: offset,
+            lineHeight,
+            maxWidth: maxLineWidth - (qrSize + 0.1),
+            color: 'black',
+            fontSize: 0.14,
+            font: 'Roboto-Regular',
+        });
 
         offset += 0.075;
         offset += this.renderText(ctx, keys.memoPrivate, {
             scale,
             x: margin + qrSize + 0.1,
             y: sectionStart + sectionHeight - 0.6,
-            lineHeight: lineHeight,
+            lineHeight,
             maxWidth: maxLineWidth,
             color: 'black',
             fontSize: 0.14,
@@ -429,10 +406,7 @@ export default class PdfDownload extends Component {
         offset += 0.15;
         this.drawQr(
             ctx,
-            'hive://import/wif/' +
-                keys.activePrivate +
-                '/account/' +
-                this.props.name,
+            'hive://import/wif/' + keys.activePrivate + '/account/' + this.props.name,
             margin,
             offset,
             qrSize,
@@ -445,7 +419,7 @@ export default class PdfDownload extends Component {
             scale,
             x: margin + qrSize + 0.1,
             y: offset,
-            lineHeight: lineHeight,
+            lineHeight,
             maxWidth: maxLineWidth,
             color: 'black',
             fontSize: 0.14,
@@ -454,13 +428,13 @@ export default class PdfDownload extends Component {
 
         offset += this.renderText(
             ctx,
-            'Used for monetary and wallet related actions, such as ' +
-                'transferring tokens or powering HIVE up and down.',
+            'Used for monetary and wallet related actions, such as '
+                + 'transferring tokens or powering HIVE up and down.',
             {
                 scale,
                 x: margin + qrSize + 0.1,
                 y: offset,
-                lineHeight: lineHeight,
+                lineHeight,
                 maxWidth: maxLineWidth - (qrSize + 0.1),
                 color: 'black',
                 fontSize: 0.14,
@@ -473,7 +447,7 @@ export default class PdfDownload extends Component {
             scale,
             x: margin + qrSize + 0.1,
             y: sectionStart + sectionHeight - 0.6,
-            lineHeight: lineHeight,
+            lineHeight,
             maxWidth: maxLineWidth,
             color: 'black',
             fontSize: 0.14,
@@ -492,10 +466,7 @@ export default class PdfDownload extends Component {
         offset += 0.15;
         this.drawQr(
             ctx,
-            'hive://import/wif/' +
-                keys.ownerPrivate +
-                '/account/' +
-                this.props.name,
+            'hive://import/wif/' + keys.ownerPrivate + '/account/' + this.props.name,
             margin,
             offset,
             qrSize,
@@ -508,7 +479,7 @@ export default class PdfDownload extends Component {
             scale,
             x: margin + qrSize + 0.1,
             y: offset,
-            lineHeight: lineHeight,
+            lineHeight,
             maxWidth: maxLineWidth - qrSize - 0.1,
             color: 'black',
             fontSize: 0.14,
@@ -517,15 +488,15 @@ export default class PdfDownload extends Component {
 
         offset += this.renderText(
             ctx,
-            'This key is used to reset all your other keys. It is ' +
-                'recommended to keep it offline at all times. If your ' +
-                'account is compromised, use this key to recover it ' +
-                'within 30 days at https://wallet.hive.blog',
+            'This key is used to reset all your other keys. It is '
+                + 'recommended to keep it offline at all times. If your '
+                + 'account is compromised, use this key to recover it '
+                + 'within 30 days at https://wallet.hive.blog',
             {
                 scale,
                 x: margin + qrSize + 0.1,
                 y: offset,
-                lineHeight: lineHeight,
+                lineHeight,
                 maxWidth: maxLineWidth - (qrSize + 0.1),
                 color: 'black',
                 fontSize: 0.14,
@@ -538,7 +509,7 @@ export default class PdfDownload extends Component {
             scale,
             x: margin + qrSize + 0.1,
             y: sectionStart + sectionHeight - 0.6,
-            lineHeight: lineHeight,
+            lineHeight,
             maxWidth: maxLineWidth - qrSize - 0.1,
             color: 'black',
             fontSize: 0.14,
@@ -560,7 +531,7 @@ export default class PdfDownload extends Component {
             scale,
             x: margin,
             y: offset,
-            lineHeight: lineHeight,
+            lineHeight,
             maxWidth: maxLineWidth,
             color: 'black',
             fontSize: 0.14,
@@ -569,13 +540,12 @@ export default class PdfDownload extends Component {
 
         offset += this.renderText(
             ctx,
-            'The seed password used to generate this document. ' +
-                'Do not share this key.',
+            'The seed password used to generate this document. Do not share this key.',
             {
                 scale,
                 x: margin,
                 y: offset,
-                lineHeight: lineHeight,
+                lineHeight,
                 maxWidth: maxLineWidth,
                 color: 'black',
                 fontSize: 0.14,
@@ -588,7 +558,7 @@ export default class PdfDownload extends Component {
             scale,
             x: margin,
             y: offset,
-            lineHeight: lineHeight,
+            lineHeight,
             maxWidth: maxLineWidth,
             color: 'black',
             fontSize: 0.14,
@@ -608,7 +578,7 @@ export default class PdfDownload extends Component {
             scale,
             x: margin,
             y: offset,
-            lineHeight: lineHeight,
+            lineHeight,
             maxWidth: maxLineWidth,
             color: 'black',
             fontSize: 0.18,
@@ -618,15 +588,15 @@ export default class PdfDownload extends Component {
         offset += 0.1;
         offset += this.renderText(
             ctx,
-            'Public keys are associated with usernames and are used to ' +
-                'encrypt and verify messages. Your public keys are not required ' +
-                'for login. You can view these anytime at: https://wallet.hive.blog/@' +
-                this.props.name,
+            'Public keys are associated with usernames and are used to '
+                + 'encrypt and verify messages. Your public keys are not required '
+                + 'for login. You can view these anytime at: https://wallet.hive.blog/@'
+                + this.props.name,
             {
                 scale,
                 x: margin,
                 y: offset,
-                lineHeight: lineHeight,
+                lineHeight,
                 maxWidth: maxLineWidth,
                 color: 'black',
                 fontSize: 0.15,
@@ -642,7 +612,7 @@ export default class PdfDownload extends Component {
             scale,
             x: margin,
             y: offset,
-            lineHeight: lineHeight,
+            lineHeight,
             maxWidth: maxLineWidth,
             color: 'black',
             fontSize: 0.14,
@@ -653,7 +623,7 @@ export default class PdfDownload extends Component {
             scale,
             x: 1.25,
             y: offset,
-            lineHeight: lineHeight,
+            lineHeight,
             maxWidth: maxLineWidth,
             color: 'black',
             fontSize: 0.14,
@@ -664,7 +634,7 @@ export default class PdfDownload extends Component {
             scale,
             x: margin,
             y: offset,
-            lineHeight: lineHeight,
+            lineHeight,
             maxWidth: maxLineWidth,
             color: 'black',
             fontSize: 0.14,
@@ -675,7 +645,7 @@ export default class PdfDownload extends Component {
             scale,
             x: 1.25,
             y: offset,
-            lineHeight: lineHeight,
+            lineHeight,
             maxWidth: maxLineWidth,
             color: 'black',
             fontSize: 0.14,
@@ -686,7 +656,7 @@ export default class PdfDownload extends Component {
             scale,
             x: margin,
             y: offset,
-            lineHeight: lineHeight,
+            lineHeight,
             maxWidth: maxLineWidth,
             color: 'black',
             fontSize: 0.14,
@@ -697,7 +667,7 @@ export default class PdfDownload extends Component {
             scale,
             x: 1.25,
             y: offset,
-            lineHeight: lineHeight,
+            lineHeight,
             maxWidth: maxLineWidth,
             color: 'black',
             fontSize: 0.14,
@@ -708,7 +678,7 @@ export default class PdfDownload extends Component {
             scale,
             x: margin,
             y: offset,
-            lineHeight: lineHeight,
+            lineHeight,
             maxWidth: maxLineWidth,
             color: 'black',
             fontSize: 0.14,
@@ -719,7 +689,7 @@ export default class PdfDownload extends Component {
             scale,
             x: 1.25,
             y: offset,
-            lineHeight: lineHeight,
+            lineHeight,
             maxWidth: maxLineWidth,
             color: 'black',
             fontSize: 0.14,
@@ -730,7 +700,7 @@ export default class PdfDownload extends Component {
             scale,
             x: maxLineWidth - 0.2,
             y: offset - 0.2,
-            lineHeight: lineHeight,
+            lineHeight,
             maxWidth: maxLineWidth,
             color: '#bbbbbb',
             fontSize: 0.14,

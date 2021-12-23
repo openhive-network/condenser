@@ -13,11 +13,7 @@ describe('makeCanonicalLink', () => {
             { ...post_data, json_metadata: {} },
             'https://hive.blog/testing/@test/test-post',
         ],
-        [
-            'handles posts without app',
-            { ...post_data, json_metadata: {} },
-            'https://hive.blog/testing/@test/test-post',
-        ],
+        ['handles posts without app', { ...post_data, json_metadata: {} }, 'https://hive.blog/testing/@test/test-post'],
         [
             'handles empty strings as app',
             { ...post_data, json_metadata: { app: '' } },
@@ -54,7 +50,7 @@ describe('makeCanonicalLink', () => {
             'https://hive.blog/testing/@test/test-post',
         ],
     ];
-    test_cases.forEach(v => {
+    test_cases.forEach((v) => {
         it(v[0], () => {
             expect(makeCanonicalLink(v[1], v[1].json_metadata)).toBe(v[2]);
         });

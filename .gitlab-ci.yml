@@ -7,7 +7,6 @@ variables:
     DOCKER_IMAGE: hiveio/condenser
     APP_REVIEW_SUBDOMAIN: .condenser.engrave.dev
     STAGING_DOMAIN: staging.condenser.engrave.dev
-    PRODUCTION_DOMAIN: hive.blog
     CERTS: ~/.docker
 
 ################################# COMMON TEMPLATES #################################
@@ -40,20 +39,11 @@ variables:
     after_script:
         - rm -fR $CERTS
 
-.docker-remote-host-production: &docker-remote-host-production
-    before_script:
-        - mkdir -p $CERTS
-        - echo "$PRODUCTION_TLSCACERT" > $CERTS/ca.pem
-        - echo "$PRODUCTION_TLSCERT" > $CERTS/cert.pem
-        - echo "$PRODUCTION_TLSKEY" > $CERTS/key.pem
-    after_script:
-        - rm -fR $CERTS
-
 ################################# MERGE REQUESTS #################################
 
 run-unit-tests:
     stage: test
-    image: node:12.16.2
+    image: node:12.22.6
     tags:
         - public-runner-docker
     only:
@@ -67,7 +57,7 @@ run-unit-tests:
 
 run-eslint:
     stage: test
-    image: node:12.16.2
+    image: node:12.22.6
     tags:
         - public-runner-docker
     only:
@@ -77,7 +67,6 @@ run-eslint:
         - yarn install --frozen-lockfile --ignore-optional
     script:
         - yarn ci:eslint
-    allow_failure: true # will be changed to false when all linter errors removed
 
 build-review-app:
     <<: *docker-job
@@ -176,19 +165,3 @@ deploy-staging:
     environment:
         name: staging
         url: https://$STAGING_DOMAIN
-
-deploy-production:
-    <<: *docker-job
-    <<: *docker-remote-host-production
-    stage: deploy
-    variables:
-        DOCKER_TAG: $DOCKER_IMAGE:$CI_COMMIT_SHORT_SHA
-        SERVICE_NAME: production_condenser
-    only:
-        - master
-    script:
-        - DOCKER_CERT_PATH=$CERTS docker -H $PRODUCTION_HOST --tlsverify pull $DOCKER_TAG
-        - DOCKER_CERT_PATH=$CERTS docker -H $PRODUCTION_HOST --tlsverify service update --image $DOCKER_TAG --update-failure-action rollback --update-order start-first $SERVICE_NAME
-    environment:
-        name: production
-        url: https://$PRODUCTION_DOMAIN

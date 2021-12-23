@@ -6,19 +6,20 @@ export default class Qr extends React.Component {
         handleScan: PropTypes.func.isRequired,
         onClose: PropTypes.func,
     };
+
     constructor(props) {
         super();
-        this.handleError = error => {
+        this.handleError = (error) => {
             console.error(error);
         };
         const { onClose, handleScan } = props;
-        this.handleScan = data => {
+        this.handleScan = (data) => {
             handleScan(data);
             if (onClose) onClose();
         };
     }
+
     render() {
-        const { handleError, handleScan } = this;
         // Watch out, QrReader can mess up the nodejs server, tries to ref `navigator`
         // The server does not need a QrReader anyways
         if (!process.env.BROWSER) return <span />;

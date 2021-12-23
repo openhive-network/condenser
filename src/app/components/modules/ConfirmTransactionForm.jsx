@@ -17,40 +17,45 @@ class ConfirmTransactionForm extends Component {
         confirmErrorCallback: PropTypes.func,
         okClick: PropTypes.func,
     };
+
     constructor() {
         super();
         this.state = { checkboxChecked: false };
     }
+
     componentDidMount() {
         document.body.addEventListener('click', this.closeOnOutsideClick);
     }
+
     componentWillUnmount() {
         document.body.removeEventListener('click', this.closeOnOutsideClick);
     }
-    closeOnOutsideClick = e => {
+
+    closeOnOutsideClick = (e) => {
         const inside_dialog = findParent(e.target, 'ConfirmTransactionForm');
         if (!inside_dialog) this.onCancel();
     };
+
     onCancel = () => {
         const { confirmErrorCallback, onCancel } = this.props;
         if (confirmErrorCallback) confirmErrorCallback();
         if (onCancel) onCancel();
     };
+
     okClick = () => {
         const { okClick, confirmBroadcastOperation } = this.props;
         okClick(confirmBroadcastOperation);
     };
-    onCheckbox = e => {
+
+    onCheckbox = (e) => {
         const checkboxChecked = e.target.checked;
         this.setState({ checkboxChecked });
     };
+
     render() {
-        const { onCancel, okClick, onCheckbox } = this;
+        const { onCancel, okClick } = this;
         const {
-            confirm,
-            confirmBroadcastOperation,
-            warning,
-            checkbox,
+            confirm, confirmBroadcastOperation, warning, checkbox
         } = this.props;
         const { checkboxChecked } = this.state;
         const conf = typeof confirm === 'function' ? confirm() : confirm;
@@ -60,70 +65,46 @@ class ConfirmTransactionForm extends Component {
                 <hr />
                 <div>{conf}</div>
                 {warning ? (
-                    <div
-                        style={{ paddingTop: 10, fontWeight: 'bold' }}
-                        className="error"
-                    >
+                    <div style={{ paddingTop: 10, fontWeight: 'bold' }} className="error">
                         {warning}
                     </div>
                 ) : null}
                 {checkbox ? (
                     <div>
                         <label htmlFor="checkbox">
-                            <input
-                                id="checkbox"
-                                type="checkbox"
-                                checked={checkboxChecked}
-                                onChange={this.onCheckbox}
-                            />
+                            <input id="checkbox" type="checkbox" checked={checkboxChecked} onChange={this.onCheckbox} />
                             {checkbox}
                         </label>
                     </div>
                 ) : null}
                 <br />
-                <button
-                    className="button"
-                    onClick={okClick}
-                    disabled={!(checkbox === undefined || checkboxChecked)}
-                >
+                <button type="button" className="button" onClick={okClick} disabled={!(checkbox === undefined || checkboxChecked)}>
                     {tt('g.ok')}
                 </button>
-                <button
-                    type="button hollow"
-                    className="button hollow"
-                    onClick={onCancel}
-                >
+                <button type="button" className="button hollow" onClick={onCancel}>
                     {tt('g.cancel')}
                 </button>
             </div>
         );
     }
 }
-const typeName = confirmBroadcastOperation => {
-    const title = confirmBroadcastOperation.getIn([
-        'operation',
-        '__config',
-        'title',
-    ]);
+const typeName = (confirmBroadcastOperation) => {
+    const title = confirmBroadcastOperation.getIn(['operation', '__config', 'title']);
     if (title) return title;
     const type = confirmBroadcastOperation.get('type');
     return tt('confirmtransactionform_jsx.confirm', {
         transactionType: type
             .split('_')
-            .map(n => n.charAt(0).toUpperCase() + n.substring(1))
+            .map((n) => n.charAt(0).toUpperCase() + n.substring(1))
             .join(' '), // @todo we should translate each potential transaction type!
     });
 };
 
 export default connect(
     // mapStateToProps
-    state => {
-        const confirmBroadcastOperation = state.transaction.get(
-            'confirmBroadcastOperation'
-        );
-        const confirmErrorCallback = state.transaction.get(
-            'confirmErrorCallback'
-        );
+    (state) => {
+        const confirmBroadcastOperation = state.transaction.get('confirmBroadcastOperation');
+        const confirmErrorCallback = state.transaction.get('confirmErrorCallback');
         const confirm = state.transaction.get('confirm');
         const warning = state.transaction.get('warning');
         const checkbox = state.transaction.get('checkbox');
@@ -136,8 +117,8 @@ export default connect(
         };
     },
     // mapDispatchToProps
-    dispatch => ({
-        okClick: confirmBroadcastOperation => {
+    (dispatch) => ({
+        okClick: (confirmBroadcastOperation) => {
             dispatch(transactionActions.hideConfirm());
             dispatch(
                 transactionActions.broadcastOperation({

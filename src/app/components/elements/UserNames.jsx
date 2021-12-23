@@ -17,12 +17,14 @@ class UserNames extends Component {
         names: PropTypes.array,
         size: PropTypes.number,
     };
+
     static defaultProps = {
         size: 2,
     };
 
     render() {
-        let { names, size } = this.props;
+        let { size } = this.props;
+        const { names } = this.props;
 
         if (!names) {
             return null;
@@ -35,12 +37,12 @@ class UserNames extends Component {
         }
 
         // if size == 0, there is no "and" in the output
-        let and_names = size == 0 ? [] : names.splice(size);
+        const and_names = size == 0 ? [] : names.splice(size);
 
-        let out = [];
+        const out = [];
 
         // build first portion of output: "name1, name2, name3"
-        for (var i = 0; i < names.length; i++) {
+        for (let i = 0; i < names.length; i += 1) {
             if (i > 0) out.push(<span key={'_comma' + i}>, </span>);
             out.push(userLink(names[i]));
         }
@@ -57,7 +59,7 @@ class UserNames extends Component {
                     <DropdownMenu
                         key="_others"
                         selected={and_names.length + ' others'}
-                        items={and_names.map(name => {
+                        items={and_names.map((name) => {
                             return { value: name, link: '/@' + name };
                         })}
                         el="div"

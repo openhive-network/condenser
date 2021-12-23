@@ -6,21 +6,16 @@ import React from 'react';
 import { render } from 'react-dom';
 import { renderToString } from 'react-dom/server';
 import {
-    Router,
-    RouterContext,
-    match,
-    applyRouterMiddleware,
-    browserHistory,
+ Router, RouterContext, match, applyRouterMiddleware, browserHistory
 } from 'react-router';
 import { Provider } from 'react-redux';
 import { api } from '@hiveio/hive-js';
 
 import RootRoute from 'app/RootRoute';
 import * as appActions from 'app/redux/AppReducer';
-import { createStore, applyMiddleware, compose } from 'redux';
+import { createStore, applyMiddleware } from 'redux';
 import { useScroll } from 'react-router-scroll';
 import createSagaMiddleware from 'redux-saga';
-import { all } from 'redux-saga/effects';
 import { syncHistoryWithStore } from 'react-router-redux';
 import rootReducer from 'app/redux/RootReducer';
 import rootSaga from 'shared/RootSaga';
@@ -35,12 +30,12 @@ let get_state_perf,
     get_content_perf = false;
 if (process.env.OFFLINE_SSR_TEST) {
     const testDataDir = process.env.OFFLINE_SSR_TEST_DATA_DIR || 'api_mockdata';
-    let uri = `${__dirname}/../../`;
+    const uri = `${__dirname}/../../`;
     get_state_perf = require(uri + testDataDir + '/get_state');
     get_content_perf = require(uri + testDataDir + '/get_content');
 }
 
-const calcOffsetRoot = startEl => {
+const calcOffsetRoot = (startEl) => {
     let offset = 0;
     let el = startEl;
     while (el) {
@@ -88,8 +83,7 @@ const SCROLL_DIRECTION_DOWN = 'down';
  * If an element with this id is present, the page does not want us to detect navigation history direction (clicking links/forward button or back button)
  * @type {string}
  */
-const DISABLE_ROUTER_HISTORY_NAV_DIRECTION_EL_ID =
-    'disable_router_nav_history_direction_check';
+const DISABLE_ROUTER_HISTORY_NAV_DIRECTION_EL_ID = 'disable_router_nav_history_direction_check';
 
 let scrollTopTimeout = null;
 
@@ -116,27 +110,22 @@ const scrollTop = (el, topOffset, prevDocumentInfo, triesRemaining) => {
     //We scroll if the document has 1. not been deliberately scrolled, AND 2. we have not passed our target scroll,
     //NOR has the document changed in a meaningful way since we last looked at it
     if (prevDocumentInfo.direction === SCROLL_DIRECTION_DOWN) {
-        doScroll =
-            prevDocumentInfo.scrollTop <=
-                documentInfo.scrollTop + SCROLL_FUDGE_PIXELS &&
-            (documentInfo.scrollTop < documentInfo.scrollTarget ||
-                prevDocumentInfo.scrollTarget < documentInfo.scrollTarget ||
-                prevDocumentInfo.scrollHeight < documentInfo.scrollHeight);
+        doScroll = prevDocumentInfo.scrollTop <= documentInfo.scrollTop + SCROLL_FUDGE_PIXELS
+            && (documentInfo.scrollTop < documentInfo.scrollTarget
+                || prevDocumentInfo.scrollTarget < documentInfo.scrollTarget
+                || prevDocumentInfo.scrollHeight < documentInfo.scrollHeight);
     } else if (prevDocumentInfo.direction === SCROLL_DIRECTION_UP) {
-        doScroll =
-            prevDocumentInfo.scrollTop >=
-                documentInfo.scrollTop - SCROLL_FUDGE_PIXELS &&
-            (documentInfo.scrollTop > documentInfo.scrollTarget ||
-                prevDocumentInfo.scrollTarget > documentInfo.scrollTarget ||
-                prevDocumentInfo.scrollHeight > documentInfo.scrollHeight);
+        doScroll = prevDocumentInfo.scrollTop >= documentInfo.scrollTop - SCROLL_FUDGE_PIXELS
+            && (documentInfo.scrollTop > documentInfo.scrollTarget
+                || prevDocumentInfo.scrollTarget > documentInfo.scrollTarget
+                || prevDocumentInfo.scrollHeight > documentInfo.scrollHeight);
     }
 
     if (doScroll) {
         window.scrollTo(0, documentInfo.scrollTarget);
         if (triesRemaining > 0) {
             scrollTopTimeout = setTimeout(
-                () =>
-                    scrollTop(el, topOffset, documentInfo, triesRemaining - 1),
+                () => scrollTop(el, topOffset, documentInfo, triesRemaining - 1),
                 SCROLL_TOP_DELAY_MS
             );
         }
@@ -180,10 +169,7 @@ class OffsetScrollBehavior extends ScrollBehavior {
                 scrollTop: Math.ceil(document.scrollingElement.scrollTop),
                 scrollTarget: calcOffsetRoot(el) + topOffset,
             };
-            documentInfo.direction =
-                documentInfo.scrollTop < documentInfo.scrollTarget
-                    ? SCROLL_DIRECTION_DOWN
-                    : SCROLL_DIRECTION_UP;
+            documentInfo.direction = documentInfo.scrollTop < documentInfo.scrollTarget ? SCROLL_DIRECTION_DOWN : SCROLL_DIRECTION_UP;
             scrollTop(el, topOffset, documentInfo, SCROLL_TOP_TRIES); //this function does the actual work of scrolling.
         } else {
             super.scrollToTarget(element, newTarget);
@@ -192,7 +178,7 @@ class OffsetScrollBehavior extends ScrollBehavior {
 }
 //END: SCROLL CODE
 
-const bindMiddleware = middleware => {
+const bindMiddleware = (middleware) => {
     if (process.env.BROWSER && process.env.NODE_ENV === 'development') {
         const { composeWithDevTools } = require('redux-devtools-extension');
         return composeWithDevTools(applyMiddleware(...middleware));
@@ -201,12 +187,10 @@ const bindMiddleware = middleware => {
 };
 
 const runRouter = (location, routes) => {
-    return new Promise(resolve =>
-        match({ routes, location }, (...args) => resolve(args))
-    );
+    return new Promise((resolve) => match({ routes, location }, (...args) => resolve(args)));
 };
 
-const onRouterError = error => {
+const onRouterError = (error) => {
     console.error('onRouterError', error);
 };
 
@@ -220,26 +204,17 @@ const onRouterError = error => {
  * @param {RequestTimer} requestTimer
  * @returns promise
  */
-export async function serverRender(
-    location,
-    initialState,
-    ErrorPage,
-    userPreferences,
-    offchain,
-    requestTimer
-) {
-    let error, redirect, renderProps;
+export async function serverRender(location, initialState, ErrorPage, userPreferences, offchain, requestTimer) {
+    let error, renderProps;
 
     try {
-        [error, redirect, renderProps] = await runRouter(location, RootRoute);
+        [error,, renderProps] = await runRouter(location, RootRoute);
     } catch (e) {
         console.error('Routing error:', e.toString(), location);
         return {
             title: 'Routing error - Hive',
             statusCode: 500,
-            body: renderToString(
-                ErrorPage ? <ErrorPage /> : <span>Routing error</span>
-            ),
+            body: renderToString(ErrorPage ? <ErrorPage /> : <span>Routing error</span>),
         };
     }
 
@@ -262,10 +237,7 @@ export async function serverRender(
 
         // If a user profile URL is requested but no profile information is
         // included in the API response, return User Not Found.
-        if (
-            url.match(routeRegex.UserProfile) &&
-            Object.getOwnPropertyNames(onchain.profiles).length === 0
-        ) {
+        if (url.match(routeRegex.UserProfile) && Object.getOwnPropertyNames(onchain.profiles).length === 0) {
             // protect for invalid account
             return {
                 title: 'User Not Found - Hive',
@@ -276,15 +248,14 @@ export async function serverRender(
 
         // If we are not loading a post, truncate state data to bring response size down.
         if (!url.match(routeRegex.Post)) {
-            for (var key in onchain.content) {
-                onchain.content[key]['active_votes'] = null;
+            for (const key in onchain.content) {
+                if (key in onchain.content) {
+                    onchain.content[key].active_votes = null;
+                }
             }
         }
         // Are we loading an un-category-aliased post?
-        if (
-            !url.match(routeRegex.UserProfile) &&
-            url.match(routeRegex.PostNoCategory)
-        ) {
+        if (!url.match(routeRegex.UserProfile) && url.match(routeRegex.PostNoCategory)) {
             let header;
             if (process.env.OFFLINE_SSR_TEST) {
                 header = get_content_perf;
@@ -296,30 +267,30 @@ export async function serverRender(
             if (header && header.author && header.permlink && header.category) {
                 const { author, permlink, category } = header;
                 return { redirectUrl: `/${category}/@${author}/${permlink}` };
-            } else {
+            }
                 // protect on invalid user pages (i.e /user/transferss)
                 return {
                     title: 'Page Not Found - Hive',
                     statusCode: 404,
                     body: renderToString(<NotFound />),
                 };
-            }
+
         }
 
         // Insert the special posts into the list of posts, so there is no
         // jumping of content.
-        offchain.special_posts.featured_posts.forEach(post => {
+        offchain.special_posts.featured_posts.forEach((post) => {
             onchain.content[`${post.author}/${post.permlink}`] = post;
         });
 
-        offchain.special_posts.promoted_posts.forEach(post => {
+        offchain.special_posts.promoted_posts.forEach((post) => {
             onchain.content[`${post.author}/${post.permlink}`] = post;
         });
 
         server_store = createStore(rootReducer, {
             app: initialState.app,
             global: onchain,
-            userProfiles: { profiles: onchain['profiles'] },
+            userProfiles: { profiles: onchain.profiles },
             offchain,
         });
         server_store.dispatch({
@@ -337,7 +308,7 @@ export async function serverRender(
                 body: renderToString(<NotFound />),
             };
             // Ensure error page on state exception
-        } else {
+        }
             const msg = (e.toString && e.toString()) || e.message || e;
             const stack_trace = e.stack || '[no stack]';
             console.error('State/store error: ', msg, stack_trace);
@@ -346,7 +317,7 @@ export async function serverRender(
                 statusCode: 500,
                 body: renderToString(<ErrorPage />),
             };
-        }
+
     }
 
     let app, status, meta;
@@ -388,11 +359,7 @@ export async function serverRender(
  */
 export function clientRender(initialState) {
     const sagaMiddleware = createSagaMiddleware();
-    const store = createStore(
-        rootReducer,
-        initialState,
-        bindMiddleware([sagaMiddleware])
-    );
+    const store = createStore(rootReducer, initialState, bindMiddleware([sagaMiddleware]));
     sagaMiddleware.run(rootSaga);
     const history = syncHistoryWithStore(browserHistory, store);
 
@@ -400,20 +367,18 @@ export function clientRender(initialState) {
      * When to scroll - on hash link navigation determine if the page should scroll to that element (forward nav, or ignore nav direction)
      */
     const scroll = useScroll({
-        createScrollBehavior: config => new OffsetScrollBehavior(config), //information assembler for has scrolling.
+        createScrollBehavior: (config) => new OffsetScrollBehavior(config), //information assembler for has scrolling.
         shouldUpdateScroll: (prevLocation, { location }) => {
             // eslint-disable-line no-shadow
             //if there is a hash, we may want to scroll to it
             if (location.hash) {
                 //if disableNavDirectionCheck exists, we want to always navigate to the hash (the page is telling us that's desired behavior based on the element's existence
-                const disableNavDirectionCheck = document.getElementById(
-                    DISABLE_ROUTER_HISTORY_NAV_DIRECTION_EL_ID
-                );
+                const disableNavDirectionCheck = document.getElementById(DISABLE_ROUTER_HISTORY_NAV_DIRECTION_EL_ID);
                 //we want to navigate to the corresponding id=<hash> element on 'PUSH' navigation (prev null + POP is a new window url nav ~= 'PUSH')
                 if (
-                    disableNavDirectionCheck ||
-                    (prevLocation === null && location.action === 'POP') ||
-                    location.action === 'PUSH'
+                    disableNavDirectionCheck
+                    || (prevLocation === null && location.action === 'POP')
+                    || location.action === 'PUSH'
                 ) {
                     return location.hash;
                 }
@@ -423,11 +388,7 @@ export function clientRender(initialState) {
     });
 
     if (process.env.NODE_ENV === 'production') {
-        console.log(
-            '%c%s',
-            'color: red; background: yellow; font-size: 24px;',
-            'WARNING!'
-        );
+        console.log('%c%s', 'color: red; background: yellow; font-size: 24px;', 'WARNING!');
         console.log(
             '%c%s',
             'color: black; font-size: 16px;',
@@ -463,14 +424,14 @@ async function apiFetchState(url) {
         const history = await api.getFeedHistoryAsync();
         const feed = history.price_history;
         const last = feed[feed.length - 1];
-        onchain['feed_price'] = last;
+        onchain.feed_price = last;
     } catch (error) {
         console.error('Error fetching feed price:', error);
     }
 
     try {
         const dgpo = await api.getDynamicGlobalPropertiesAsync();
-        onchain['props'] = { hbd_print_rate: dgpo['hbd_print_rate'] };
+        onchain.props = { hbd_print_rate: dgpo.hbd_print_rate };
     } catch (error) {
         console.error('Error fetching dgpo:', error);
     }

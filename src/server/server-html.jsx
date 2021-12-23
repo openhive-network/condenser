@@ -1,17 +1,10 @@
-import * as config from 'config';
 import React from 'react';
 
 export default function ServerHTML({
     body,
     assets,
-    locale,
     title,
     meta,
-    shouldSeeAds,
-    adClient,
-    gptEnabled,
-    gptBannedTags,
-    gptBidding,
     shouldSeeCookieConsent,
     cookieConsentApiKey,
 }) {
@@ -21,16 +14,15 @@ export default function ServerHTML({
             <head>
                 <meta charSet="utf-8" />
                 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-                {meta &&
-                    meta.map(m => {
+                {meta
+                    && meta.map((m) => {
                         if (m.title) {
                             page_title = m.title;
                             return null;
                         }
                         if (m.canonical) return <link key="canonical" rel="canonical" href={m.canonical} />;
                         if (m.name && m.content) return <meta key={m.name} name={m.name} content={m.content} />;
-                        if (m.property && m.content)
-                            return <meta key={m.property} property={m.property} content={m.content} />;
+                        if (m.property && m.content) return <meta key={m.property} property={m.property} content={m.content} />;
                         return null;
                     })}
                 <link rel="manifest" href="/static/manifest.json" />
@@ -105,26 +97,9 @@ export default function ServerHTML({
                     rel="stylesheet"
                     type="text/css"
                 />
-                {assets.style.map((href, idx) => <link href={href} key={idx} rel="stylesheet" type="text/css" />)}
-                {gptEnabled ? (
-                    <script
-                        dangerouslySetInnerHTML={{
-                            __html: `
-                            (function() {
-                              var bsa_optimize = document.createElement('script');
-                              window.optimize = { queue: [] };
-                              bsa_optimize.type = 'text/javascript';
-                              bsa_optimize.async = true;
-                              bsa_optimize.src = 'https://cdn-s2s.buysellads.net/pub/steemit.js?' + (new Date() - new Date() % 3600000);
-                              (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(bsa_optimize);
-                            })();
-                        `,
-                        }}
-                    />
-                ) : null}
-                {gptEnabled ? (
-                    <script src="//m.servedby-buysellads.com/monetization.js" type="text/javascript" />
-                ) : null}
+                {assets.style.map((href) => (
+                    <link href={href} key={href} rel="stylesheet" type="text/css" />
+                ))}
                 {shouldSeeCookieConsent ? (
                     <script
                         id="Cookiebot"
@@ -156,25 +131,16 @@ export default function ServerHTML({
                         `,
                     }}
                 />
+                <script async src="https://www.tiktok.com/embed.js" charSet="UTF-8" />
+                <script async src="https://www.instagram.com/embed.js" charSet="UTF-8" />
                 <script async src="https://embed.redditmedia.com/widgets/platform.js" charSet="UTF-8" />
                 <title>{page_title}</title>
             </head>
             <body>
                 {<div id="content" dangerouslySetInnerHTML={{ __html: body }} />}
-                {assets.script.map((href, idx) => <script key={idx} src={href} />)}
-                {/* gptEnabled ? (
-                    <script
-                        dangerouslySetInnerHTML={{
-                            __html: `
-                            (function(){
-                              if(typeof _bsa !== 'undefined' && _bsa) {
-                                _bsa.init('fancybar', 'CE7D653L', 'placement:steemitcom');
-                              }
-                            })();
-                        `,
-                        }}
-                    />
-                      ) : null*/}
+                {assets.script.map((href) => (
+                    <script key={href} src={href} />
+                ))}
             </body>
         </html>
     );

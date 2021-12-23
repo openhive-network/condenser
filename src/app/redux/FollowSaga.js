@@ -1,4 +1,7 @@
-import { fromJS, Map, Set, OrderedSet } from 'immutable';
+/*eslint no-shadow: "warn"*/
+import {
+ fromJS, Map, OrderedSet
+} from 'immutable';
 import { call, put, select } from 'redux-saga/effects';
 import { api } from '@hiveio/hive-js';
 
@@ -9,19 +12,14 @@ import * as globalActions from 'app/redux/GlobalReducer';
 */
 
 // Test limit with 2 (not 1, infinate looping)
+// eslint-disable-next-line import/prefer-default-export
 export function* loadFollows(method, account, type, force = false) {
-    if (
-        yield select(state =>
-            state.global.getIn(['follow', method, account, type + '_loading'])
-        )
-    ) {
+    if (yield select((state) => state.global.getIn(['follow', method, account, type + '_loading']))) {
         return; //already loading
     }
 
     if (!force) {
-        const hasResult = yield select(state =>
-            state.global.hasIn(['follow', method, account, type + '_result'])
-        );
+        const hasResult = yield select((state) => state.global.hasIn(['follow', method, account, type + '_result']));
         if (hasResult) {
             return; //already loaded
         }
@@ -31,7 +29,7 @@ export function* loadFollows(method, account, type, force = false) {
         globalActions.update({
             key: ['follow', method, account],
             notSet: Map(),
-            updater: m => m.set(type + '_loading', true),
+            updater: (m) => m.set(type + '_loading', true),
         })
     );
 
@@ -48,22 +46,18 @@ function* loadFollowsLoop(method, account, type, start = '', limit = 1000) {
         globalActions.update({
             key: ['follow_inprogress', method, account],
             notSet: Map(),
-            updater: m => {
+            updater: (m) => {
                 m = m.asMutable();
-                res.forEach(value => {
+                res.forEach((value) => {
                     cnt += 1;
 
                     const whatList = value.get('what');
-                    const accountNameKey =
-                        method === 'getFollowingAsync'
-                            ? 'following'
-                            : 'follower';
-                    const accountName = (lastAccountName = value.get(
-                        accountNameKey
-                    ));
-                    whatList.forEach(what => {
+                    const accountNameKey = method === 'getFollowingAsync' ? 'following' : 'follower';
+                    // eslint-disable-next-line no-multi-assign
+                    const accountName = (lastAccountName = value.get(accountNameKey));
+                    whatList.forEach((what) => {
                         //currently this is always true: what === type
-                        m.update(what, OrderedSet(), s => s.add(accountName));
+                        m.update(what, OrderedSet(), (s) => s.add(accountName));
                     });
                 });
                 return m.asImmutable();
@@ -80,22 +74,17 @@ function* loadFollowsLoop(method, account, type, start = '', limit = 1000) {
         yield put(
             globalActions.update({
                 key: [],
-                updater: m => {
+                updater: (m) => {
                     m = m.asMutable();
 
-                    const result = m.getIn(
-                        ['follow_inprogress', method, account, type],
-                        OrderedSet()
-                    );
+                    const result = m.getIn(['follow_inprogress', method, account, type], OrderedSet());
                     m.deleteIn(['follow_inprogress', method, account, type]);
-                    m.updateIn(['follow', method, account], Map(), mm =>
-                        mm.merge({
+                    m.updateIn(['follow', method, account], Map(), (mm) => mm.merge({
                             // Count may be set separately without loading the full xxx_result set
                             [type + '_count']: result.size,
                             [type + '_result']: result.reverse(),
                             [type + '_loading']: false,
-                        })
-                    );
+                        }));
                     return m.asImmutable();
                 },
             })

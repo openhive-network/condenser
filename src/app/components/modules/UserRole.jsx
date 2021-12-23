@@ -12,14 +12,14 @@ class UserRole extends Component {
         };
     }
 
-    onInput = event => {
+    onInput = (event) => {
         event && event.preventDefault();
         this.setState({
             newUsername: event.target.value,
         });
     };
 
-    onSelect = event => {
+    onSelect = (event) => {
         event && event.preventDefault();
         this.setState({
             newRole: event.target.value,
@@ -40,10 +40,7 @@ class UserRole extends Component {
                 });
                 return;
             }
-            this.props.onSubmit(
-                this.state.newUsername.trim(),
-                this.state.newRole.trim()
-            );
+            this.props.onSubmit(this.state.newUsername.trim(), this.state.newRole.trim());
         } else {
             if (this.props.role === this.state.newRole) {
                 this.setState({
@@ -58,16 +55,10 @@ class UserRole extends Component {
     render() {
         const { newRole, message, newUsername } = this.state;
         const {
-            username,
-            community,
-            role,
-            availableRoles,
-            addUser,
+            username, community, availableRoles, addUser
         } = this.props;
 
-        const roleSelector = availableRoles.map(role => (
-            <option value={role}>{role}</option>
-        ));
+        const roleSelector = availableRoles.map((role) => <option value={role}>{role}</option>);
         const editUserModalHeader = (
             <div>
                 <h4>{tt('g.community_user_role_edit_header')}</h4>
@@ -102,7 +93,7 @@ class UserRole extends Component {
                         maxLength={32}
                         name="username"
                         value={addUser ? newUsername : username}
-                        onChange={e => this.onInput(e)}
+                        onChange={(e) => this.onInput(e)}
                         disabled={!addUser}
                     />
                 </div>
@@ -113,11 +104,7 @@ class UserRole extends Component {
                     </select>
                 </div>
                 <div className="text-right">
-                    <button
-                        className="button"
-                        type="submit"
-                        onClick={() => this.onSubmit()}
-                    >
+                    <button className="button" type="submit" onClick={() => this.onSubmit()}>
                         Save
                     </button>
                 </div>
@@ -125,16 +112,29 @@ class UserRole extends Component {
                 <div>
                     <h5>Role Permissions</h5>
                     <p>
-                        <strong>Owner</strong> - assign admins<br />
-                        <strong>Admin</strong> - edit settings, assign mods<br
-                        />
-                        <strong>Moderator</strong> - mute, pin, set user titles<br
-                        />
-                        <strong>Member</strong> - listed on leadership team<br
-                        />
-                        <strong>Guest</strong> - default; can post and comment<br
-                        />
-                        <strong>Muted</strong> - new posts automatically muted
+                        <strong>Owner</strong>
+                        {' '}
+                        - assign admins
+                        <br />
+                        <strong>Admin</strong>
+                        {' '}
+                        - edit settings, assign mods
+                        <br />
+                        <strong>Moderator</strong>
+                        {' '}
+                        - mute, pin, set user titles
+                        <br />
+                        <strong>Member</strong>
+                        {' '}
+                        - listed on leadership team
+                        <br />
+                        <strong>Guest</strong>
+                        {' '}
+                        - default; can post and comment
+                        <br />
+                        <strong>Muted</strong>
+                        {' '}
+                        - new posts automatically muted
                     </p>
                 </div>
             </span>

@@ -88,19 +88,19 @@ export function* fetchUserPeakdBadges(action) {
 
 // Action creators
 export const actions = {
-    fetchProfile: payload => ({
+    fetchProfile: (payload) => ({
         type: FETCH_PROFILE,
         payload,
     }),
-    fetchLists: payload => ({
+    fetchLists: (payload) => ({
         type: FETCH_LISTS,
         payload,
     }),
-    fetchHivebuzzBadges: payload => ({
+    fetchHivebuzzBadges: (payload) => ({
         type: FETCH_HIVEBUZZ_BADGES,
         payload,
     }),
-    fetchPeakdBadges: payload => ({
+    fetchPeakdBadges: (payload) => ({
         type: FETCH_PEAKD_BADGES,
         payload,
     }),

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import Slider from 'react-rangeslider';
@@ -9,7 +9,7 @@ import Icon from 'app/components/elements/Icon';
 import { DEBT_TOKEN_SHORT, LIQUID_TOKEN_UPPERCASE, INVEST_TOKEN_SHORT } from 'app/client_config';
 import FormattedAsset from 'app/components/elements/FormattedAsset';
 import { pricePerHive } from 'app/utils/StateFunctions';
-import shouldComponentUpdate from 'app/utils/shouldComponentUpdate';
+// import shouldComponentUpdate  from 'app/utils/shouldComponentUpdate';
 import { formatDecimal, parsePayoutAmount } from 'app/utils/ParsersAndFormatters';
 import DropdownMenu from 'app/components/elements/DropdownMenu';
 import TimeAgoWrapper from 'app/components/elements/TimeAgoWrapper';
@@ -46,7 +46,7 @@ function abs(value) {
     return Math.abs(parseInt(value));
 }
 
-class Voting extends React.Component {
+class Voting extends PureComponent {
     static propTypes = {
         // HTML properties
         showList: PropTypes.bool,
@@ -79,19 +79,21 @@ class Voting extends React.Component {
             },
         };
 
-        this.voteUp = e => {
+        this.voteUp = (e) => {
             e && e.preventDefault();
             this.voteUpOrDown(true);
         };
-        this.voteDown = e => {
+        this.voteDown = (e) => {
             e && e.preventDefault();
             this.voteUpOrDown(false);
         };
-        this.voteUpOrDown = up => {
+        this.voteUpOrDown = (up) => {
             if (this.props.voting) return;
             this.setState({ votingUp: up, votingDown: !up });
             if (this.state.showWeight) this.setState({ showWeight: false });
-            const { myVote, author, permlink, username, is_comment } = this.props;
+            const {
+                myVote, author, permlink, username,
+            } = this.props;
 
             let weight;
             if (myVote > 0 || myVote < 0) {
@@ -117,7 +119,7 @@ class Voting extends React.Component {
             });
         };
 
-        this.handleWeightChange = up => weight => {
+        this.handleWeightChange = (up) => (weight) => {
             let w;
             if (up) {
                 w = {
@@ -133,7 +135,7 @@ class Voting extends React.Component {
             this.setState({ sliderWeight: w });
         };
 
-        this.storeSliderWeight = up => () => {
+        this.storeSliderWeight = (up) => () => {
             const { username, is_comment } = this.props;
             const weight = up ? this.state.sliderWeight.up : this.state.sliderWeight.down;
             localStorage.setItem(
@@ -145,10 +147,10 @@ class Voting extends React.Component {
             const { username, enable_slider, is_comment } = this.props;
             if (enable_slider) {
                 const sliderWeightUp = Number(
-                    localStorage.getItem('voteWeight' + '-' + username + (is_comment ? '-comment' : ''))
+                    localStorage.getItem('voteWeight-' + username + (is_comment ? '-comment' : ''))
                 );
                 const sliderWeightDown = Number(
-                    localStorage.getItem('voteWeight' + 'Down' + '-' + username + (is_comment ? '-comment' : ''))
+                    localStorage.getItem('voteWeightDown-' + username + (is_comment ? '-comment' : ''))
                 );
                 this.setState({
                     sliderWeight: {
@@ -159,23 +161,24 @@ class Voting extends React.Component {
             }
         };
 
-        this.toggleWeightUp = e => {
+        this.toggleWeightUp = (e) => {
             e.preventDefault();
             this.toggleWeightUpOrDown(true);
         };
 
-        this.toggleWeightDown = e => {
+        this.toggleWeightDown = (e) => {
             e && e.preventDefault();
             this.toggleWeightUpOrDown(false);
         };
 
-        this.toggleWeightUpOrDown = up => {
+        this.toggleWeightUpOrDown = (up) => {
             this.setState({
+                // eslint-disable-next-line react/no-access-state-in-setstate
                 showWeight: !this.state.showWeight,
                 showWeightDir: up ? 'up' : 'down',
             });
         };
-        this.shouldComponentUpdate = shouldComponentUpdate(this, 'Voting');
+        // this.shouldComponentUpdate = shouldComponentUpdate(this, 'Voting');
     }
 
     render() {
@@ -185,11 +188,9 @@ class Voting extends React.Component {
             showList,
             voting,
             enable_slider,
-            is_comment,
             post,
             price_per_hive,
             hbd_print_rate,
-            username,
         } = this.props;
 
         // `lite` Voting component: e.g. search results
@@ -203,17 +204,22 @@ class Voting extends React.Component {
             );
         }
 
-        const { votingUp, votingDown, showWeight, showWeightDir } = this.state;
+        const {
+ votingUp, votingDown, showWeight, showWeightDir
+} = this.state;
 
         const votingUpActive = voting && votingUp;
         const votingDownActive = voting && votingDown;
 
-        const slider = up => {
+        const slider = (up) => {
             const b = up ? this.state.sliderWeight.up : this.state.sliderWeight.down;
             const s = up ? '' : '-';
             return (
                 <span>
-                    <div className="weight-display">{s + b / 100}%</div>
+                    <div className="weight-display">
+                        {s + b / 100}
+                        %
+                    </div>
                     <Slider
                         min={100}
                         max={MAX_WEIGHT}
@@ -230,10 +236,9 @@ class Voting extends React.Component {
         let downVote;
         if (true) {
             const down = <Icon name={votingDownActive ? 'empty' : 'chevron-down-circle'} className="flag" />;
-            const classDown =
-                'Voting__button Voting__button-down' +
-                (myVote < 0 ? ' Voting__button--downvoted' : '') +
-                (votingDownActive ? ' votingDown' : '');
+            const classDown = 'Voting__button Voting__button-down'
+                + (myVote < 0 ? ' Voting__button--downvoted' : '')
+                + (votingDownActive ? ' votingDown' : '');
             // myVote === current vote
 
             let dropdown = (
@@ -265,16 +270,16 @@ class Voting extends React.Component {
                             this.toggleWeightDown();
                         }}
                         title={down}
-                        position={'right'}
+                        position="right"
                     >
                         <div className="Voting__adjust_weight_down">
-                            {(myVote == null || myVote === 0) &&
-                                enable_slider && <div className="weight-container">{slider(false)}</div>}
+                            {(myVote == null || myVote === 0)
+                                && enable_slider && <div className="weight-container">{slider(false)}</div>}
                             <CloseButton onClick={() => this.setState({ showWeight: false })} />
                             <div className="clear Voting__about-flag">
                                 {ABOUT_FLAG}
                                 <br />
-                                <span href="#" onClick={this.voteDown} className="button outline" title="Downvote">
+                                <span role="button" tabIndex={0} href="#" onClick={this.voteDown} className="button outline" title="Downvote">
                                     Submit
                                 </span>
                             </div>
@@ -310,10 +315,9 @@ class Voting extends React.Component {
         const shown_payout = payout_limit_hit && max_payout > 0 ? max_payout : total_payout;
 
         const up = <Icon name={votingUpActive ? 'empty' : 'chevron-up-circle'} className="upvote" />;
-        const classUp =
-            'Voting__button Voting__button-up' +
-            (myVote > 0 ? ' Voting__button--upvoted' : '') +
-            (votingUpActive ? ' votingUp' : '');
+        const classUp = 'Voting__button Voting__button-up'
+            + (myVote > 0 ? ' Voting__button--upvoted' : '')
+            + (votingUpActive ? ' votingUp' : '');
 
         const payoutItems = [];
 
@@ -329,17 +333,17 @@ class Voting extends React.Component {
             if (max_payout > 0) {
                 payoutItems.push({
                     value:
-                        tt('voting_jsx.breakdown') +
-                        ': ' +
-                        (fmt(pending_hbd, DEBT_TOKEN_SHORT) + ', ') +
-                        (hbd_print_rate != HBD_PRINT_RATE_MAX ? fmt(pending_hive, LIQUID_TOKEN_UPPERCASE) + ', ' : '') +
-                        fmt(pending_hp, INVEST_TOKEN_SHORT),
+                        tt('voting_jsx.breakdown')
+                        + ': '
+                        + (fmt(pending_hbd, DEBT_TOKEN_SHORT) + ', ')
+                        + (hbd_print_rate != HBD_PRINT_RATE_MAX ? fmt(pending_hive, LIQUID_TOKEN_UPPERCASE) + ', ' : '')
+                        + fmt(pending_hp, INVEST_TOKEN_SHORT),
                 });
             }
 
             const beneficiaries = post.get('beneficiaries');
             if (beneficiaries) {
-                beneficiaries.forEach(function(key) {
+                beneficiaries.forEach((key) => {
                     payoutItems.push({
                         value: key.get('account') + ': ' + (fmt(parseFloat(key.get('weight')) / 100) + '%'),
                         link: '/@' + key.get('account'),
@@ -349,7 +353,9 @@ class Voting extends React.Component {
 
             const payoutDate = (
                 <span>
-                    {tt('voting_jsx.payout')} <TimeAgoWrapper date={payout_at} />
+                    {tt('voting_jsx.payout')}
+                    {' '}
+                    <TimeAgoWrapper date={payout_at} />
                 </span>
             );
             payoutItems.push({ value: payoutDate });
@@ -415,22 +421,31 @@ class Voting extends React.Component {
 
         let voters_list = null;
         if (showList && total_votes > 0 && active_votes) {
-            let voters = [];
+            const voters = [];
 
             // add top votes
             const avotes = active_votes.toJS();
             const maxlen = Math.min(avotes.length, MAX_VOTES_DISPLAY);
             avotes.sort((a, b) => (abs(a.rshares) > abs(b.rshares) ? -1 : 1));
+            // eslint-disable-next-line no-plusplus
             for (let v = 0; v < maxlen; ++v) {
                 const { rshares, voter } = avotes[v];
-                if (rshares === 0) continue;
-                const rshares_percent = rshares * 100 / net_rshares;
-                const vote_value = shown_payout * rshares_percent / 100;
-                const sign = rshares < 0 ? '-' : '';
-                voters.push({
-                    value: `${voter}: ${sign}$${Math.abs(vote_value).toFixed(2)}`,
-                    link: '/@' + voter,
-                });
+                if (rshares !== 0) {
+                    const rshares_percent = (rshares * 100) / net_rshares;
+                    const vote_value = (shown_payout * rshares_percent) / 100;
+                    const sign = rshares < 0 ? '-' : '';
+                    let vote_value_string = '';
+                    if (shown_payout > 0) {
+                        vote_value_string = `: ${sign}$${Math.abs(vote_value).toFixed(2)}`;
+                    } else if (sign === '-') {
+                        vote_value_string = ` [${sign}]`;
+                    }
+
+                    voters.push({
+                        value: `${voter}${vote_value_string}`,
+                        link: '/@' + voter,
+                    });
+                }
             }
 
             // add overflow, if any
@@ -489,7 +504,7 @@ class Voting extends React.Component {
                     <div className="Voting__adjust_weight">
                         {votingUpActive ? (
                             <a href="#" onClick={() => null} className="confirm_weight" title={tt('g.upvote')}>
-                                <Icon size="2x" name={'empty'} />
+                                <Icon size="2x" name="empty" />
                             </a>
                         ) : (
                             <a href="#" onClick={this.voteUp} className="confirm_weight" title={tt('g.upvote')}>
@@ -533,7 +548,7 @@ export default connect(
 
         const author = post.get('author');
         const permlink = post.get('permlink');
-        let votes_key = ['content', author + '/' + permlink, 'active_votes'];
+        const votes_key = ['content', author + '/' + permlink, 'active_votes'];
         const active_votes = state.global.getIn(votes_key, List());
         const is_comment = post.get('depth') == 0;
 
@@ -548,10 +563,10 @@ export default connect(
 
         let myVote = ownProps.myVote || null; // ownProps: test only
         if (username && active_votes) {
-            const vote = active_votes.find(el => el.get('voter') === username);
+            const vote = active_votes.find((el) => el.get('voter') === username);
             if (vote) {
-                let has_rshares = vote.get('rshares') !== undefined;
-                let has_percent = vote.get('percent') !== undefined;
+                const has_rshares = vote.get('rshares') !== undefined;
+                const has_percent = vote.get('percent') !== undefined;
                 if (has_rshares && !has_percent) {
                     myVote = parseInt(vote.get('rshares'), 10);
                 } else if (!has_rshares && has_percent) {
@@ -580,25 +595,24 @@ export default connect(
     },
 
     // mapDispatchToProps
-    dispatch => ({
-        vote: (weight, { author, permlink, username, myVote, isFlag, rshares }) => {
+    (dispatch) => ({
+        vote: (weight, {
+ author, permlink, username, myVote, isFlag, rshares
+}) => {
             const confirm = () => {
                 // new vote
                 if (myVote == null) return null;
 
                 // changing a vote
-                if (weight === 0)
-                    return isFlag
+                if (weight === 0) { return isFlag
                         ? tt('voting_jsx.removing_your_vote')
-                        : tt('voting_jsx.removing_your_vote_will_reset_curation_rewards_for_this_post');
-                if (weight > 0)
-                    return isFlag
+                        : tt('voting_jsx.removing_your_vote_will_reset_curation_rewards_for_this_post'); }
+                if (weight > 0) { return isFlag
                         ? tt('voting_jsx.changing_to_an_upvote')
-                        : tt('voting_jsx.changing_to_an_upvote_will_reset_curation_rewards_for_this_post');
-                if (weight < 0)
-                    return isFlag
+                        : tt('voting_jsx.changing_to_an_upvote_will_reset_curation_rewards_for_this_post'); }
+                if (weight < 0) { return isFlag
                         ? tt('voting_jsx.changing_to_a_downvote')
-                        : tt('voting_jsx.changing_to_a_downvote_will_reset_curation_rewards_for_this_post');
+                        : tt('voting_jsx.changing_to_a_downvote_will_reset_curation_rewards_for_this_post'); }
                 return null;
             };
             dispatch(
@@ -615,7 +629,7 @@ export default connect(
                         },
                     },
                     confirm,
-                    errorCallback: errorKey => {
+                    errorCallback: (errorKey) => {
                         console.log('Transaction Error:' + errorKey);
                     },
                 })

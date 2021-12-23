@@ -14,7 +14,7 @@ describe('formatDecimal', () => {
             [5.0, '5.00'],
             [5, '5.00'],
         ];
-        test_cases.forEach(v => {
+        test_cases.forEach((v) => {
             expect(formatDecimal(v[0]).join('')).toBe(v[1]);
         });
     });

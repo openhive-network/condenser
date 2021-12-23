@@ -1,25 +1,22 @@
 import React from 'react';
 import reactForm from 'app/utils/ReactForm';
 import { configure, mount } from 'enzyme';
-import Adapter from 'enzyme-adapter-react-15';
+import Adapter from 'enzyme-adapter-react-16';
 
-import {
-    BeneficiarySelector,
-    validateBeneficiaries,
-} from './BeneficiarySelector';
+import { BeneficiarySelector, validateBeneficiaries } from './BeneficiarySelector';
 
 require('app/Translator');
 
 configure({ adapter: new Adapter() });
 
 class FormWrapper extends React.Component {
-    constructor(props) {
+    constructor() {
         super();
         this.state = {};
         reactForm({
             fields: ['beneficiaries'],
             initialValues: { beneficiaries: [] },
-            validation: values => {
+            validation: () => {
                 return {
                     beneficiaries: true,
                 };
@@ -31,13 +28,7 @@ class FormWrapper extends React.Component {
 
     render() {
         const { beneficiaries } = this.state;
-        return (
-            <BeneficiarySelector
-                {...beneficiaries.props}
-                username="testuser"
-                following={['testfollowing']}
-            />
-        );
+        return <BeneficiarySelector {...beneficiaries.props} username="testuser" following={['testfollowing']} />;
     }
 }
 
@@ -47,35 +38,23 @@ describe('BeneficiarySelector', () => {
 
         const component = wrapper.instance();
         expect(component.state.beneficiaries.value.length).toBe(0);
-        expect(wrapper.find('input #remainingPercent').get(0).props.value).toBe(
-            100
-        );
+        expect(wrapper.find('input #remainingPercent').get(0).props.value).toBe(100);
 
         // add beneficiary
         wrapper.find('a #add').simulate('click');
         expect(component.state.beneficiaries.value.length).toBe(1);
 
         // add name and percent
-        wrapper
-            .find('input #percent')
-            .simulate('change', { target: { value: 20 } });
-        expect(wrapper.find('input #remainingPercent').get(0).props.value).toBe(
-            80
-        );
-        wrapper
-            .find('input #user')
-            .simulate('change', { target: { value: 'testuser' } });
+        wrapper.find('input #percent').simulate('change', { target: { value: 20 } });
+        expect(wrapper.find('input #remainingPercent').get(0).props.value).toBe(80);
+        wrapper.find('input #user').simulate('change', { target: { value: 'testuser' } });
         expect(component.state.beneficiaries.value[0].percent).toBe(20);
-        expect(component.state.beneficiaries.value[0].username).toBe(
-            'testuser'
-        );
+        expect(component.state.beneficiaries.value[0].username).toBe('testuser');
 
         // remove beneficiary
         wrapper.find('a #remove').simulate('click');
         expect(component.state.beneficiaries.value.length).toBe(0);
-        expect(wrapper.find('input #remainingPercent').get(0).props.value).toBe(
-            100
-        );
+        expect(wrapper.find('input #remainingPercent').get(0).props.value).toBe(100);
     });
 });
 
@@ -85,12 +64,10 @@ describe('BeneficiarySelector_maxEntries', () => {
 
         const component = wrapper.instance();
         expect(component.state.beneficiaries.value.length).toBe(0);
-        expect(wrapper.find('input #remainingPercent').get(0).props.value).toBe(
-            100
-        );
+        expect(wrapper.find('input #remainingPercent').get(0).props.value).toBe(100);
 
         // add beneficiary 8 times
-        for (var i = 0; i < 8; i++) {
+        for (let i = 0; i < 8; i += 1) {
             wrapper.find('a #add').simulate('click');
         }
         expect(component.state.beneficiaries.value.length).toBe(8);
@@ -101,63 +78,48 @@ describe('BeneficiarySelector_maxEntries', () => {
 
 describe('BeneficiarySelector_validate', () => {
     it('beneficiary size exceeded', () => {
-        var beneficiaries = [];
-        for (var i = 0; i < 9; i++) {
+        const beneficiaries = [];
+        for (let i = 0; i < 9; i += 1) {
             beneficiaries[i] = { username: 'abc' + i, percent: 1 };
         }
-        expect(validateBeneficiaries('', beneficiaries, true)).toContain(
-            'at most 8 beneficiaries'
-        );
+        expect(validateBeneficiaries('', beneficiaries, true)).toContain('at most 8 beneficiaries');
     });
 
     it('beneficiary cannot have duplicate', () => {
-        var beneficiaries = [];
-        for (var i = 0; i < 2; i++) {
+        const beneficiaries = [];
+        for (let i = 0; i < 2; i += 1) {
             beneficiaries[i] = { username: 'abc', percent: 1 };
         }
-        expect(validateBeneficiaries('', beneficiaries, true)).toContain(
-            'duplicate'
-        );
+        expect(validateBeneficiaries('', beneficiaries, true)).toContain('duplicate');
     });
 
     it('beneficiary cannot be self', () => {
-        var beneficiaries = [{ username: 'abc', percent: 1 }];
-        expect(validateBeneficiaries('abc', beneficiaries, true)).toContain(
-            'self'
-        );
+        const beneficiaries = [{ username: 'abc', percent: 1 }];
+        expect(validateBeneficiaries('abc', beneficiaries, true)).toContain('self');
     });
 
     it('beneficiary user missing when optional no error', () => {
-        var beneficiaries = [{ username: '', percent: 0 }];
+        const beneficiaries = [{ username: '', percent: 0 }];
         expect(validateBeneficiaries('a', beneficiaries, false)).toBeFalsy();
     });
 
     it('beneficiary percent missing when optional no error', () => {
-        var beneficiaries = [{ username: 'abc', percent: 0 }];
+        const beneficiaries = [{ username: 'abc', percent: 0 }];
         expect(validateBeneficiaries('', beneficiaries, false)).toBeFalsy();
     });
 
     it('beneficiary percent too low when required', () => {
-        var beneficiaries = [{ username: 'abc', percent: 0 }];
-        expect(validateBeneficiaries('', beneficiaries, true)).toContain(
-            'percent'
-        );
+        const beneficiaries = [{ username: 'abc', percent: 0 }];
+        expect(validateBeneficiaries('', beneficiaries, true)).toContain('percent');
     });
 
     it('beneficiary percent too high', () => {
-        var beneficiaries = [{ username: 'abc', percent: 101 }];
-        expect(validateBeneficiaries('', beneficiaries, true)).toContain(
-            'percent'
-        );
+        const beneficiaries = [{ username: 'abc', percent: 101 }];
+        expect(validateBeneficiaries('', beneficiaries, true)).toContain('percent');
     });
 
     it('beneficiary percent sum too high', () => {
-        var beneficiaries = [
-            { username: 'abc', percent: 50 },
-            { username: 'def', percent: 51 },
-        ];
-        expect(validateBeneficiaries('', beneficiaries, true)).toContain(
-            'percent'
-        );
+        const beneficiaries = [{ username: 'abc', percent: 50 }, { username: 'def', percent: 51 }];
+        expect(validateBeneficiaries('', beneficiaries, true)).toContain('percent');
     });
 });

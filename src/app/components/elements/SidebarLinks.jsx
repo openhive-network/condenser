@@ -1,8 +1,7 @@
 import React from 'react';
-import tt from 'counterpart';
 import { Link } from 'react-router';
 
-const SidebarLinks = ({ username, topics }) => (
+const SidebarLinks = ({ topics }) => (
     <div className="c-sidebar__module">
         {/*
         <div className="c-sidebar__header">
@@ -30,18 +29,13 @@ const SidebarLinks = ({ username, topics }) => (
                 */}
                 {topics && (
                     <li className="c-sidebar__list-item">
-                        <div style={{ color: '#aaa', paddingTop: '0em' }}>
-                            Trending Communities
-                        </div>
+                        <div style={{ color: '#aaa', paddingTop: '0em' }}>Trending Communities</div>
                     </li>
                 )}
-                {topics &&
-                    topics.toJS().map(item => (
+                {topics
+                    && topics.toJS().map((item) => (
                         <li key={item[0]} className="c-sidebar__list-item">
-                            <Link
-                                className="c-sidebar__link"
-                                to={`/trending/${item[0]}`}
-                            >
+                            <Link className="c-sidebar__link" to={`/trending/${item[0]}`}>
                                 {item[1]}
                             </Link>
                         </li>

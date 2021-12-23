@@ -18,16 +18,13 @@ class CommunityRoles extends React.Component {
             title: '',
             updateRoleModal: false,
             addUserToCommunityModal: false,
-            updatedRole: '',
         };
         this.onAccountChange = this.onAccountChange.bind(this);
         this.onRoleChange = this.onRoleChange.bind(this);
         this.onSubmit = this.onSubmit.bind(this);
         this.onEditUserRoleSelect = this.onEditUserRoleSelect.bind(this);
         this.toggleUpdateRoleModal = this.toggleUpdateRoleModal.bind(this);
-        this.toggleAddUserToCommunityModal = this.toggleAddUserToCommunityModal.bind(
-            this
-        );
+        this.toggleAddUserToCommunityModal = this.toggleAddUserToCommunityModal.bind(this);
     }
 
     componentDidMount() {
@@ -39,6 +36,7 @@ class CommunityRoles extends React.Component {
             updateRoleModal: showModal,
         });
     }
+
     toggleAddUserToCommunityModal(showModal) {
         this.setState({
             addUserToCommunityModal: showModal,
@@ -73,11 +71,7 @@ class CommunityRoles extends React.Component {
 
     render() {
         const {
-            community,
-            loading,
-            updating,
-            roles,
-            communityMetadata,
+            community, loading, updating, roles, communityMetadata,
         } = this.props;
 
         const canEdit = {
@@ -90,24 +84,22 @@ class CommunityRoles extends React.Component {
 
         let availableRoles = [];
 
-        if (
-            communityMetadata &&
-            communityMetadata.context &&
-            Object.keys(communityMetadata.context).length > 0
-        ) {
+        if (communityMetadata && communityMetadata.context && Object.keys(communityMetadata.context).length > 0) {
             availableRoles = canEdit[communityMetadata.context.role];
         }
 
-        const tableRows = roles.toJS().map((tuple, index) => {
+        const tableRows = roles.toJS().map((tuple) => {
             const name = tuple[0];
             const title = tuple[2];
             let role = tuple[1];
             if (availableRoles && availableRoles.includes(tuple[1])) {
                 role = (
                     <a
+                        role="link"
+                        tabIndex={0}
                         className="community-user--role"
                         aria-labelledby="Community User Role"
-                        onClick={e => {
+                        onClick={(e) => {
                             e.preventDefault();
                             this.onEditUserRoleSelect(name, tuple[1], title);
                             this.toggleUpdateRoleModal(true);
@@ -120,7 +112,10 @@ class CommunityRoles extends React.Component {
             return (
                 <tr key={name}>
                     <td>
-                        <Link to={`/@${name}`}>@{name}</Link>
+                        <Link to={`/@${name}`}>
+                            @
+                            {name}
+                        </Link>
                     </td>
                     <td>{role}</td>
                     <td>{title}</td>
@@ -143,15 +138,13 @@ class CommunityRoles extends React.Component {
 
         const editUserModal = (
             <Reveal onHide={() => null} show>
-                <CloseButton
-                    onClick={() => this.toggleUpdateRoleModal(false)}
-                />
+                <CloseButton onClick={() => this.toggleUpdateRoleModal(false)} />
                 <UserRole
                     title={this.state.title}
                     username={this.state.account}
                     community={this.props.community}
                     role={this.state.role}
-                    onSubmit={newRole => {
+                    onSubmit={(newRole) => {
                         const params = {
                             community: this.props.community,
                             account: this.state.account,
@@ -168,9 +161,7 @@ class CommunityRoles extends React.Component {
 
         const addUserModal = (
             <Reveal onHide={() => null} show>
-                <CloseButton
-                    onClick={() => this.toggleAddUserToCommunityModal(false)}
-                />
+                <CloseButton onClick={() => this.toggleAddUserToCommunityModal(false)} />
                 <UserRole
                     title={this.state.title}
                     username={this.state.account}
@@ -204,9 +195,7 @@ class CommunityRoles extends React.Component {
             body = (
                 <div>
                     <h1 className="articles__h1">
-                        <Link to={`/trending/${community}`}>
-                            {commName || community}
-                        </Link>
+                        <Link to={`/trending/${community}`}>{commName || community}</Link>
                     </h1>
                     <br />
                     <div className="c-sidebar__module">
@@ -217,6 +206,7 @@ class CommunityRoles extends React.Component {
                         <div>
                             {table}
                             <button
+                                type="button"
                                 onClick={() => {
                                     this.toggleAddUserToCommunityModal(true);
                                 }}
@@ -231,16 +221,10 @@ class CommunityRoles extends React.Component {
         }
 
         return (
-            <PostsIndexLayout
-                category={community}
-                enableAds={false}
-                blogmode={false}
-            >
+            <PostsIndexLayout category={community} blogmode={false}>
                 <div className="CommunityRoles">
                     <div className="row">
-                        <div className="column large-9 medium-12 small-12">
-                            {body}
-                        </div>
+                        <div className="column large-9 medium-12 small-12">{body}</div>
                     </div>
                 </div>
             </PostsIndexLayout>
@@ -252,8 +236,11 @@ const CommunityRolesWrapped = connect(
     (state, ownProps) => {
         const { community } = ownProps.params;
         const tree = state.community.get(community, Map());
-        const roles = tree.get('roles', List());
-        const loading = roles.size == 0;
+        let roles = tree.get('roles', List());
+        if (typeof roles === 'string') {
+            roles = List();
+        }
+        const loading = roles.size === 0;
         const updating = tree.get('updatePending', false);
         const communityMetadata = state.global.getIn(['community', community]);
         return {
@@ -265,11 +252,11 @@ const CommunityRolesWrapped = connect(
         };
     },
 
-    dispatch => ({
-        getCommunityRoles: community => {
+    (dispatch) => ({
+        getCommunityRoles: (community) => {
             dispatch(communityActions.getCommunityRoles(community));
         },
-        updateUser: params => {
+        updateUser: (params) => {
             dispatch(communityActions.updateUserRole(params));
         },
     })

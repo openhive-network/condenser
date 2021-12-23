@@ -7,7 +7,9 @@ import SvgImage from 'app/components/elements/SvgImage';
 
 class PostWrapper extends React.Component {
     componentWillMount() {
-        const { redirectUrl, loading, author, permlink } = this.props;
+        const {
+ redirectUrl, loading, author, permlink
+} = this.props;
         if (redirectUrl) {
             if (browserHistory) browserHistory.replace(redirectUrl);
         } else if (loading) {
@@ -53,10 +55,7 @@ const StoreWrapped = connect(
         let category = state.global.getIn(['content', postref, 'category']);
         if (typeof category === 'undefined') {
             if (state.global.hasIn(['headers', postref])) {
-                category = state.global.getIn(
-                    ['headers', postref, 'category'],
-                    null
-                );
+                category = state.global.getIn(['headers', postref, 'category'], null);
             }
         }
 
@@ -67,9 +66,8 @@ const StoreWrapped = connect(
             loading: typeof category === 'undefined',
         };
     },
-    dispatch => ({
-        getPostHeader: payload =>
-            dispatch(fetchDataSagaActions.getPostHeader(payload)),
+    (dispatch) => ({
+        getPostHeader: (payload) => dispatch(fetchDataSagaActions.getPostHeader(payload)),
     })
 )(PostWrapper);
 

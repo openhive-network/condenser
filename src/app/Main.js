@@ -3,17 +3,16 @@ import 'core-js/stable';
 import 'regenerator-runtime/runtime';
 import 'whatwg-fetch';
 import store from 'store';
-import { VIEW_MODE_WHISTLE, PARAM_VIEW_MODE } from 'shared/constants';
 import './assets/stylesheets/app.scss';
 import plugins from 'app/utils/JsPlugins';
 import Iso from 'iso';
 import { clientRender } from 'shared/UniversalRender';
-import ConsoleExports from './utils/ConsoleExports';
 import { serverApiRecordEvent } from 'app/utils/ServerApiClient';
 import * as steem from '@hiveio/hive-js';
 import { determineViewMode } from 'app/utils/Links';
 import frontendLogger from 'app/utils/FrontendLogger';
 import Cookies from 'universal-cookie';
+import ConsoleExports from './utils/ConsoleExports';
 
 window.addEventListener('error', frontendLogger);
 
@@ -38,11 +37,12 @@ function runApp(initial_state) {
         enabled: false,
     };
     const buff = konami.code.split('');
-    const cmd = command => {
+    const cmd = (command) => {
         console.log('got command:' + command);
         switch (command) {
             case CMD_LOG_O:
                 konami.enabled = false;
+                return 'done';
             case CMD_LOG_TOGGLE:
             case CMD_LOG_T:
                 konami.enabled = !konami.enabled;
@@ -61,17 +61,17 @@ function runApp(initial_state) {
     const enableKonami = () => {
         if (!window.s) {
             console.log('The cupie doll is yours.');
-            window.s = command => {
+            window.s = (command) => {
                 return cmd.call(this, command);
             };
         }
     };
 
-    window.onunhandledrejection = function(evt) {
+    window.onunhandledrejection = function (evt) {
         console.error('unhandled rejection', evt ? evt.toString() : '<null>');
     };
 
-    window.document.body.onkeypress = e => {
+    window.document.body.onkeypress = (e) => {
         buff.shift();
         buff.push(e.key);
         if (buff.join('') === konami.code) {
@@ -86,13 +86,10 @@ function runApp(initial_state) {
     }
 
     const { config } = initial_state.offchain;
-    let cookies = new Cookies();
+    const cookies = new Cookies();
     const alternativeApiEndpoints = config.alternative_api_endpoints;
     const cookie_endpoint = cookies.get('user_preferred_api_endpoint');
-    const currentApiEndpoint =
-        cookie_endpoint === undefined
-            ? config.steemd_connection_client
-            : cookie_endpoint;
+    const currentApiEndpoint = cookie_endpoint === undefined ? config.steemd_connection_client : cookie_endpoint;
 
     steem.api.setOptions({
         url: currentApiEndpoint,
@@ -104,7 +101,6 @@ function runApp(initial_state) {
     });
     steem.config.set('address_prefix', config.address_prefix);
     steem.config.set('rebranded_api', true);
-    steem.broadcast.updateOperations();
 
     window.$STM_Config = config;
     plugins(config);
@@ -122,17 +118,11 @@ function runApp(initial_state) {
     if (locale) initial_state.user.locale = locale;
     initial_state.user.maybeLoggedIn = !!store.get('autopost2');
     if (initial_state.user.maybeLoggedIn) {
-        const username = new Buffer(store.get('autopost2'), 'hex')
-            .toString()
-            .split('\t')[0];
+        const username = Buffer.from(store.get('autopost2'), 'hex').toString().split('\t')[0];
         initial_state.user.current = {
             username,
         };
     }
-
-    const location = `${window.location.pathname}${window.location.search}${
-        window.location.hash
-    }`;
 
     try {
         clientRender(initial_state);
@@ -145,7 +135,8 @@ function runApp(initial_state) {
 if (!window.Intl) {
     require.ensure(
         ['intl/dist/Intl'],
-        require => {
+        (require) => {
+            // eslint-disable-next-line no-multi-assign
             window.IntlPolyfill = window.Intl = require('intl/dist/Intl');
             require('intl/locale-data/jsonp/en-US.js');
             require('intl/locale-data/jsonp/es.js');

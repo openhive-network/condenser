@@ -37,11 +37,11 @@ export default function reducer(state = defaultSearchState, action) {
 
             const posts = List(
                 results
-                    .filter(post => {
+                    .filter((post) => {
                         // Don't include comments in search results
                         return post.depth === 0;
                     })
-                    .map(post => {
+                    .map((post) => {
                         post.created = post.created_at;
                         post.author_rep = parseFloat(post.author_rep);
                         post.author_reputation = post.author_rep;
@@ -66,20 +66,20 @@ export default function reducer(state = defaultSearchState, action) {
     }
 }
 
-export const search = payload => ({
+export const search = (payload) => ({
     type: SEARCH_DISPATCH,
     payload,
 });
-export const searchPending = payload => ({
+export const searchPending = (payload) => ({
     type: SEARCH_PENDING,
     payload,
 });
-export const searchError = payload => ({
+export const searchError = (payload) => ({
     type: SEARCH_ERROR,
     payload,
 });
 
-export const searchResult = payload => ({
+export const searchResult = (payload) => ({
     type: SEARCH_RESULT,
     payload,
 });

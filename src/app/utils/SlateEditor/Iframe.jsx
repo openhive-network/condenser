@@ -1,33 +1,29 @@
 import React from 'react';
-import { normalizeEmbedUrl as normalizeEmbbeddedPlayerEmbedUrl } from 'app/components/elements/EmbeddedPlayers';
+import { normalizeEmbedUrl as normalizeEmbbeddedPlayerEmbedUrl }  from 'app/components/elements/EmbeddedPlayers';
 
 export default class Iframe extends React.Component {
-    normalizeEmbedUrl = url => {
+    normalizeEmbedUrl = (url) => {
         const validEmbedUrl = normalizeEmbbeddedPlayerEmbedUrl(url);
         if (validEmbedUrl !== false) {
             return validEmbedUrl;
         }
 
-        console.log('unable to auto-detect embed url', url);
+        console.error('unable to auto-detect embed url', url);
         return null;
     };
 
-    onChange = e => {
+    onChange = (e) => {
         const { node, editor } = this.props;
         const value = e.target.value;
 
         const src = this.normalizeEmbedUrl(value) || value;
 
-        const next = editor
-            .getState()
-            .transform()
-            .setNodeByKey(node.key, { data: { src } })
-            .apply();
+        const next = editor.getState().transform().setNodeByKey(node.key, { data: { src } }).apply();
 
         editor.onChange(next);
     };
 
-    onClick = e => {
+    onClick = (e) => {
         // stop propagation so that the void node itself isn't focused, since that would unfocus the input.
         e.stopPropagation();
     };
@@ -50,9 +46,7 @@ export default class Iframe extends React.Component {
             <div {...attributes} className={className}>
                 <div className="videoWrapper">
                     {this.renderFrame()}
-                    <div style={lockStyle}>
-                        {isFocused && <span>{this.renderInput()}</span>}
-                    </div>
+                    <div style={lockStyle}>{isFocused && <span>{this.renderInput()}</span>}</div>
                 </div>
             </div>
         );

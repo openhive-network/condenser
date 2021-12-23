@@ -1,7 +1,7 @@
 export class Role {
     static LEVELS = ['muted', 'guest', 'member', 'mod', 'admin', 'owner'];
 
-    static level = role => {
+    static level = (role) => {
         if (!role) throw 'empty role provided';
         const level = Role.LEVELS.indexOf(role);
         if (level == -1) throw 'invalid role: ' + role;
@@ -26,11 +26,12 @@ export class Role {
         return Role.atLeast(role, minRole);
     };
 
-    static parseType = name => {
+    static parseType = (name) => {
         return parseInt(name[5]);
     };
 }
 
 export function ifHive(category) {
-    return category && category.substring(0, 5) == 'hive-' ? category : null;
+    if (category && category.match(/^(hive-)([0-9]{5,})/i) !== null) return category;
+    return null;
 }

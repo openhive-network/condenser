@@ -21,28 +21,24 @@ function _redirect_url(operations) {
 class SubmitPost extends React.Component {
     constructor() {
         super();
-        this.success = operations => {
+        this.success = (operations) => {
             localStorage.removeItem('replyEditorData-' + formId);
             browserHistory.push(_redirect_url(operations));
         };
     }
+
     render() {
         if (!this.props.username) {
             return <Callout>Log in to make a post.</Callout>;
         }
 
-        return (
-            <SubmitReplyEditor
-                type="submit_story"
-                successCallback={this.success}
-            />
-        );
+        return <SubmitReplyEditor type="submit_story" successCallback={this.success} />;
     }
 }
 
 module.exports = {
     path: 'submit.html',
-    component: connect((state, ownProps) => ({
+    component: connect((state) => ({
         username: state.user.getIn(['current', 'username']),
     }))(SubmitPost),
 };

@@ -1,33 +1,33 @@
+/*eslint global-require: "warn"*/
 import path from 'path';
 import Koa from 'koa';
 import mount from 'koa-mount';
 import helmet from 'koa-helmet';
 import koa_logger from 'koa-logger';
-import requestTime from './requesttimings';
-import StatsLoggerClient from './utils/StatsLoggerClient';
-import { SteemMarket } from './utils/SteemMarket';
-import hardwareStats from './hardwarestats';
 import cluster from 'cluster';
 import os from 'os';
-import prod_logger from './prod_logger';
 import favicon from 'koa-favicon';
 import staticCache from 'koa-static-cache';
-import useRedirects from './redirects';
-import useGeneralApi from './api/general';
-import useUserJson from './json/user_json';
-import usePostJson from './json/post_json';
 import isBot from 'koa-isbot';
 import session from '@steem/crypto-session';
 import csrf from 'koa-csrf';
 import minimist from 'minimist';
 import config from 'config';
-import { routeRegex } from 'app/ResolveRoute';
 import secureRandom from 'secure-random';
-import userIllegalContent from 'app/utils/userIllegalContent';
 import koaLocale from 'koa-locale';
+import { routeRegex } from 'app/ResolveRoute';
+import userIllegalContent from 'app/utils/userIllegalContent';
 import { getSupportedLocales } from './utils/misc';
 import { specialPosts } from './utils/SpecialPosts';
-import fs from 'fs';
+import usePostJson from './json/post_json';
+import useUserJson from './json/user_json';
+import useGeneralApi from './api/general';
+import useRedirects from './redirects';
+import prod_logger from './prod_logger';
+import hardwareStats from './hardwarestats';
+import { SteemMarket } from './utils/SteemMarket';
+import StatsLoggerClient from './utils/StatsLoggerClient';
+import requestTime from './requesttimings';
 
 if (cluster.isMaster) console.log('application server starting, please wait.');
 
@@ -39,9 +39,6 @@ const env = process.env.NODE_ENV || 'development';
 // cache of a thousand days
 const cacheOpts = { maxAge: 86400000, gzip: true, buffer: true };
 
-// import ads.txt to be served statically
-const adstxt = fs.readFileSync(path.join(__dirname, '../app/assets/ads.txt'), 'utf8');
-
 // Serve static assets without fanfare
 app.use(favicon(path.join(__dirname, '../app/assets/images/favicons/favicon.ico')));
 
@@ -51,13 +48,6 @@ app.use(mount('/images', staticCache(path.join(__dirname, '../app/assets/images'
 
 app.use(mount('/javascripts', staticCache(path.join(__dirname, '../app/assets/javascripts'), cacheOpts)));
 
-app.use(
-    mount('/ads.txt', function*() {
-        this.type = 'text/plain';
-        this.body = adstxt;
-    })
-);
-
 // Proxy asset folder to webpack development server in development mode
 if (env === 'development') {
     const webpack_dev_port = process.env.PORT ? parseInt(process.env.PORT) + 1 : 8081;
@@ -65,7 +55,7 @@ if (env === 'development') {
     console.log('proxying to webpack dev server at ' + proxyhost);
     const proxy = require('koa-proxy')({
         host: proxyhost,
-        map: filePath => 'assets/' + filePath,
+        map: (filePath) => 'assets/' + filePath,
     });
     app.use(mount('/assets', proxy));
 } else {
@@ -76,6 +66,7 @@ let resolvedAssets = false;
 let supportedLocales = false;
 
 if (process.env.NODE_ENV === 'production') {
+    // eslint-disable-next-line import/no-dynamic-require
     resolvedAssets = require(path.join(__dirname, '../..', '/tmp/webpack-stats-prod.json'));
     supportedLocales = getSupportedLocales();
 }
@@ -111,13 +102,13 @@ function convertEntriesToArrays(obj) {
 
 // Fetch cached currency data for homepage
 const steemMarket = new SteemMarket();
-app.use(function*(next) {
+app.use(function* (next) {
     this.steemMarketData = yield steemMarket.get();
     yield next;
 });
 
 // some redirects and health status
-app.use(function*(next) {
+app.use(function* (next) {
     if (this.method === 'GET' && this.url === '/.well-known/healthcheck.json') {
         this.status = 200;
         this.body = {
@@ -138,10 +129,10 @@ app.use(function*(next) {
 
     // normalize user name url from cased params
     if (
-        this.method === 'GET' &&
-        (routeRegex.UserProfile.test(this.url) ||
-            routeRegex.PostNoCategory.test(this.url) ||
-            routeRegex.Post.test(this.url))
+        this.method === 'GET'
+        && (routeRegex.UserProfile.test(this.url)
+            || routeRegex.PostNoCategory.test(this.url)
+            || routeRegex.Post.test(this.url))
     ) {
         const p = this.originalUrl.toLowerCase();
         let userCheck = '';
@@ -180,7 +171,7 @@ app.use(function*(next) {
     if (this.url.indexOf('?') !== -1) {
         const paramsToProcess = ['ch', 'cn', 'r'];
 
-        paramsToProcess.forEach(paramToProcess => {
+        paramsToProcess.forEach((paramToProcess) => {
             if (urlParams.has(paramToProcess)) {
                 const paramValue = urlParams.get(paramToProcess);
                 if (paramValue) {
@@ -226,7 +217,8 @@ if (env === 'production') {
 app.use(mount('/static', staticCache(path.join(__dirname, '../app/assets/static'), cacheOpts)));
 
 app.use(
-    mount('/robots.txt', function*() {
+    // eslint-disable-next-line require-yield
+    mount('/robots.txt', function* () {
         this.set('Cache-Control', 'public, max-age=86400000');
         this.type = 'text/plain';
         this.body = 'User-agent: *\nAllow: /';
@@ -235,8 +227,9 @@ app.use(
 
 // set user's uid - used to identify users in logs and some other places
 // FIXME SECURITY PRIVACY cycle this uid after a period of time
-app.use(function*(next) {
-    const last_visit = this.session.last_visit;
+app.use(function* (next) {
+    const { last_visit } = this.session;
+    // eslint-disable-next-line no-bitwise
     this.session.last_visit = (new Date().getTime() / 1000) | 0;
     const from_link = this.request.headers.referer;
     if (!this.session.uid) {
@@ -266,6 +259,7 @@ if (env === 'production') {
         reportOnly: config.get('helmet.reportOnly'),
         setAllHeaders: config.get('helmet.setAllHeaders'),
     };
+    // eslint-disable-next-line prefer-destructuring
     helmetConfig.directives.reportUri = helmetConfig.directives.reportUri[0];
     if (helmetConfig.directives.reportUri === '-') {
         delete helmetConfig.directives.reportUri;
@@ -281,14 +275,14 @@ if (env !== 'test') {
     // so `src/server/app_render.jsx` can `await` on it.
     app.specialPostsPromise = specialPosts();
     // refresh special posts every five minutes
-    setInterval(function() {
-        return new Promise(function(resolve, reject) {
+    setInterval(() => {
+        return new Promise((resolve) => {
             app.specialPostsPromise = specialPosts();
             resolve();
         });
     }, 300000);
 
-    app.use(function*() {
+    app.use(function* () {
         yield appRender(this, supportedLocales, resolvedAssets);
         const bot = this.state.isBot;
         if (bot) {
@@ -296,17 +290,17 @@ if (env !== 'test') {
         }
     });
 
-    const argv = minimist(process.argv.slice(2));
+    minimist(process.argv.slice(2));
 
     const port = process.env.PORT ? parseInt(process.env.PORT) : 8080;
 
     if (env === 'production' && process.env.DISABLE_CLUSTERING !== 'true') {
         if (cluster.isMaster) {
-            for (var i = 0; i < numProcesses; i++) {
+            for (let i = 0; i < numProcesses; i += 1) {
                 cluster.fork();
             }
             // if a worker dies replace it so application keeps running
-            cluster.on('exit', function(worker) {
+            cluster.on('exit', (worker) => {
                 console.log('error: worker %d died, starting a new one', worker.id);
                 cluster.fork();
             });

@@ -1,13 +1,11 @@
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 const path = require('path');
-const webpack = require('webpack');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const Webpack_isomorphic_tools_plugin = require('webpack-isomorphic-tools/plugin');
 const writeStats = require('./utils/write-stats');
 
-const Webpack_isomorphic_tools_plugin = require('webpack-isomorphic-tools/plugin');
-const webpack_isomorphic_tools_plugin =
-    new Webpack_isomorphic_tools_plugin(require('./webpack-isotools-config'))
-        .development();
+// eslint-disable-next-line global-require
+const webpack_isomorphic_tools_plugin = new Webpack_isomorphic_tools_plugin(require('./webpack-isotools-config')).development();
 
 const devMode = process.env.NODE_ENV !== 'production';
 
@@ -18,7 +16,7 @@ const plugins = [
             statsOptions: { source: false }
         }),
         function () {
-            this.plugin('done', writeStats);
+            this.hooks.done.tap('WriteStats', writeStats);
         },
         webpack_isomorphic_tools_plugin,
     ];
@@ -68,6 +66,7 @@ const scss_loaders = [
 ];
 
 module.exports = {
+    mode: 'development',
     entry: {
         app: ['core-js/stable', './src/app/Main.js'],
         vendor: [
@@ -96,7 +95,8 @@ module.exports = {
     module: {
         rules: [
             {
-                test: /\.(jpe?g|png)/, use: [
+                test: /\.(jpe?g|png)/,
+                use: [
                     {
                         loader: 'url-loader',
                         options: {
@@ -137,7 +137,7 @@ module.exports = {
     resolve: {
         alias: {
             react: path.join(__dirname, '../node_modules', 'react'),
-            assets: path.join(__dirname, '../src/app/assets')
+            assets: path.join(__dirname, '../src/app/assets'),
         },
         extensions: ['.js', '.json', '.jsx'],
         modules: [
@@ -145,6 +145,5 @@ module.exports = {
             'node_modules'
         ]
     },
-    externals: {
-    }
+    externals: {},
 };

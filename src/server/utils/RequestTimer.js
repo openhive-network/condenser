@@ -3,15 +3,9 @@ import StatsLoggerClient from './StatsLoggerClient';
 
 /**
  * @param {array} hrtime process.hrtime() tuple
- * @returns {number} nanoseconds
- */
-const hrtimeToNanoseconds = hrtime => +hrtime[0] * 1e9 + +hrtime[1];
-
-/**
- * @param {array} hrtime process.hrtime() tuple
  * @returns {number} milliseconds
  */
-const hrtimeToMilliseconds = hrtime => +hrtime[0] * 1000 + +hrtime[1] / 1000000;
+const hrtimeToMilliseconds = (hrtime) => +hrtime[0] * 1000 + +hrtime[1] / 1000000;
 
 /**
  * Logs total request time starting at instantiation and ending when finish() is called.
@@ -27,10 +21,7 @@ export default class RequestTimer {
      * @param {string} tags not yet supported by statsd / StatsLoggerClient
      */
     constructor(statsLoggerClient, prefix, tags) {
-        assert(
-            statsLoggerClient instanceof StatsLoggerClient,
-            'provide an instance of StatsLoggerClient'
-        );
+        assert(statsLoggerClient instanceof StatsLoggerClient, 'provide an instance of StatsLoggerClient');
 
         this.start = process.hrtime();
         this.timers = [];
@@ -54,10 +45,7 @@ export default class RequestTimer {
      * @param {string} name
      */
     startTimer(name) {
-        assert(
-            typeof name === 'string',
-            'a name for the timer must be provided'
-        );
+        assert(typeof name === 'string', 'a name for the timer must be provided');
 
         this.inProgressTimers[name] = process.hrtime();
     }
@@ -68,23 +56,14 @@ export default class RequestTimer {
      * @param {*} name
      */
     stopTimer(name) {
-        assert(
-            typeof this.inProgressTimers[name] !== 'undefined',
-            'provide an existing timer name'
-        );
+        assert(typeof this.inProgressTimers[name] !== 'undefined', 'provide an existing timer name');
 
-        this.logSegment(
-            name,
-            hrtimeToMilliseconds(process.hrtime(this.inProgressTimers[name]))
-        );
+        this.logSegment(name, hrtimeToMilliseconds(process.hrtime(this.inProgressTimers[name])));
         delete this.inProgressTimers[name];
     }
 
     finish() {
-        this.logSegment(
-            'total_ms',
-            hrtimeToMilliseconds(process.hrtime(this.start))
-        );
+        this.logSegment('total_ms', hrtimeToMilliseconds(process.hrtime(this.start)));
         this.statsLoggerClient.logTimers(this.timers, this.requestTags);
     }
 }

@@ -43,9 +43,7 @@ export const proxifyImageUrl = (url, dimensions = false) => {
     if (dimensions && $STM_Config && $STM_Config.img_proxy_prefix) {
         let dims = dimensions + '/';
         if (typeof dimensions !== 'string') {
-            dims = proxyList
-                ? proxyList.shift().match(/([0-9]+x[0-9]+)\//g)[0]
-                : NATURAL_SIZE;
+            dims = proxyList ? proxyList.shift().match(/([0-9]+x[0-9]+)\//g)[0] : NATURAL_SIZE;
         }
 
         // NOTE: This forces the dimensions to be `CAPPED_SIZE` to save on
@@ -54,10 +52,7 @@ export const proxifyImageUrl = (url, dimensions = false) => {
             dims = CAPPED_SIZE;
         }
 
-        if (
-            (NATURAL_SIZE !== dims && CAPPED_SIZE !== dims) ||
-            !rProxyDomain.test(respUrl)
-        ) {
+        if ((NATURAL_SIZE !== dims && CAPPED_SIZE !== dims) || !rProxyDomain.test(respUrl)) {
             return $STM_Config.img_proxy_prefix + dims + respUrl;
         }
     }

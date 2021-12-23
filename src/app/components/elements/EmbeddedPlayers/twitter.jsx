@@ -115,12 +115,9 @@ export function normalizeEmbedUrl(url) {
 }
 
 function generateTwitterCode(metadata) {
-    let twitterCode =
-        '<blockquote className="twitter-tweet"><p lang="en" dir="ltr"></p>&mdash; <a href=""></a></blockquote>';
+    let twitterCode = '<blockquote className="twitter-tweet"><p lang="en" dir="ltr"></p>&mdash; <a href=""></a></blockquote>';
     if (metadata) {
-        let [author, date, url, description] = Buffer.from(metadata, 'base64')
-            .toString()
-            .split('|');
+        let [author, date, url, description] = Buffer.from(metadata, 'base64').toString().split('|');
 
         // Sanitizing input
         author = author.replace(/(<([^>]+)>)/gi, '');
@@ -131,11 +128,10 @@ function generateTwitterCode(metadata) {
             description = url;
         }
 
-        twitterCode =
-            '<blockquote class="twitter-tweet">' +
-            `<p lang="en" dir="ltr">${description}</p>` +
-            `&mdash; ${author} <a href="${url}">${date}</a>` +
-            '</blockquote>';
+        twitterCode = '<blockquote class="twitter-tweet">'
+            + `<p lang="en" dir="ltr">${description}</p>`
+            + `&mdash; ${author} <a href="${url}">${date}</a>`
+            + '</blockquote>';
 
         const twttr = _.get(window, 'twttr');
         if (twttr && twttr.widgets) {
@@ -182,14 +178,10 @@ export function embedNode(child) {
         const twitter = extractMetadata(data);
 
         if (twitter) {
-            const metadata = `${twitter.author}|${twitter.date}|${
-                twitter.url
-            }|${twitter.description}`;
+            const metadata = `${twitter.author}|${twitter.date}|${twitter.url}|${twitter.description}`;
             child.data = data.replace(
                 regex.main,
-                `~~~ embed:${twitter.id} twitter metadata:${Buffer.from(
-                    metadata
-                ).toString('base64')} ~~~`
+                `~~~ embed:${twitter.id} twitter metadata:${Buffer.from(metadata).toString('base64')} ~~~`
             );
         }
     } catch (error) {
@@ -211,14 +203,10 @@ export function preprocessHtml(child) {
             // to replace the image/anchor tag created by 3Speak dApp
             const twitter = extractMetadataFromEmbedCode(child);
             if (twitter) {
-                const metadata = `${twitter.author}|${twitter.date}|${
-                    twitter.url
-                }|${twitter.description}`;
+                const metadata = `${twitter.author}|${twitter.date}|${twitter.url}|${twitter.description}`;
                 child = child.replace(
                     regex.htmlReplacement,
-                    `~~~ embed:${twitter.id} twitter metadata:${Buffer.from(
-                        metadata
-                    ).toString('base64')} ~~~`
+                    `~~~ embed:${twitter.id} twitter metadata:${Buffer.from(metadata).toString('base64')} ~~~`
                 );
             }
         }

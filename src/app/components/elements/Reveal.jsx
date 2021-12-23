@@ -17,20 +17,15 @@ const Reveal = ({ children, onHide, show }) => {
 
     return (
         <Modal
-            backdrop={true}
+            backdrop
             transition={Transition}
             onHide={onHide}
             show={show}
-            backdropClassName={'reveal-overlay'}
+            backdropClassName="reveal-overlay"
             backdropStyle={{ display: 'block' }}
             style={modalStyle}
         >
-            <div
-                className={'reveal fade in'}
-                role={'document'}
-                tabIndex={'-1'}
-                style={{ display: 'block' }}
-            >
+            <div className="reveal fade in" role="document" tabIndex="-1" style={{ display: 'block' }}>
                 {children}
             </div>
         </Modal>

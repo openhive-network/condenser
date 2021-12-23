@@ -1,23 +1,17 @@
 import GDPRUserList from './utils/GDPRUserList';
 
-const reg = pattern => {
+const reg = (pattern) => {
     pattern = pattern
-        .replace('<account>', '(@[\\w\\.\\d-]+)')
+        .replace('<account>', '(@[\\w.\\d-]+)')
         .replace(
             '<account-tab>',
             '(blog|posts|comments|replies|payout|feed|followed|followers|settings|notifications|communities)'
         )
-        .replace(
-            '<sort>',
-            '(hot|trending|promoted|payout|payout_comments|muted|created)'
-        )
-        .replace('<tag>', '([\\w\\W\\d-]{1,32})')
+        .replace('<sort>', '(hot|trending|promoted|payout|payout_comments|muted|created)')
+        .replace('<tag>', '([\\w\\W\\d-]{1,255})')
         .replace('<permlink>', '([\\w\\d-]+)')
         .replace('/', '\\/')
-        .replace(
-            '<list_type>',
-            '(blacklisted|muted|followed_blacklists|followed_muted_lists)'
-        );
+        .replace('<list_type>', '(blacklisted|muted|followed_blacklists|followed_muted_lists)');
     return new RegExp('^\\/' + pattern + '$');
 };
 
@@ -60,31 +54,27 @@ export default function resolveRoute(path) {
 
     // /@user/feed
     match = path.match(routeRegex.UserFeed);
-    if (match)
-        return GDPRUserList.includes(match[1].substring(1))
+    if (match) { return GDPRUserList.includes(match[1].substring(1))
             ? { page: 'NotFound' }
-            : { page: 'PostsIndex', params: ['home', match[1]] };
+            : { page: 'PostsIndex', params: ['home', match[1]] }; }
 
     // /@user, /@user/blog, /@user/settings
     match = path.match(routeRegex.UserProfile);
-    if (match)
-        return GDPRUserList.includes(match[1].substring(1))
+    if (match) { return GDPRUserList.includes(match[1].substring(1))
             ? { page: 'NotFound' }
-            : { page: 'UserProfile', params: match.slice(1) };
+            : { page: 'UserProfile', params: match.slice(1) }; }
 
-    // /@user/permlink (redirects to /category/@user/permlink)
+    // /@user/permlink (redirects to /category/@user/permlink):wq
     match = path.match(routeRegex.PostNoCategory);
-    if (match)
-        return GDPRUserList.includes(match[1].substring(1))
+    if (match) { return GDPRUserList.includes(match[1].substring(1))
             ? { page: 'NotFound' }
-            : { page: 'PostNoCategory', params: match.slice(1) };
+            : { page: 'PostNoCategory', params: match.slice(1) }; }
 
     // /category/@user/permlink
     match = path.match(routeRegex.Post);
-    if (match)
-        return GDPRUserList.includes(match[2].substring(1))
+    if (match) { return GDPRUserList.includes(match[2].substring(1))
             ? { page: 'NotFound' }
-            : { page: 'Post', params: match.slice(1) };
+            : { page: 'Post', params: match.slice(1) }; }
 
     // /trending, /trending/category
     match = path.match(routeRegex.CategoryFilters);
@@ -99,10 +89,8 @@ export default function resolveRoute(path) {
     // -----------
 
     // developer
-    if (path === '/xss/test' && process.env.NODE_ENV === 'development')
-        return { page: 'XSSTest' };
-    if (path === '/benchmark' && process.env.OFFLINE_SSR_TEST)
-        return { page: 'Benchmark' };
+    if (path === '/xss/test' && process.env.NODE_ENV === 'development') return { page: 'XSSTest' };
+    if (path === '/benchmark' && process.env.OFFLINE_SSR_TEST) return { page: 'Benchmark' };
 
     return { page: 'NotFound' };
 }

@@ -86,15 +86,9 @@ export function embedNode(child, links /*images*/) {
 
         const vimeoRegex = new RegExp(`${vimeo.url}(#t=${vimeo.startTime}s?)?`);
         if (vimeo.startTime > 0) {
-            child.data = data.replace(
-                vimeoRegex,
-                `~~~ embed:${vimeo.id} vimeo ${vimeo.startTime} ~~~`
-            );
+            child.data = data.replace(vimeoRegex, `~~~ embed:${vimeo.id} vimeo ${vimeo.startTime} ~~~`);
         } else {
-            child.data = data.replace(
-                vimeoRegex,
-                `~~~ embed:${vimeo.id} vimeo ~~~`
-            );
+            child.data = data.replace(vimeoRegex, `~~~ embed:${vimeo.id} vimeo ~~~`);
         }
 
         if (links) links.add(vimeo.canonical);
@@ -119,15 +113,11 @@ export function genIframeMd(idx, id, width, height, startTime) {
 
     let sandbox = sandboxConfig.useSandbox;
     if (sandbox) {
-        if (
-            Object.prototype.hasOwnProperty.call(
-                sandboxConfig,
-                'sandboxAttributes'
-            )
-        ) {
+        if (Object.prototype.hasOwnProperty.call(sandboxConfig, 'sandboxAttributes')) {
             sandbox = sandboxConfig.sandboxAttributes.join(' ');
         }
     }
+    const aspectRatioPercent = (height / width) * 100;
     const iframeProps = {
         src: url,
         width,
@@ -142,7 +132,16 @@ export function genIframeMd(idx, id, width, height, startTime) {
     }
 
     return (
-        <div key={`vimeo-${id}-${idx}`} className="videoWrapper">
+        <div
+            key={`vimeo-${id}-${idx}`}
+            className="videoWrapper"
+            style={{
+                position: 'relative',
+                width: '100%',
+                height: 0,
+                paddingBottom: `${aspectRatioPercent}%`,
+            }}
+        >
             <iframe
                 title="Vimeo embedded player"
                 // eslint-disable-next-line react/jsx-props-no-spreading

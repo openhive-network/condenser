@@ -24,7 +24,7 @@ class PostCategoryBanner extends React.Component {
     render() {
         const { subscriptions, onChange } = this.props;
         const { postDestination } = this.state;
-        const onCommunitySelected = e => {
+        const onCommunitySelected = (e) => {
             const destination = e.target.value;
             this.setState({ postDestination: destination });
             onChange(destination);
@@ -34,7 +34,8 @@ class PostCategoryBanner extends React.Component {
             <div className="PostCategoryBanner">
                 <div className="postTo">
                     <small>
-                        Posting to:{' '}
+                        Posting to:
+                        {' '}
                         <select
                             className="PostCategoryBanner--community-selector"
                             value={postDestination || ''}
@@ -42,8 +43,8 @@ class PostCategoryBanner extends React.Component {
                         >
                             <option value="blog">My blog</option>
                             <optgroup label="Subscribed Community">
-                                {subscriptions &&
-                                    subscriptions.map(entry => {
+                                {subscriptions
+                                    && subscriptions.map((entry) => {
                                         const [hive, name] = entry;
                                         return (
                                             <option value={hive} key={hive}>
@@ -83,8 +84,8 @@ export default connect(
             subscriptions: subscriptions ? subscriptions.toJS() : [],
         };
     },
-    dispatch => ({
-        getAccountSubscriptions: username => {
+    (dispatch) => ({
+        getAccountSubscriptions: (username) => {
             return dispatch(fetchDataSagaActions.getSubscriptions(username));
         },
     })

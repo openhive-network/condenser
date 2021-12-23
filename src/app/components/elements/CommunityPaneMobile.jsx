@@ -16,15 +16,11 @@ class CommunityPaneMobile extends Component {
     };
 
     render() {
-        const {
-            community,
-            showRecentSubscribers,
-            showModerationLog,
-        } = this.props;
+        const { community, showRecentSubscribers, showModerationLog } = this.props;
         const handleSubscriberClick = () => {
             showRecentSubscribers(community);
         };
-        const handleModerationLogCLick = e => {
+        const handleModerationLogCLick = (e) => {
             e.preventDefault();
             showModerationLog(community);
         };
@@ -33,31 +29,22 @@ class CommunityPaneMobile extends Component {
         const canPost = Role.canPost(category, viewer_role);
 
         const settings = Role.atLeast(viewer_role, 'admin') && (
-            <SettingsEditButton community={community.get('name')}>
-                Settings
-            </SettingsEditButton>
+            <SettingsEditButton community={community.get('name')}>Settings</SettingsEditButton>
         );
 
-        const roles = Role.atLeast(viewer_role, 'mod') && (
-            <Link to={`/roles/${category}`}>Roles</Link>
-        );
+        const roles = Role.atLeast(viewer_role, 'mod') && <Link to={`/roles/${category}`}>Roles</Link>;
 
         const subs = community.get('subscribers');
 
         return (
             <div>
                 <div className="c-sidebar__module CommunityPaneMobile">
-                    <div
-                        className="row"
-                        style={{ textAlign: 'center', lineHeight: '1em' }}
-                    >
-                        <div
-                            className="column large-10 medium-8 small-12"
-                            style={{ textAlign: 'left' }}
-                        >
+                    <div className="row" style={{ textAlign: 'center', lineHeight: '1em' }}>
+                        <div className="column large-10 medium-8 small-12" style={{ textAlign: 'left' }}>
                             {roles && (
                                 <div style={{ float: 'right' }}>
-                                    Mod{': '}
+                                    Mod
+                                    {': '}
                                     {roles}
                                     {settings && (
                                         <span>
@@ -67,19 +54,14 @@ class CommunityPaneMobile extends Component {
                                     )}
                                 </div>
                             )}
-                            <h3 className="c-sidebar__h3">
-                                {community.get('title')}
-                            </h3>
+                            <h3 className="c-sidebar__h3">{community.get('title')}</h3>
                             <div
                                 style={{
                                     margin: '-14px 0 8px',
                                     opacity: '0.65',
                                 }}
                             >
-                                <span
-                                    onClick={handleSubscriberClick}
-                                    className="pointer"
-                                >
+                                <span role="link" tabIndex={0} onClick={handleSubscriberClick} className="pointer">
                                     {numberWithCommas(subs)}
                                     {subs == 1 ? ' subscriber' : ' subscribers'}
                                 </span>
@@ -89,22 +71,15 @@ class CommunityPaneMobile extends Component {
                                         fontSize: '0.8em',
                                     }}
                                 >
-                                    <a onClick={handleModerationLogCLick}>
-                                        Activity Log
-                                    </a>
+                                    <a role="link" tabIndex={0} onClick={handleModerationLogCLick}>Activity Log</a>
                                 </div>
                                 &nbsp;&nbsp;&bull;&nbsp;&nbsp;
-                                {numberWithCommas(
-                                    community.get('num_authors')
-                                )}{' '}
+                                {numberWithCommas(community.get('num_authors'))}
+                                {' '}
                                 active
                             </div>
-                            {community.get('is_nsfw') && (
-                                <span className="affiliation">nsfw</span>
-                            )}
-                            <div style={{ margin: '0 0 12px' }}>
-                                {community.get('about')}
-                            </div>
+                            {community.get('is_nsfw') && <span className="affiliation">nsfw</span>}
+                            <div style={{ margin: '0 0 12px' }}>{community.get('about')}</div>
                         </div>
 
                         <div className="column large-2 medium-4 small-12">
@@ -114,9 +89,7 @@ class CommunityPaneMobile extends Component {
                                     margin: '0 4px',
                                 }}
                             >
-                                <SubscribeButton
-                                    community={community.get('name')}
-                                />
+                                <SubscribeButton community={community.get('name')} />
                             </span>
                             {canPost && (
                                 <span
@@ -148,9 +121,9 @@ export default connect(
         community: ownProps.community,
     }),
     // mapDispatchToProps
-    dispatch => {
+    (dispatch) => {
         return {
-            showRecentSubscribers: community => {
+            showRecentSubscribers: (community) => {
                 dispatch(
                     globalActions.showDialog({
                         name: 'communitySubscribers',
@@ -158,7 +131,7 @@ export default connect(
                     })
                 );
             },
-            showModerationLog: community => {
+            showModerationLog: (community) => {
                 dispatch(
                     globalActions.showDialog({
                         name: 'communityModerationLog',

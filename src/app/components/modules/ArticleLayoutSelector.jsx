@@ -1,6 +1,5 @@
 /* eslint react/prop-types: 0 */
 import React from 'react';
-import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import * as appActions from 'app/redux/AppReducer';
 
@@ -8,10 +7,7 @@ class ArticleLayoutSelector extends React.Component {
     render() {
         return (
             <div className="articles__layout-selector">
-                <svg
-                    className="articles__icon--layout"
-                    onClick={this.props.toggleBlogmode}
-                >
+                <svg className="articles__icon--layout" onClick={this.props.toggleBlogmode}>
                     <g
                         id="svg-icon-symbol-layout"
                         viewBox="0 0 24 24"
@@ -55,10 +51,10 @@ class ArticleLayoutSelector extends React.Component {
 }
 
 export default connect(
-    state => ({
+    (state) => ({
         blogmode: state.app.getIn(['user_preferences', 'blogmode']),
     }),
-    dispatch => ({
+    (dispatch) => ({
         toggleBlogmode: () => {
             dispatch(appActions.toggleBlogmode());
         },

@@ -1,33 +1,34 @@
 import React from 'react';
 import tt from 'counterpart';
 import { connect } from 'react-redux';
-import { SIGNUP_URL } from 'shared/constants';
 import Icon from 'app/components/elements/Icon';
 import { Link } from 'react-router';
 
 const SidebarNewUsers = ({ walletUrl }) => {
-    const makeLink = (i, ix, arr) => {
+    const makeLink = (i, ix) => {
         // A link is internal if it begins with a slash
         const isExternal = !i.link.match(/^\//) || i.isExternal;
         // const cn = ix === arr.length - 1 ? '--last' : 'c-sidebar__item';
         if (isExternal) {
             return (
-                <li key={ix} className={'c-sidebar__item'}>
+                <li key={ix} className="c-sidebar__item">
                     <a href={i.link} target="_blank" rel="noopener noreferrer">
-                        {i.label}&nbsp;<Icon name="extlink" />
+                        {i.label}
+                        &nbsp;
+                        <Icon name="extlink" />
                     </a>
                 </li>
             );
         }
         if (i.onClick) {
             return (
-                <li key={ix} className={cn}>
-                    <a onClick={i.onClick}>{i.label}</a>
+                <li key={ix}>
+                    <a role="link" tabIndex={0} onClick={i.onClick}>{i.label}</a>
                 </li>
             );
         }
         return (
-            <li key={ix} className={cn}>
+            <li key={ix}>
                 <Link to={i.link}>{i.label}</Link>
             </li>
         );

@@ -1,13 +1,19 @@
-import { call, put, select, all, takeEvery } from 'redux-saga/effects';
-import { fromJS, Set, Map } from 'immutable';
+/*eslint no-shadow: "warn", no-underscore-dangle: "warn" */
+/* global $STM_Config */
+import {
+ call, put, select, takeEvery
+} from 'redux-saga/effects';
+import { Set, Map } from 'immutable';
 import tt from 'counterpart';
 import getSlug from 'speakingurl';
 import base58 from 'bs58';
 import secureRandom from 'secure-random';
-import { PrivateKey, PublicKey } from '@hiveio/hive-js/lib/auth/ecc';
-import { api, broadcast, auth, memo } from '@hiveio/hive-js';
+import { PrivateKey } from '@hiveio/hive-js/lib/auth/ecc';
+import { broadcast } from '@hiveio/hive-js';
+import { dispatcher } from 'react-dispatch';
 
-import { getAccount, getContent } from 'app/redux/SagaShared';
+import { EVENT_OPERATION_BROADCAST } from 'shared/constants';
+import { getContent } from 'app/redux/SagaShared';
 import { postingOps, findSigningKey } from 'app/redux/AuthSaga';
 import * as appActions from 'app/redux/AppReducer';
 import * as globalActions from 'app/redux/GlobalReducer';
@@ -17,15 +23,11 @@ import { DEBT_TICKER } from 'app/client_config';
 import { serverApiRecordEvent } from 'app/utils/ServerApiClient';
 import { isLoggedInWithKeychain } from 'app/utils/HiveKeychain';
 import { callBridge } from 'app/utils/steemApi';
-import {
-    isLoggedInWithHiveSigner,
-    hiveSignerClient,
-    sendOperationsWithHiveSigner,
-} from 'app/utils/HiveSigner';
+import { isLoggedInWithHiveSigner, hiveSignerClient } from 'app/utils/HiveSigner';
 
-export const transactionWatches = [
-    takeEvery(transactionActions.BROADCAST_OPERATION, broadcastOperation),
-];
+import diff_match_patch from 'diff-match-patch';
+
+export const transactionWatches = [takeEvery(transactionActions.BROADCAST_OPERATION, broadcastOperation)];
 
 const hook = {
     preBroadcast_comment,
@@ -37,9 +39,6 @@ const hook = {
     accepted_delete_comment,
     accepted_vote,
 };
-
-const toStringUtf8 = o =>
-    o ? (Buffer.isBuffer(o) ? o.toString('utf-8') : o.toString()) : o;
 
 function* preBroadcast_vote({ operation, username }) {
     if (!operation.voter) operation.voter = username;
@@ -135,33 +134,30 @@ export function* broadcastOperation({
                     password,
                 });
                 if (signingKey) payload.keys.push(signingKey);
-                else {
-                    if (!password) {
-                        yield put(
-                            userActions.showLogin({
-                                operation: {
-                                    type,
-                                    operation,
-                                    username,
-                                    successCallback,
-                                    errorCallback,
-                                    saveLogin: true,
-                                },
-                            })
-                        );
-                        return;
-                    }
+                else if (!password) {
+                    yield put(
+                        userActions.showLogin({
+                            operation: {
+                                type,
+                                operation,
+                                username,
+                                successCallback,
+                                errorCallback,
+                                saveLogin: true,
+                            },
+                        })
+                    );
+                    return;
                 }
             }
         }
         // if the customJsonPayload has a 'required_posting_auths' key, that has value undefined, and the user is logged in. Update it.
-        const updatedOps = payload.operations.map((op, idx, src) => {
+        const updatedOps = payload.operations.map((op) => {
             if (op[0] === 'custom_json') {
                 if (
-                    op[1].required_posting_auths &&
-                    op[1].required_posting_auths.filter(u => u === undefined)
-                        .length > 0 &&
-                    username
+                    op[1].required_posting_auths
+                    && op[1].required_posting_auths.filter((u) => u === undefined).length > 0
+                    && username
                 ) {
                     op[1].required_posting_auths = [username];
                 }
@@ -173,14 +169,10 @@ export function* broadcastOperation({
 
         yield call(broadcastPayload, { payload });
         let eventType = type
-            .replace(/^([a-z])/, g => g.toUpperCase())
-            .replace(/_([a-z])/g, g => g[1].toUpperCase());
-        if (eventType === 'Comment' && !operation.parent_author)
-            eventType = 'Post';
-        const page =
-            eventType === 'Vote'
-                ? `@${operation.author}/${operation.permlink}`
-                : '';
+            .replace(/^([a-z])/, (g) => g.toUpperCase())
+            .replace(/_([a-z])/g, (g) => g[1].toUpperCase());
+        if (eventType === 'Comment' && !operation.parent_author) eventType = 'Post';
+        const page = eventType === 'Vote' ? `@${operation.author}/${operation.permlink}` : '';
         serverApiRecordEvent(eventType, page);
     } catch (error) {
         console.error('TransactionSage', error);
@@ -190,15 +182,17 @@ export function* broadcastOperation({
 
 function hasPrivateKeys(payload) {
     const blob = JSON.stringify(payload.operations);
-    let m,
-        re = /P?(5[123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{50})/g;
+    let m;
+    const re = /P?(5[123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{50})/g;
     while (true) {
         m = re.exec(blob);
         if (m) {
             try {
                 PrivateKey.fromWif(m[1]); // performs the base58check
                 return true;
-            } catch (e) {}
+            } catch (e) {
+                // Nothing
+            }
         } else {
             break;
         }
@@ -207,18 +201,19 @@ function hasPrivateKeys(payload) {
 }
 
 function* broadcastPayload({
-    payload: { operations, keys, username, successCallback, errorCallback },
+ payload: {
+ operations, keys, username, successCallback, errorCallback
+}
 }) {
     let needsActiveAuth = false;
 
     console.log('broadcastPayload', operations, username);
 
     if ($STM_Config.read_only_mode) return;
+    // eslint-disable-next-line no-restricted-syntax
     for (const [type] of operations) {
         // see also transaction/ERROR
-        yield put(
-            transactionActions.remove({ key: ['TransactionError', type] })
-        );
+        yield put(transactionActions.remove({ key: ['TransactionError', type] }));
         if (!postingOps.has(type)) {
             needsActiveAuth = true;
         }
@@ -226,13 +221,17 @@ function* broadcastPayload({
 
     {
         const newOps = [];
+        // eslint-disable-next-line no-restricted-syntax
         for (const [type, operation] of operations) {
             if (hook['preBroadcast_' + type]) {
                 const op = yield call(hook['preBroadcast_' + type], {
                     operation,
                     username,
                 });
-                if (Array.isArray(op)) for (const o of op) newOps.push(o);
+                if (Array.isArray(op)) {
+                    // eslint-disable-next-line no-restricted-syntax
+                    for (const o of op) newOps.push(o);
+                }
                 else newOps.push([type, op]);
             } else {
                 newOps.push([type, operation]);
@@ -243,6 +242,7 @@ function* broadcastPayload({
 
     // status: broadcasting
     const broadcastedEvent = () => {
+        // eslint-disable-next-line no-restricted-syntax
         for (const [type, operation] of operations) {
             if (hook['broadcasted_' + type]) {
                 try {
@@ -255,7 +255,7 @@ function* broadcastPayload({
     };
 
     // get username
-    const currentUser = yield select(state => state.user.get('current'));
+    const currentUser = yield select((state) => state.user.get('current'));
     const currentUsername = currentUser && currentUser.get('username');
     username = username || currentUsername;
 
@@ -263,89 +263,64 @@ function* broadcastPayload({
         yield new Promise((resolve, reject) => {
             // Bump transaction (for live UI testing).. Put 0 in now (no effect),
             // to enable browser's autocomplete and help prevent typos.
-            const env = process.env;
-            const bump = env.BROWSER
-                ? parseInt(localStorage.getItem('bump') || 0)
-                : 0;
-            if (env.BROWSER && bump === 1) {
+            const bump = process.env.BROWSER ? parseInt(localStorage.getItem('bump') || 0) : 0;
+            if (process.env.BROWSER && bump === 1) {
                 // for testing
-                console.log(
-                    'TransactionSaga bump(no broadcast) and reject',
-                    JSON.stringify(operations, null, 2)
-                );
+                console.log('TransactionSaga bump(no broadcast) and reject', JSON.stringify(operations, null, 2));
                 setTimeout(() => {
                     reject(new Error('Testing, fake error'));
                 }, 2000);
-            } else if (env.BROWSER && bump === 2) {
+            } else if (process.env.BROWSER && bump === 2) {
                 // also for testing
-                console.log(
-                    'TransactionSaga bump(no broadcast) and resolve',
-                    JSON.stringify(operations, null, 2)
-                );
+                console.log('TransactionSaga bump(no broadcast) and resolve', JSON.stringify(operations, null, 2));
                 setTimeout(() => {
                     resolve();
                     broadcastedEvent();
                 }, 2000);
-            } else {
-                if (isLoggedInWithKeychain()) {
-                    const authType = needsActiveAuth ? 'active' : 'posting';
-                    window.hive_keychain.requestBroadcast(
-                        username,
-                        operations,
-                        authType,
-                        response => {
-                            if (!response.success) {
-                                reject(response.message);
-                            } else {
-                                broadcastedEvent();
-                                resolve();
-                            }
-                        }
-                    );
-                } else if (isLoggedInWithHiveSigner()) {
-                    if (!needsActiveAuth) {
-                        hiveSignerClient.broadcast(
-                            operations,
-                            (err, result) => {
-                                if (err) {
-                                    reject(err.error_description);
-                                } else {
-                                    broadcastedEvent();
-                                    resolve();
-                                }
-                            }
-                        );
+            } else if (isLoggedInWithKeychain()) {
+                const authType = needsActiveAuth ? 'active' : 'posting';
+                window.hive_keychain.requestBroadcast(username, operations, authType, (response) => {
+                    if (!response.success) {
+                        reject(response.message);
                     } else {
-                        sendOperationsWithHiveSigners(
-                            operations,
-                            {},
-                            (err, result) => {
-                                if (err) {
-                                    reject(err.error_description);
-                                } else {
-                                    broadcastedEvent();
-                                    resolve();
-                                }
-                            }
-                        );
+                        broadcastedEvent();
+                        resolve();
                     }
-                } else {
-                    broadcast.send(
-                        { extensions: [], operations },
-                        keys,
-                        err => {
-                            if (err) {
-                                reject(err);
-                            } else {
-                                broadcastedEvent();
-                                resolve();
-                            }
+                });
+            } else if (isLoggedInWithHiveSigner()) {
+                if (!needsActiveAuth) {
+                    hiveSignerClient.broadcast(operations, (err) => {
+                        if (err) {
+                            reject(err.error_description);
+                        } else {
+                            broadcastedEvent();
+                            resolve();
                         }
-                    );
+                    });
+                } else {
+                    // eslint-disable-next-line no-undef
+                    sendOperationsWithHiveSigners(operations, {}, (err) => {
+                        if (err) {
+                            reject(err.error_description);
+                        } else {
+                            broadcastedEvent();
+                            resolve();
+                        }
+                    });
                 }
+            } else {
+                broadcast.send({ extensions: [], operations }, keys, (err) => {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        broadcastedEvent();
+                        resolve();
+                    }
+                });
             }
         });
         // status: accepted
+        // eslint-disable-next-line no-restricted-syntax
         for (const [type, operation] of operations) {
             if (hook['accepted_' + type]) {
                 try {
@@ -365,18 +340,19 @@ function* broadcastPayload({
                 );
             }
         }
-        if (successCallback)
+        if (successCallback) {
             try {
                 successCallback(operations);
             } catch (error) {
                 console.error('defaultErrorCallback', error);
             }
+        }
+        dispatcher.dispatch(EVENT_OPERATION_BROADCAST);
     } catch (error) {
         console.error('TransactionSaga\tbroadcastPayload', error);
         // status: error
-        yield put(
-            transactionActions.error({ operations, error, errorCallback })
-        );
+        yield put(transactionActions.error({ operations, error, errorCallback }));
+        // eslint-disable-next-line no-restricted-syntax
         for (const [type, operation] of operations) {
             if (hook['error_' + type]) {
                 try {
@@ -392,10 +368,7 @@ function* broadcastPayload({
 function* accepted_comment({ operation }) {
     const { author, permlink } = operation;
     //yield call(getContent, { author, permlink });
-    if (
-        operation.__config.originalBody !== null &&
-        operation.__config.originalBody !== undefined
-    ) {
+    if (operation.__config.originalBody !== null && operation.__config.originalBody !== undefined) {
         yield call(lazyUpdate, operation);
     } else {
         yield call(wait, 9000);
@@ -406,14 +379,14 @@ function* accepted_comment({ operation }) {
 
 function updateFollowState(action, following, state) {
     if (action == null) {
-        state = state.update('blog_result', Set(), r => r.delete(following));
-        state = state.update('ignore_result', Set(), r => r.delete(following));
+        state = state.update('blog_result', Set(), (r) => r.delete(following));
+        state = state.update('ignore_result', Set(), (r) => r.delete(following));
     } else if (action === 'blog') {
-        state = state.update('blog_result', Set(), r => r.add(following));
-        state = state.update('ignore_result', Set(), r => r.delete(following));
+        state = state.update('blog_result', Set(), (r) => r.add(following));
+        state = state.update('ignore_result', Set(), (r) => r.delete(following));
     } else if (action === 'ignore') {
-        state = state.update('ignore_result', Set(), r => r.add(following));
-        state = state.update('blog_result', Set(), r => r.delete(following));
+        state = state.update('ignore_result', Set(), (r) => r.add(following));
+        state = state.update('blog_result', Set(), (r) => r.delete(following));
     }
     state = state.set('blog_count', state.get('blog_result', Set()).size);
     state = state.set('ignore_count', state.get('ignore_result', Set()).size);
@@ -426,20 +399,21 @@ function* accepted_custom_json({ operation }) {
         console.log(operation);
         try {
             if (json[0] === 'follow') {
-                const { follower, following, what: [action] } = json[1];
+                const {
+                    follower,
+                    following,
+                    what: [action],
+                } = json[1];
                 yield put(
                     globalActions.update({
                         key: ['follow', 'getFollowingAsync', follower],
                         notSet: Map(),
-                        updater: m => updateFollowState(action, following, m),
+                        updater: (m) => updateFollowState(action, following, m),
                     })
                 );
             }
         } catch (e) {
-            console.error(
-                'TransactionSaga unrecognized follow custom_json format',
-                operation.json
-            );
+            console.error('TransactionSaga unrecognized follow custom_json format', operation.json);
         }
     }
     return operation;
@@ -449,19 +423,12 @@ function* accepted_delete_comment({ operation }) {
     yield put(globalActions.deleteContent(operation));
 }
 
-const wait = ms =>
-    new Promise(resolve => {
+const wait = (ms) => new Promise((resolve) => {
         setTimeout(() => resolve(), ms);
     });
 
 function* accepted_vote({ operation: { author, permlink, weight } }) {
-    console.log(
-        'Vote accepted, weight',
-        weight,
-        'on',
-        author + '/' + permlink,
-        'weight'
-    );
+    console.log('Vote accepted, weight', weight, 'on', author + '/' + permlink, 'weight');
     // update again with new $$ amount from the steemd node
     yield put(
         globalActions.remove({
@@ -474,12 +441,12 @@ function* accepted_vote({ operation: { author, permlink, weight } }) {
 
 export function* preBroadcast_comment({ operation, username }) {
     if (!operation.author) operation.author = username;
-    let permlink = operation.permlink;
-    const { author, __config: { originalBody, comment_options } } = operation;
+    let { permlink } = operation;
     const {
-        parent_author = '',
-        parent_permlink = operation.category,
+        author,
+        __config: { originalBody, comment_options },
     } = operation;
+    const { parent_author = '', parent_permlink = operation.category } = operation;
     const { title } = operation;
     let { body } = operation;
 
@@ -487,6 +454,7 @@ export function* preBroadcast_comment({ operation, username }) {
 
     let body2;
     if (originalBody) {
+        // eslint-disable-next-line no-unused-vars
         const patch = createPatch(originalBody, body);
         // Putting body into buffer will expand Unicode characters into their true length
         //if (patch && patch.length < new Buffer(body, 'utf-8').length)
@@ -495,8 +463,7 @@ export function* preBroadcast_comment({ operation, username }) {
     if (!body2) body2 = body;
     if (!permlink) permlink = yield createPermlink(title, author);
 
-    if (typeof operation.json_metadata !== 'string')
-        throw 'json not serialized';
+    if (typeof operation.json_metadata !== 'string') throw 'json not serialized';
     const op = {
         ...operation,
         permlink: permlink.toLowerCase(),
@@ -525,9 +492,7 @@ export function* preBroadcast_comment({ operation, username }) {
                 percent_hbd,
                 allow_votes,
                 allow_curation_rewards,
-                extensions: comment_options.extensions
-                    ? comment_options.extensions
-                    : [],
+                extensions: comment_options.extensions ? comment_options.extensions : [],
             },
         ]);
     }
@@ -551,9 +516,7 @@ export function* createPermlink(title, author) {
             permlink: s,
         });
         if (head && !!head.category) {
-            const noise = base58
-                .encode(secureRandom.randomBuffer(4))
-                .toLowerCase();
+            const noise = base58.encode(secureRandom.randomBuffer(4)).toLowerCase();
             permlink = noise + '-' + s;
         } else {
             permlink = s;
@@ -569,8 +532,6 @@ export function* createPermlink(title, author) {
 
     return permlink;
 }
-
-import diff_match_patch from 'diff-match-patch';
 const dmp = new diff_match_patch();
 
 export function createPatch(text1, text2) {

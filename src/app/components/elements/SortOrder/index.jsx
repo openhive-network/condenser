@@ -1,11 +1,13 @@
-import React, { Component } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import tt from 'counterpart';
-import { Link } from 'react-router';
-import { browserHistory } from 'react-router';
+import { Link, browserHistory } from 'react-router';
+
 import NativeSelect from 'app/components/elements/NativeSelect';
 
-const SortOrder = ({ topic, sortOrder, horizontal, pathname }) => {
+const SortOrder = ({
+ topic, sortOrder, horizontal, pathname
+}) => {
     let tag = topic || '';
     let sort = sortOrder;
 
@@ -19,24 +21,24 @@ const SortOrder = ({ topic, sortOrder, horizontal, pathname }) => {
         sort = 'trending';
     }
 
-    const sorts = (tag, topMenu = false) => {
-        if (tag != '') tag = `/${tag}`;
+    const sorts = (_tag, topMenu = false) => {
+        if (_tag !== '') _tag = `/${_tag}`;
 
-        let out = [
+        const out = [
             {
                 label: tt('main_menu.trending'),
-                value: `/trending${tag}`,
+                value: `/trending${_tag}`,
             },
             {
                 label: tt('main_menu.hot'),
-                value: `/hot${tag}`,
+                value: `/hot${_tag}`,
             },
         ];
 
         if (!topMenu) {
             out.push({
                 label: tt('g.new'),
-                value: `/created${tag}`,
+                value: `/created${_tag}`,
             });
 
             /*
@@ -48,12 +50,12 @@ const SortOrder = ({ topic, sortOrder, horizontal, pathname }) => {
 
             out.push({
                 label: tt('g.payouts'),
-                value: `/payout${tag}`,
+                value: `/payout${_tag}`,
             });
 
             out.push({
                 label: 'Muted',
-                value: `/muted${tag}`,
+                value: `/muted${_tag}`,
             });
         }
 
@@ -62,13 +64,12 @@ const SortOrder = ({ topic, sortOrder, horizontal, pathname }) => {
 
     // vertical dropdown
     if (!horizontal) {
-        const url = (sort, tag = null) =>
-            tag ? `/${sort}/${tag}` : `/${sort}`;
+        const url = (_sort, _tag = null) => (_tag ? `/${_sort}/${_tag}` : `/${_sort}`);
         return (
             <NativeSelect
                 currentlySelected={url(sort, tag)}
                 options={sorts(tag, false)}
-                onChange={el => browserHistory.replace(el.value)}
+                onChange={(el) => browserHistory.replace(el.value)}
             />
         );
     }
@@ -76,7 +77,7 @@ const SortOrder = ({ topic, sortOrder, horizontal, pathname }) => {
     // site header
     return (
         <ul className="nav__block-list">
-            {sorts('', true).map(i => {
+            {sorts('', true).map((i) => {
                 const active = i.value === `/${sort}`;
                 const cls = active ? 'nav__block-list-item--active' : '';
                 return (

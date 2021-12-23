@@ -22,26 +22,22 @@ class UserTitle extends React.Component {
     }
 
     onToggleDialog = () => {
+        // eslint-disable-next-line react/no-access-state-in-setstate
         this.setState({ showDialog: !this.state.showDialog });
     };
 
-    onSave = newTitle => {
+    onSave = (newTitle) => {
         const community = this.props.community.get('name');
         //-- Simulate a "receiveState" action to feed new title into post state
-        let newstate = { content: {}, simulation: true };
-        let content_key = this.props.author + '/' + this.props.permlink;
-        newstate['content'][content_key] = { author_title: newTitle };
+        const newstate = { content: {}, simulation: true };
+        const content_key = this.props.author + '/' + this.props.permlink;
+        newstate.content[content_key] = { author_title: newTitle };
         this.props.pushState(newstate);
 
-        this.props.saveTitle(
-            this.props.username,
-            this.props.author,
-            community,
-            newTitle
-        );
+        this.props.saveTitle(this.props.username, this.props.author, community, newTitle);
         this.props.onEditSubmit();
         this.setState({
-            newTitle: newTitle,
+            newTitle,
         });
     };
 
@@ -58,25 +54,23 @@ class UserTitle extends React.Component {
 
         let editor;
         if (showEdit) {
-            const { author, community, username } = this.props;
+            const { author, community } = this.props;
             const { showDialog } = this.state;
             editor = (
                 <span className="affiliation-edit">
-                    <a onClick={this.onToggleDialog} title="Edit Title">
+                    <a role="link" tabIndex={0} onClick={this.onToggleDialog} title="Edit Title">
                         <Icon name="pencil2" size="0_8x" />
                     </a>
                     {showDialog && (
                         <Reveal onHide={() => null} show>
-                            <CloseButton
-                                onClick={() => this.onToggleDialog()}
-                            />
+                            <CloseButton onClick={() => this.onToggleDialog()} />
                             <UserTitleEditor
                                 title={title}
                                 username={author}
                                 community={community.get('title')}
-                                onSubmit={newTitle => {
+                                onSubmit={(_newTitle) => {
                                     this.onToggleDialog();
-                                    this.onSave(newTitle);
+                                    this.onSave(_newTitle);
                                 }}
                             />
                         </Reveal>
@@ -115,10 +109,7 @@ UserTitle.defaultProps = {
 
 export default connect(
     (state, ownProps) => {
-        const community = state.global.getIn(
-            ['community', ownProps.community],
-            Map()
-        );
+        const community = state.global.getIn(['community', ownProps.community], Map());
         const viewer_role = community.getIn(['context', 'role'], 'guest');
         const { author, permlink, title } = ownProps;
         return {
@@ -130,18 +121,11 @@ export default connect(
             viewer_role,
         };
     },
-    dispatch => ({
-        pushState: state => {
+    (dispatch) => ({
+        pushState: (state) => {
             return dispatch(globalActions.receiveState(state));
         },
-        saveTitle: (
-            username,
-            account,
-            community,
-            title,
-            successCallback,
-            errorCallback
-        ) => {
+        saveTitle: (username, account, community, title, successCallback, errorCallback) => {
             const action = 'setUserTitle';
 
             const payload = [

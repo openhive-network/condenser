@@ -1,4 +1,4 @@
-/*global $STM_Config */
+/*eslint no-underscore-dangle: "warn"*/
 import koa_router from 'koa-router';
 import koa_body from 'koa-body';
 import config from 'config';
@@ -11,13 +11,11 @@ import fetch from 'node-fetch';
 
 const ACCEPTED_TOS_TAG = 'accepted_tos_20180614';
 
-const mixpanel = config.get('mixpanel')
-    ? Mixpanel.init(config.get('mixpanel'))
-    : null;
+const mixpanel = config.get('mixpanel') ? Mixpanel.init(config.get('mixpanel')) : null;
 
-const _stringval = v => (typeof v === 'string' ? v : JSON.stringify(v));
+const _stringval = (v) => (typeof v === 'string' ? v : JSON.stringify(v));
 
-const _parse = params => {
+const _parse = (params) => {
     if (typeof params === 'string') {
         try {
             return JSON.parse(params);
@@ -31,7 +29,7 @@ const _parse = params => {
 };
 
 function logRequest(path, ctx, extra) {
-    let d = { ip: getRemoteIp(ctx.req) };
+    const d = { ip: getRemoteIp(ctx.req) };
     if (ctx.session) {
         if (ctx.session.user) {
             d.user = ctx.session.user;
@@ -44,13 +42,13 @@ function logRequest(path, ctx, extra) {
         }
     }
     if (extra) {
-        Object.keys(extra).forEach(k => {
+        Object.keys(extra).forEach((k) => {
             const nk = d[k] ? '_' + k : k;
             d[nk] = extra[k];
         });
     }
     const info = Object.keys(d)
-        .map(k => `${k}=${_stringval(d[k])}`)
+        .map((k) => `${k}=${_stringval(d[k])}`)
         .join(' ');
     console.log(`-- /${path} --> ${info}`);
 }
@@ -60,7 +58,7 @@ export default function useGeneralApi(app) {
     app.use(router.routes());
     const koaBody = koa_body();
 
-    router.post('/login_account', koaBody, function*() {
+    router.post('/login_account', koaBody, function* () {
         // if (rateLimitReq(this, this.req)) return;
         const params = this.request.body;
         const { csrf, account, signatures } = _parse(params);
@@ -70,48 +68,24 @@ export default function useGeneralApi(app) {
         try {
             if (signatures) {
                 if (!this.session.login_challenge) {
-                    console.error(
-                        '/login_account missing this.session.login_challenge'
-                    );
+                    console.error('/login_account missing this.session.login_challenge');
                 } else {
-                    const [chainAccount] = yield api.getAccountsAsync([
-                        account,
-                    ]);
+                    const [chainAccount] = yield api.getAccountsAsync([account]);
                     if (!chainAccount) {
-                        console.error(
-                            '/login_account missing blockchain account',
-                            account
-                        );
+                        console.error('/login_account missing blockchain account', account);
                     } else {
                         const auth = { posting: false };
-                        const bufSha = hash.sha256(
-                            JSON.stringify(
-                                { token: this.session.login_challenge },
-                                null,
-                                0
-                            )
-                        );
-                        const verify = (
-                            type,
-                            sigHex,
-                            pubkey,
-                            weight,
-                            weight_threshold
-                        ) => {
+                        const bufSha = hash.sha256(JSON.stringify({ token: this.session.login_challenge }, null, 0));
+                        const verify = (type, sigHex, pubkey, weight, weight_threshold) => {
                             if (!sigHex) return;
                             if (weight !== 1 || weight_threshold !== 1) {
                                 console.error(
-                                    `/login_account login_challenge unsupported ${
-                                        type
-                                    } auth configuration: ${account}`
+                                    `/login_account login_challenge unsupported ${type} auth configuration: ${account}`
                                 );
                             } else {
                                 const sig = parseSig(sigHex);
                                 const public_key = PublicKey.fromString(pubkey);
-                                const verified = sig.verifyHash(
-                                    bufSha,
-                                    public_key
-                                );
+                                const verified = sig.verifyHash(bufSha, public_key);
                                 if (!verified) {
                                     console.error(
                                         '/login_account verification failed',
@@ -129,13 +103,7 @@ export default function useGeneralApi(app) {
                                 weight_threshold,
                             },
                         } = chainAccount;
-                        verify(
-                            'posting',
-                            signatures.posting,
-                            posting_pubkey,
-                            weight,
-                            weight_threshold
-                        );
+                        verify('posting', signatures.posting, posting_pubkey, weight, weight_threshold);
                         if (auth.posting) this.session.a = account;
                     }
                 }
@@ -153,11 +121,7 @@ export default function useGeneralApi(app) {
                 mixpanel.people.increment(this.session.uid, 'Logins', 1);
             }
         } catch (error) {
-            console.error(
-                'Error in /login_account api call',
-                this.session.uid,
-                error.message
-            );
+            console.error('Error in /login_account api call', this.session.uid, error.message);
             this.body = JSON.stringify({
                 error: error.message,
             });
@@ -165,7 +129,8 @@ export default function useGeneralApi(app) {
         }
     });
 
-    router.post('/logout_account', koaBody, function*() {
+    // eslint-disable-next-line require-yield
+    router.post('/logout_account', koaBody, function* () {
         // if (rateLimitReq(this, this.req)) return; - logout maybe immediately followed with login_attempt event
         const params = this.request.body;
         const { csrf } = _parse(params);
@@ -175,17 +140,13 @@ export default function useGeneralApi(app) {
             this.session.a = null;
             this.body = JSON.stringify({ status: 'ok' });
         } catch (error) {
-            console.error(
-                'Error in /logout_account api call',
-                this.session.uid,
-                error
-            );
+            console.error('Error in /logout_account api call', this.session.uid, error);
             this.body = JSON.stringify({ error: error.message });
             this.status = 500;
         }
     });
 
-    router.post('/csp_violation', function*() {
+    router.post('/csp_violation', function* () {
         if (rateLimitReq(this, this.req)) return;
         let params;
         try {
@@ -195,36 +156,20 @@ export default function useGeneralApi(app) {
         }
         if (params && params['csp-report']) {
             const csp_report = params['csp-report'];
-            const value = `${csp_report['document-uri']} : ${
-                csp_report['blocked-uri']
-            }`;
-            console.log(
-                '-- /csp_violation -->',
-                value,
-                '--',
-                this.req.headers['user-agent']
-            );
+            const value = `${csp_report['document-uri']} : ${csp_report['blocked-uri']}`;
+            console.log('-- /csp_violation -->', value, '--', this.req.headers['user-agent']);
         } else {
-            console.log(
-                '-- /csp_violation [no csp-report] -->',
-                params,
-                '--',
-                this.req.headers['user-agent']
-            );
+            console.log('-- /csp_violation [no csp-report] -->', params, '--', this.req.headers['user-agent']);
         }
         this.body = '';
     });
 
-    router.post('/setUserPreferences', koaBody, function*() {
+    // eslint-disable-next-line require-yield
+    router.post('/setUserPreferences', koaBody, function* () {
         const params = this.request.body;
         const { csrf, payload } = _parse(params);
         if (!checkCSRF(this, csrf)) return;
-        console.log(
-            '-- /setUserPreferences -->',
-            this.session.user,
-            this.session.uid,
-            payload
-        );
+        console.log('-- /setUserPreferences -->', this.session.user, this.session.uid, payload);
         if (!this.session.a) {
             this.body = 'missing logged in account';
             this.status = 500;
@@ -236,17 +181,13 @@ export default function useGeneralApi(app) {
             this.session.user_prefs = json;
             this.body = JSON.stringify({ status: 'ok' });
         } catch (error) {
-            console.error(
-                'Error in /setUserPreferences api call',
-                this.session.uid,
-                error
-            );
+            console.error('Error in /setUserPreferences api call', this.session.uid, error);
             this.body = JSON.stringify({ error: error.message });
             this.status = 500;
         }
     });
 
-    router.post('/isTosAccepted', koaBody, function*() {
+    router.post('/isTosAccepted', koaBody, function* () {
         const params = this.request.body;
         const { csrf } = _parse(params);
         if (!checkCSRF(this, csrf)) return;
@@ -270,17 +211,13 @@ export default function useGeneralApi(app) {
 
             this.body = JSON.stringify(res.includes(ACCEPTED_TOS_TAG));
         } catch (error) {
-            console.error(
-                'Error in /isTosAccepted api call',
-                this.session.a,
-                error
-            );
+            console.error('Error in /isTosAccepted api call', this.session.a, error);
             this.body = JSON.stringify({ error: error.message });
             this.status = 500;
         }
     });
 
-    router.post('/acceptTos', koaBody, function*() {
+    router.post('/acceptTos', koaBody, function* () {
         const params = this.request.body;
         const { csrf } = _parse(params);
         if (!checkCSRF(this, csrf)) return;
@@ -302,16 +239,12 @@ export default function useGeneralApi(app) {
             );
             this.body = JSON.stringify({ status: 'ok' });
         } catch (error) {
-            console.error(
-                'Error in /acceptTos api call',
-                this.session.uid,
-                error
-            );
+            console.error('Error in /acceptTos api call', this.session.uid, error);
             this.body = JSON.stringify({ error: error.message });
             this.status = 500;
         }
     });
-    router.post('/search', koaBody, function*() {
+    router.post('/search', koaBody, function* () {
         const params = this.request.body;
         const passThrough = {
             method: this.request.method,
@@ -323,14 +256,10 @@ export default function useGeneralApi(app) {
             // NOTE: agentOptions purely for testing, localhost vs SSL.
             //agentOptions: { checkServerIdentity: () => {} },
         };
-        const { csrf } =
-            typeof params === 'string' ? JSON.parse(params) : params;
+        const { csrf } = typeof params === 'string' ? JSON.parse(params) : params;
         if (!checkCSRF(this, csrf)) return;
         try {
-            const searchResult = yield fetch(
-                'https://api.hivesearcher.com/search',
-                passThrough
-            );
+            const searchResult = yield fetch('https://api.hivesearcher.com/search', passThrough);
             const resultJson = yield searchResult.json();
             this.body = JSON.stringify(resultJson);
             this.status = 200;
@@ -342,7 +271,7 @@ export default function useGeneralApi(app) {
     });
 }
 
-const parseSig = hexSig => {
+const parseSig = (hexSig) => {
     try {
         return Signature.fromHex(hexSig);
     } catch (e) {
