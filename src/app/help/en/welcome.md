@@ -1,11 +1,8 @@
 <span id="disable_router_nav_history_direction_check"></span>
 ## Welcome to Hive!
 
-***
-
 Now that you have an account, here's how to get started.
 
-***
 
 ### 1. Backup your password
 
