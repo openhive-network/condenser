@@ -1,11 +1,8 @@
 <span id="disable_router_nav_history_direction_check"></span>
 ## Welcome to Hive!
 
-***
-
 Now that you have an account, here's how to get started.
 
-***
 
 ### 1. Backup your password
 
@@ -29,38 +26,33 @@ Your keys are available from your Wallet page. Back them up and keep them secure
 2. Do not plagiarize, and be sure to cite sources, including for images.
 
 
-### 3. Update your profile
+### 4. Update your profile
 
-You can update your profile on the Settings page.
-This includes your display name, location, about information, and website.
-
-
-### 4. Create your "Introduceyourself" Post
-
-The tradition for new users is to create an "introduceyourself" post in order
-to let the community get to know you. You can verify other social media
-accounts (Twitter, Facebook, etc.) by sharing the link to your Hive account
-from those profiles.
+You can update your profile on the Settings page. This includes your display name, location, about information, and website.
 
 
-### 5. Sign up for Hive Chat
+### 5. Create your "Introduceyourself" Post
 
-A lot of users mingle and chat in [OpenHive.Chat](https://openhive.chat/). It is a
-great place to meet people!
+The tradition for new users is to create an "introduceyourself" post in order to let the community get to know you. You can verify other social media accounts (Twitter, Facebook, etc.) by sharing the link to your Hive account from those profiles.
 
-You log in with your Hive account, using Private Posting Key to confirm your identity.
-Ask questions in the [\#help](https://openhive.chat/channel/help) channel.
+### 6. Equip yourself
+
+[Hive Keychain](https://hive-keychain.com) is a browser-based extension to log into various Hive-based platforms. Download it for your preferred browser and import your keys. It also acts as a light wallet!
+
+[Hivesigner](https://hivesigner.com) is another application which allows you to securely log into a range of Hive-based products using OAuth2. It's simple to use and lets you manage your authorizations all in one place. 
 
 
-### 6. Voting and Tokens
+### 7. Get to know others
 
-Posts and comments can accrue votes over a period of 7 days. Projected payouts
-will fluctuate (up and down) and no payout is guaranteed. If a post receives
-enough votes for a payout, it will be split evenly between the author and voters ("curators").
+- A lot of users mingle and chat in [OpenHive.Chat](https://openhive.chat/). It is a great place to meet people! You log in with your Hive account, using Private Posting Key to confirm your identity. Ask questions in the [\#help](https://openhive.chat/channel/help) channel.
+- Many Hive community members also enjoy our [Discord](https://myhive.li/discord) and [Telegram](https://t.me/hiveblockchain) groups. They're fun and informative! 
 
-HIVE, Hive Power (HP) and Hive Backed Dollars (HBD) are the three forms of digital
-currency used by the Hive blockchain. More information
-[here](https://hive.blog/faq.html#What_is_the_difference_between_HIVE__HIVE_Power__and_Hive_Dollars).
+
+### 8. Voting and Tokens
+
+Posts and comments can accrue votes over a period of 7 days. Projected payouts will fluctuate (up and down) and no payout is guaranteed. If a post receives enough votes for a payout, it will be split evenly between the author and voters ("curators").
+
+HIVE, Hive Power (HP) and Hive Backed Dollars (HBD) are the three forms of digital currency used by the Hive blockchain. More information [here](https://hive.blog/faq.html#What_is_the_difference_between_HIVE__HIVE_Power__and_Hive_Dollars).
 
 
 ##### Additional resources
