@@ -113,9 +113,8 @@
 - <a href="#What_is_considered_spam_or_abuse">What is considered spam or abuse?</a>
 - <a href="#What_are_Hive_s_policies_on_plagiarism">What are Hive.blog’s policies on plagiarism?</a>
 - <a href="#Is_it_okay_to_use_random_pictures_from_the_internet">Is it okay to use random pictures from the internet?</a>
-- <a href="#What_is_Hivewatchers">What is Hivewatchers?</a>
-- <a href="#What_is__cheetah">What is @cheetah?</a>
-- <a href="#Where_do_I_report_a_post_or_comment_that_contains_plagiarism__spam__or_abuse">Where do I report a post or comment that contains plagiarism, spam, or abuse?</a>
+- <a href="#What_are_Hivewatchers">What are Hivewatchers?</a>
+- <a href="#Where_do_I_report_a_post_or_comment_that_contains_plagiarism__fraud__or_phishing">Where do I report a post or comment that contains plagiarism, fraud, or phishing?</a>
 
 ### <span id="Table_of_Contents_Reputation">Reputation</span>
 - <a href="#What_is_Reputation">What is Reputation?</a>
@@ -858,9 +857,9 @@ If you are using an image that is not your own, make sure you are allowed to use
 Using random pictures from the internet without giving credit is discouraged. You may, however, use photos from “free image” websites such as Pexels.com or Pixabay.com. All photos on Pexels and Pixabay are free for personal and commercial use.
 
 <a href="#Table_of_Contents_Plagiarism__Spam__and_Abuse">^</a>
-## <span id="Where_do_I_report_a_post_or_comment_that_contains_plagiarism__spam__or_abuse">Where do I report a post or comment that contains plagiarism, spam, or abuse?</span>
+## <span id="Where_do_I_report_a_post_or_comment_that_contains_plagiarism__fraud__or_phishing">Where do I report a post or comment that contains plagiarism, fraud, or phishing?</span>
 
-You can report any abusive content to the <a href="https://openhive.chat/channel/hiveabuse">#hiveabuse</a> channel on <a href="https://openhive.chat/home">OpenHive.Chat</a>.
+You can report any abusive or malicious content to the <a href="https://discord.gg/JnvkJMV">Hivewatchers Discord</a> channel or on <a href="https://openhive.chat/home">OpenHive.Chat</a>.
 
 <a href="#Table_of_Contents_Plagiarism__Spam__and_Abuse">^</a>
 # Reputation
