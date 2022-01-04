@@ -4,7 +4,7 @@
 ## <span id="Table_of_Contents">Table of Contents</span>
 
 ### <span id="Table_of_Contents_General">General</span>
-- <a href="#What_is_Hive_blog">What is Hive.blog?</a>
+- <a href="#What_is_Hive">What is Hive?</a>
 - <a href="#How_does_Hive_work">How does Hive.blog work?</a>
 - <a href="#How_does_Hive_differ_from_other_social_media_websites">How does Hive.blog differ from other social media websites?</a>
 - <a href="#What_do_I_need_to_do_in_order_to_secure_my_account">What do I need to do in order to secure my account?</a>
@@ -169,9 +169,9 @@
 
 # General
 
-## <span id="What_is_Hive_blog">What is hive.blog?</span>
+## <span id="What_is_Hive">What is Hive?</span>
 
-Hive has redefined social media by building a living, breathing, and growing social economy - a community where users are rewarded for sharing their voice. It's a new kind of attention economy.
+Hive is a decentralized information-sharing network with an accompanying blockchain-based financial ledger built on the Delegated Proof of Stake (DPoS) protocol. Hive supports many different types of information-sharing applications. A myriad of dapps, APIs, and front-ends contribute to the accessibility of data on the Hive blockchain. Hive is developed to store vast amounts of content and to make it easily available for time-based monetization. Examples of use cases include social media with monetized rewards for content producers, interactive games, identity management, polling systems, and micro-loans. The performance of the blockchain is designed to scale with widespread adoption of the currency and platforms in mind. By combining the lightning-fast processing times and fee-less transactions, Hive is positioned to become one of the leading blockchain technologies used by people worldwide. Learn more about Hive and sign up today a <a href="https://hive.io">hive.io</a>.
 
 <a href="#Table_of_Contents_General">^</a>
 ## <span id="How_does_Hive_work">How does Hive.blog work?</span>
