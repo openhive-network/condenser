@@ -5,14 +5,12 @@
 
 ### <span id="Table_of_Contents_General">General</span>
 - <a href="#What_is_Hive">What is Hive?</a>
-- <a href="#How_does_Hive_work">How does Hive.blog work?</a>
-- <a href="#How_does_Hive_differ_from_other_social_media_websites">How does Hive.blog differ from other social media websites?</a>
-- <a href="#What_do_I_need_to_do_in_order_to_secure_my_account">What do I need to do in order to secure my account?</a>
+- <a href="#How_does_blogging_on_Hive_work">How does blogging on Hive work?</a>
 - <a href="#Does_it_cost_anything_to_post__comment__or_vote">Does it cost anything to post, comment, or vote?</a>
 - <a href="#Can_I_earn_digital_tokens_on_Hive_How">Can I earn digital tokens on Hive? How?</a>
 - <a href="#Where_do_the_tokens_come_from">Where do the tokens come from?</a>
 - <a href="#Where_does_the_value_come_from">Where does the value come from?</a>
-- <a href="#Why_are_people_getting_vastly_different_rewards">Why are people getting vastly different rewards?</a>
+- <a href="Where_can_I_get_technical_information_about_Hive">Where can I get technical information about Hive?</a>
 
 ### <span id="Table_of_Contents_Accounts">Accounts</span>
 - <a href="#Can_I_change_my_username">Can I change my username?</a>
@@ -128,7 +126,6 @@
 - <a href="#Can_I_share_on_other_social_media">Can I share on other social media?</a>
 
 ### <span id="Table_of_Contents_Blockchain">Blockchain</span>
-- <a href="#What_is_a_blockchain">What is a blockchain?</a>
 - <a href="#What_is_the_Hive_blockchain">What is the Hive blockchain?</a>
 - <a href="#How_do_Resource_Credits_work_on_the_Hive_blockchain">How do Resource Credits work on the Hive blockchain?</a>
 - <a href="#What_is_the_difference_between_Hive_and_Hive_blog">What is the difference between Hive and Hive.blog?</a>
@@ -140,20 +137,13 @@
 - <a href="#Can_I_mine_HIVE">Can I mine HIVE?</a>
 
 ### <span id="Table_of_Contents_Security">Security</span>
+- <a href="#What_do_I_need_to_do_in_order_to_secure_my_account">What do I need to do in order to secure my account?</a>
 - <a href="#How_can_I_keep_my_Hive_account_secure">How can I keep my Hive account secure?</a>
 - <a href="#Why_should_I_be_careful_with_my_master_password">Why should I be careful with my master password?</a>
-- <a href="#Why_is_the_master_password_a_long_string_of_gibberish">Why is the master password a long string of gibberish?</a>
 - <a href="#What_are_my_different_keys_for">What are my different keys for?</a>
 - <a href="#What_do_I_do_if_I_lost_my_password_keys">What do I do if I lost my password/keys?</a>
 - <a href="#Are_my_HIVE_and_Hive_Dollar_tokens_insured_in_the_event_of_a_hack_or_if_someone_takes_over_my_account">Are my HIVE and Hive Dollar tokens insured in the event of a hack or if someone takes over my account?</a>
 - <a href="#How_do_I_report_a_security_vulnerability">How do I report a security vulnerability?</a>
-
-### <span id="Table_of_Contents_Developers">Developers</span>
-- <a href="#Are_the_Hive_blockchain_and_Hive_blog_code_open_source">Are the Hive blockchain and Hive.blog code open-source?</a>
-- <a href="#Is_there_a_Github_page_for_Hive_blog">Is there a Github page for Hive.blog?</a>
-- <a href="#Is_there_a_Github_page_for_the_Hive_blockchain">Is there a Github page for the Hive blockchain?</a>
-- <a href="#What_is_available_for_developers_interested_in_Hive_and_Hive_blog">What is available for developers interested in Hive and Hive.blog?</a>
-- <a href="#How_do_I_use_cli_wallet">How do I use cli_wallet?</a>
 
 ### <span id="Table_of_Contents_Witnesses">Witnesses</span>
 - <a href="#What_are_Hive_witnesses">What are Hive witnesses?</a>
@@ -173,25 +163,11 @@
 Hive is a decentralized information-sharing network with an accompanying blockchain-based financial ledger built on the Delegated Proof of Stake (DPoS) protocol. Hive supports many different types of information-sharing applications. A myriad of dapps, APIs, and front-ends contribute to the accessibility of data on the Hive blockchain. Hive is developed to store vast amounts of content and to make it easily available for time-based monetization. Examples of use cases include social media with monetized rewards for content producers, interactive games, identity management, polling systems, and micro-loans. The performance of the blockchain is designed to scale with widespread adoption of the currency and platforms in mind. By combining the lightning-fast processing times and fee-less transactions, Hive is positioned to become one of the leading blockchain technologies used by people worldwide. Learn more about Hive and sign up today a <a href="https://hive.io">hive.io</a>.
 
 <a href="#Table_of_Contents_General">^</a>
-## <span id="How_does_Hive_work">How does Hive.blog work?</span>
+## <span id="How_does_blogging_on_Hive_work">How does blogging on Hive work?</span>
 
-Hive.blog is one of the many websites that are powered by the Hive blockchain and HIVE cryptocurrency. All of these websites read and write content to the Hive blockchain, which stores the content in an immutable blockchain ledger, and rewards users for their contributions with digital tokens called HIVE.
+Posting content to the Hive blockchain through social websites such as Hive.blog allows not only for immutable storage of information but also for a time-based monetization of it. Users who make posts or comments are able to receive rewards for their contributions in HIVE and HBD when those posts receive positive votes. At the end of a 7 day window the final value of the content is determined and the user receives a combination of staked HIVE (as Hive Power) and HBD. 
 
-Every day, the Hive blockchain mints new HIVE tokens and adds them to a community's "rewards pool". These tokens are then awarded to users for their contributions, based on the votes that their content receives. Users who hold more tokens in their account as "Hive Power" will get to decide where a larger portion of the rewards pool is distributed.
-
-<a href="#Table_of_Contents_General">^</a>
-## <span id="How_does_Hive_differ_from_other_social_media_websites">How does Hive.blog differ from other social media websites?</span>
-
-While most social media sites extract this value for the benefit of their shareholders, Hive believes that the users of the platform should receive the benefits and rewards for their attention and the contributions they make to the platform.
-
-<a href="#Table_of_Contents_General">^</a>
-## <span id="What_do_I_need_to_do_in_order_to_secure_my_account">What do I need to do in order to secure my account?</span>
-
-Unlike most social media websites, **there is no way to recover your account if you lose your password / owner key!** This is why it is extremely important that you save and backup your password somewhere safe. It is strongly recommended that you store an offline copy in case of a hard drive failure or other calamity. Consider digital offline storage, such as an external disk or flash drive, as well as printed paper stored in a fireproof safe. Use a safe deposit box for best redundancy.
-
-If you leak your private key to another user or a third-party website, that user or website will have full access to your account. This means they can steal it, as well as the funds inside of it. It is therefore not recommended to enter your private key information with any other user or third-party website. If you believe your account has been compromised, you should change your password/keys right away.
-
-Each account has multiple keys, which each have different levels of authority: owner, active, posting, and memo. The information on the different types of keys and their purposes, as well as more information on password and key security, can be found in the section on <a href="#Table_of_Contents_Security">Security</a>.
+The awarded funds come from a communal "reward pool" which is tied to inflation. Holding Hive Power allows users to participate in deciding the allocation of the reward pool. When users curate (vote for) content, they effectively help distribute the reward pool. 
 
 <a href="#Table_of_Contents_General">^</a>
 ## <span id="Does_it_cost_anything_to_post__comment__or_vote">Does it cost anything to post, comment, or vote?</span>
@@ -212,11 +188,6 @@ You can earn digital tokens on Hive by:
 **Vesting** - HIVE tokens that are powered up to Hive Power will earn a small amount of new tokens for holding.
 
 <a href="#Table_of_Contents_General">^</a>
-## <span id="Where_do_the_tokens_come_from">Where do the tokens come from?</span>
-
-The Hive network continually creates new digital tokens to reward content creators and curators. Some of the newly-created tokens are transferred to users who add value to Hive by posting, commenting, and voting on other people's posts. The remainder is distributed to holders of Hive Power and the witnesses that power the blockchain.
-
-<a href="#Table_of_Contents_General">^</a>
 ## <span id="Where_does_the_value_come_from">Where does the value come from?</span>
 
 At its root, Hive is simply a points system. However, because this points system is blockchain-based, the points can be traded on markets as tokens. People buy and sell these tokens, and many hold in anticipation of increased purchasing power for various Hive-related services.
@@ -224,13 +195,13 @@ At its root, Hive is simply a points system. However, because this points system
 By analogy, Hive is a game system where users compete for attention and rewards by bringing content and adding value to the platform. The rewards people earn are tokens that have market value and are readily tradable. It is similar to how someone playing a video game could obtain a limited item or currency by playing the game. If the currency or items are transferable between users, then they can sell or buy them on game item markets.
 
 <a href="#Table_of_Contents_General">^</a>
-## <span id="Why_are_people_getting_vastly_different_rewards">Why are people getting vastly different rewards?</span>
+## <span id="Where_can_I_get_technical_information_about_Hive">Where can I get technical information about Hive?</span>
 
-Hive is not a "get rich quick" scheme. While it is possible to post content that goes viral quickly and earn a lot of rewards on a single post, this is not typical for most users.
+Hive is an Open Source project that is maintained by a large and diverse group of blockchain enthusiasts.
 
-Most of the authors that you see earning high rewards are users that have spent a lot of time in the network building followings, making connections with others, and developing a reputation for bringing high quality content.
+The [Hive Developer Portal](https://developers.hive.io/) is the best place to start and contains documents and resources for developing tools and applications for the Hive blockchain.
 
-It is best to have realistic expectations, without focusing on rewards when you are first starting out. Work on building a following, making connections, and developing a good reputation. Consistency will pay off in the long run.
+The Hive repository, including the repository of Hive.blog (called 'Condenser'), is available on [Gitlab](https://gitlab.syncad.com/hive).
 
 <a href="#Table_of_Contents_General">^</a>
 
@@ -992,41 +963,34 @@ No. Proof of work mining has been removed from Hive.
 <a href="#Table_of_Contents_Blockchain">^</a>
 # Security
 
-## <span id="How_can_I_keep_my_Hive_account_secure">How can I keep my Hive account secure?</span>
+## <span id="What_do_I_need_to_do_in_order_to_secure_my_account">What do I need to do in order to secure my account?</span>
 
-<b>Save your master password and keep it somewhere safe.</b>
+Unlike with centralized services, **there is usually no way to recover your account if you lose your password or owner key!** Account recoveries are possible only under very specific conditions. This is why it is extremely important that you save and backup your password somewhere safe. It is strongly recommended that you store an offline copy in case of a hard drive failure or other calamity. Consider digital offline storage, such as an external disk or flash drive, as well as printed paper stored in a fireproof safe. Use a safe deposit box for best redundancy.
 
-Only log into your account using the key with the appropriate permissions for what you are doing:
-- Posting key for every day logins
-- Active key when necessary for transfers, power ups, etc.
-- Master password or owner key when changing the password
+If you leak your private key to another user or a third-party website, that user or website will have full access to your account. This means they can steal it, as well as the funds inside of it. It is therefore not recommended to enter your private key information with any other user or third-party website. If you believe your account has been compromised, you should change your password/keys right away.
 
-Again, <b>save your master password</b> and keep it safe! If logging in with your post key, make sure you don't overwrite or misplace your original master password.
-
-It is not recommended to share your password or keys with any third party site.
-
-<a href="#Table_of_Contents_Security">^</a>
-## <span id="Why_should_I_be_careful_with_my_master_password">Why should I be careful with my master password?</span>
-
-The master password is used to derive all keys for your account, including the owner key. If someone has access to your master password, they can steal your account and all of the tokens in it.
-
-<a href="#Table_of_Contents_Security">^</a>
-## <span id="Why_is_the_master_password_a_long_string_of_gibberish">Why is the master password a long string of gibberish?</span>
-
-The password has to be long and random for maximum account security.
+Each account has multiple keys, which each have different levels of authority: owner, active, posting, and memo. The information on the different types of keys and their purposes, as well as more information on password and key security, can be found in the following section.
 
 <a href="#Table_of_Contents_Security">^</a>
 ## <span id="What_are_my_different_keys_for">What are my different keys for?</span>
 
+Only log into your account using the key with the appropriate permissions for what you are doing:
+
 **Posting key** - The posting key allows accounts to post, comment, edit, vote, reblog, and follow or mute other accounts. Most users should be logging into Hive every day with the posting key. You are more likely to have your password or key compromised the more you use it so a limited posting key exists to restrict the damage that a compromised account key would cause.
 
-**Active key** - The active key is meant for more sensitive tasks such as transferring funds, power up/down transactions, converting Hive Dollars, voting for witnesses, updating profile details and avatar, and placing a market order.
+**Active key** - The active key is meant for more sensitive tasks such as transferring funds, power up/down (staking and unstaking) transactions, converting Hive Dollars, voting for witnesses, updating profile details, voting on DHF proposals and placing market orders.
 
-**Memo key** - Currently the memo key is not used.
+**Memo key** - The memo key is used for encrypting and decrypting encrypted messages within the memo parameter of fund transfers.
 
-**Owner key** - The owner key is only meant for use when necessary. It is the most powerful key because it can change any key of an account, including the owner key. Ideally it is meant to be stored offline, and only used to recover a compromised account.
+**Owner key** - The owner key is only meant for use when necessary. It is the most powerful key because it can change any key of an account. It is used for recovering accounts and regenerating other keys as well as setting a new password. Ideally it is meant to be stored offline, and only used to recover a compromised account.
 
 <a href="#Table_of_Contents_Security">^</a>
+## <span id="Why_should_I_be_careful_with_my_master_password">Why should I be careful with my master password?</span>
+
+The master password is a seed that is used to derive all keys for your account, including the owner key. If someone has access to your master password, they can get full control of your account and all the funds in it.
+
+<a href="#Table_of_Contents_Security">^</a>
+
 ## <span id="What_do_I_do_if_I_lost_my_password_keys">What do I do if I lost my password/keys?</span>
 
 There is no way to recover your account if you lose your password or owner key! Because your account has real value, it is **very important** that you save your master password somewhere safe where you will not lose it.
@@ -1046,38 +1010,7 @@ If your tokens are in Hive Power, it is impossible for a hacker to take out more
 If you find a security issue please report the details to privacy@hive.io.
 
 <a href="#Table_of_Contents_Security">^</a>
-# Developers
 
-## <span id="Are_the_Hive_blockchain_and_Hive_blog_code_open_source">Are the Hive blockchain and hive.blog code open-source?</span>
-
-Yes. Both the Hive blockchain and hive.blog are open-source projects.
-
-Developers should however avoid the use of the term "Hive.blog" in their own products, and instead refer to the Hive Blockchain or Hive Platform.
-
-<a href="#Table_of_Contents_Developers">^</a>
-## <span id="Is_there_a_Github_page_for_Hive_blog">Is there a Github page for hive.blog?</span>
-
-Yes. Will be made public after launch
-
-<a href="#Table_of_Contents_Developers">^</a>
-## <span id="Is_there_a_Github_page_for_the_Hive_blockchain">Is there a Github page for the Hive blockchain?</span>
-
-Yes. Will be made public after launch
-
-<a href="#Table_of_Contents_Developers">^</a>
-## <span id="What_is_available_for_developers_interested_in_Hive_and_Hive_blog">What is available for developers interested in Hive and Hive.blog?</span>
-
-Many software engineers are currently leveraging the open-source code to build their applications on Hive
-
-The [Hive Developer Portal](https://developers.hive.io/) also contains documents and resources for developing tools and applications for the Hive blockchain.
-
-<a href="#Table_of_Contents_Developers">^</a>
-## <span id="How_do_I_use_cli_wallet">How do I use cli_wallet?</span>
-
-Here is a guide from the user @pfunk explaining how to use the cli_wallet:
-https://hive.blog/steemhelp/@pfunk/a-learner-s-guide-to-using-steem-s-cliwallet-part-1
-
-<a href="#Table_of_Contents_Developers">^</a>
 # Witnesses
 
 ## <span id="What_are_Hive_witnesses">What are Hive witnesses?</span>
@@ -1110,7 +1043,7 @@ You can also create a post on hive.blog with the tag #help, and someone in the c
 
 ## <span id="Third_Party_References_and_User_Links">Third Party References and User Links</span>
 
-Any services listed here, as well as any other third party applications or websites that are listed, does not constitute and endorsement or recommendation on behalf of the operators of Hive.blog
+Any services listed here, as well as any other third party applications or websites that are listed, does not constitute and endorsement or recommendation on behalf of the operators of Hive.blog 
 
 Please use the third party tools and content at your own risk.
 
