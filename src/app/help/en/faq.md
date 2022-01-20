@@ -83,9 +83,7 @@
 - <a href="#What_can_I_do_with_my_HIVE_tokens">What can I do with my HIVE tokens?</a>
 - <a href="#What_can_I_do_with_my_HBD_tokens">What can I do with my HBD tokens?</a>
 - <a href="#What_is_a_MVEST">What is a MVEST?</a>
-- <a href="#Can_I_sell_goods_and_services_on_Hive">Can I sell goods and services on Hive?</a>
 - <a href="#How_can_I_withdraw_my_HIVE_or_HBD_coins">How can I withdraw my HIVE or HBD coins?</a>
-- <a href="#Will_I_get_a_1099_from_Hive">Will I get a 1099 from Hive.blog?</a>
 - <a href="#How_much_are_the_transaction_fees_for_sending_tokens_to_other_users">How much are the transaction fees for sending tokens to other users?</a>
 - <a href="#Are_there_fees_for_Powering_Up__Powering_Down__trading_on_the_internal_market__or_converting_HBD_to_HIVE">Are there fees for Powering Up, Powering Down, trading on the internal market, or converting HBD to HIVE?</a>
 - <a href="#How_long_does_it_take_to_transfer_HIVE_or_HBD_tokens_between_users">How long does it take to transfer HIVE or HBD tokens between users?</a>
@@ -686,21 +684,13 @@ You can exchange them. Visit the internal Market, found in the main menu. There 
 A VEST is a unit of measurement for Hive Power. A MVEST is one million VESTS. The amount of Hive Power in one MVEST can be found on <a href="https://hiveblocks.com/">hiveblocks.com</a> as `hive_per_mvests`.
 
 <a href="#Table_of_Contents_Economics">^</a>
-## <span id="Can_I_sell_goods_and_services_on_Hive">Can I sell goods and services on Hive?</span>
 
-Other than making a post and making sales manually, there is no interface for selling items directly on hive.blog. You can list goods and services on the third-party websites and accept payment in Hive Dollars or HIVE. You also have the option to advertise your items through Hive posts.
-
-<a href="#Table_of_Contents_Economics">^</a>
 ## <span id="How_can_I_withdraw_my_HIVE_or_HBD_coins">How can I withdraw my HIVE or HBD coins?</span>
 
 HIVE and HBD tokens are readily tradable to bitcoin, which can be traded for the local currency of your choice. There is a link to "Sell" your HIVE and HBD tokens in your wallet, which uses the <a href="https://blocktrades.us/">BlockTrades</a> interface.
 
 <a href="#Table_of_Contents_Economics">^</a>
-## <span id="Will_I_get_a_1099_from_Hive">Will I get a 1099 from Hive?</span>
 
-No, you are not being paid by Hive. The Hive network rewards you. It is your responsibility to determine what, if any, taxes apply to the transactions you make. Further, it is your responsibility to report and remit the correct tax to the appropriate tax authority. Hive is not responsible for determining whether taxes apply to your Hive transactions, or for collecting, reporting, withholding, or remitting any taxes arising from any Hive transactions.
-
-<a href="#Table_of_Contents_Economics">^</a>
 ## <span id="How_much_are_the_transaction_fees_for_sending_tokens_to_other_users">How much are the transaction fees for sending tokens to other users?</span>
 
 There are never any fees for transfers within the Hive network. However, if you transfer Hive to an exchange and convert it to another currency, you may incur a small fee from the exchange.
