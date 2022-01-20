@@ -57,8 +57,6 @@
 - <a href="#What_does__Promoting__a_post_do">What does "Promoting" a post do?</a>
 - <a href="#How_do_I_promote_a_post">How do I promote a post?</a>
 - <a href="#What_is_Reblogging">What is Reblogging?</a>
-
-### <span id="Table_of_Contents_Comments">Comments</span>
 - <a href="#Can_I_earn_digital_tokens_for_commenting">Can I earn digital tokens for commenting?</a>
 - <a href="#How_often_can_I_comment">How often can I comment?</a>
 
@@ -508,19 +506,16 @@ Reblogging is the inclusion of other people's posts in your blog.  Once you rebl
 
 <a href="#Table_of_Contents_Posting">^</a>
 
-
-# Comments
-
 ## <span id="Can_I_earn_digital_tokens_for_commenting">Can I earn digital tokens for commenting?</span>
 
 Yes, comments that are upvoted can earn rewards just like posts!
 
-<a href="#Table_of_Contents_Comments">^</a>
+<a href="#Table_of_Contents_Posting">^</a>
 ## <span id="How_often_can_I_comment">How often can I comment?</span>
 
 There is a three second wait time in between comments to limit spam.
 
-<a href="#Table_of_Contents_Comments">^</a>
+<a href="#Table_of_Contents_Posting">^</a>
 # Economics
 
 ## <span id="Where_do_the_new_HIVE_tokens_come_from">Where do the new HIVE tokens come from?</span>
