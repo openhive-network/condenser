@@ -1,5 +1,5 @@
 <span id="disable_router_nav_history_direction_check"></span>
-# Hive.blog FAQ
+# FAQ
 
 ## <span id="Table_of_Contents">Table of Contents</span>
 
