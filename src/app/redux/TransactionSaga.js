@@ -39,7 +39,12 @@ const hook = {
     accepted_custom_json,
     accepted_delete_comment,
     accepted_vote,
+    broadcast_done,
 };
+
+function* broadcast_done() {
+    yield put(userActions.hideHiveAuthModal());
+}
 
 function* preBroadcast_vote({ operation, username }) {
     if (!operation.voter) operation.voter = username;
@@ -246,6 +251,10 @@ function* broadcastPayload({
         operations = newOps;
     }
 
+    if (HiveAuthService.isLoggedInWithHiveAuth()) {
+        yield put(userActions.showHiveAuthModal());
+    }
+
     // status: broadcasting
     const broadcastedEvent = () => {
         // eslint-disable-next-line no-restricted-syntax
@@ -316,15 +325,19 @@ function* broadcastPayload({
                 }
             } else if (HiveAuthService.isLoggedInWithHiveAuth()) {
                 // Nothing requires Active Key at the moment, to revisit if we ever merge wallet back.
-                HiveAuthService.broadcast(operations, 'posting', (response) => {
-                    console.log('HAS broadcast response', response);
-                    if (!response.success) {
-                        reject(response.error);
-                    } else {
-                        broadcastedEvent();
-                        resolve();
+                HiveAuthService.broadcast(
+                    operations,
+                    'posting',
+                    (response) => {
+                        console.log('HAS broadcast response', response);
+                        if (!response.success) {
+                            reject(response.error);
+                        } else {
+                            broadcastedEvent();
+                            resolve();
+                        }
                     }
-                });
+                );
             } else {
                 broadcast.send({ extensions: [], operations }, keys, (err) => {
                     if (err) {
@@ -336,6 +349,9 @@ function* broadcastPayload({
                 });
             }
         });
+
+        yield call(hook.broadcast_done);
+
         // status: accepted
         // eslint-disable-next-line no-restricted-syntax
         for (const [type, operation] of operations) {
@@ -367,6 +383,7 @@ function* broadcastPayload({
         dispatcher.dispatch(EVENT_OPERATION_BROADCAST);
     } catch (error) {
         console.error('TransactionSaga\tbroadcastPayload', error);
+        yield call(hook.broadcast_done);
         // status: error
         yield put(transactionActions.error({ operations, error, errorCallback }));
         // eslint-disable-next-line no-restricted-syntax

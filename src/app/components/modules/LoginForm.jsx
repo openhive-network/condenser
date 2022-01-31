@@ -30,6 +30,8 @@ class LoginForm extends Component {
     };
 
     static defaultProps = {
+        loginError: '',
+        onCancel: undefined,
         afterLoginRedirectToWelcome: false,
     };
 
@@ -74,6 +76,14 @@ class LoginForm extends Component {
         if (this.refs.username && !this.refs.username.value) this.refs.username.focus();
         // eslint-disable-next-line react/no-string-refs
         if (this.refs.username && this.refs.username.value) this.refs.pw.focus();
+    }
+
+    componentDidUpdate() {
+        const { loginError } = this.props;
+        if (loginError && this.state.isProcessingHiveAuth) {
+            // eslint-disable-next-line react/no-did-update-set-state
+            this.setState({ isProcessingHiveAuth: false });
+        }
     }
 
     // shouldComponentUpdate = shouldComponentUpdate(this, 'LoginForm');
@@ -228,7 +238,7 @@ class LoginForm extends Component {
         const {
             username, password, useKeychain, useHiveAuth, saveLogin
         } = this.state;
-        console.log('state login', this.state.login);
+
         const { valid, handleSubmit } = this.state.login;
         const submitting = this.state.login.submitting || this.state.isHiveSigner || this.state.isProcessingHiveAuth;
         const { usernameOnChange, onCancel /*qrReader*/ } = this;
@@ -319,6 +329,8 @@ class LoginForm extends Component {
                 onSubmit={handleSubmit(({ data }) => {
                     // bind redux-form to react-redux
                     console.log('Login\tdispatchSubmit', useHiveAuth.value);
+                    this.props.clearError();
+
                     if (useHiveAuth.value) {
                         this.setState({ isProcessingHiveAuth: true });
                     }
@@ -422,7 +434,7 @@ class LoginForm extends Component {
                             ref="pw"
                             {...useHiveAuth.props}
                             onChange={this.useHiveAuthToggle}
-                            disabled={submitting}
+                            disabled={!hasError && submitting}
                         />
                         &nbsp;
                         <img src="/images/hiveauth.png" alt="Hive Authentication Services" width="16" />
@@ -462,7 +474,15 @@ class LoginForm extends Component {
                 </div>
                 <div className="hiveauth_info">
                     <div id="hiveauth-instructions" className="hiveauth_instructions" />
-                    <canvas id="hiveauth-qr" className="hiveauth_qr" />
+                    <a
+                        href="#"
+                        id="hiveauth-qr-link"
+                        className="hiveauth_qr"
+                        target="_blank"
+                        rel="noreferrer noopener"
+                    >
+                        <canvas id="hiveauth-qr" />
+                    </a>
                 </div>
                 {/*signupLink*/}
             </form>

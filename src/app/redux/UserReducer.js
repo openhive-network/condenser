@@ -14,6 +14,8 @@ const REMOVE_HIGH_SECURITY_KEYS = 'user/REMOVE_HIGH_SECURITY_KEYS';
 const CHANGE_LANGUAGE = 'user/CHANGE_LANGUAGE';
 const SHOW_PROMOTE_POST = 'user/SHOW_PROMOTE_POST';
 const HIDE_PROMOTE_POST = 'user/HIDE_PROMOTE_POST';
+const SHOW_HIVE_AUTH_MODAL = 'user/SHOW_HIVE_AUTH_MODAL';
+const HIVE_AUTH_MODAL = 'user/HIVE_AUTH_MODAL';
 export const CHECK_KEY_TYPE = 'user/CHECK_KEY_TYPE';
 export const USERNAME_PASSWORD_LOGIN = 'user/USERNAME_PASSWORD_LOGIN';
 export const SET_USER = 'user/SET_USER';
@@ -47,6 +49,7 @@ const defaultState = fromJS({
     maybeLoggedIn: false,
     showAnnouncement: false,
     sessionId: '',
+    show_hive_auth_modal: false,
 });
 
 export default function reducer(state = defaultState, action) {
@@ -135,6 +138,12 @@ export default function reducer(state = defaultState, action) {
 
         case HIDE_PROMOTE_POST:
             return state.set('show_promote_post_modal', false);
+
+        case SHOW_HIVE_AUTH_MODAL:
+            return state.set('show_hive_auth_modal', true);
+
+        case HIVE_AUTH_MODAL:
+            return state.set('show_hive_auth_modal', false);
 
         case CHECK_KEY_TYPE:
             return state; // saga
@@ -283,6 +292,16 @@ export const showPromotePost = (payload) => ({
 export const hidePromotePost = (payload) => ({
     type: HIDE_PROMOTE_POST,
     payload,
+});
+
+export const showHiveAuthModal = (payload) => ({
+    type: SHOW_HIVE_AUTH_MODAL,
+    payload,
+});
+
+export const hideHiveAuthModal = (payload) => ({
+   type: HIVE_AUTH_MODAL,
+   payload,
 });
 
 export const checkKeyType = (payload) => ({
