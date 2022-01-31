@@ -25,6 +25,7 @@ class Modals extends PureComponent {
         show_login_modal: false,
         show_post_advanced_settings_modal: '',
         loginBroadcastOperation: undefined,
+        show_hive_auth_modal: false,
     };
 
     static propTypes = {
@@ -46,6 +47,8 @@ class Modals extends PureComponent {
             successCallback: PropTypes.func,
             errorCallback: PropTypes.func,
         }),
+        show_hive_auth_modal: PropTypes.bool,
+        hideHiveAuthModal: PropTypes.func,
     };
 
     render() {
@@ -62,6 +65,8 @@ class Modals extends PureComponent {
             hideBandwidthError,
             hidePostAdvancedSettings,
             username,
+            show_hive_auth_modal,
+            hideHiveAuthModal,
         } = this.props;
 
         const notifications_array = notifications
@@ -127,6 +132,14 @@ class Modals extends PureComponent {
                         <PostAdvancedSettings formId={show_post_advanced_settings_modal} />
                     </Reveal>
                 )}
+                {show_hive_auth_modal && (
+                    <Reveal onHide={hideHiveAuthModal} show={!!show_hive_auth_modal}>
+                        <div>
+                            <h4>Hive Authentication Services Instructions:</h4>
+                            <div id="hive-auth-instructions">Please wait...</div>
+                        </div>
+                    </Reveal>
+                )}
                 <NotificationStack
                     notifications={notifications_array}
                     onDismiss={(n) => removeNotification(n.key)}
@@ -158,6 +171,7 @@ export default connect(
             show_bandwidth_error_modal: rcErr,
             show_post_advanced_settings_modal: state.user.get('show_post_advanced_settings_modal'),
             loginBroadcastOperation,
+            show_hive_auth_modal: state.user.get('show_hive_auth_modal'),
         };
     },
     (dispatch) => ({
@@ -180,6 +194,10 @@ export default connect(
         hidePostAdvancedSettings: (e) => {
             if (e) e.preventDefault();
             dispatch(userActions.hidePostAdvancedSettings());
+        },
+        hideHiveAuthModal: (e) => {
+            if (e) e.preventDefault();
+            alert('This popup will stay open until Hive Authentication Services operations are completed');
         },
         // example: addNotification: ({key, message}) => dispatch({type: 'ADD_NOTIFICATION', payload: {key, message}}),
         removeNotification: (key) => dispatch(appActions.removeNotification({ key })),

@@ -9,7 +9,7 @@ if (typeof window !== 'undefined') {
     HAS.default.setOptions({
         host: 'wss://hive-auth.arcange.eu/',
     });
-    console.log('Loading HAS', HAS);
+    console.log('Hive Auth: Loading...', HAS);
 }
 
 const APP_META = {
@@ -62,12 +62,17 @@ const verifyChallenge = (challenge, data) => {
     return sig.verifyHash(buf, PublicKey.fromString(data.pubkey));
 };
 
+const showInstructions = (message) => {
+    const instructionsContainer = document.getElementById('hive-auth-instructions');
+    if (instructionsContainer) {
+        instructionsContainer.innerHTML = message;
+    }
+};
+
 const broadcast = (operations, type, callbackFn) => {
-    console.log('operations', operations);
     HAS.default.broadcast(auth, type, operations, (event) => {
         if (event.cmd === 'sign_wait') {
-            alert('Broacasting your operation via Hive Authentication Services, please launch your compatible mobile wallet app and approve');
-            console.log('HAS sign wait', event);
+            showInstructions('Broadcasting your operation via Hive Authentication Services, please launch your compatible mobile wallet app and approve');
         } else {
             console.warn('Hive Auth: was expecting sign_wait');
             callbackFn({
@@ -93,7 +98,7 @@ const broadcast = (operations, type, callbackFn) => {
             console.warn('Hive Auth: server returned an error', err);
             callbackFn({
                 success: false,
-                error: err,
+                error: err.error,
             });
         });
 };
@@ -178,19 +183,31 @@ const login = async (username, callbackFn) => {
         }
     )
         .then((res) => {
-            const { cmd, data: { expire, token }, uuid } = res;
+            const { cmd, data, uuid } = res;
+            const { expire, token, challenge: challengeResponse } = data;
             switch (cmd) {
                 case 'auth_ack':
-                    console.log('Hive Auth: user has approved the auth request');
-                    callbackFn({
-                        success: true,
-                        hiveAuthData: {
-                            key: auth.key,
-                            token,
-                            expire,
-                            uuid,
-                        }
-                    });
+                    console.log('Hive Auth: user has approved the auth request', challengeResponse);
+                    const verified = verifyChallenge(challenge, challengeResponse);
+
+                    if(verified) {
+                        console.log("Hive Auth: challenge succeeded");
+                        callbackFn({
+                            success: true,
+                            hiveAuthData: {
+                                key: auth.key,
+                                token,
+                                expire,
+                                uuid,
+                            }
+                        });
+                    } else {
+                        console.error("Hive Auth: challenge failed");
+                        callbackFn({
+                            success: false,
+                            error: 'failed validating challenge',
+                        });
+                    }
                     break;
 
                 case 'auth_nack':
@@ -207,7 +224,7 @@ const login = async (username, callbackFn) => {
             }
         })
         .catch((err) => {
-            console.error('Hive Auth: server returned an error');
+            console.error('Hive Auth: server returned an error', err);
             callbackFn({
                 success: false,
                 error: err,
@@ -236,7 +253,6 @@ const requestAndVerifyChallenge = async (type, callbackFn) => {
         const { cmd, uuid, data } = response;
 
         if (cmd === 'challenge_ack') {
-            console.log('challenge respon', response, data);
             const verified = verifyChallenge(challenge, data);
 
             if(verified) {
