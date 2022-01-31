@@ -161,6 +161,7 @@ const login = async (username, callbackFn) => {
                     const authUri = `has://auth_req/${btoa(JSON.stringify(authPayload))}`;
 
                     console.log('Hive Auth: Generating QR code');
+                    const qrLinkElement = document.getElementById('hiveauth-qr-link');
                     const qrElement = document.getElementById('hiveauth-qr');
                     const QR = new QRious({
                         element: qrElement,
@@ -170,9 +171,10 @@ const login = async (username, callbackFn) => {
                         size: 200,
                     });
                     QR.value = authUri;
-                    qrElement.classList.add('show');
+                    qrLinkElement.href = authUri;
+                    qrLinkElement.classList.add('show');
 
-                    updateLoginInstructions('Please use your Hive Authentication Services compatible mobile wallet app and scan the following QR code');
+                    updateLoginInstructions('Please tap or scan the following QR code with your Hive Authentication Services compatible mobile wallet app');
                 } else {
                     console.warn(`Hive Auth: auth request returned an unknown command ${cmd}`);
                     clearLoginInstructions();
