@@ -231,7 +231,6 @@ function* usernamePasswordLogin2(options) {
     } catch (error) {
         defaultBeneficiaries = [];
     }
-    console.log('***** login_with_hiveauth', login_with_hiveauth);
     yield put(
         userActions.setUser({
             defaultBeneficiaries,
