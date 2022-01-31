@@ -234,7 +234,7 @@ function* usernamePasswordLogin2(options) {
     yield put(
         userActions.setUser({
             defaultBeneficiaries,
-            show_login_modal: useHiveAuth,
+            show_login_modal: useHiveAuth && document.location.pathname !== '/login.html',
         })
     );
     // return if already logged in using steem keychain
@@ -486,6 +486,8 @@ function* usernamePasswordLogin2(options) {
                     }));
                     return;
                 }
+
+                feedURL = '/@' + username + '/feed';
             } else if (useHiveSigner) {
                 if (access_token) {
                     // redirect url
