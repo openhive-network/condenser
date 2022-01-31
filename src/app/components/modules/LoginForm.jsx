@@ -474,7 +474,15 @@ class LoginForm extends Component {
                 </div>
                 <div className="hiveauth_info">
                     <div id="hiveauth-instructions" className="hiveauth_instructions" />
-                    <canvas id="hiveauth-qr" className="hiveauth_qr" />
+                    <a
+                        href="#"
+                        id="hiveauth-qr-link"
+                        className="hiveauth_qr"
+                        target="_blank"
+                        rel="noreferrer noopener"
+                    >
+                        <canvas id="hiveauth-qr" />
+                    </a>
                 </div>
                 {/*signupLink*/}
             </form>
