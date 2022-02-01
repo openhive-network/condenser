@@ -25,6 +25,7 @@ const RECEIVE_CONTENT = 'global/RECEIVE_CONTENT';
 const LINK_REPLY = 'global/LINK_REPLY';
 const DELETE_CONTENT = 'global/DELETE_CONTENT';
 const VOTED = 'global/VOTED';
+const UNVOTED = 'global/UNVOTED';
 const FETCHING_DATA = 'global/FETCHING_DATA';
 const RECEIVE_DATA = 'global/RECEIVE_DATA';
 const SET = 'global/SET';
@@ -159,7 +160,6 @@ export default function reducer(state = defaultState, action = {}) {
         }
 
         case RECEIVE_COMMUNITY: {
-            console.log('DEBUG: community payload', payload);
             return state.update('community', Map(), (a) => a.mergeDeep(payload));
         }
 
@@ -251,6 +251,25 @@ export default function reducer(state = defaultState, action = {}) {
 
             const idx = votes.findIndex((v) => v.get('voter') === voter);
             votes = idx === -1 ? votes.push(vote) : votes.set(idx, vote);
+
+            // TODO: new state never returned -- masked by RECEIVE_CONTENT
+            state = state.setIn(_key, votes);
+            return state;
+        }
+
+        case UNVOTED: {
+            const {
+                voter, author, permlink,
+            } = payload;
+            const _key = ['content', author + '/' + permlink, 'active_votes'];
+            let votes = state.getIn(_key, List());
+            if (votes === null) {
+                votes = List();
+            }
+
+            const idx = votes.findIndex((v) => v.get('voter') === voter);
+            votes = votes.splice(idx, 1);
+            // votes = idx === -1 ? votes.push(vote) : votes.set(idx, vote);
 
             // TODO: new state never returned -- masked by RECEIVE_CONTENT
             state = state.setIn(_key, votes);
@@ -429,6 +448,11 @@ export const deleteContent = (payload) => ({
 
 export const voted = (payload) => ({
     type: VOTED,
+    payload,
+});
+
+export const unvoted = (payload) => ({
+    type: UNVOTED,
     payload,
 });
 

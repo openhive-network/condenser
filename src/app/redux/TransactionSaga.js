@@ -461,8 +461,7 @@ const wait = (ms) => new Promise((resolve) => {
     setTimeout(() => resolve(), ms);
 });
 
-function* accepted_vote({ operation: { author, permlink, weight } }) {
-    console.log('Vote accepted, weight', weight, 'on', author + '/' + permlink, 'weight');
+function* accepted_vote({ operation: { author, permlink } }) {
     // update again with new $$ amount from the steemd node
     yield put(
         globalActions.remove({
@@ -587,11 +586,16 @@ function* error_custom_json({ operation: { id, required_posting_auths } }) {
     }
 }
 
-function* error_vote({ operation: { author, permlink } }) {
+function* error_vote(transaction) {
+    const { operation } = transaction;
+    const { author, permlink } = operation;
     yield put(
         globalActions.remove({
             key: `transaction_vote_active_${author}_${permlink}`,
         })
+    );
+    yield put(
+        globalActions.unvoted(operation)
     );
     yield call(getContent, { author, permlink }); // unvote
 }
