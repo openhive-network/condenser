@@ -215,8 +215,8 @@ class Voting extends PureComponent {
         }
 
         const {
- votingUp, votingDown, showWeight, showWeightDir
-} = this.state;
+            votingUp, votingDown, showWeight, showWeightDir
+        } = this.state;
 
         const votingUpActive = voting && votingUp;
         const votingDownActive = voting && votingDown;

@@ -1,3 +1,4 @@
+import tt from 'counterpart';
 import QRious from 'qrious';
 import { PublicKey, Signature, hash } from '@hiveio/hive-js/lib/auth/ecc';
 
@@ -72,12 +73,12 @@ const updateModalMessage = (message) => {
 const broadcast = (operations, type, callbackFn) => {
     HAS.default.broadcast(auth, type, operations, (event) => {
         if (event.cmd === 'sign_wait') {
-            updateModalMessage('Broadcasting your operation via Hive Authentication Services, please launch your compatible mobile wallet app and approve.');
+            updateModalMessage(tt('hiveauthservices.broadcastInstructions'));
         } else {
             console.warn('Hive Auth: was expecting sign_wait');
             callbackFn({
                 success: false,
-                error: 'unknown command',
+                error: tt('hiveauthservices.unknownCommand'),
             });
         }
     })
@@ -90,7 +91,7 @@ const broadcast = (operations, type, callbackFn) => {
             } else {
                 callbackFn({
                     success: false,
-                    error: 'unknown command',
+                    error: tt('hiveauthservices.unknownCommand'),
                 });
             }
         })
@@ -117,7 +118,7 @@ const clearLoginInstructions = () => {
 };
 
 const login = async (username, callbackFn) => {
-    updateLoginInstructions('Connecting to Hive Authentication Services...');
+    updateLoginInstructions(tt('hiveauthservices.connecting'));
 
     setUsername(username);
 
@@ -174,13 +175,13 @@ const login = async (username, callbackFn) => {
                     qrLinkElement.href = authUri;
                     qrLinkElement.classList.add('show');
 
-                    updateLoginInstructions('Please tap or scan the following QR code with your Hive Authentication Services compatible mobile wallet app');
+                    updateLoginInstructions(tt('hiveauthservices.qrInstructions'));
                 } else {
                     console.warn(`Hive Auth: auth request returned an unknown command ${cmd}`);
                     clearLoginInstructions();
                     callbackFn({
                         success: false,
-                        error: 'unknown command',
+                        error: tt('hiveauthservices.unknownCommand'),
                     });
                 }
             } else {
@@ -188,7 +189,7 @@ const login = async (username, callbackFn) => {
                 clearLoginInstructions();
                 callbackFn({
                     success: false,
-                    error: 'Hive Authentication Services token expired, please try again...',
+                    error: tt('hiveauthservices.tokenExpired'),
                 });
             }
         }
@@ -217,7 +218,7 @@ const login = async (username, callbackFn) => {
                         clearLoginInstructions();
                         callbackFn({
                             success: false,
-                            error: 'failed validating challenge',
+                            error: tt('hiveauthservices.challengeValidationFailed'),
                         });
                     }
                     break;
@@ -227,7 +228,7 @@ const login = async (username, callbackFn) => {
                     clearLoginInstructions();
                     callbackFn({
                         success: false,
-                        error: 'user has rejected the Hive Authentication Services request',
+                        error: tt('hiveauthservices.userRejectedRequest'),
                     });
                     break;
 
@@ -236,7 +237,7 @@ const login = async (username, callbackFn) => {
                     clearLoginInstructions();
                     callbackFn({
                         success: false,
-                        error: 'unknown command',
+                        error: tt('hiveauthservices.unknownCommand'),
                     });
                     break;
             }
@@ -246,7 +247,7 @@ const login = async (username, callbackFn) => {
             clearLoginInstructions();
             callbackFn({
                 success: false,
-                error: `The Hive Authentication Services request has expired, please try again...`,
+                error: tt('hiveauthservices.requestExpired'),
             });
         });
 };
@@ -255,7 +256,7 @@ const requestAndVerifyChallenge = async (type, callbackFn) => {
     console.log(`Hive Auth: requesting ${type} key challenge`);
     const qrElement = document.getElementById('hiveauth-qr');
     qrElement.classList.remove('show');
-    updateLoginInstructions('Please use your Hive Authentication Services compatible mobile wallet app to verify your posting key.');
+    updateLoginInstructions(tt('hiveauthservices.verifyPostingKeyInstructions'));
 
     const status = HAS.default.status();
 
@@ -283,21 +284,21 @@ const requestAndVerifyChallenge = async (type, callbackFn) => {
                 console.warn("Hive Auth: challenge failed", uuid);
                 callbackFn({
                     success: false,
-                    error: 'failed matching signature to public key',
+                    error: tt('hiveauthservices.publicKeyMatchingError'),
                 });
             }
         } else {
             console.warn(`Hive Auth: challenge request returned an unknown command ${cmd}`, uuid);
             callbackFn({
                 success: false,
-                error: 'unknown command',
+                error: tt('hiveauthservices.unknownCommand'),
             });
         }
     } catch(e) {
         console.error("Hive Auth: challenge failed");
         callbackFn({
             success: false,
-            error: 'failed processing challenge',
+            error: tt('hiveauthservices.failedProcessingChallenge'),
         });
     }
 };

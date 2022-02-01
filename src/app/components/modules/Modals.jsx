@@ -132,13 +132,17 @@ class Modals extends PureComponent {
                     </Reveal>
                 )}
                 {show_post_advanced_settings_modal && (
-                    <Reveal onHide={hidePostAdvancedSettings} show={show_post_advanced_settings_modal ? true : false}>
+                    <Reveal
+                        onHide={hidePostAdvancedSettings}
+                        show={!!show_post_advanced_settings_modal}
+                    >
                         <CloseButton onClick={hidePostAdvancedSettings} />
                         <PostAdvancedSettings formId={show_post_advanced_settings_modal} />
                     </Reveal>
                 )}
                 {show_hive_auth_modal && (
                     <Reveal onHide={hideHiveAuthModal} show={!!show_hive_auth_modal}>
+                        <CloseButton onClick={hideHiveAuthModal} />
                         <div>
                             <div className="hiveauth-banner">
                                 <img
@@ -148,10 +152,10 @@ class Modals extends PureComponent {
                                 />
                             </div>
                             <div
-                                className="153"
+                                className="hiveauth-instructions"
                                 id="hive-auth-instructions"
                             >
-                                Please wait...
+                                {tt('hiveauthservices.pleaseWait')}
                             </div>
                         </div>
                     </Reveal>
@@ -214,7 +218,7 @@ export default connect(
         },
         hideHiveAuthModal: (e) => {
             if (e) e.preventDefault();
-            alert('This popup will stay open until Hive Authentication Services operations are completed. You can cancel it from your favourite mobile wallet app.');
+            dispatch(userActions.hideHiveAuthModal());
         },
         // example: addNotification: ({key, message}) => dispatch({type: 'ADD_NOTIFICATION', payload: {key, message}}),
         removeNotification: (key) => dispatch(appActions.removeNotification({ key })),
