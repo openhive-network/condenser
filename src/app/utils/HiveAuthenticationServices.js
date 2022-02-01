@@ -72,7 +72,7 @@ const updateModalMessage = (message) => {
 const broadcast = (operations, type, callbackFn) => {
     HAS.default.broadcast(auth, type, operations, (event) => {
         if (event.cmd === 'sign_wait') {
-            updateModalMessage('Broadcasting your operation via Hive Authentication Services, please launch your compatible mobile wallet app and approve');
+            updateModalMessage('Broadcasting your operation via Hive Authentication Services, please launch your compatible mobile wallet app and approve.');
         } else {
             console.warn('Hive Auth: was expecting sign_wait');
             callbackFn({

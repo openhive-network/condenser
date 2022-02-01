@@ -26,6 +26,8 @@ class Modals extends PureComponent {
         show_post_advanced_settings_modal: '',
         loginBroadcastOperation: undefined,
         show_hive_auth_modal: false,
+        hideHiveAuthModal: false,
+        nightmodeEnabled: false,
     };
 
     static propTypes = {
@@ -38,6 +40,7 @@ class Modals extends PureComponent {
         hideConfirm: PropTypes.func.isRequired,
         hideBandwidthError: PropTypes.func.isRequired,
         hidePostAdvancedSettings: PropTypes.func.isRequired,
+        // eslint-disable-next-line react/forbid-prop-types
         notifications: PropTypes.object,
         show_terms_modal: PropTypes.bool,
         removeNotification: PropTypes.func,
@@ -49,6 +52,7 @@ class Modals extends PureComponent {
         }),
         show_hive_auth_modal: PropTypes.bool,
         hideHiveAuthModal: PropTypes.func,
+        nightmodeEnabled: PropTypes.bool,
     };
 
     render() {
@@ -67,6 +71,7 @@ class Modals extends PureComponent {
             username,
             show_hive_auth_modal,
             hideHiveAuthModal,
+            nightmodeEnabled,
         } = this.props;
 
         const notifications_array = notifications
@@ -83,7 +88,7 @@ class Modals extends PureComponent {
             new_window.location = 'https://blocktrades.us/?input_coin_type=eth&output_coin_type=steem_power&receive_address=' + username;
         };
         return (
-            <div>
+            <div className="modal-window">
                 {show_login_modal && (
                     <Reveal
                         onHide={() => {
@@ -135,8 +140,19 @@ class Modals extends PureComponent {
                 {show_hive_auth_modal && (
                     <Reveal onHide={hideHiveAuthModal} show={!!show_hive_auth_modal}>
                         <div>
-                            <h4>Hive Authentication Services Instructions:</h4>
-                            <div id="hive-auth-instructions">Please wait...</div>
+                            <div className="hiveauth-banner">
+                                <img
+                                    src={`/images/hiveauth-banner-${nightmodeEnabled ? 'dark' : 'light'}.png`}
+                                    alt="Hive Authentication Services"
+                                    width="100%"
+                                />
+                            </div>
+                            <div
+                                className="153"
+                                id="hive-auth-instructions"
+                            >
+                                Please wait...
+                            </div>
                         </div>
                     </Reveal>
                 )}
@@ -172,6 +188,7 @@ export default connect(
             show_post_advanced_settings_modal: state.user.get('show_post_advanced_settings_modal'),
             loginBroadcastOperation,
             show_hive_auth_modal: state.user.get('show_hive_auth_modal'),
+            nightmodeEnabled: state.app.getIn(['user_preferences', 'nightmode']),
         };
     },
     (dispatch) => ({
@@ -197,7 +214,7 @@ export default connect(
         },
         hideHiveAuthModal: (e) => {
             if (e) e.preventDefault();
-            alert('This popup will stay open until Hive Authentication Services operations are completed');
+            alert('This popup will stay open until Hive Authentication Services operations are completed. You can cancel it from your favourite mobile wallet app.');
         },
         // example: addNotification: ({key, message}) => dispatch({type: 'ADD_NOTIFICATION', payload: {key, message}}),
         removeNotification: (key) => dispatch(appActions.removeNotification({ key })),
