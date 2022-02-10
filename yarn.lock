@@ -8901,10 +8901,10 @@ history@^3.0.0:
     query-string "^4.2.2"
     warning "^3.0.0"
 
-hive-auth-wrapper@^0.8.1:
-  version "0.8.1"
-  resolved "https://registry.yarnpkg.com/hive-auth-wrapper/-/hive-auth-wrapper-0.8.1.tgz#774c98b78fe7780bd57febdc6e47c49bd65fa069"
-  integrity sha512-KA0Otmh2nKD2RdeN9DccuWePvjdcEYAMjdf8AipI9UIvnoG24gKn6gVuU7HNJI7sh3ooRXIxG9ysooeo0DiBPA==
+hive-auth-wrapper@^0.8.3:
+  version "0.8.3"
+  resolved "https://registry.yarnpkg.com/hive-auth-wrapper/-/hive-auth-wrapper-0.8.3.tgz#255a885e92ee5e8231def758ca4faf012b7b3a4b"
+  integrity sha512-j6xt+cgW4/eF2xALF96oBx8N4xiOZDqjNMFsZXFxdBdM6PPqy7aNbx+pYNGsn5JnDCKvVA7hJp3EDqhcu+dn5A==
   dependencies:
     assert "^2.0.0"
     crypto-js "^4.1.1"
