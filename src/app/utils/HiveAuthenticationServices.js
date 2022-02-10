@@ -16,7 +16,7 @@ if (typeof window !== 'undefined') {
 const APP_META = {
     name: 'Hive Blog',
     description: 'Hive Blog',
-    icon: 'https://hive.blog/images/hive-blog-logo.svg',
+    icon: 'https://hive.blog/images/hive-blog-logo.png',
 };
 
 const auth = {
