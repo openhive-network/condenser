@@ -16,7 +16,7 @@ if (typeof window !== 'undefined') {
 const APP_META = {
     name: 'Hive Blog',
     description: 'Hive Blog',
-    icon: 'https://hive.blog/images/hive-blog-logo.svg',
+    icon: 'https://hive.blog/images/hive-blog-logo.png',
 };
 
 const auth = {
@@ -118,6 +118,18 @@ const clearLoginInstructions = () => {
 };
 
 const login = async (username, callbackFn) => {
+    let visibilityChange;
+    if (typeof document.hidden !== "undefined") { // Opera 12.10 and Firefox 18 and later support
+        visibilityChange = "visibilitychange";
+    } else if (typeof document.msHidden !== "undefined") {
+        visibilityChange = "msvisibilitychange";
+    } else if (typeof document.webkitHidden !== "undefined") {
+        visibilityChange = "webkitvisibilitychange";
+    }
+    document.addEventListener(visibilityChange, () => {
+        HAS.default.connect();
+    }, false);
+
     updateLoginInstructions(tt('hiveauthservices.connecting'));
 
     setUsername(username);
