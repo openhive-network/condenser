@@ -55,7 +55,7 @@
     "disk-stat": "1.0.4",
     "extract-text-webpack-plugin": "^v4.0.0-beta.0",
     "foundation-sites": "git+https://gitlab.syncad.com/hive/foundation-sites.git#544fb8a26efcf45e9ba9ccaa77b04d0ae35b9722",
-    "hive-auth-wrapper": "^0.8.5",
+    "hive-auth-wrapper": "^0.8.6",
     "hive-uri": "^0.2.3",
     "hivesigner": "3.2.7",
     "humanize-duration": "^3.27.0",
