@@ -16,7 +16,7 @@ services:
             SDC_IMAGE_PROXY_PREFIX: https://images.hive.blog/
             SDC_UPLOAD_IMAGE_URL: https://images.hive.blog
             SDC_ALT_API_ENDPOINTS: "https://api.hive.blog https://anyx.io https://api.openhive.network https://api.hivekings.com"
-            SDC_HELMET_CONNECTSRC: "'self' https://hivean.com https://images.hive.blog https://anyx.io https://api.hive.blog https://api.openhive.network https://api.hivekings.com https://hivebuzz.me https://peakd.com https://hivesigner.com https://gist.github.com https://peakd.com https://www.reddit.com *.ibytedos.com"
+            SDC_HELMET_CONNECTSRC: "'self' https://hivean.com https://images.hive.blog https://anyx.io https://api.hive.blog https://api.openhive.network https://api.hivekings.com https://hivebuzz.me https://peakd.com https://hivesigner.com https://gist.github.com https://peakd.com https://www.reddit.com *.ibytedtos.com wss://hive-auth.arcange.eu"
             SDC_HELMET_STYLESRC: "'self' 'unsafe-inline' fonts.googleapis.com platform.twitter.com embed.redditmedia.com github.githubassets.com www.reddit.com cdn.embedly.com *.tiktokcdn.com"
             ESTEEM_ELASTIC_SEARCH_API_KEY: "169EALKZ7LENMA1S5EBT55DGQCWX8JE6YCJRNR05TVCFJYUICRFEXRMY8YSS"
             SDC_HELMET_FONTSRC: "data: fonts.gstatic.com cdn.embedly.com"
