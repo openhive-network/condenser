@@ -26,6 +26,7 @@ class SubmitPost extends React.Component {
             browserHistory.push(_redirect_url(operations));
         };
     }
+
     render() {
         if (!this.props.username) {
             return <Callout>Log in to make a post.</Callout>;
@@ -37,7 +38,7 @@ class SubmitPost extends React.Component {
 
 module.exports = {
     path: 'submit.html',
-    component: connect((state, ownProps) => ({
+    component: connect((state) => ({
         username: state.user.getIn(['current', 'username']),
     }))(SubmitPost),
 };

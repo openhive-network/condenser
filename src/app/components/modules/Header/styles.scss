@@ -1,14 +1,14 @@
 .Header {
-  backface-visibility: hidden;
-  top: 0;
-  left: 0;
-  width: 100%;
-  z-index: 100;
-  box-shadow: 0 2px 4px 0 rgba(0,0,0,0.05);
-  @include themify($themes) {
-    background-color: themed('navBackgroundColor');
-    border-bottom: themed('border');
-  }
+    backface-visibility: hidden;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 100;
+    box-shadow: 0 2px 4px 0 rgba(0,0,0,0.05);
+    @include themify($themes) {
+        background-color: themed('navBackgroundColor');
+        border-bottom: themed('border');
+    }
 }
 
 .Header__nav {
@@ -19,26 +19,26 @@
 }
 
 .ConnectionError {
-  margin-right: 4rem;
-  color: #ec5840;
+    margin-right: 4rem;
+    color: #ec5840;
 }
 
 .Header__logotype {
-  transition: 0.2s all ease-in-out;
-  height: 37px;
-  display: flex;
-  align-items: baseline;
-  .icon-svg {
-    @include themify($themes) {
-      fill: themed('colorAccent');
+    transition: 0.2s all ease-in-out;
+    height: 37px;
+    display: flex;
+    align-items: baseline;
+    .icon-svg {
+        @include themify($themes) {
+            fill: themed('colorAccent');
+        }
     }
-  }
 
-  &-beta{
-    position: absolute;
-    top: 38px;
-    left: 136px;
-  }
+    &-beta{
+        position: absolute;
+        top: 38px;
+        left: 136px;
+    }
 }
 
 .Header__sort {
@@ -98,16 +98,18 @@
     display: block;
     width: 36px;
     height: 36px;
-  .Userpic {
-    width: 36px !important;
-    height: 36px !important;
-    @include MQ(M) {
-        width: 40px!important;
-        height: 40px !important;
-        position: relative;
-        top: -2px;
+    position: relative;
+    .Userpic {
+        width: 36px;
+        height: 36px;
+
+        @include MQ(M) {
+            width: 40px;
+            height: 40px;
+            position: relative;
+            top: -2px;
+        }
     }
-  }
 }
 
 .Header__notification {
@@ -121,11 +123,12 @@
     line-height: 20px;
     font-size: 11px;
     text-align: center;
+    z-index: 2;
     > span {
         color: white;
     }
     &--loading {
-     background: transparent; 
+        background: transparent;
     }
 }
 
@@ -143,45 +146,45 @@ span.Header__hamburger.toggle-menu {
     }
     cursor: pointer;
     &::after {
-      transition: 0.2s all ease-in-out;
-      @include themify($themes) {
-        background: themed('textColorPrimary');
-        box-shadow: 0 7px 0 themed('textColorPrimary'), 0 14px 0 themed('textColorPrimary');
-      }
+        transition: 0.2s all ease-in-out;
+        @include themify($themes) {
+            background: themed('textColorPrimary');
+            box-shadow: 0 7px 0 themed('textColorPrimary'), 0 14px 0 themed('textColorPrimary');
+        }
     }
     &:hover {
-      &::after {
-        @include themify($themes) {
-          background: themed('textColorAccent');
-          box-shadow: 0 7px 0 themed('textColorAccent'), 0 14px 0 themed('textColorAccent');
+        &::after {
+            @include themify($themes) {
+                background: themed('textColorAccent');
+                box-shadow: 0 7px 0 themed('textColorAccent'), 0 14px 0 themed('textColorAccent');
+            }
         }
-      }
     }
 }
 
 .annoucement-banner {
-  text-align: left;
-  position: relative;
-  background: #171FC9; //Notice Blue
-  // background: #fff3cd;
-  color: #fff;
-  // color: #856404;
-  @include themify($themes) {
-      border-bottom: themed('borderLight');
-  }
-  @include MQ(M) {
-    text-align: center;
-  }
-  .close-button {
-    position: absolute;
-    top: 2px;
-    right: 0px;
-    transform: scale(0.85);
+    text-align: left;
+    position: relative;
+    background: #171FC9; //Notice Blue
+    // background: #fff3cd;
     color: #fff;
-    &:hover, &:focus {
-      color: #ccc;
+    // color: #856404;
+    @include themify($themes) {
+        border-bottom: themed('borderLight');
     }
-  }
+    @include MQ(M) {
+        text-align: center;
+    }
+    .close-button {
+        position: absolute;
+        top: 2px;
+        right: 0px;
+        transform: scale(0.85);
+        color: #fff;
+        &:hover, &:focus {
+            color: #ccc;
+        }
+    }
 }
 
 .announcement-banner__text {
@@ -190,10 +193,15 @@ span.Header__hamburger.toggle-menu {
     font-family: "Source Sans Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
     font-size: 14px;
     line-height: 1.3;
- }
+}
 
 .announcement-banner__link {
-   color: #fafafa !important;
-   // color: #856404 !important;;
-   text-decoration: underline;
+    color: #fafafa !important;
+    // color: #856404 !important;;
+    text-decoration: underline;
+}
+
+.Header__usermenu .login-provider-tooltip {
+    display: inline;
+    margin-left: 5px;
 }

@@ -5,13 +5,12 @@ import tt from 'counterpart';
 import { SIGNUP_URL } from 'shared/constants';
 import PostFull from 'app/components/cards/PostFull';
 import NotFoundMessage from 'app/components/cards/NotFoundMessage';
-import { parseJsonTags } from 'app/utils/StateFunctions';
 import Comment, { sortComments } from 'app/components/cards/Comment';
 import DropdownMenu from 'app/components/elements/DropdownMenu';
 import { serverApiRecordEvent } from 'app/utils/ServerApiClient';
-import GptAd from 'app/components/elements/GptAd';
 import { isLoggedIn } from 'app/utils/UserUtil';
 import LoadingIndicator from 'app/components/elements/LoadingIndicator';
+import Pagination from "../cards/Pagination";
 
 function isEmptyPost(post) {
     // check if the post doesn't exist
@@ -32,6 +31,7 @@ class Post extends React.Component {
         super();
         this.state = {
             showNegativeComments: false,
+            currentReplyPage: 1,
         };
         this.showSignUp = () => {
             serverApiRecordEvent('SignUp', 'Post Promo');
@@ -60,7 +60,9 @@ class Post extends React.Component {
         const {
             content, sortOrder, post, dis, loading,
         } = this.props;
-        const { showNegativeComments, commentHidden, showAnyway } = this.state;
+        const {
+            showNegativeComments, commentHidden, showAnyway, currentReplyPage,
+        } = this.state;
 
         if (!content || !dis) {
             if (loading) {
@@ -76,13 +78,11 @@ class Post extends React.Component {
             }
         }
 
-        const gptTags = parseJsonTags(dis);
-
         // A post should be hidden if it is not special, is not told to "show
         // anyway", and is designated "gray".
         let postBody;
         const special = dis.get('special');
-        if (!special && !showAnyway && dis.getIn(['stats', 'gray'], false)) {
+        if (!special && !showAnyway && dis.getIn(['statshasMoreReplies', 'gray'], false)) {
             postBody = (
                 <div className="Post">
                     <div className="row">
@@ -115,16 +115,18 @@ class Post extends React.Component {
 
         sortComments(content, replies, sortOrder);
 
-        // Don't render too many comments on server-side
-        const commentLimit = 100;
-        if (global.process !== undefined && replies.length > commentLimit) {
-            replies = replies.slice(0, commentLimit);
-        }
-        let commentCount = 0;
-        const positiveComments = replies.map((reply) => {
-            commentCount += 1;
-            const showAd = commentCount % 5 === 0 && commentCount !== replies.length && commentCount !== commentLimit;
+        const nbRepliesPerPage = 100;
+        const replyStartIndex = (currentReplyPage - 1) * nbRepliesPerPage;
+        const replyEndIndex = replyStartIndex + (nbRepliesPerPage - 1);
+        const nbReplies = replies.length;
+        replies = replies.slice(replyStartIndex, replyEndIndex);
 
+        const handlePaginationClick = (page) => {
+            this.setState({ currentReplyPage: page });
+            document.getElementById('comments').scrollIntoView();
+        };
+
+        const positiveComments = replies.map((reply) => {
             return (
                 <div key={post + reply}>
                     <Comment
@@ -134,12 +136,6 @@ class Post extends React.Component {
                         showNegativeComments={showNegativeComments}
                         onHide={this.onHideComment}
                     />
-
-                    {this.props.gptEnabled && showAd ? (
-                        <div className="Post_footer__ad">
-                            <GptAd tags={gptTags} type="Freestar" id="bsa-zone_1566494240874-7_123456" />
-                        </div>
-                    ) : null}
                 </div>
             );
         });
@@ -202,12 +198,7 @@ class Post extends React.Component {
                         </div>
                     </div>
                 )}
-                {this.props.gptEnabled && commentCount >= 5 ? (
-                    <div className="Post_footer__ad">
-                        <GptAd tags={gptTags} type="Freestar" id="bsa-zone_1566494147292-7_123456" />
-                    </div>
-                ) : null}
-                <div id="#comments" className="Post_comments row hfeed">
+                <div id="comments" className="Post_comments row hfeed">
                     <div className="column large-12">
                         <div className="Post_comments__content">
                             {positiveComments.length ? (
@@ -217,16 +208,27 @@ class Post extends React.Component {
                                     <DropdownMenu items={sort_menu} el="li" selected={sort_label} position="left" />
                                 </div>
                             ) : null}
+                            <Pagination
+                                nbReplies={nbReplies}
+                                currentReplyPage={currentReplyPage}
+                                nbRepliesPerPage={nbRepliesPerPage}
+                                replyStartIndex={replyStartIndex}
+                                replyEndIndex={replyEndIndex}
+                                onClick={handlePaginationClick}
+                            />
                             {positiveComments}
+                            <Pagination
+                                nbReplies={nbReplies}
+                                currentReplyPage={currentReplyPage}
+                                nbRepliesPerPage={nbRepliesPerPage}
+                                replyStartIndex={replyStartIndex}
+                                replyEndIndex={replyEndIndex}
+                                onClick={handlePaginationClick}
+                            />
                             {negativeGroup}
                         </div>
                     </div>
                 </div>
-                {this.props.gptEnabled ? (
-                    <div className="Post_footer__ad">
-                        <GptAd tags={gptTags} type="Freestar" id="bsa-zone_1566494371533-0_123456" />
-                    </div>
-                ) : null}
             </div>
         );
     }
@@ -244,7 +246,6 @@ export default connect((state, ownProps) => {
         content,
         dis,
         sortOrder: currLocation.query.sort || 'trending',
-        gptEnabled: state.app.getIn(['googleAds', 'gptEnabled']),
         loading: state.app.get('loading'),
     };
 })(Post);

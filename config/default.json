@@ -4,8 +4,8 @@
   "helmet": {
     "directives": {
       "childSrc": "'self' 3speak.tv emb.d.tube player.twitch.tv www.youtube.com staticxx.facebook.com w.soundcloud.com player.vimeo.com",
-      "connectSrc": "https://images.hive.blog 'self' hive.blog https://api.hive.blog api.blocktrades.us https://anyx.io https://hivesigner.com https://hivebuzz.me https://peakd.com https://api.deathwing.me https://www.reddit.com https://gist.github.com https://rpc.ausbit.dev https://api.ha.deathwing.me",
-      "defaultSrc": "tpc.googlesyndication.com 'self' img.3speakcontent.online emb.d.tube www.youtube.com staticxx.facebook.com player.vimeo.com *.streamrail.com",
+      "connectSrc": "https://images.hive.blog 'self' hive.blog https://api.hive.blog api.blocktrades.us https://anyx.io https://hivesigner.com https://hivebuzz.me https://peakd.com https://api.deathwing.me https://www.reddit.com https://gist.github.com https://rpc.ausbit.dev https://api.ha.deathwing.me *.ibytedtos.com wss://hive-auth.arcange.eu",
+      "defaultSrc": "'self' img.3speakcontent.online emb.d.tube www.youtube.com staticxx.facebook.com player.vimeo.com *.streamrail.com",
       "fontSrc": "data: fonts.gstatic.com cdn.embedly.com",
       "frameAncestors": "'none'",
       "frameSrc": "'self' https:",
@@ -13,14 +13,13 @@
       "objectSrc": "'none'",
       "pluginTypes": "application/pdf",
       "scriptSrc": "'unsafe-inline' 'unsafe-eval' data: https: 'self' www.google-analytics.com connect.facebook.net",
-      "styleSrc": "'self' 'unsafe-inline' fonts.googleapis.com platform.twitter.com www.reddit.com cdn.embedly.com github.githubassets.com",
+      "styleSrc": "'self' 'unsafe-inline' fonts.googleapis.com platform.twitter.com www.reddit.com cdn.embedly.com github.githubassets.com *.tiktokcdn.com",
       "reportUri": "/api/v1/csp_violation"
     },
     "reportOnly": false,
     "setAllHeaders": true
   },
   "img_proxy_prefix": "https://images.hive.blog/",
-  "ipfs_prefix": false,
   "mixpanel": false,
   "notify": {
     "gcm_key": "google secret key"
@@ -39,7 +38,7 @@
   "steemd_connection_server": "https://api.hive.blog",
   "steemd_use_appbase": true,
   "chain_id": "beeab0de00000000000000000000000000000000000000000000000000000000",
-  "alternative_api_endpoints": "https://api.hive.blog https://api.ha.deathwing.me",
+  "alternative_api_endpoints": "https://api.hive.blog https://anyx.io https://api.openhive.network https://api.hivekings.com",
   "default_observer":"hive.blog",
   "failover_threshold": 3,
   "address_prefix": "STM",
@@ -47,179 +46,6 @@
   "conveyor_username": false,
   "special_posts_url": false,
   "wallet_url": "https://wallet.hive.blog",
-  "gpt_banned_tags": ["nsfw", "tante"],
-  "google_ad_enabled": null,
-  "google_ad_test": null,
-  "google_ad_client": null,
-  "google_ad_slots": {
-    "market_1": {
-      "slot_id": "0"
-    },
-    "in_feed_1": {
-      "slot_id": "0",
-      "layout_key": "-fb+5w+4e-db+86",
-      "every": 15
-    }
-  },
-  "video_ads_enabled": null,
-  "gpt_enabled": null,
-  "gpt_basic_slots": {
-    "bottom-of-post": {
-      "path": "/21784675435/steemit_bottom-of-post",
-      "dimensions": [[728, 90], [970, 90]]
-    },
-    "bottom-of-post-mobile": {
-      "path": "/21784675435/steemit_bottom-of-post/steemit_bottom-of-post_mobile",
-      "dimensions": [[220, 90]]
-    },
-
-    "left-navigation": {
-      "path": "/21784675435/steemit_left-navigation",
-      "dimensions": [[120, 600], [160, 600]]
-    },
-    "left-navigation-loggedin-mobile": {
-      "path": "/21784675435/steemit_left-navigation/steemit_left-navigation_loggedin_mobile",
-      "dimensions": [[120, 240]]
-    },
-    "left-navigation-loggedin": {
-      "path": "/21784675435/steemit_left-navigation/steemit_left-navigation_loggedin",
-      "dimensions": [[120, 600], [160, 600]]
-    },
-    "left-navigation-mobile": {
-      "path": "/21784675435/steemit_left-navigation/steemit_left-navigation_mobile",
-      "dimensions": [[120, 240]]
-    },
-
-    "right-navigation": {
-      "path": "/21784675435/steemit_right-navigation",
-      "dimensions": [[120, 600], [160, 600]]
-    },
-    "right-navigation-loggedin-mobile": {
-      "path": "/21784675435/steemit_right-navigation/steemit_right-navigation_loggedin_mobile",
-      "dimensions": [[120, 240]]
-    },
-    "right-navigation-loggedin": {
-      "path": "/21784675435/steemit_right-navigation/steemit_right-navigation_loggedin",
-      "dimensions": [[120, 600], [160, 600]]
-    },
-    "right-navigation-mobile": {
-      "path": "/21784675435/steemit_right-navigation/steemit_right-navigation_mobile",
-      "dimensions": [[120, 240]]
-    },
-
-    "top-navigation": {
-      "path": "/21784675435/steemit_top-navi",
-      "dimensions": [[728, 90], [970, 90]]
-    },
-    "top-navigation-loggedin-mobile": {
-      "path": "/21784675435/steemit_top-navi/steemit_top-navi_loggedin_mobile",
-      "dimensions": [[220, 90]]
-    },
-    "top-navigation-loggedin": {
-      "path": "/21784675435/steemit_top-navi/steemit_top-navi_loggedin",
-      "dimensions": [[728, 90], [970, 90]]
-    },
-    "top-navigation-mobile": {
-      "path": "/21784675435/steemit_top-navi/steemit_top-navi_mobile",
-      "dimensions": [[220, 90]]
-    }
-  },
-  "gpt_category_slots": {},
-  "gpt_bidding_slots":{
-    "bottom-of-post": {
-      "path": "/21784675435/steemit_bottom-of-post/steemit_bottom-of-post_prebid",
-      "dimensions": [[728, 90]]
-    },
-
-    "post-page-above-comments": {
-      "path": "/21784675435/steemit_post-page-above-comments",
-      "dimensions": [[728, 90], [970, 90]]
-    },
-    "post-page-above-comments-loggedin-mobile": {
-      "path": "/21784675435/steemit_post-page-above-comments/steemit_post-page-above-comments_loggedin_mobile",
-      "dimensions": [[220, 90]]
-    },
-    "post-page-above-comments-loggedin": {
-      "path": "/21784675435/steemit_post-page-above-comments/steemit_post-page-above-comments_loggedin",
-      "dimensions": [[728, 90], [970, 90]]
-    },
-    "post-page-above-comments-mobile": {
-      "path": "/21784675435/steemit_post-page-above-comments/steemit_post-page-above-comments_mobile",
-      "dimensions": [[220, 90]]
-    },
-
-    "top-navigation": {
-      "path": "/21784675435/steemit_top-navi",
-      "dimensions": [[728, 90], [970, 90]]
-    },
-    "top-navigation-loggedin-mobile": {
-      "path": "/21784675435/steemit_top-navi/steemit_top-navi_loggedin_mobile",
-      "dimensions": [[220, 90]]
-    },
-    "top-navigation-loggedin": {
-      "path": "/21784675435/steemit_top-navi/steemit_top-navi_loggedin",
-      "dimensions": [[728, 90], [970, 90]]
-    },
-    "top-navigation-mobile": {
-      "path": "/21784675435/steemit_top-navi/steemit_top-navi_mobile",
-      "dimensions": [[220, 90]]
-    },
-
-    "left-navigation": {
-      "path": "/21784675435/steemit_left-navigation/steemit_left-navigation_prebid",
-      "dimensions": [[120, 600], [160, 600]]
-    }
-  },
-  "gpt_bidding": {
-    "prebid_timeout": 2000,
-    "failsafe_timeout": 3000,
-    "ad_units": [
-      {
-        "code": "/21784675435/steemit_top-navi",
-        "mediaTypes": { "banner": { "sizes": [[728, 90], [220, 90], [970, 90]] } },
-        "bids": [{
-          "bidder": "coinzilla",
-          "params": { "placementId": "6425c7b9886e0045972" }
-        }]
-      },
-      {
-        "code": "/21784675435/steemit_post-page-above-comments",
-        "mediaTypes": { "banner": { "sizes": [[728, 90], [220, 90], [970, 90]] } },
-        "bids": [{
-          "bidder": "coinzilla",
-          "params": { "placementId": "6425c7b9886e0045972" }
-        }]
-      },
-      {
-        "code": "/21784675435/steemit_left-navigation/steemit_left-navigation_prebid",
-        "mediaTypes": { "banner": { "sizes": [[120, 600], [160, 600]] } },
-        "bids": [{
-          "bidder": "coinzilla",
-          "params": { "placementId": "3575c7b9886e2cb3619" }
-        }]
-      }
-    ],
-    "custom_config": {
-      "buckets": [
-        {
-          "precision": 2,
-          "min": 0,
-          "max": 1,
-          "increment": 0.05
-        },
-        {
-          "precision": 2,
-          "min": 1,
-          "max": 8,
-          "increment": 0.1
-        }
-      ]
-    },
-    "system_currency": {
-      "adServerCurrency": "USD",
-      "granularityMultiplier": 1
-    }
-  },
   "cookie_consent_enabled": null,
   "cookie_consent_api_key": null,
   "steem_market_endpoint": null,

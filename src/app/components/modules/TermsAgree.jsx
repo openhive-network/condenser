@@ -4,8 +4,6 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import tt from 'counterpart';
 
-import { translate } from 'app/Translator';
-import HelpContent from 'app/components/elements/HelpContent';
 import * as userActions from 'app/redux/UserReducer';
 
 class TermsAgree extends Component {
@@ -55,7 +53,8 @@ class TermsAgree extends Component {
                             checked={this.state.tosChecked}
                             onChange={this.handleInputChange}
                         />
-                        {tt('termsagree_jsx.i_agree_to_hives')}{' '}
+                        {tt('termsagree_jsx.i_agree_to_hives')}
+                        {' '}
                         <a target="_blank" rel="noopener noreferrer" href="/tos.html">
                             {tt('termsagree_jsx.terms_of_service')}
                         </a>
@@ -69,7 +68,8 @@ class TermsAgree extends Component {
                             checked={this.state.privacyChecked}
                             onChange={this.handleInputChange}
                         />
-                        {tt('termsagree_jsx.i_agree_to_hives')}{' '}
+                        {tt('termsagree_jsx.i_agree_to_hives')}
+                        {' '}
                         <a target="_blank" rel="noopener noreferrer" href="/privacy.html">
                             {tt('termsagree_jsx.privacy_policy')}
                         </a>

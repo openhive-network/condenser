@@ -2,20 +2,28 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { browserHistory } from 'react-router';
 import Icon from 'app/components/elements/Icon';
-import VerticalMenu from './VerticalMenu';
 import { findParent } from 'app/utils/DomUtils';
+import VerticalMenu from './VerticalMenu';
+
+const propTypes = {
+    items: PropTypes.arrayOf(PropTypes.object).isRequired,
+    selected: PropTypes.string,
+    children: PropTypes.oneOfType([PropTypes.object, PropTypes.array, PropTypes.element]),
+    className: PropTypes.string,
+    title: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
+    href: PropTypes.string,
+    el: PropTypes.string.isRequired,
+};
+
+const defaultProps = {
+    selected: undefined,
+    children: undefined,
+    className: undefined,
+    title: undefined,
+    href: undefined,
+};
 
 export default class DropdownMenu extends React.Component {
-    static propTypes = {
-        items: PropTypes.arrayOf(PropTypes.object).isRequired,
-        selected: PropTypes.string,
-        children: PropTypes.oneOfType([PropTypes.object, PropTypes.array, PropTypes.element]),
-        className: PropTypes.string,
-        title: PropTypes.string,
-        href: PropTypes.string,
-        el: PropTypes.string.isRequired,
-    };
-
     constructor(props) {
         super(props);
         this.state = {
@@ -65,7 +73,9 @@ export default class DropdownMenu extends React.Component {
     };
 
     render() {
-        const { el, items, selected, children, className, title, href, position } = this.props;
+        const {
+ el, items, selected, children, className, title, href, position
+} = this.props;
         const hasDropdown = items.length > 0;
 
         let entry = children || (
@@ -75,19 +85,20 @@ export default class DropdownMenu extends React.Component {
             </span>
         );
 
-        if (hasDropdown)
-            entry = (
-                <a key="entry" href={href || '#'} onClick={this.toggle}>
-                    {entry}
-                </a>
-            );
+        if (hasDropdown) { entry = (
+            <a key="entry" href={href || '#'} onClick={this.toggle}>
+                {entry}
+            </a>
+            ); }
 
         const menu = <VerticalMenu key="menu" title={title} items={items} hideValue={selected} />;
-        const cls =
-            'DropdownMenu' +
-            (this.state.shown ? ' show' : '') +
-            (className ? ` ${className}` : '') +
-            (position ? ` ${position}` : '');
+        const cls = 'DropdownMenu'
+            + (this.state.shown ? ' show' : '')
+            + (className ? ` ${className}` : '')
+            + (position ? ` ${position}` : '');
         return React.createElement(el, { className: cls }, [entry, menu]);
     }
 }
+
+DropdownMenu.propTypes = propTypes;
+DropdownMenu.defaultProps = defaultProps;

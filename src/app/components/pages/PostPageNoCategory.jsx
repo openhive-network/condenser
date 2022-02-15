@@ -7,7 +7,9 @@ import SvgImage from 'app/components/elements/SvgImage';
 
 class PostWrapper extends React.Component {
     componentWillMount() {
-        const { redirectUrl, loading, author, permlink } = this.props;
+        const {
+ redirectUrl, loading, author, permlink
+} = this.props;
         if (redirectUrl) {
             if (browserHistory) browserHistory.replace(redirectUrl);
         } else if (loading) {

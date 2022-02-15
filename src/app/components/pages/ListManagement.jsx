@@ -24,7 +24,7 @@ const defaultProps = {
     username: '',
     accountname: '',
     list_type: '',
-    profile: {},
+    profile: null,
 };
 
 class ListManagement extends React.Component {
@@ -235,9 +235,9 @@ class ListManagement extends React.Component {
         const all_users = text.split(',');
         if (this.state.error_message !== '') this.setState({ error_message: '' });
         if (all_users.length > 100) { this.setState({
-                warning_message:
-                    'You are adding a large number of accounts. Numerous brodcast operations will be required.',
-            }); }
+            warning_message:
+                'You are adding a large number of accounts. Numerous brodcast operations will be required.',
+        }); }
         else this.setState({ warning_message: '' });
 
         const names_only = this.state.all_listed_accounts.map((item) => {
@@ -514,7 +514,7 @@ class ListManagement extends React.Component {
             <center>
                 <LoadingIndicator type="circle" />
             </center>
-            ); }
+        ); }
 
         let blacklist_description = this.props.profile
             .get('metadata')
@@ -585,6 +585,7 @@ class ListManagement extends React.Component {
                         current_user={this.props.username}
                         accountname={this.props.accountname}
                         profile={this.props.profile}
+                        routeParams={this.props.routeParams}
                     />
                 </div>
                 <p />
@@ -611,8 +612,8 @@ class ListManagement extends React.Component {
                                         <td>
                                             <center>
                                                 {this.state.first_time_user && viewing_own_page && (
-                                                    <h5>{tt('list_management_jsx.welcome_header')}</h5>
-                                                )}
+                                                <h5>{tt('list_management_jsx.welcome_header')}</h5>
+                                            )}
                                             </center>
                                         </td>
                                     </tr>
@@ -638,23 +639,23 @@ class ListManagement extends React.Component {
                                 </tbody>
                             </table>
                             {viewing_own_page
-                                && this.state.first_time_user && (
-                                    <div>
-                                        {tt('list_management_jsx.info7')}
-                                        {' '}
-                                        <br />
-                                        <span
-                                            role="button"
-                                            tabIndex={0}
-                                            className="button slim hollow secondary"
-                                            onClick={() => {
-                                                this.dismiss_intro();
-                                            }}
-                                        >
-                                            {tt('list_management_jsx.acknowledge')}
-                                        </span>
-                                    </div>
-                                )}
+                            && this.state.first_time_user && (
+                                <div>
+                                    {tt('list_management_jsx.info7')}
+                                    {' '}
+                                    <br />
+                                    <span
+                                        role="button"
+                                        tabIndex={0}
+                                        className="button slim hollow secondary"
+                                        onClick={() => {
+                                            this.dismiss_intro();
+                                        }}
+                                    >
+                                        {tt('list_management_jsx.acknowledge')}
+                                    </span>
+                                </div>
+                            )}
                         </center>
                     </div>
                 )}
@@ -764,22 +765,22 @@ class ListManagement extends React.Component {
                                             <tr>
                                                 <td
                                                     style={{
-                                                        whiteSpace: 'nowrap',
-                                                    }}
-                                                >
+                                                    whiteSpace: 'nowrap',
+                                                }}
+                                            >
                                                     <center>
                                                         <input
                                                             style={{
-                                                                width: '60%',
-                                                                whiteSpace: 'nowrap',
-                                                            }}
+                                                            width: '60%',
+                                                            whiteSpace: 'nowrap',
+                                                        }}
                                                             type="text"
                                                             name="multiadd"
                                                             ref={(el) => (this.multiadd = el)}
                                                             onChange={(e) => {
-                                                                this.validate_accounts_to_add(e.target.value);
-                                                            }}
-                                                        />
+                                                            this.validate_accounts_to_add(e.target.value);
+                                                        }}
+                                                    />
                                                     </center>
                                                 </td>
                                             </tr>
@@ -787,21 +788,21 @@ class ListManagement extends React.Component {
                                             <tr>
                                                 <td
                                                     style={{
-                                                        width: '60%',
-                                                        whiteSpace: 'nowrap',
-                                                    }}
-                                                >
+                                                    width: '60%',
+                                                    whiteSpace: 'nowrap',
+                                                }}
+                                            >
                                                     <center>
                                                         {this.state.validated_accounts.length > 0 && (
-                                                            <span
-                                                                role="button"
-                                                                tabIndex={0}
-                                                                className="button slim hollow secondary"
-                                                                onClick={this.broadcastFollowOperation}
-                                                            >
-                                                                {button_text}
-                                                            </span>
-                                                        )}
+                                                        <span
+                                                            role="button"
+                                                            tabIndex={0}
+                                                            className="button slim hollow secondary"
+                                                            onClick={this.broadcastFollowOperation}
+                                                        >
+                                                            {button_text}
+                                                        </span>
+                                                    )}
                                                     </center>
                                                 </td>
                                             </tr>
@@ -835,7 +836,7 @@ class ListManagement extends React.Component {
                                                 ref={(el) => (this.searchbox = el)}
                                                 style={{ width: '350px' }}
                                                 onChange={this.handle_filter_change}
-                                            />
+                                        />
                                         </center>
                                     </td>
                                 </tr>
@@ -852,7 +853,7 @@ class ListManagement extends React.Component {
                         <span
                             className="button slim hollow secondary"
                             // onClick={this.handle_reset_list.bind(this, true)}
-                            disabled="true"
+                            disabled
                         >
                             {this.state.is_busy ? tt('list_management_jsx.button_busy') : reset_all_button_text}
                         </span>

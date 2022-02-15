@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-// import shouldComponentUpdate from 'app/utils/shouldComponentUpdate';
+// import shouldComponentUpdate  from 'app/utils/shouldComponentUpdate';
 import { cleanReduxInput } from 'app/utils/ReduxForms';
 import tt from 'counterpart';
 

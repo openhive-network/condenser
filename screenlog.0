@@ -1,0 +1,321 @@
+Building hive
+Step 1/29 : FROM node:12.16.2 as development
+ ---> 406aa3abbc6c
+Step 2/29 : WORKDIR /var/app
+ ---> Running in 8938831f0be4
+Removing intermediate container 8938831f0be4
+ ---> cf586914dd09
+Step 3/29 : COPY package.json yarn.lock ./
+ ---> a8040e61f89e
+Step 4/29 : RUN yarn install --non-interactive --frozen-lockfile --ignore-optional
+ ---> Running in 61f37544ef20
+yarn install v1.22.4
+[1/5] Validating package.json...
+[2/5] Resolving packages...
+[3/5] Fetching packages...
+info fsevents@2.1.3: The platform "linux" is incompatible with this module.
+info "fsevents@2.1.3" is an optional dependency and failed compatibility check. Excluding it from installation.
+info fsevents@1.2.13: The platform "linux" is incompatible with this module.
+info "fsevents@1.2.13" is an optional dependency and failed compatibility check. Excluding it from installation.
+[91mwarning store@1.3.20: The engine "browser" appears to be invalid.
+[0minfo fsevents@1.2.9: The platform "linux" is incompatible with this module.
+info "fsevents@1.2.9" is an optional dependency and failed compatibility check. Excluding it from installation.
+[4/5] Linking dependencies...
+[91mwarning " > react-intl@2.4.0" has unmet peer dependency "prop-types@^15.5.4".
+[0m[91mwarning " > react-router-scroll@0.4.4" has unmet peer dependency "history@^2.0.0 || ^3.0.0".
+[0m[91mwarning " > react-tabs@3.1.1" has incorrect peer dependency "react@^16.3.0".
+[0m[91mwarning " > @storybook/react@3.2.19" has incorrect peer dependency "babel-core@^6.26.0 | ^7.0.0-0".
+[0m[91mwarning " > eslint-config-airbnb@18.1.0" has unmet peer dependency "eslint-plugin-react-hooks@^2.5.0 || ^1.7.0".
+[0m[91mwarning "eslint-plugin-jest > @typescript-eslint/experimental-utils > @typescript-eslint/typescript-estree > tsutils@3.17.1" has unmet peer dependency "typescript@>=2.8.0 || >= 3.2.0-dev || >= 3.3.0-dev || >= 3.4.0-dev || >= 3.5.0-dev || >= 3.6.0-dev || >= 3.6.0-beta || >= 3.7.0-dev || >= 3.7.0-beta".
+[0m[91mwarning " > storybook-addon-intl@2.3.0" has unmet peer dependency "@storybook/addons@^3.2.16".
+[0m[91mwarning " > svgo-loader@1.2.1" has unmet peer dependency "svgo@>=0.4.0".
+[0m[91mwarning " > webpack-dev-middleware@1.12.0" has incorrect peer dependency "webpack@^1.0.0 || ^2.0.0 || ^3.0.0".
+[0m[5/5] Building fresh packages...
+Done in 205.83s.
+Removing intermediate container 61f37544ef20
+ ---> fc9e004276d1
+Step 5/29 : COPY . .
+ ---> b1ae19dca5a2
+Step 6/29 : RUN mkdir tmp && yarn build
+ ---> Running in 717ed668bb43
+yarn run v1.22.4
+$ NODE_ENV=production webpack --config ./webpack/prod.config.js && rm -rf ./lib && babel src --out-dir lib -D
+[91m(node:29) DeprecationWarning: Tapable.plugin is deprecated. Use new API on `.hooks` instead
+[0m[91mDEPRECATION [0m[91mWARNING[0m[91m on line 244, column 5 of node_modules/foundation-sites/scss/components/_table.scss: 
+@elseif is deprecated and will not be supported in future Sass versions.
+Use "@else if" instead.
+    ╷
+244 │     @elseif($table-stripe == odd) {
+    │     ^^^^^^^
+    ╵
+[0m[91m
+[0m[91mDEPRECATION [0m[91mWARNING[0m[91m on line 260, column 5 of node_modules/foundation-sites/scss/components/_table.scss: 
+@elseif is deprecated and will not be supported in future Sass versions.
+Use "@else if" instead.
+    ╷
+260 │     @elseif($table-stripe == odd) {
+    │     ^^^^^^^
+    ╵
+[0m[91m
+[0m[webpack-cli] Compilation finished
+Webpack Bundle Analyzer saved stats file to /var/app/dist/stats.json
+[91mupdated webpack-stats-prod.json
+[0masset size limit: The following asset(s) exceed the recommended size limit (244 KiB).
+This can impact web performance.
+Assets: 
+  624d8a6b5ffb5fca686e7236c7e03595.png (426 KiB)
+  app.f8049b4c16941c9cddaf.js (3.52 MiB)
+  vendor.f8049b4c16941c9cddaf.js (1.53 MiB)
+entrypoint size limit: The following entrypoint(s) combined asset size exceeds the recommended limit (244 KiB). This can impact web performance.
+Entrypoints:
+  app (3.76 MiB)
+      app.css
+      app.f8049b4c16941c9cddaf.js
+  vendor (1.53 MiB)
+      vendor.f8049b4c16941c9cddaf.js
+
+Hash: [1mf8049b4c16941c9cddaf[39m[22m
+Version: webpack [1m4.44.2[39m[22m
+Time: [1m183810[39m[22mms
+Built at: 11/18/2020 [1m4:47:57 AM[39m[22m
+                               [1mAsset[39m[22m      [1mSize[39m[22m  [1mChunks[39m[22m  [1m[39m[22m                       [1m[39m[22m       [1mChunk Names[39m[22m
+           [1m[32m2.f8049b4c16941c9cddaf.js[39m[22m   224 KiB       [1m2[39m[22m  [1m[32m[emitted] [immutable][39m[22m         vendors~IntlBundle
+[1m[33m624d8a6b5ffb5fca686e7236c7e03595.png[39m[22m   [1m[33m426 KiB[39m[22m        [1m[39m[22m  [1m[32m[emitted] [immutable][39m[22m  [1m[33m[big][39m[22m  
+                             [1m[32mapp.css[39m[22m   240 KiB       [1m0[39m[22m  [1m[32m[emitted][39m[22m                     app
+         [1m[33mapp.f8049b4c16941c9cddaf.js[39m[22m  [1m[33m3.52 MiB[39m[22m       [1m0[39m[22m  [1m[32m[emitted] [immutable][39m[22m  [1m[33m[big][39m[22m  app
+      [1m[33mvendor.f8049b4c16941c9cddaf.js[39m[22m  [1m[33m1.53 MiB[39m[22m       [1m1[39m[22m  [1m[32m[emitted] [immutable][39m[22m  [1m[33m[big][39m[22m  vendor
+Entrypoint [1mapp[39m[22m [1m[33m[big][39m[22m = [1m[32mapp.css[39m[22m [1m[32mapp.f8049b4c16941c9cddaf.js[39m[22m
+Entrypoint [1mvendor[39m[22m [1m[33m[big][39m[22m = [1m[32mvendor.f8049b4c16941c9cddaf.js[39m[22m
+   [0] [1m./node_modules/react/react.js[39m[22m 56 bytes {[1m[33m0[39m[22m} {[1m[33m1[39m[22m}[1m[32m [built][39m[22m
+  [14] [1m./node_modules/immutable/dist/immutable.js[39m[22m 139 KiB {[1m[33m0[39m[22m} {[1m[33m1[39m[22m}[1m[32m [built][39m[22m
+  [29] [1m./node_modules/react-router/es/index.js + 32 modules[39m[22m 74.5 KiB {[1m[33m0[39m[22m} {[1m[33m1[39m[22m}[1m[32m [built][39m[22m
+       | [1m./node_modules/react-router/es/index.js[39m[22m 1.43 KiB[1m[32m [built][39m[22m
+       | [1m./node_modules/react-router/es/PatternUtils.js[39m[22m 7.17 KiB[1m[32m [built][39m[22m
+       | [1m./node_modules/react-router/es/RouteUtils.js[39m[22m 2.37 KiB[1m[32m [built][39m[22m
+       | [1m./node_modules/react-router/es/RouterContext.js[39m[22m 3.7 KiB[1m[32m [built][39m[22m
+       | [1m./node_modules/react-router/es/Router.js[39m[22m 5.17 KiB[1m[32m [built][39m[22m
+       | [1m./node_modules/react-router/es/PropTypes.js[39m[22m 454 bytes[1m[32m [built][39m[22m
+       | [1m./node_modules/react-router/es/Link.js[39m[22m 4.02 KiB[1m[32m [built][39m[22m
+       | [1m./node_modules/react-router/es/IndexLink.js[39m[22m 648 bytes[1m[32m [built][39m[22m
+       | [1m./node_modules/react-router/es/withRouter.js[39m[22m 2.05 KiB[1m[32m [built][39m[22m
+       | [1m./node_modules/react-router/es/Redirect.js[39m[22m 2.49 KiB[1m[32m [built][39m[22m
+       | [1m./node_modules/react-router/es/IndexRedirect.js[39m[22m 1.28 KiB[1m[32m [built][39m[22m
+       | [1m./node_modules/react-router/es/IndexRoute.js[39m[22m 1.37 KiB[1m[32m [built][39m[22m
+       | [1m./node_modules/react-router/es/Route.js[39m[22m 1.3 KiB[1m[32m [built][39m[22m
+       | [1m./node_modules/react-router/es/createMemoryHistory.js[39m[22m 637 bytes[1m[32m [built][39m[22m
+       | [1m./node_modules/react-router/es/match.js[39m[22m 2.25 KiB[1m[32m [built][39m[22m
+       |     + 18 hidden modules
+  [57] [1m./node_modules/react-dom/index.js[39m[22m 59 bytes {[1m[33m0[39m[22m} {[1m[33m1[39m[22m}[1m[32m [built][39m[22m
+  [81] [1m./node_modules/@hiveio/hive-js/lib/index.js[39m[22m 402 bytes {[1m[33m0[39m[22m} {[1m[33m1[39m[22m}[1m[32m [built][39m[22m
+  [91] [1m./node_modules/bytebuffer/dist/bytebuffer.js[39m[22m 153 KiB {[1m[33m0[39m[22m} {[1m[33m1[39m[22m}[1m[32m [built][39m[22m
+ [261] [1m./node_modules/slate/lib/index.js[39m[22m 3.93 KiB {[1m[33m0[39m[22m} {[1m[33m1[39m[22m}[1m[32m [built][39m[22m
+ [287] [1m./node_modules/remarkable/index.js[39m[22m 51 bytes {[1m[33m0[39m[22m} {[1m[33m1[39m[22m}[1m[32m [built][39m[22m
+ [470] [1m./node_modules/autolinker/dist/Autolinker.js[39m[22m 81.4 KiB {[1m[33m0[39m[22m} {[1m[33m1[39m[22m}[1m[32m [built][39m[22m
+ [980] [1m./node_modules/slate-insert-block-on-enter/dist/index.js[39m[22m 3.77 KiB {[1m[33m0[39m[22m} {[1m[33m1[39m[22m}[1m[32m [built][39m[22m
+ [981] [1m./node_modules/slate-trailing-block/dist/index.js[39m[22m 1.42 KiB {[1m[33m0[39m[22m} {[1m[33m1[39m[22m}[1m[32m [built][39m[22m
+ [983] [1m./node_modules/slate-drop-or-paste-images/dist/index.js[39m[22m 4.86 KiB {[1m[33m0[39m[22m} {[1m[33m1[39m[22m}[1m[32m [built][39m[22m
+[1003] [1m./node_modules/core-js/stable/index.js[39m[22m 102 bytes {[1m[33m0[39m[22m}[1m[32m [built][39m[22m
+[1128] [1mmulti core-js/stable ./src/app/Main.js[39m[22m 40 bytes {[1m[33m0[39m[22m}[1m[32m [built][39m[22m
+[1741] [1mmulti react react-dom react-router @hiveio/hive-js slate slate-drop-or-paste-images slate-insert-block-on-enter slate-trailing-block bytebuffer immutable autolinker pako remarkable picturefill[39m[22m 184 bytes {[1m[33m1[39m[22m}[1m[32m [built][39m[22m
+    + 1747 hidden modules
+
+[1m[33mWARNING in asset size limit: The following asset(s) exceed the recommended size limit (244 KiB).
+This can impact web performance.
+Assets: 
+  624d8a6b5ffb5fca686e7236c7e03595.png (426 KiB)
+  app.f8049b4c16941c9cddaf.js (3.52 MiB)
+  vendor.f8049b4c16941c9cddaf.js (1.53 MiB)[39m[22m
+
+[1m[33mWARNING in entrypoint size limit: The following entrypoint(s) combined asset size exceeds the recommended limit (244 KiB). This can impact web performance.
+Entrypoints:
+  app (3.76 MiB)
+      app.css
+      app.f8049b4c16941c9cddaf.js
+  vendor (1.53 MiB)
+      vendor.f8049b4c16941c9cddaf.js
+[39m[22m
+Child [1mmini-css-extract-plugin node_modules/css-loader/dist/cjs.js??ref--8-1!node_modules/postcss-loader/dist/cjs.js??ref--8-2!node_modules/react-tabs/style/react-tabs.css[39m[22m:
+    Entrypoint [1mmini-css-extract-plugin[39m[22m = [1m[32m*[39m[22m
+    [0] [1m./node_modules/css-loader/dist/runtime/cssWithMappingToString.js[39m[22m 2.21 KiB {[1m[33m0[39m[22m}[1m[32m [built][39m[22m
+    [1] [1m./node_modules/css-loader/dist/runtime/api.js[39m[22m 1.57 KiB {[1m[33m0[39m[22m}[1m[32m [built][39m[22m
+    [2] [1m./node_modules/css-loader/dist/cjs.js??ref--8-1!./node_modules/postcss-loader/dist/cjs.js??ref--8-2!./node_modules/react-tabs/style/react-tabs.css[39m[22m 2.89 KiB {[1m[33m0[39m[22m}[1m[32m [built][39m[22m
+Child [1mmini-css-extract-plugin node_modules/css-loader/dist/cjs.js??ref--9-1!node_modules/postcss-loader/dist/cjs.js??ref--9-2!node_modules/sass-loader/dist/cjs.js!src/app/assets/stylesheets/app.scss[39m[22m:
+    Entrypoint [1mmini-css-extract-plugin[39m[22m = [1m[32m*[39m[22m
+    [0] [1m./node_modules/css-loader/dist/runtime/cssWithMappingToString.js[39m[22m 2.21 KiB {[1m[33m0[39m[22m}[1m[32m [built][39m[22m
+    [1] [1m./node_modules/css-loader/dist/runtime/api.js[39m[22m 1.57 KiB {[1m[33m0[39m[22m}[1m[32m [built][39m[22m
+    [2] [1m./node_modules/css-loader/dist/cjs.js??ref--9-1!./node_modules/postcss-loader/dist/cjs.js??ref--9-2!./node_modules/sass-loader/dist/cjs.js!./src/app/assets/stylesheets/app.scss[39m[22m 664 KiB {[1m[33m0[39m[22m}[1m[32m [built][39m[22m
+[webpack-isomorphic-tools/plugin] [error] Module "css ./node_modules/css-loader/dist/cjs.js??ref--9-1!./node_modules/postcss-loader/dist/cjs.js??ref--9-2!./node_modules/sass-loader/dist/cjs.js!./src/app/assets/stylesheets/app.scss" has no source. Maybe Webpack compilation of this module failed. Skipping this asset.
+[webpack-isomorphic-tools/plugin] [error] Module "css ./node_modules/css-loader/dist/cjs.js??ref--8-1!./node_modules/postcss-loader/dist/cjs.js??ref--8-2!./node_modules/react-tabs/style/react-tabs.css" has no source. Maybe Webpack compilation of this module failed. Skipping this asset.
+Hash: f8049b4c16941c9cddaf
+Version: webpack 4.44.2
+Time: 183810ms
+Built at: 11/18/2020 4:47:57 AM
+                               Asset      Size  Chunks                                Chunk Names
+           2.f8049b4c16941c9cddaf.js   224 KiB       2  [emitted] [immutable]         vendors~IntlBundle
+624d8a6b5ffb5fca686e7236c7e03595.png   426 KiB          [emitted] [immutable]  [big]  
+                             app.css   240 KiB       0  [emitted]                     app
+         app.f8049b4c16941c9cddaf.js  3.52 MiB       0  [emitted] [immutable]  [big]  app
+      vendor.f8049b4c16941c9cddaf.js  1.53 MiB       1  [emitted] [immutable]  [big]  vendor
+Entrypoint app [big] = app.css app.f8049b4c16941c9cddaf.js
+Entrypoint vendor [big] = vendor.f8049b4c16941c9cddaf.js
+   [0] ./node_modules/react/react.js 56 bytes {0} {1} [built]
+  [14] ./node_modules/immutable/dist/immutable.js 139 KiB {0} {1} [built]
+  [29] ./node_modules/react-router/es/index.js + 32 modules 74.5 KiB {0} {1} [built]
+       | ./node_modules/react-router/es/index.js 1.43 KiB [built]
+       | ./node_modules/react-router/es/PatternUtils.js 7.17 KiB [built]
+       | ./node_modules/react-router/es/RouteUtils.js 2.37 KiB [built]
+       | ./node_modules/react-router/es/RouterContext.js 3.7 KiB [built]
+       | ./node_modules/react-router/es/Router.js 5.17 KiB [built]
+       | ./node_modules/react-router/es/PropTypes.js 454 bytes [built]
+       | ./node_modules/react-router/es/Link.js 4.02 KiB [built]
+       | ./node_modules/react-router/es/IndexLink.js 648 bytes [built]
+       | ./node_modules/react-router/es/withRouter.js 2.05 KiB [built]
+       | ./node_modules/react-router/es/Redirect.js 2.49 KiB [built]
+       | ./node_modules/react-router/es/IndexRedirect.js 1.28 KiB [built]
+       | ./node_modules/react-router/es/IndexRoute.js 1.37 KiB [built]
+       | ./node_modules/react-router/es/Route.js 1.3 KiB [built]
+       | ./node_modules/react-router/es/createMemoryHistory.js 637 bytes [built]
+       | ./node_modules/react-router/es/match.js 2.25 KiB [built]
+       |     + 18 hidden modules
+  [57] ./node_modules/react-dom/index.js 59 bytes {0} {1} [built]
+  [81] ./node_modules/@hiveio/hive-js/lib/index.js 402 bytes {0} {1} [built]
+  [91] ./node_modules/bytebuffer/dist/bytebuffer.js 153 KiB {0} {1} [built]
+ [261] ./node_modules/slate/lib/index.js 3.93 KiB {0} {1} [built]
+ [287] ./node_modules/remarkable/index.js 51 bytes {0} {1} [built]
+ [470] ./node_modules/autolinker/dist/Autolinker.js 81.4 KiB {0} {1} [built]
+ [980] ./node_modules/slate-insert-block-on-enter/dist/index.js 3.77 KiB {0} {1} [built]
+ [981] ./node_modules/slate-trailing-block/dist/index.js 1.42 KiB {0} {1} [built]
+ [983] ./node_modules/slate-drop-or-paste-images/dist/index.js 4.86 KiB {0} {1} [built]
+[1003] ./node_modules/core-js/stable/index.js 102 bytes {0} [built]
+[1128] multi core-js/stable ./src/app/Main.js 40 bytes {0} [built]
+[1741] multi react react-dom react-router @hiveio/hive-js slate slate-drop-or-paste-images slate-insert-block-on-enter slate-trailing-block bytebuffer immutable autolinker pako remarkable picturefill 184 bytes {1} [built]
+    + 1747 hidden modules
+
+WARNING in asset size limit: The following asset(s) exceed the recommended size limit (244 KiB).
+This can impact web performance.
+Assets: 
+  624d8a6b5ffb5fca686e7236c7e03595.png (426 KiB)
+  app.f8049b4c16941c9cddaf.js (3.52 MiB)
+  vendor.f8049b4c16941c9cddaf.js (1.53 MiB)
+
+WARNING in entrypoint size limit: The following entrypoint(s) combined asset size exceeds the recommended limit (244 KiB). This can impact web performance.
+Entrypoints:
+  app (3.76 MiB)
+      app.css
+      app.f8049b4c16941c9cddaf.js
+  vendor (1.53 MiB)
+      vendor.f8049b4c16941c9cddaf.js
+
+Child mini-css-extract-plugin node_modules/css-loader/dist/cjs.js??ref--8-1!node_modules/postcss-loader/dist/cjs.js??ref--8-2!node_modules/react-tabs/style/react-tabs.css:
+    Entrypoint mini-css-extract-plugin = *
+    [0] ./node_modules/css-loader/dist/runtime/cssWithMappingToString.js 2.21 KiB {0} [built]
+    [1] ./node_modules/css-loader/dist/runtime/api.js 1.57 KiB {0} [built]
+    [2] ./node_modules/css-loader/dist/cjs.js??ref--8-1!./node_modules/postcss-loader/dist/cjs.js??ref--8-2!./node_modules/react-tabs/style/react-tabs.css 2.89 KiB {0} [built]
+Child mini-css-extract-plugin node_modules/css-loader/dist/cjs.js??ref--9-1!node_modules/postcss-loader/dist/cjs.js??ref--9-2!node_modules/sass-loader/dist/cjs.js!src/app/assets/stylesheets/app.scss:
+    Entrypoint mini-css-extract-plugin = *
+    [0] ./node_modules/css-loader/dist/runtime/cssWithMappingToString.js 2.21 KiB {0} [built]
+    [1] ./node_modules/css-loader/dist/runtime/api.js 1.57 KiB {0} [built]
+    [2] ./node_modules/css-loader/dist/cjs.js??ref--9-1!./node_modules/postcss-loader/dist/cjs.js??ref--9-2!./node_modules/sass-loader/dist/cjs.js!./src/app/assets/stylesheets/app.scss 664 KiB {0} [built]
+[91m[BABEL] Note: The code generator has deoptimised the styling of /var/app/src/app/assets/static/jspdf.min.js as it exceeds the max of 500KB.
+[0mSuccessfully compiled 298 files with Babel (39016ms).
+Done in 239.41s.
+Removing intermediate container 717ed668bb43
+ ---> a4a11605e19c
+Step 7/29 : CMD [ "yarn", "run", "start" ]
+ ---> Running in b31749837c4d
+Removing intermediate container b31749837c4d
+ ---> 4e10671eeba8
+[2K
+Step 8/29 : FROM development as dependencies
+ ---> 4e10671eeba8
+Step 9/29 : RUN yarn install --non-interactive --frozen-lockfile --ignore-optional --production
+ ---> Running in 2b484a2261e8
+yarn install v1.22.4
+[1/5] Validating package.json...
+[2/5] Resolving packages...
+[3/5] Fetching packages...
+info fsevents@2.1.3: The platform "linux" is incompatible with this module.
+info "fsevents@2.1.3" is an optional dependency and failed compatibility check. Excluding it from installation.
+info fsevents@1.2.13: The platform "linux" is incompatible with this module.
+info "fsevents@1.2.13" is an optional dependency and failed compatibility check. Excluding it from installation.
+[91mwarning store@1.3.20: The engine "browser" appears to be invalid.
+[0minfo fsevents@1.2.9: The platform "linux" is incompatible with this module.
+info "fsevents@1.2.9" is an optional dependency and failed compatibility check. Excluding it from installation.
+[4/5] Linking dependencies...
+[91mwarning " > react-intl@2.4.0" has unmet peer dependency "prop-types@^15.5.4".
+[0m[91mwarning " > react-router-scroll@0.4.4" has unmet peer dependency "history@^2.0.0 || ^3.0.0".
+[0m[91mwarning " > react-tabs@3.1.1" has incorrect peer dependency "react@^16.3.0".
+[0m[91mwarning " > @storybook/react@3.2.19" has incorrect peer dependency "babel-core@^6.26.0 | ^7.0.0-0".
+[0m[91mwarning " > eslint-config-airbnb@18.1.0" has unmet peer dependency "eslint-plugin-react-hooks@^2.5.0 || ^1.7.0".
+[0m[91mwarning "eslint-plugin-jest > @typescript-eslint/experimental-utils > @typescript-eslint/typescript-estree > tsutils@3.17.1" has unmet peer dependency "typescript@>=2.8.0 || >= 3.2.0-dev || >= 3.3.0-dev || >= 3.4.0-dev || >= 3.5.0-dev || >= 3.6.0-dev || >= 3.6.0-beta || >= 3.7.0-dev || >= 3.7.0-beta".
+[0m[91mwarning " > storybook-addon-intl@2.3.0" has unmet peer dependency "@storybook/addons@^3.2.16".
+[0m[91mwarning " > svgo-loader@1.2.1" has unmet peer dependency "svgo@>=0.4.0".
+[0m[91mwarning " > webpack-dev-middleware@1.12.0" has incorrect peer dependency "webpack@^1.0.0 || ^2.0.0 || ^3.0.0".
+[0m[5/5] Building fresh packages...
+Done in 26.54s.
+Removing intermediate container 2b484a2261e8
+ ---> 03f648551eab
+[2K
+Step 10/29 : FROM node:12.16.2-alpine as production
+ ---> 90a1b235430e
+Step 11/29 : WORKDIR /var/app
+ ---> Running in 961f0b2048fa
+Removing intermediate container 961f0b2048fa
+ ---> 83ab3bee0666
+Step 12/29 : ARG SOURCE_COMMIT
+ ---> Running in a5e1b22db4a3
+Removing intermediate container a5e1b22db4a3
+ ---> ed3d4c1c5096
+Step 13/29 : ENV SOURCE_COMMIT ${SOURCE_COMMIT}
+ ---> Running in 3ddd3c8e5df4
+Removing intermediate container 3ddd3c8e5df4
+ ---> 24c25dabaa16
+Step 14/29 : ARG DOCKER_TAG
+ ---> Running in 42390f17df03
+Removing intermediate container 42390f17df03
+ ---> 12c543ab748e
+Step 15/29 : ENV DOCKER_TAG ${DOCKER_TAG}
+ ---> Running in 7e0717cd39e7
+Removing intermediate container 7e0717cd39e7
+ ---> b2cc709d9271
+Step 16/29 : COPY --from=dependencies /var/app/package.json /var/app/package.json
+ ---> b8ae1e273099
+Step 17/29 : COPY --from=dependencies /var/app/config /var/app/config
+ ---> 6dbe24a4c1a3
+Step 18/29 : COPY --from=dependencies /var/app/dist /var/app/dist
+ ---> e4015eec0671
+Step 19/29 : COPY --from=dependencies /var/app/lib /var/app/lib
+ ---> 6073cf3a6451
+Step 20/29 : COPY --from=dependencies /var/app/src /var/app/src
+ ---> 550e792f596c
+Step 21/29 : COPY --from=dependencies /var/app/tmp /var/app/tmp
+ ---> 0a71e8f1eb18
+Step 22/29 : COPY --from=dependencies /var/app/webpack /var/app/webpack
+ ---> 86278021b96b
+Step 23/29 : COPY --from=dependencies /var/app/node_modules /var/app/node_modules
+ ---> dee41f50161d
+Step 24/29 : COPY --from=dependencies /var/app/healthcheck.js /var/app/healthcheck.js
+ ---> 865e8bfd468e
+Step 25/29 : HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=5 CMD node /var/app/healthcheck.js
+ ---> Running in bfd6639b1918
+Removing intermediate container bfd6639b1918
+ ---> a05aaf4a3542
+Step 26/29 : ENV PORT 8080
+ ---> Running in deede439e0f6
+Removing intermediate container deede439e0f6
+ ---> 078eea0323d0
+Step 27/29 : ENV NODE_ENV production
+ ---> Running in 1f9a91d0db36
+Removing intermediate container 1f9a91d0db36
+ ---> fd4718773104
+Step 28/29 : EXPOSE 8080
+ ---> Running in 2c32c623bf05
+Removing intermediate container 2c32c623bf05
+ ---> 6cb5c6a66aa7
+Step 29/29 : CMD [ "yarn", "run", "production" ]
+ ---> Running in c6a2cef6c07c
+Removing intermediate container c6a2cef6c07c
+ ---> 661e58bbd59e
+[2K
+Successfully built 661e58bbd59e
+Successfully tagged hive/condenser:latest

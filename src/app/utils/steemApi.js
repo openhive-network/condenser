@@ -28,10 +28,9 @@ export async function callBridge(method, params) {
         && method !== 'get_post_header'
         && method !== 'list_subscribers'
         && method !== 'normalize_post'
+        && method !== 'list_community_roles'
         && (params.observer === null || params.observer === undefined)
     ) params.observer = $STM_Config.default_observer;
-
-    console.log('call bridge', method, params && JSON.stringify(params).substring(0, 200));
 
     return new Promise(((resolve, reject) => {
         api.call('bridge.' + method, params, (err, data) => {

@@ -7,9 +7,10 @@ export default class NotFoundMessage extends React.Component {
             <div className="NotFound float-center">
                 <div>
                     <Icon name="hive" size="4x" />
-                    <h4 className="NotFound__header">Sorry! This page doesn't exist.</h4>
+                    <h4 className="NotFound__header">Sorry! This page does not exist.</h4>
                     <p>
-                        Not to worry. You can head back to{' '}
+                        Not to worry. You can head back to
+                        {' '}
                         <a style={{ fontWeight: 800 }} href="/">
                             our homepage
                         </a>

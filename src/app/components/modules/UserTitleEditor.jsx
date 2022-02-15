@@ -15,6 +15,7 @@ class UserTitleEditor extends Component {
     onInput = (event) => {
         const newState = {};
         let newValue = event.target.value || '';
+        // eslint-disable-next-line no-prototype-builtins
         if (event.target.hasOwnProperty('checked')) newValue = event.target.checked;
         newState[event.target.name] = newValue;
         this.setState(newState);
@@ -34,8 +35,8 @@ class UserTitleEditor extends Component {
                     {/*<h4>{tt('g.community_user_title_edit_header')}</h4>*/}
                     <h4>
                         {tt('g.community_user_title_edit_description', {
-                            community: community,
-                            username: username,
+                            community,
+                            username,
                         })}
                     </h4>
                 </div>

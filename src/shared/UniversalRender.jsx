@@ -5,16 +5,17 @@ import Iso from 'iso';
 import React from 'react';
 import { render } from 'react-dom';
 import { renderToString } from 'react-dom/server';
-import { Router, RouterContext, match, applyRouterMiddleware, browserHistory } from 'react-router';
+import {
+ Router, RouterContext, match, applyRouterMiddleware, browserHistory
+} from 'react-router';
 import { Provider } from 'react-redux';
 import { api } from '@hiveio/hive-js';
 
 import RootRoute from 'app/RootRoute';
 import * as appActions from 'app/redux/AppReducer';
-import { createStore, applyMiddleware, compose } from 'redux';
+import { createStore, applyMiddleware } from 'redux';
 import { useScroll } from 'react-router-scroll';
 import createSagaMiddleware from 'redux-saga';
-import { all } from 'redux-saga/effects';
 import { syncHistoryWithStore } from 'react-router-redux';
 import rootReducer from 'app/redux/RootReducer';
 import rootSaga from 'shared/RootSaga';
@@ -29,7 +30,7 @@ let get_state_perf,
     get_content_perf = false;
 if (process.env.OFFLINE_SSR_TEST) {
     const testDataDir = process.env.OFFLINE_SSR_TEST_DATA_DIR || 'api_mockdata';
-    let uri = `${__dirname}/../../`;
+    const uri = `${__dirname}/../../`;
     get_state_perf = require(uri + testDataDir + '/get_state');
     get_content_perf = require(uri + testDataDir + '/get_content');
 }
@@ -109,17 +110,15 @@ const scrollTop = (el, topOffset, prevDocumentInfo, triesRemaining) => {
     //We scroll if the document has 1. not been deliberately scrolled, AND 2. we have not passed our target scroll,
     //NOR has the document changed in a meaningful way since we last looked at it
     if (prevDocumentInfo.direction === SCROLL_DIRECTION_DOWN) {
-        doScroll =
-            prevDocumentInfo.scrollTop <= documentInfo.scrollTop + SCROLL_FUDGE_PIXELS &&
-            (documentInfo.scrollTop < documentInfo.scrollTarget ||
-                prevDocumentInfo.scrollTarget < documentInfo.scrollTarget ||
-                prevDocumentInfo.scrollHeight < documentInfo.scrollHeight);
+        doScroll = prevDocumentInfo.scrollTop <= documentInfo.scrollTop + SCROLL_FUDGE_PIXELS
+            && (documentInfo.scrollTop < documentInfo.scrollTarget
+                || prevDocumentInfo.scrollTarget < documentInfo.scrollTarget
+                || prevDocumentInfo.scrollHeight < documentInfo.scrollHeight);
     } else if (prevDocumentInfo.direction === SCROLL_DIRECTION_UP) {
-        doScroll =
-            prevDocumentInfo.scrollTop >= documentInfo.scrollTop - SCROLL_FUDGE_PIXELS &&
-            (documentInfo.scrollTop > documentInfo.scrollTarget ||
-                prevDocumentInfo.scrollTarget > documentInfo.scrollTarget ||
-                prevDocumentInfo.scrollHeight > documentInfo.scrollHeight);
+        doScroll = prevDocumentInfo.scrollTop >= documentInfo.scrollTop - SCROLL_FUDGE_PIXELS
+            && (documentInfo.scrollTop > documentInfo.scrollTarget
+                || prevDocumentInfo.scrollTarget > documentInfo.scrollTarget
+                || prevDocumentInfo.scrollHeight > documentInfo.scrollHeight);
     }
 
     if (doScroll) {
@@ -170,8 +169,7 @@ class OffsetScrollBehavior extends ScrollBehavior {
                 scrollTop: Math.ceil(document.scrollingElement.scrollTop),
                 scrollTarget: calcOffsetRoot(el) + topOffset,
             };
-            documentInfo.direction =
-                documentInfo.scrollTop < documentInfo.scrollTarget ? SCROLL_DIRECTION_DOWN : SCROLL_DIRECTION_UP;
+            documentInfo.direction = documentInfo.scrollTop < documentInfo.scrollTarget ? SCROLL_DIRECTION_DOWN : SCROLL_DIRECTION_UP;
             scrollTop(el, topOffset, documentInfo, SCROLL_TOP_TRIES); //this function does the actual work of scrolling.
         } else {
             super.scrollToTarget(element, newTarget);
@@ -207,10 +205,10 @@ const onRouterError = (error) => {
  * @returns promise
  */
 export async function serverRender(location, initialState, ErrorPage, userPreferences, offchain, requestTimer) {
-    let error, redirect, renderProps;
+    let error, renderProps;
 
     try {
-        [error, redirect, renderProps] = await runRouter(location, RootRoute);
+        [error,, renderProps] = await runRouter(location, RootRoute);
     } catch (e) {
         console.error('Routing error:', e.toString(), location);
         return {
@@ -250,8 +248,10 @@ export async function serverRender(location, initialState, ErrorPage, userPrefer
 
         // If we are not loading a post, truncate state data to bring response size down.
         if (!url.match(routeRegex.Post)) {
-            for (var key in onchain.content) {
-                onchain.content[key]['active_votes'] = null;
+            for (const key in onchain.content) {
+                if (key in onchain.content) {
+                    onchain.content[key].active_votes = null;
+                }
             }
         }
         // Are we loading an un-category-aliased post?
@@ -267,14 +267,14 @@ export async function serverRender(location, initialState, ErrorPage, userPrefer
             if (header && header.author && header.permlink && header.category) {
                 const { author, permlink, category } = header;
                 return { redirectUrl: `/${category}/@${author}/${permlink}` };
-            } else {
+            }
                 // protect on invalid user pages (i.e /user/transferss)
                 return {
                     title: 'Page Not Found - Hive',
                     statusCode: 404,
                     body: renderToString(<NotFound />),
                 };
-            }
+
         }
 
         // Insert the special posts into the list of posts, so there is no
@@ -290,7 +290,7 @@ export async function serverRender(location, initialState, ErrorPage, userPrefer
         server_store = createStore(rootReducer, {
             app: initialState.app,
             global: onchain,
-            userProfiles: { profiles: onchain['profiles'] },
+            userProfiles: { profiles: onchain.profiles },
             offchain,
         });
         server_store.dispatch({
@@ -308,7 +308,7 @@ export async function serverRender(location, initialState, ErrorPage, userPrefer
                 body: renderToString(<NotFound />),
             };
             // Ensure error page on state exception
-        } else {
+        }
             const msg = (e.toString && e.toString()) || e.message || e;
             const stack_trace = e.stack || '[no stack]';
             console.error('State/store error: ', msg, stack_trace);
@@ -317,7 +317,7 @@ export async function serverRender(location, initialState, ErrorPage, userPrefer
                 statusCode: 500,
                 body: renderToString(<ErrorPage />),
             };
-        }
+
     }
 
     let app, status, meta;
@@ -376,9 +376,9 @@ export function clientRender(initialState) {
                 const disableNavDirectionCheck = document.getElementById(DISABLE_ROUTER_HISTORY_NAV_DIRECTION_EL_ID);
                 //we want to navigate to the corresponding id=<hash> element on 'PUSH' navigation (prev null + POP is a new window url nav ~= 'PUSH')
                 if (
-                    disableNavDirectionCheck ||
-                    (prevLocation === null && location.action === 'POP') ||
-                    location.action === 'PUSH'
+                    disableNavDirectionCheck
+                    || (prevLocation === null && location.action === 'POP')
+                    || location.action === 'PUSH'
                 ) {
                     return location.hash;
                 }
@@ -424,14 +424,14 @@ async function apiFetchState(url) {
         const history = await api.getFeedHistoryAsync();
         const feed = history.price_history;
         const last = feed[feed.length - 1];
-        onchain['feed_price'] = last;
+        onchain.feed_price = last;
     } catch (error) {
         console.error('Error fetching feed price:', error);
     }
 
     try {
         const dgpo = await api.getDynamicGlobalPropertiesAsync();
-        onchain['props'] = { hbd_print_rate: dgpo['hbd_print_rate'] };
+        onchain.props = { hbd_print_rate: dgpo.hbd_print_rate };
     } catch (error) {
         console.error('Error fetching dgpo:', error);
     }

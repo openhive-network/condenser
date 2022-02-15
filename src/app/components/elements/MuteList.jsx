@@ -4,7 +4,7 @@ import { Link } from 'react-router';
 import * as transactionActions from 'app/redux/TransactionReducer';
 
 class MuteList extends React.Component {
-    constructor(props) {
+    constructor() {
         super();
         this.state = {};
         this.unmute = this.unmute.bind(this);
@@ -31,7 +31,10 @@ class MuteList extends React.Component {
         const items = users.map((user) => (
             <li key={user}>
                 <Link to={'/@' + user}>
-                    <strong>@{user}</strong>
+                    <strong>
+                        @
+                        {user}
+                    </strong>
                 </Link>
                 &nbsp;&nbsp;&nbsp;&nbsp;
                 {busy == user ? (
@@ -49,7 +52,6 @@ class MuteList extends React.Component {
 }
 
 module.exports = connect(
-    (state, props) => ({}),
     (dispatch) => ({
         updateFollow: (follower, following, type, done) => {
             const what = type ? [type] : [];

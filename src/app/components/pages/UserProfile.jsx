@@ -23,15 +23,15 @@ const emptyPostsText = (section, account, isMyAccount) => {
 
     if (section == 'posts') {
         return tt('user_profile.user_hasnt_made_any_posts_yet', { name });
-    } else if (section == 'comments') {
+    } if (section == 'comments') {
         return tt('user_profile.user_hasnt_made_any_posts_yet', { name });
-    } else if (section == 'replies') {
+    } if (section == 'replies') {
         return tt('user_profile.user_hasnt_had_any_replies_yet', { name }) + '.';
-    } else if (section == 'payout') {
+    } if (section == 'payout') {
         return 'No pending payouts.';
-    } else if (section == 'blog' && !isMyAccount) {
+    } if (section == 'blog' && !isMyAccount) {
         return tt('user_profile.user_hasnt_started_bloggin_yet', { name });
-    } else if (section == 'blog') {
+    } if (section == 'blog') {
         return (
             <div>
                 {tt('user_profile.looks_like_you_havent_posted_anything_yet')}
@@ -57,9 +57,9 @@ const emptyPostsText = (section, account, isMyAccount) => {
                 <br />*/}
             </div>
         );
-    } else {
-        console.error('unhandled emptytext case', section, name, isMyAccount);
     }
+    console.error('unhandled emptytext case', section, name, isMyAccount);
+
 };
 
 export default class UserProfile extends React.Component {
@@ -108,18 +108,18 @@ export default class UserProfile extends React.Component {
         }
     }
 
-    shouldComponentUpdate(np, ns) {
+    shouldComponentUpdate(np) {
         return (
-            np.username !== this.props.username ||
-            np.status !== this.props.status ||
-            np.followers !== this.props.followers ||
-            np.following !== this.props.following ||
-            np.loading !== this.props.loading ||
-            np.location.pathname !== this.props.location.pathname ||
-            np.blogmode !== this.props.blogmode ||
-            np.posts !== this.props.posts ||
-            np.profile !== this.props.profile ||
-            np.notifications !== this.props.notifications
+            np.username !== this.props.username
+            || np.status !== this.props.status
+            || np.followers !== this.props.followers
+            || np.following !== this.props.following
+            || np.loading !== this.props.loading
+            || np.location.pathname !== this.props.location.pathname
+            || np.blogmode !== this.props.blogmode
+            || np.posts !== this.props.posts
+            || np.profile !== this.props.profile
+            || np.notifications !== this.props.notifications
         );
     }
 
@@ -127,7 +127,9 @@ export default class UserProfile extends React.Component {
         const last_post = this.props.posts ? this.props.posts.last() : null;
         if (!last_post) return;
         //if (last_post == this.props.pending) return; // if last post is 'pending', its an invalid start token
-        const { username, status, order, category } = this.props;
+        const {
+            username, status, order, category,
+        } = this.props;
 
         if (isFetchingOrRecentlyUpdated(status, order, category)) return;
 
@@ -149,7 +151,6 @@ export default class UserProfile extends React.Component {
                 following,
                 followers,
                 accountname,
-                walletUrl,
                 category,
                 section,
                 order,
@@ -159,6 +160,7 @@ export default class UserProfile extends React.Component {
                 peakdBadges,
                 notifications,
                 subscriptions,
+                routeParams,
             },
         } = this;
 
@@ -172,7 +174,7 @@ export default class UserProfile extends React.Component {
                     <LoadingIndicator type="circle" />
                 </center>
             );
-        } else if (!profile) {
+        } if (!profile) {
             return (
                 <div>
                     <center>{tt('user_profile.unknown_account')}</center>
@@ -235,9 +237,7 @@ export default class UserProfile extends React.Component {
         };
 
         let tab_header;
-        let top_active = section;
         if (['posts', 'comments', 'payout'].includes(section)) {
-            top_active = 'posts';
             tab_header = (
                 <div className="UserProfile__postmenu">
                     {_tablink2('posts', tt('g.posts'))}
@@ -247,47 +247,14 @@ export default class UserProfile extends React.Component {
             );
         }
 
-        const _tablink = (tab, label) => {
-            const cls = tab === top_active ? 'active' : null;
-            return (
-                <Link to={_url(tab)} className={cls}>
-                    {label}
-                </Link>
-            );
-        };
-
-        const top_menu = (
-            <div className="row UserProfile__top-menu">
-                <div className="columns small-9 medium-12 medium-expand">
-                    <ul className="menu" style={{ flexWrap: 'wrap' }}>
-                        <li>{_tablink('blog', tt('g.blog'))}</li>
-                        <li>{_tablink('posts', tt('g.posts'))}</li>
-                        <li>{_tablink('replies', tt('g.replies'))}</li>
-                        <li>{_tablink('communities', tt('g.social'))}</li>
-                        <li>{_tablink('notifications', tt('g.notifications'))}</li>
-                        {/*
-                        <li>{_tablink('comments', tt('g.comments'))}</li>
-                        <li>{_tablink('payout', tt('voting_jsx.payout'))}</li>
-                        */}
-                    </ul>
-                </div>
-                <div className="columns shrink">
-                    <ul className="menu" style={{ flexWrap: 'wrap' }}>
-                        <li>
-                            <a href={walletUrl} target="_blank" rel="noopener noreferrer">
-                                Wallet
-                            </a>
-                        </li>
-                        {isMyAccount && <li>{_tablink('settings', tt('g.settings'))}</li>}
-                    </ul>
-                </div>
-            </div>
-        );
-
         return (
             <div className="UserProfile">
-                <UserProfileHeader current_user={username} accountname={accountname} profile={profile} />
-                <div className="UserProfile__top-nav row expanded">{top_menu}</div>
+                <UserProfileHeader
+                    current_user={username}
+                    accountname={accountname}
+                    profile={profile}
+                    routeParams={routeParams}
+                />
                 <div className="row">
                     <div className={classnames('UserProfile__tab_content', 'column', 'layout-list')}>
                         <article className="articles">
@@ -312,8 +279,6 @@ module.exports = {
             let { section } = ownProps.routeParams;
             if (!section) section = 'blog';
             const order = ['blog', 'posts', 'comments', 'replies', 'payout'].includes(section) ? section : null;
-
-            const profile = state.userProfiles.getIn(['profiles', accountname]);
 
             return {
                 posts: state.global.getIn(['discussion_idx', '@' + accountname, order]),

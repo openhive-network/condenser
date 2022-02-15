@@ -47,7 +47,8 @@ const highlightText = (text, highlight) => {
                 <span key={i} style={part.toLowerCase() === highlight.toLowerCase() ? { fontWeight: 'bold' } : {}}>
                     {part}
                 </span>
-            ))}{' '}
+            ))}
+            {' '}
         </span>
     );
 };
@@ -89,22 +90,21 @@ class NotificationsList extends React.Component {
         mentions: ['mention'],
     };
 
-    constructor() {
-        super();
-    }
-
-    componentWillMount() {
+    componentDidMount() {
         const { username, getAccountNotifications } = this.props;
         if (username) {
             getAccountNotifications(username);
         }
     }
 
-    componentDidUpdate(prevProps) {
-        const { username, getAccountNotifications } = this.props;
-        if (prevProps.username !== username) {
-            getAccountNotifications(username);
-        }
+    shouldComponentUpdate(nextProps) {
+        return (
+            JSON.stringify(this.props.notifications) !== JSON.stringify(nextProps.notifications)
+            || this.props.notificationActionPending !== nextProps.notificationActionPending
+        );
+    }
+
+    componentDidUpdate() {
         this.applyFilter();
     }
 
@@ -137,7 +137,7 @@ class NotificationsList extends React.Component {
                 } else {
                     notificationElement.classList.remove('even');
                 }
-            } else if (this.notificationFilterToTypes.hasOwnProperty(notificationFilter)) {
+            } else if (Object.prototype.hasOwnProperty.call(this.notificationFilterToTypes, notificationFilter)) {
                 const notificationTypes = this.notificationFilterToTypes[notificationFilter];
                 let matchType = false;
 
@@ -196,15 +196,20 @@ class NotificationsList extends React.Component {
 
         const renderItem = (item) => {
             const unRead = Date.parse(`${lastRead}Z`) <= Date.parse(`${item.date}Z`);
-            const usernamePattern = /\B@[a-z0-9\.-]+/gi;
+            const usernamePattern = /\B@[a-z0-9.-]+/gi;
             const mentions = item.msg.match(usernamePattern);
             const participants = mentions
                 ? mentions.map((m) => (
-                      <a href={'/' + m}>
-                          <Userpic account={m.substring(1)} />
-                      </a>
+                    <a key={m} href={'/' + m}>
+                        <Userpic account={m.substring(1)} />
+                    </a>
                   ))
                 : null;
+
+            if (item.date === '1970-01-01T00:00:00') {
+                return null;
+            }
+
             return (
                 <div key={item.id} className={`notification__item flex-body notification__${item.type}`}>
                     <div className="notification__score">
@@ -309,17 +314,18 @@ class NotificationsList extends React.Component {
                         </a>
                     </div>
                 </center>
-                {(notificationActionPending || !process.env.BROWSER) && (
-                    <center>
-                        <LoadingIndicator type="circle" />
-                    </center>
-                )}
 
                 {notifications && notifications.length > 0 && (
                     <div style={{ lineHeight: '1rem' }}>{notifications.map((item) => renderItem(item))}</div>
                 )}
                 {!notifications && !notificationActionPending && process.env.BROWSER && (
-                    <Callout>Welcome! You don't have any notifications yet.</Callout>
+                    <Callout>Welcome! You do not have any notifications yet.</Callout>
+                )}
+
+                {(notificationActionPending || !process.env.BROWSER) && (
+                    <center>
+                        <LoadingIndicator type="circle" />
+                    </center>
                 )}
 
                 {!notificationActionPending && notifications && !isLastPage && (

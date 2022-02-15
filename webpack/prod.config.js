@@ -4,6 +4,7 @@ const baseConfig = require('./base.config');
 
 module.exports = {
     ...baseConfig,
+    devtool: 'eval-source-map',
     plugins: [
         new webpack.DefinePlugin({
             'process.env': {
@@ -12,37 +13,13 @@ module.exports = {
                 VERSION: JSON.stringify(git.long())
             }
         }),
-        /*
-        // TODO: sourcemap
-        new webpack.optimize.UglifyJsPlugin({
-            compress: {
-                warnings: false,
-                screw_ie8: true,
-                sequences: true,
-                dead_code: true,
-                drop_debugger: true,
-                comparisons: true,
-                conditionals: true,
-                evaluate: true,
-                booleans: true,
-                loops: true,
-                unused: true,
-                hoist_funs: true,
-                if_return: true,
-                join_vars: true,
-                cascade: true
-            },
-            output: {
-                comments: false
-            }
-        }),*/
         ...baseConfig.plugins,
         // Fix window.onerror
         // See https://github.com/webpack/webpack/issues/5681#issuecomment-345861733
         new webpack.SourceMapDevToolPlugin({
             module: true,
             columns: false,
-            moduleFilenameTemplate: info => { return `${info.resourcePath}?${info.loaders}` }
-        })
-    ]
+            moduleFilenameTemplate: (info) => { return `${info.resourcePath}?${info.loaders}`; }
+        }),
+    ],
 };

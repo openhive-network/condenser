@@ -1,5 +1,5 @@
 import { fromJS } from 'immutable';
-import { DEFAULT_LANGUAGE } from 'app/client_config';
+import { DEFAULT_LANGUAGE } from 'app//client_config';
 
 // Action constants
 const SHOW_LOGIN = 'user/SHOW_LOGIN';
@@ -14,6 +14,8 @@ const REMOVE_HIGH_SECURITY_KEYS = 'user/REMOVE_HIGH_SECURITY_KEYS';
 const CHANGE_LANGUAGE = 'user/CHANGE_LANGUAGE';
 const SHOW_PROMOTE_POST = 'user/SHOW_PROMOTE_POST';
 const HIDE_PROMOTE_POST = 'user/HIDE_PROMOTE_POST';
+const SHOW_HIVE_AUTH_MODAL = 'user/SHOW_HIVE_AUTH_MODAL';
+const HIVE_AUTH_MODAL = 'user/HIVE_AUTH_MODAL';
 export const CHECK_KEY_TYPE = 'user/CHECK_KEY_TYPE';
 export const USERNAME_PASSWORD_LOGIN = 'user/USERNAME_PASSWORD_LOGIN';
 export const SET_USER = 'user/SET_USER';
@@ -31,6 +33,7 @@ const SHOW_POST_ADVANCED_SETTINGS = 'user/SHOW_POST_ADVANCED_SETTINGS';
 const HIDE_POST_ADVANCED_SETTINGS = 'user/HIDE_POST_ADVANCED_SETTINGS';
 const HIDE_ANNOUNCEMENT = 'user/HIDE_ANNOUNCEMENT';
 const SHOW_ANNOUNCEMENT = 'user/SHOW_ANNOUNCEMENT';
+const GENERATE_SESSION_ID = 'user/GENERATE_SESSION_ID';
 
 // Saga-related
 export const UPLOAD_IMAGE = 'user/UPLOAD_IMAGE';
@@ -45,6 +48,8 @@ const defaultState = fromJS({
     show_side_panel: false,
     maybeLoggedIn: false,
     showAnnouncement: false,
+    sessionId: '',
+    show_hive_auth_modal: false,
 });
 
 export default function reducer(state = defaultState, action) {
@@ -134,6 +139,12 @@ export default function reducer(state = defaultState, action) {
         case HIDE_PROMOTE_POST:
             return state.set('show_promote_post_modal', false);
 
+        case SHOW_HIVE_AUTH_MODAL:
+            return state.set('show_hive_auth_modal', true);
+
+        case HIVE_AUTH_MODAL:
+            return state.set('show_hive_auth_modal', false);
+
         case CHECK_KEY_TYPE:
             return state; // saga
 
@@ -213,6 +224,13 @@ export default function reducer(state = defaultState, action) {
             typeof sessionStorage !== 'undefined' && sessionStorage.setItem('hideAnnouncement', 'true');
             return state.set('showAnnouncement', false);
 
+        case GENERATE_SESSION_ID:
+            const gRand = () => {
+                return Math.floor((1 + Math.random()) * 65536).toString(16).substring(1);
+            };
+
+            return state.set('sessionId', `${gRand() + gRand()}-${gRand()}-${gRand()}-${gRand()}-${gRand()}${gRand()}${gRand()}`);
+
         default:
             return state;
     }
@@ -274,6 +292,16 @@ export const showPromotePost = (payload) => ({
 export const hidePromotePost = (payload) => ({
     type: HIDE_PROMOTE_POST,
     payload,
+});
+
+export const showHiveAuthModal = (payload) => ({
+    type: SHOW_HIVE_AUTH_MODAL,
+    payload,
+});
+
+export const hideHiveAuthModal = (payload) => ({
+   type: HIVE_AUTH_MODAL,
+   payload,
 });
 
 export const checkKeyType = (payload) => ({
@@ -361,4 +389,8 @@ export const hideAnnouncement = () => ({
 
 export const showAnnouncement = () => ({
     type: SHOW_ANNOUNCEMENT,
+});
+
+export const generateSessionId = () => ({
+    type: GENERATE_SESSION_ID,
 });

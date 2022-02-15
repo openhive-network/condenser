@@ -4,9 +4,12 @@ import MarkdownViewer from 'app/components/cards/MarkdownViewer';
 class XSS extends React.Component {
     render() {
         if (!process.env.NODE_ENV === 'development') return <div />;
-        let tests = xss.map((test, i) => (
+        const tests = xss.map((test, i) => (
             <div key={i}>
-                <h2>Test {i}</h2>
+                <h2>
+                    Test
+                    {i}
+                </h2>
                 <MarkdownViewer formId={'xsstest' + i} text={test} />
                 <hr />
             </div>
@@ -66,7 +69,7 @@ alert(String.fromCharCode(88,83,83))//";alert(String.fromCharCode(88,83,83))//--
 
     `onnerr w/ clearly invalid img: <img src="awesome.jpg" onerror="alert('xss')" /><br />
 good image: <img src="https://steem.io/images/press/press-theblkchn.png" onerror="alert('xss')" /><br />
-good url, bad img: <img src="https://steem.io/testing-does-not-exist.png" onerror="alert('xss')" /> 
+good url, bad img: <img src="https://steem.io/testing-does-not-exist.png" onerror="alert('xss')" />
 (results will vary if using image proxy -- it rewrites 'src')`,
 
     `**test**!%3Cimg%20src=%22awsome.jpg%22%20onerror=%22alert(1)%22/%3E`,

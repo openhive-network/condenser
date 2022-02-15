@@ -5,7 +5,6 @@ import AutocompleteInput from 'app/components/elements/AutocompleteInput';
 
 import Unicode from 'app/utils/Unicode';
 import tt from 'counterpart';
-import { throws } from 'assert';
 
 const languageOptions = [
     { abbr: 'en', name: 'English' },
@@ -37,7 +36,7 @@ class CommunitySettings extends Component {
     onInput = (event) => {
         const el = event.target;
         const field = el.name;
-        const value = el.hasOwnProperty('checked') ? el.checked : el.value;
+        const value = Object.prototype.hasOwnProperty.call(el, 'checked') ? el.checked : el.value;
         this.setState({ [field]: value });
 
         if (field == 'title') {
@@ -61,7 +60,9 @@ class CommunitySettings extends Component {
     };
 
     render() {
-        const { title, about, is_nsfw, lang, description, flag_text, formError } = this.state;
+        const {
+ title, about, is_nsfw, lang, description, flag_text, formError
+} = this.state;
         const currentLanguage = languageOptions.filter((l) => l.abbr === lang)[0].name;
         return (
             <span>
@@ -96,7 +97,7 @@ class CommunitySettings extends Component {
                         />
                     </label>
                     <AutocompleteInput
-                        label={'Language'}
+                        label="Language"
                         values={languageOptions}
                         initialValue={currentLanguage}
                         onSelect={(v) => {
@@ -133,7 +134,8 @@ class CommunitySettings extends Component {
                         />
                     </label>
                     <label>
-                        <input type="checkbox" name="is_nsfw" checked={is_nsfw} onChange={(e) => this.onInput(e)} />{' '}
+                        <input type="checkbox" name="is_nsfw" checked={is_nsfw} onChange={(e) => this.onInput(e)} />
+                        {' '}
                         NSFW
                     </label>
                     <div className="text-right">

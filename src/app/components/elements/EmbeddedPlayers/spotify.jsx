@@ -121,7 +121,7 @@ export function genIframeMd(idx, id, width, height) {
     }
 
     return (
-        <div key={`spotify-${id}-${idx}`} className="videoWrapper">
+        <div key={`spotify-${id}-${idx}`} className="iframeWrapper">
             <iframe
                 title="spotify embedded player"
                 // eslint-disable-next-line react/jsx-props-no-spreading

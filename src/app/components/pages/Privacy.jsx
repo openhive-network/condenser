@@ -301,7 +301,8 @@ class Privacy extends React.Component {
                         <span className="c1">
                             In some circumstances we may anonymize your personal information (so that it can no longer
                             be associated with you) in which case we may use this information indefinitely without
-                            further notice to you. &nbsp;{' '}
+                            further notice to you. &nbsp;
+                            {' '}
                         </span>
                     </p>
                     <p className="c0">
