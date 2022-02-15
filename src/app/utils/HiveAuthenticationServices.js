@@ -179,7 +179,6 @@ const login = async (username, callbackFn) => {
 
         console.log('Hive Auth: user has approved the auth request', challengeResponse);
         const verified = verifyChallenge(challenge, challengeResponse);
-        console.log('verified', verified);
 
         if(verified) {
             console.log("Hive Auth: challenge succeeded");

@@ -8855,10 +8855,10 @@ history@^3.0.0:
     query-string "^4.2.2"
     warning "^3.0.0"
 
-hive-auth-client@^0.1.2:
-  version "0.1.2"
-  resolved "https://registry.yarnpkg.com/hive-auth-client/-/hive-auth-client-0.1.2.tgz#e758bca0c0b02c84ee87fea40691b98347abcc4b"
-  integrity sha512-HPEMsQNi14t/iAc0Tsw1dPNic9WrTwOX/1wzj/DlMXiZzMdVzqvuTHX/VTLO+rUDby5Wp4EpXNa2iVwTRD9diQ==
+hive-auth-client@^0.1.3:
+  version "0.1.3"
+  resolved "https://registry.yarnpkg.com/hive-auth-client/-/hive-auth-client-0.1.3.tgz#7f358bf2d7510f4c1d9fd13d977b5d5c3e2df9a7"
+  integrity sha512-zVFnDD1lBaj+HS/XogVPWIQJ82OPafEjI2SF0aCacJV9PBwBm5c7OHeO8JMNwPZ0ViY+ec9My+M9fst4nSVLjQ==
   dependencies:
     crypto-js "^4.1.1"
     lodash "^4.17.21"
