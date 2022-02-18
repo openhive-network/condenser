@@ -1,7 +1,7 @@
 /*eslint no-shadow: "warn", no-underscore-dangle: "warn" */
 /* global $STM_Config */
 import {
- call, put, select, takeEvery
+    call, put, select, takeEvery
 } from 'redux-saga/effects';
 import { Set, Map } from 'immutable';
 import tt from 'counterpart';
@@ -24,6 +24,7 @@ import { serverApiRecordEvent } from 'app/utils/ServerApiClient';
 import { isLoggedInWithKeychain } from 'app/utils/HiveKeychain';
 import { callBridge } from 'app/utils/steemApi';
 import { isLoggedInWithHiveSigner, hiveSignerClient } from 'app/utils/HiveSigner';
+import HiveAuthService from 'app/utils/HiveAuthenticationServices';
 
 import diff_match_patch from 'diff-match-patch';
 
@@ -38,7 +39,12 @@ const hook = {
     accepted_custom_json,
     accepted_delete_comment,
     accepted_vote,
+    broadcast_done,
 };
+
+function* broadcast_done() {
+    yield put(userActions.hideHiveAuthModal());
+}
 
 function* preBroadcast_vote({ operation, username }) {
     if (!operation.voter) operation.voter = username;
@@ -69,6 +75,7 @@ export function* broadcastOperation({
         username,
         password,
         useKeychain,
+        useHiveAuth,
         successCallback,
         errorCallback,
         allowPostUnsafe,
@@ -81,6 +88,7 @@ export function* broadcastOperation({
         username,
         password,
         useKeychain,
+        useHiveAuth,
         successCallback,
         errorCallback,
         allowPostUnsafe,
@@ -124,7 +132,11 @@ export function* broadcastOperation({
         return;
     }
     try {
-        if (!isLoggedInWithKeychain() && !isLoggedInWithHiveSigner()) {
+        if (
+            !isLoggedInWithKeychain()
+            && !isLoggedInWithHiveSigner()
+            && !HiveAuthService.isLoggedInWithHiveAuth()
+        ) {
             if (!keys || keys.length === 0) {
                 payload.keys = [];
                 // user may already be logged in, or just enterend a signing passowrd or wif
@@ -151,8 +163,9 @@ export function* broadcastOperation({
                 }
             }
         }
+
         // if the customJsonPayload has a 'required_posting_auths' key, that has value undefined, and the user is logged in. Update it.
-        const updatedOps = payload.operations.map((op) => {
+        payload.operations = payload.operations.map((op) => {
             if (op[0] === 'custom_json') {
                 if (
                     op[1].required_posting_auths
@@ -164,8 +177,6 @@ export function* broadcastOperation({
             }
             return op;
         });
-
-        payload.operations = updatedOps;
 
         yield call(broadcastPayload, { payload });
         let eventType = type
@@ -201,9 +212,9 @@ function hasPrivateKeys(payload) {
 }
 
 function* broadcastPayload({
- payload: {
- operations, keys, username, successCallback, errorCallback
-}
+   payload: {
+       operations, keys, username, successCallback, errorCallback
+   }
 }) {
     let needsActiveAuth = false;
 
@@ -238,6 +249,10 @@ function* broadcastPayload({
             }
         }
         operations = newOps;
+    }
+
+    if (HiveAuthService.isLoggedInWithHiveAuth()) {
+        yield put(userActions.showHiveAuthModal());
     }
 
     // status: broadcasting
@@ -308,6 +323,21 @@ function* broadcastPayload({
                         }
                     });
                 }
+            } else if (HiveAuthService.isLoggedInWithHiveAuth()) {
+                // Nothing requires Active Key at the moment, to revisit if we ever merge wallet back.
+                HiveAuthService.broadcast(
+                    operations,
+                    'posting',
+                    (response) => {
+                        console.log('HAS broadcast response', response);
+                        if (!response.success) {
+                            reject(response.error);
+                        } else {
+                            broadcastedEvent();
+                            resolve();
+                        }
+                    }
+                );
             } else {
                 broadcast.send({ extensions: [], operations }, keys, (err) => {
                     if (err) {
@@ -319,6 +349,9 @@ function* broadcastPayload({
                 });
             }
         });
+
+        yield call(hook.broadcast_done);
+
         // status: accepted
         // eslint-disable-next-line no-restricted-syntax
         for (const [type, operation] of operations) {
@@ -350,6 +383,7 @@ function* broadcastPayload({
         dispatcher.dispatch(EVENT_OPERATION_BROADCAST);
     } catch (error) {
         console.error('TransactionSaga\tbroadcastPayload', error);
+        yield call(hook.broadcast_done);
         // status: error
         yield put(transactionActions.error({ operations, error, errorCallback }));
         // eslint-disable-next-line no-restricted-syntax
@@ -424,11 +458,10 @@ function* accepted_delete_comment({ operation }) {
 }
 
 const wait = (ms) => new Promise((resolve) => {
-        setTimeout(() => resolve(), ms);
-    });
+    setTimeout(() => resolve(), ms);
+});
 
-function* accepted_vote({ operation: { author, permlink, weight } }) {
-    console.log('Vote accepted, weight', weight, 'on', author + '/' + permlink, 'weight');
+function* accepted_vote({ operation: { author, permlink } }) {
     // update again with new $$ amount from the steemd node
     yield put(
         globalActions.remove({
@@ -553,11 +586,16 @@ function* error_custom_json({ operation: { id, required_posting_auths } }) {
     }
 }
 
-function* error_vote({ operation: { author, permlink } }) {
+function* error_vote(transaction) {
+    const { operation } = transaction;
+    const { author, permlink } = operation;
     yield put(
         globalActions.remove({
             key: `transaction_vote_active_${author}_${permlink}`,
         })
+    );
+    yield put(
+        globalActions.unvoted(operation)
     );
     yield call(getContent, { author, permlink }); // unvote
 }

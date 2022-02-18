@@ -25,6 +25,9 @@ class Modals extends PureComponent {
         show_login_modal: false,
         show_post_advanced_settings_modal: '',
         loginBroadcastOperation: undefined,
+        show_hive_auth_modal: false,
+        hideHiveAuthModal: false,
+        nightmodeEnabled: false,
     };
 
     static propTypes = {
@@ -37,6 +40,7 @@ class Modals extends PureComponent {
         hideConfirm: PropTypes.func.isRequired,
         hideBandwidthError: PropTypes.func.isRequired,
         hidePostAdvancedSettings: PropTypes.func.isRequired,
+        // eslint-disable-next-line react/forbid-prop-types
         notifications: PropTypes.object,
         show_terms_modal: PropTypes.bool,
         removeNotification: PropTypes.func,
@@ -46,6 +50,9 @@ class Modals extends PureComponent {
             successCallback: PropTypes.func,
             errorCallback: PropTypes.func,
         }),
+        show_hive_auth_modal: PropTypes.bool,
+        hideHiveAuthModal: PropTypes.func,
+        nightmodeEnabled: PropTypes.bool,
     };
 
     render() {
@@ -62,6 +69,9 @@ class Modals extends PureComponent {
             hideBandwidthError,
             hidePostAdvancedSettings,
             username,
+            show_hive_auth_modal,
+            hideHiveAuthModal,
+            nightmodeEnabled,
         } = this.props;
 
         const notifications_array = notifications
@@ -78,7 +88,7 @@ class Modals extends PureComponent {
             new_window.location = 'https://blocktrades.us/?input_coin_type=eth&output_coin_type=steem_power&receive_address=' + username;
         };
         return (
-            <div>
+            <div className="modal-window">
                 {show_login_modal && (
                     <Reveal
                         onHide={() => {
@@ -122,9 +132,32 @@ class Modals extends PureComponent {
                     </Reveal>
                 )}
                 {show_post_advanced_settings_modal && (
-                    <Reveal onHide={hidePostAdvancedSettings} show={show_post_advanced_settings_modal ? true : false}>
+                    <Reveal
+                        onHide={hidePostAdvancedSettings}
+                        show={!!show_post_advanced_settings_modal}
+                    >
                         <CloseButton onClick={hidePostAdvancedSettings} />
                         <PostAdvancedSettings formId={show_post_advanced_settings_modal} />
+                    </Reveal>
+                )}
+                {show_hive_auth_modal && (
+                    <Reveal onHide={hideHiveAuthModal} show={!!show_hive_auth_modal}>
+                        <CloseButton onClick={hideHiveAuthModal} />
+                        <div>
+                            <div className="hiveauth-banner">
+                                <img
+                                    src={`/images/hiveauth-banner-${nightmodeEnabled ? 'dark' : 'light'}.png`}
+                                    alt="Hive Authentication Services"
+                                    width="100%"
+                                />
+                            </div>
+                            <div
+                                className="hiveauth-instructions"
+                                id="hive-auth-instructions"
+                            >
+                                {tt('hiveauthservices.pleaseWait')}
+                            </div>
+                        </div>
                     </Reveal>
                 )}
                 <NotificationStack
@@ -158,6 +191,8 @@ export default connect(
             show_bandwidth_error_modal: rcErr,
             show_post_advanced_settings_modal: state.user.get('show_post_advanced_settings_modal'),
             loginBroadcastOperation,
+            show_hive_auth_modal: state.user.get('show_hive_auth_modal'),
+            nightmodeEnabled: state.app.getIn(['user_preferences', 'nightmode']),
         };
     },
     (dispatch) => ({
@@ -180,6 +215,10 @@ export default connect(
         hidePostAdvancedSettings: (e) => {
             if (e) e.preventDefault();
             dispatch(userActions.hidePostAdvancedSettings());
+        },
+        hideHiveAuthModal: (e) => {
+            if (e) e.preventDefault();
+            dispatch(userActions.hideHiveAuthModal());
         },
         // example: addNotification: ({key, message}) => dispatch({type: 'ADD_NOTIFICATION', payload: {key, message}}),
         removeNotification: (key) => dispatch(appActions.removeNotification({ key })),

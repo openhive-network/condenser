@@ -608,7 +608,8 @@
         "login_warning_link_text": "Open my Hive Wallet to access and view my posting key",
         "join_our": "Join our",
         "sign_transfer": "Sign to complete transfer",
-        "use_keychain": "Use keychain extension",
+        "use_keychain": "Use Hive Keychain extension",
+        "use_hiveauth": "Use Hive Authentication Services",
         "more_login_methods": "more login methods"
     },
     "chainvalidation_js": {
@@ -818,5 +819,19 @@
         "newest": "Newest",
         "popularity": "Popularity",
         "relevance": "Relevance"
+    },
+    "hiveauthservices": {
+        "pleaseWait": "Please wait",
+        "broadcastInstructions": "Broadcasting your operation via Hive Authentication Services, please launch your compatible mobile wallet app and approve.",
+        "unknownCommand": "unknown command",
+        "connecting": "Connecting to Hive Authentication Services...",
+        "qrInstructions": "Please tap or scan the following QR code with your Hive Authentication Services compatible mobile wallet app",
+        "tokenExpired": "Hive Authentication Services token expired, please try again..",
+        "challengeValidationFailed": "failed validating challenge",
+        "userRejectedRequest": "user has rejected the Hive Authentication Services request",
+        "requestExpired": "The Hive Authentication Services request has expired, please try again...",
+        "verifyPostingKeyInstructions": "'Please use your Hive Authentication Services compatible mobile wallet app to verify your posting key.'",
+        "publicKeyMatchingError": "failed matching signature to public key",
+        "failedProcessingChallenge": "failed processing challenge"
     }
 }

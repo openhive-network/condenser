@@ -6157,6 +6157,11 @@ crypto-browserify@^3.11.0:
     randombytes "^2.0.0"
     randomfill "^1.0.3"
 
+crypto-js@^4.1.1:
+  version "4.1.1"
+  resolved "https://registry.yarnpkg.com/crypto-js/-/crypto-js-4.1.1.tgz#9e485bcf03521041bd85844786b83fb7619736cf"
+  integrity sha512-o2JlM7ydqd3Qk9CA0L4NL6mTzU2sdx96a+oOfPu8Mkl/PK51vSyoi8/rQ8NknZtk44vq15lmhAj9CIAGwgeWKw==
+
 csrf@^3.0.0:
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/csrf/-/csrf-3.1.0.tgz#ec75e9656d004d674b8ef5ba47b41fbfd6cb9c30"
@@ -8849,6 +8854,14 @@ history@^3.0.0:
     loose-envify "^1.2.0"
     query-string "^4.2.2"
     warning "^3.0.0"
+
+hive-auth-client@^0.1.4:
+  version "0.1.4"
+  resolved "https://registry.yarnpkg.com/hive-auth-client/-/hive-auth-client-0.1.4.tgz#736795f39e2900a275dbeb589def8604a09d51f8"
+  integrity sha512-JtE6+ctZumvJGkv6LahJFORiFn4sUGk3BfpCPldamNK8ljnoEamYCoEfZsZHSJ2BLRr44798LxD+beI+9TxFaQ==
+  dependencies:
+    crypto-js "^4.1.1"
+    lodash "^4.17.21"
 
 hive-uri@^0.2.3:
   version "0.2.3"

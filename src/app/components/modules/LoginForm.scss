@@ -87,3 +87,19 @@
     width: 140px;
   }
 }
+.reveal .login-alternative-methods a.button {
+    font-size: 15px;
+}
+.reveal .login-alternative-methods a.button img {
+    height: 28px;
+}
+.hiveauth_info {
+    margin-bottom: 10px;
+}
+.hiveauth_instructions,
+.hiveauth_qr {
+    display: none;
+    &.show {
+        display: block;
+    }
+}
