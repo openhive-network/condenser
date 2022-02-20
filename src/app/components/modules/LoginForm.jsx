@@ -437,7 +437,7 @@ class LoginForm extends Component {
                             disabled={!hasError && submitting}
                         />
                         &nbsp;
-                        <img src="/images/hiveauth.png" alt="Hive Authentication Services" width="16" />
+                        <img src="/images/hiveauth.png" alt="HiveAuth" width="16" />
                         &nbsp;
                         {tt('loginform_jsx.use_hiveauth')}
                     </label>

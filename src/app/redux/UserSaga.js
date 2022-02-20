@@ -10,7 +10,7 @@ import { accountAuthLookup } from 'app/redux/AuthSaga';
 import { getAccount } from 'app/redux/SagaShared';
 import * as userActions from 'app/redux/UserReducer';
 import { isLoggedInWithKeychain } from 'app/utils/HiveKeychain';
-import HiveAuthServices from 'app/utils/HiveAuthenticationServices.js';
+import HiveAuthUtils from 'app/utils/HiveAuthUtils';
 import { packLoginData, extractLoginData } from 'app/utils/UserUtil';
 import { browserHistory } from 'react-router';
 import {
@@ -250,13 +250,13 @@ function* usernamePasswordLogin2(options) {
         return;
     }
 
-    // return if already logged in using Hive Authentication Services
+    // return if already logged in using HiveAuth
     if (login_with_hiveauth) {
-        console.log('Logged in using Hive Authentication Services');
-        HiveAuthServices.setUsername(username);
-        HiveAuthServices.setKey(hiveauth_key);
-        HiveAuthServices.setToken(hiveauth_token);
-        HiveAuthServices.setExpire(hiveauth_token_expires);
+        console.log('Logged in using HiveAuth');
+        HiveAuthUtils.setUsername(username);
+        HiveAuthUtils.setKey(hiveauth_key);
+        HiveAuthUtils.setToken(hiveauth_token);
+        HiveAuthUtils.setExpire(hiveauth_token_expires);
         yield put(
             userActions.setUser({
                 username,
@@ -463,7 +463,7 @@ function* usernamePasswordLogin2(options) {
                 );
             } else if (useHiveAuth) {
                 const authResponse = yield new Promise((resolve) => {
-                    HiveAuthServices.login(username, (res) => {
+                    HiveAuthUtils.login(username, (res) => {
                         resolve(res);
                     });
                 });
