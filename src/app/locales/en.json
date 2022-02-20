@@ -832,6 +832,7 @@
         "requestExpired": "The Hive Authentication Services request has expired, please try again...",
         "verifyPostingKeyInstructions": "'Please use your Hive Authentication Services compatible mobile wallet app to verify your posting key.'",
         "publicKeyMatchingError": "failed matching signature to public key",
-        "failedProcessingChallenge": "failed processing challenge"
+        "failedProcessingChallenge": "failed processing challenge",
+        "failedAttaching": "Failed attaching"
     }
 }

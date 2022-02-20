@@ -1,3 +1,4 @@
+/* global $STM_Config */
 import tt from 'counterpart';
 import QRious from 'qrious';
 import { PublicKey, Signature, hash } from '@hiveio/hive-js/lib/auth/ecc';
@@ -5,13 +6,7 @@ import { HasClient } from 'hive-auth-client';
 
 import { isLoggedIn, extractLoginData } from 'app/utils/UserUtil';
 
-const APP_META = {
-    name: 'Hive Blog',
-    description: 'Hive Blog',
-    icon: 'https://hive.blog/images/hive-blog-logo.png',
-};
-
-const client = new HasClient('hive-auth.arcange.eu', '');
+const client = new HasClient('hive-auth.arcange.eu', '', true);
 
 const auth = {
     username: undefined,
@@ -112,7 +107,7 @@ const broadcast = (operations, type, callbackFn) => {
         clearLoginInstructions();
         callbackFn({
             success: false,
-            error: 'Failed attaching',
+            error: tt('hiveauthservices.failedAttaching'),
         });
         removeEventHandlers();
     };
@@ -276,7 +271,7 @@ const login = async (username, callbackFn) => {
         clearLoginInstructions();
         callbackFn({
             success: false,
-            error: 'Failed attaching',
+            error: tt('hiveauthservices.failedAttaching'),
         });
         removeEventHandlers();
     };
@@ -295,7 +290,15 @@ const login = async (username, callbackFn) => {
     client.addEventHandler('RequestExpired', handleRequestExpired);
     client.addEventHandler('AttachFailure', handleAttachFailure);
 
-    client.authenticate(auth, APP_META, challengeData);
+    client.authenticate(
+        auth,
+        {
+            name: 'Hive Blog',
+            description: 'Hive Blog',
+            icon: `${window.location.protocol}//${$STM_Config.site_domain}/images/hive-blog-twshare.png`,
+        },
+        challengeData
+    );
 };
 
 export default {

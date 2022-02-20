@@ -24,7 +24,7 @@ import { serverApiRecordEvent } from 'app/utils/ServerApiClient';
 import { isLoggedInWithKeychain } from 'app/utils/HiveKeychain';
 import { callBridge } from 'app/utils/steemApi';
 import { isLoggedInWithHiveSigner, hiveSignerClient } from 'app/utils/HiveSigner';
-import HiveAuthService from 'app/utils/HiveAuthenticationServices';
+import HiveAuthServices from 'app/utils/HiveAuthenticationServices';
 
 import diff_match_patch from 'diff-match-patch';
 
@@ -135,7 +135,7 @@ export function* broadcastOperation({
         if (
             !isLoggedInWithKeychain()
             && !isLoggedInWithHiveSigner()
-            && !HiveAuthService.isLoggedInWithHiveAuth()
+            && !HiveAuthServices.isLoggedInWithHiveAuth()
         ) {
             if (!keys || keys.length === 0) {
                 payload.keys = [];
@@ -251,7 +251,7 @@ function* broadcastPayload({
         operations = newOps;
     }
 
-    if (HiveAuthService.isLoggedInWithHiveAuth()) {
+    if (HiveAuthServices.isLoggedInWithHiveAuth()) {
         yield put(userActions.showHiveAuthModal());
     }
 
@@ -323,9 +323,9 @@ function* broadcastPayload({
                         }
                     });
                 }
-            } else if (HiveAuthService.isLoggedInWithHiveAuth()) {
+            } else if (HiveAuthServices.isLoggedInWithHiveAuth()) {
                 // Nothing requires Active Key at the moment, to revisit if we ever merge wallet back.
-                HiveAuthService.broadcast(
+                HiveAuthServices.broadcast(
                     operations,
                     'posting',
                     (response) => {
