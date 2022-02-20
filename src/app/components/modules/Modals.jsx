@@ -147,7 +147,7 @@ class Modals extends PureComponent {
                             <div className="hiveauth-banner">
                                 <img
                                     src={`/images/hiveauth-banner-${nightmodeEnabled ? 'dark' : 'light'}.png`}
-                                    alt="Hive Authentication Services"
+                                    alt="HiveAuth"
                                     width="100%"
                                 />
                             </div>
