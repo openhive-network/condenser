@@ -46,9 +46,22 @@
 
 .Post__reply_pagelink {
     cursor: pointer;
+    padding: 2px 4px;
+    border-radius: 2px 4px;
 
-    &.current_page {
-        font-weight: bold;
+    @include themify($themes) {
+        color: themed('buttonText');
+        background-color: themed('buttonBackground');
+
+        &:hover {
+            color: themed('buttonTextHover');
+            background-color: themed('buttonBackgroundHover');
+        }
+
+        &.current_page {
+            font-weight: bold;
+            background-color: themed('alertBackgroundColor');
+        }
     }
 }
 

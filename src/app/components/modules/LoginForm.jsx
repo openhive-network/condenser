@@ -30,6 +30,8 @@ class LoginForm extends Component {
     };
 
     static defaultProps = {
+        loginError: '',
+        onCancel: undefined,
         afterLoginRedirectToWelcome: false,
     };
 
@@ -43,7 +45,7 @@ class LoginForm extends Component {
             console.error('CreateAccount - cryptoTestResult: ', cryptoTestResult);
             cryptographyFailure = true;
         }
-        this.state = { cryptographyFailure, isHiveSigner };
+        this.state = { cryptographyFailure, isHiveSigner, isProcessingHiveAuth: false };
         this.usernameOnChange = (e) => {
             const value = e.target.value.toLowerCase();
             this.state.username.props.onChange(value);
@@ -76,23 +78,33 @@ class LoginForm extends Component {
         if (this.refs.username && this.refs.username.value) this.refs.pw.focus();
     }
 
+    componentDidUpdate() {
+        const { loginError } = this.props;
+        if (loginError && this.state.isProcessingHiveAuth) {
+            // eslint-disable-next-line react/no-did-update-set-state
+            this.setState({ isProcessingHiveAuth: false });
+        }
+    }
+
     // shouldComponentUpdate = shouldComponentUpdate(this, 'LoginForm');
 
     initForm(props) {
         reactForm({
             name: 'login',
             instance: this,
-            fields: ['username', 'password', 'saveLogin:checked', 'useKeychain:checked'],
+            fields: ['username', 'password', 'saveLogin:checked', 'useKeychain:checked', 'useHiveAuth:checked'],
             initialValues: props.initialValues,
             validation: (values) => ({
                 username: !values.username ? tt('g.required') : validate_account_name(values.username.split('/')[0]),
                 password: values.useKeychain
                     ? null
-                    : !values.password
-                    ? tt('g.required')
-                    : PublicKey.fromString(values.password)
-                    ? tt('loginform_jsx.you_need_a_private_password_or_key')
-                    : null,
+                    : values.useHiveAuth
+                        ? null
+                        : !values.password
+                            ? tt('g.required')
+                            : PublicKey.fromString(values.password)
+                                ? tt('loginform_jsx.you_need_a_private_password_or_key')
+                                : null,
             }),
         });
     }
@@ -104,8 +116,15 @@ class LoginForm extends Component {
     }
 
     useKeychainToggle = () => {
-        const { useKeychain } = this.state;
+        const { useKeychain, useHiveAuth } = this.state;
         useKeychain.props.onChange(!useKeychain.value);
+        useHiveAuth.props.onChange(false);
+    };
+
+    useHiveAuthToggle = () => {
+        const { useHiveAuth, useKeychain } = this.state;
+        useHiveAuth.props.onChange(!useHiveAuth.value);
+        useKeychain.props.onChange(false);
     };
 
     saveLoginToggle = () => {
@@ -217,10 +236,11 @@ class LoginForm extends Component {
             msg,
         } = this.props;
         const {
- username, password, useKeychain, saveLogin
-} = this.state;
+            username, password, useKeychain, useHiveAuth, saveLogin
+        } = this.state;
+
         const { valid, handleSubmit } = this.state.login;
-        const submitting = this.state.login.submitting || this.state.isHiveSigner;
+        const submitting = this.state.login.submitting || this.state.isHiveSigner || this.state.isProcessingHiveAuth;
         const { usernameOnChange, onCancel /*qrReader*/ } = this;
         const disabled = submitting || !valid;
         const opType = loginBroadcastOperation ? loginBroadcastOperation.get('type') : null;
@@ -242,8 +262,8 @@ class LoginForm extends Component {
         const submitLabel = showLoginWarning
             ? tt('loginform_jsx.continue_anyway')
             : loginBroadcastOperation
-            ? tt('g.sign_in')
-            : tt('g.login');
+                ? tt('g.sign_in')
+                : tt('g.login');
         let error = password.touched && password.error ? password.error : this.props.loginError;
         if (error === 'owner_login_blocked') {
             error = (
@@ -279,9 +299,9 @@ class LoginForm extends Component {
                 );
             }
         }
-        const password_info = !useKeychain.value && checkPasswordChecksum(password.value) === false
-                ? tt('loginform_jsx.password_info')
-                : null;
+        const password_info = !useKeychain.value && !useHiveAuth.value && checkPasswordChecksum(password.value) === false
+            ? tt('loginform_jsx.password_info')
+            : null;
         const titleText = (
             <h3>
                 {tt('loginform_jsx.returning_users')}
@@ -289,29 +309,36 @@ class LoginForm extends Component {
             </h3>
         );
 
-/*
-        const signupLink = (
-            <div className="sign-up">
-                <hr />
-                <p>
-                    {tt('loginform_jsx.join_our')} <em>{tt('loginform_jsx.amazing_community')}</em>
-                    {tt('loginform_jsx.to_comment_and_reward_others')}
-                </p>
-                <button type="button" className="button hollow" onClick={this.SignUp}>
-                    {tt('loginform_jsx.sign_up_get_hive')}
-                </button>
-            </div>
-        );
- */
+        /*
+                const signupLink = (
+                    <div className="sign-up">
+                        <hr />
+                        <p>
+                            {tt('loginform_jsx.join_our')} <em>{tt('loginform_jsx.amazing_community')}</em>
+                            {tt('loginform_jsx.to_comment_and_reward_others')}
+                        </p>
+                        <button type="button" className="button hollow" onClick={this.SignUp}>
+                            {tt('loginform_jsx.sign_up_get_hive')}
+                        </button>
+                    </div>
+                );
+         */
 
         const form = (
             <form
                 onSubmit={handleSubmit(({ data }) => {
                     // bind redux-form to react-redux
-                    console.log('Login\tdispatchSubmit');
+                    console.log('Login\tdispatchSubmit', useHiveAuth.value);
+                    this.props.clearError();
+
+                    if (useHiveAuth.value) {
+                        this.setState({ isProcessingHiveAuth: true });
+                    }
+
                     return dispatchSubmit(
                         data,
                         useKeychain.value,
+                        useHiveAuth.value,
                         loginBroadcastOperation,
                         afterLoginRedirectToWelcome
                     );
@@ -340,7 +367,7 @@ class LoginForm extends Component {
                     </div>
                 ) : null}
 
-                {useKeychain.value ? (
+                {useKeychain.value || useHiveAuth.value ? (
                     <div>
                         {error && (
                             <div className="error">
@@ -393,10 +420,28 @@ class LoginForm extends Component {
                                 disabled={submitting}
                             />
                             &nbsp;
+                            <img src="/images/hivekeychain.png" alt="Hive Keychain" width="16" />
+                            &nbsp;
                             {tt('loginform_jsx.use_keychain')}
                         </label>
                     </div>
                 )}
+                <div>
+                    <label className="LoginForm__save-login" htmlFor="useHiveAuth">
+                        <input
+                            id="useHiveAuth"
+                            type="checkbox"
+                            ref="pw"
+                            {...useHiveAuth.props}
+                            onChange={this.useHiveAuthToggle}
+                            disabled={!hasError && submitting}
+                        />
+                        &nbsp;
+                        <img src="/images/hiveauth.png" alt="HiveAuth" width="16" />
+                        &nbsp;
+                        {tt('loginform_jsx.use_hiveauth')}
+                    </label>
+                </div>
                 <div>
                     <label className="LoginForm__save-login" htmlFor="saveLogin">
                         <input
@@ -426,6 +471,18 @@ class LoginForm extends Component {
                             {tt('g.cancel')}
                         </button>
                     )}
+                </div>
+                <div className="hiveauth_info">
+                    <div id="hiveauth-instructions" className="hiveauth_instructions" />
+                    <a
+                        href="#"
+                        id="hiveauth-qr-link"
+                        className="hiveauth_qr"
+                        target="_blank"
+                        rel="noreferrer noopener"
+                    >
+                        <canvas id="hiveauth-qr" />
+                    </a>
                 </div>
                 {/*signupLink*/}
             </form>
@@ -479,7 +536,7 @@ class LoginForm extends Component {
         );
 
         const moreLoginMethods = (
-            <div className="row buttons">
+            <div className="row buttons login-alternative-methods">
                 <div className="column">
                     <a role="link" id="btn-hivesigner" className="button" onClick={this.onClickHiveSignerBtn} disabled={submitting}>
                         <img src="/images/hivesigner.svg" alt="Hive Signer" />
@@ -544,6 +601,7 @@ export default connect(
         const loginBroadcastOperation = state.user.get('loginBroadcastOperation');
         const initialValues = {
             useKeychain: !!hasCompatibleKeychain(),
+            useHiveAuth: false,
             saveLogin: saveLoginDefault,
         };
 
@@ -578,7 +636,8 @@ export default connect(
 
     // mapDispatchToProps
     (dispatch) => ({
-        dispatchSubmit: (data, useKeychain, loginBroadcastOperation, afterLoginRedirectToWelcome) => {
+        dispatchSubmit: (data, useKeychain, useHiveAuth, loginBroadcastOperation, afterLoginRedirectToWelcome) => {
+            console.log('HiveAuth', useHiveAuth);
             const { password, saveLogin } = data;
             const username = data.username.trim().toLowerCase();
             if (loginBroadcastOperation) {
@@ -592,6 +651,7 @@ export default connect(
                         username,
                         password,
                         useKeychain,
+                        useHiveAuth,
                         successCallback,
                         errorCallback,
                     })
@@ -601,6 +661,7 @@ export default connect(
                         username,
                         password,
                         useKeychain,
+                        useHiveAuth,
                         saveLogin,
                         afterLoginRedirectToWelcome,
                         operationType: type,
@@ -616,6 +677,7 @@ export default connect(
                         username,
                         password,
                         useKeychain,
+                        useHiveAuth,
                         saveLogin,
                         afterLoginRedirectToWelcome,
                     })
@@ -638,7 +700,7 @@ export default connect(
             const { type } = loginBroadcastOperation ? loginBroadcastOperation.toJS() : {};
 
             serverApiRecordEvent('SignIn', type);
-
+            console.log('really submit');
             dispatch(
                 userActions.usernamePasswordLogin({
                     username,

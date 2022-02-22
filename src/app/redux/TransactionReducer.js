@@ -56,6 +56,7 @@ export default function reducer(state = defaultState, action) {
 
             let msg;
             const key = error.toString().replace(/rethrow$/, '');
+            console.log('error key', key);
 
             if (/You may only post once every/.test(key)) {
                 // Assert Exception:( now - auth.last_root_post ) > STEEM_MIN_ROOT_COMMENT_INTERVAL: You may only post once every 5 minutes.
