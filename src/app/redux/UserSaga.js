@@ -480,13 +480,17 @@ function* usernamePasswordLogin2(options) {
                 );
             } else if (useHiveAuth) {
                 const authResponse = yield new Promise((resolve) => {
-                    HiveAuthUtils.login(username, (res) => {
+                    HiveAuthUtils.login(username, buf, (res) => {
                         resolve(res);
                     });
                 });
 
                 if (authResponse.success) {
-                    const { token, expire, key } = authResponse.hiveAuthData;
+                    const {
+                        token, expire, key, challengeHex,
+                    } = authResponse.hiveAuthData;
+                    signatures.posting = challengeHex;
+
                     yield put(
                         userActions.setUser({
                             username,

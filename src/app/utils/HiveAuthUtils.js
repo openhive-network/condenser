@@ -147,15 +147,10 @@ const clearLoginInstructions = () => {
     }
 };
 
-const login = async (username, callbackFn) => {
+const login = async (username, challenge, callbackFn) => {
     updateLoginInstructions(tt('hiveauthservices.connecting'));
 
     setUsername(username);
-
-    const challenge = JSON.stringify({
-        login: auth.username,
-        ts: Date.now()
-    });
 
     const challengeData = {
         key_type: 'posting',
@@ -228,6 +223,7 @@ const login = async (username, callbackFn) => {
                     token,
                     expire,
                     uuid,
+                    challengeHex: challengeResponse.challenge,
                 }
             });
         } else {
