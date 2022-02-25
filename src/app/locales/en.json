@@ -609,7 +609,7 @@
         "join_our": "Join our",
         "sign_transfer": "Sign to complete transfer",
         "use_keychain": "Use Hive Keychain extension",
-        "use_hiveauth": "Use Hive Authentication Services",
+        "use_hiveauth": "Use HiveAuth",
         "more_login_methods": "more login methods"
     },
     "chainvalidation_js": {
@@ -822,16 +822,17 @@
     },
     "hiveauthservices": {
         "pleaseWait": "Please wait",
-        "broadcastInstructions": "Broadcasting your operation via Hive Authentication Services, please launch your compatible mobile wallet app and approve.",
+        "broadcastInstructions": "Broadcasting your operation via HiveAuth, please launch your compatible mobile wallet app and approve.",
         "unknownCommand": "unknown command",
-        "connecting": "Connecting to Hive Authentication Services...",
-        "qrInstructions": "Please tap or scan the following QR code with your Hive Authentication Services compatible mobile wallet app",
-        "tokenExpired": "Hive Authentication Services token expired, please try again..",
+        "connecting": "Connecting to HiveAuth...",
+        "qrInstructions": "Please tap or scan the following QR code with your HiveAuth compatible mobile wallet app",
+        "tokenExpired": "HiveAuth token expired, please try again..",
         "challengeValidationFailed": "failed validating challenge",
-        "userRejectedRequest": "user has rejected the Hive Authentication Services request",
-        "requestExpired": "The Hive Authentication Services request has expired, please try again...",
-        "verifyPostingKeyInstructions": "'Please use your Hive Authentication Services compatible mobile wallet app to verify your posting key.'",
+        "userRejectedRequest": "user has rejected the HiveAuth request",
+        "requestExpired": "The HiveAuth request has expired, please try again...",
+        "verifyPostingKeyInstructions": "'Please use your HiveAuth compatible mobile wallet app to verify your posting key.'",
         "publicKeyMatchingError": "failed matching signature to public key",
-        "failedProcessingChallenge": "failed processing challenge"
+        "failedProcessingChallenge": "failed processing challenge",
+        "failedAttaching": "Failed attaching"
     }
 }

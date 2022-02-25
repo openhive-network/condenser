@@ -8860,10 +8860,10 @@ history@^3.0.0:
     query-string "^4.2.2"
     warning "^3.0.0"
 
-hive-auth-client@^0.1.3:
-  version "0.1.3"
-  resolved "https://registry.yarnpkg.com/hive-auth-client/-/hive-auth-client-0.1.3.tgz#7f358bf2d7510f4c1d9fd13d977b5d5c3e2df9a7"
-  integrity sha512-zVFnDD1lBaj+HS/XogVPWIQJ82OPafEjI2SF0aCacJV9PBwBm5c7OHeO8JMNwPZ0ViY+ec9My+M9fst4nSVLjQ==
+hive-auth-client@^0.1.4:
+  version "0.1.4"
+  resolved "https://registry.yarnpkg.com/hive-auth-client/-/hive-auth-client-0.1.4.tgz#736795f39e2900a275dbeb589def8604a09d51f8"
+  integrity sha512-JtE6+ctZumvJGkv6LahJFORiFn4sUGk3BfpCPldamNK8ljnoEamYCoEfZsZHSJ2BLRr44798LxD+beI+9TxFaQ==
   dependencies:
     crypto-js "^4.1.1"
     lodash "^4.17.21"
