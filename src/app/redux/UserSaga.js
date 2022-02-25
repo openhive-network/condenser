@@ -276,6 +276,7 @@ function* usernamePasswordLogin2(options) {
             );
         } else {
             console.log('HiveAuth token has expired');
+            HiveAuthUtils.logout();
             yield put(
                 userActions.logout({ type: 'default' })
             );

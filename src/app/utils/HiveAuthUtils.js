@@ -297,8 +297,16 @@ const login = async (username, challenge, callbackFn) => {
     );
 };
 
+const logout = () => {
+    auth.username = undefined;
+    auth.token = undefined;
+    auth.expire = undefined;
+    auth.key = undefined;
+};
+
 export default {
     login,
+    logout,
     setUsername,
     setKey,
     setToken,
