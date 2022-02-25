@@ -251,19 +251,36 @@ function* usernamePasswordLogin2(options) {
     }
 
     // return if already logged in using HiveAuth
-    if (login_with_hiveauth) {
-        console.log('Logged in using HiveAuth');
-        HiveAuthUtils.setUsername(username);
-        HiveAuthUtils.setKey(hiveauth_key);
-        HiveAuthUtils.setToken(hiveauth_token);
-        HiveAuthUtils.setExpire(hiveauth_token_expires);
-        yield put(
-            userActions.setUser({
-                username,
-                login_with_hiveauth: true,
-                effective_vests: effectiveVests(account),
-            })
-        );
+    if (
+        login_with_hiveauth
+    ) {
+        const now = new Date().getTime();
+        const isTokenValid = now < hiveauth_token_expires;
+
+        if (
+            hiveauth_key
+            && hiveauth_token
+            && isTokenValid
+        ) {
+            console.log('Logged in using HiveAuth');
+            HiveAuthUtils.setUsername(username);
+            HiveAuthUtils.setKey(hiveauth_key);
+            HiveAuthUtils.setToken(hiveauth_token);
+            HiveAuthUtils.setExpire(hiveauth_token_expires);
+            yield put(
+                userActions.setUser({
+                    username,
+                    login_with_hiveauth: true,
+                    effective_vests: effectiveVests(account),
+                })
+            );
+        } else {
+            console.log('HiveAuth token has expired');
+            yield put(
+                userActions.logout({ type: 'default' })
+            );
+        }
+
         return;
     }
 
