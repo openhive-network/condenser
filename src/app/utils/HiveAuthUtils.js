@@ -38,11 +38,11 @@ const isLoggedInWithHiveAuth = () => {
 
     const now = new Date().getTime();
     const data = localStorage.getItem('autopost2');
-    const [,,,,,,,, login_with_hiveauth, hiveauth_key, hiveauth_token, hiveauth_tokenexpires] = extractLoginData(data);
+    const [,,,,,,,, login_with_hiveauth, hiveauth_key, hiveauth_token, hiveauth_token_expires] = extractLoginData(data);
     return !!login_with_hiveauth
         && !!hiveauth_key
         && !!hiveauth_token
-        && now < hiveauth_tokenexpires;
+        && now < hiveauth_token_expires;
 };
 
 const verifyChallenge = (challenge, data) => {
@@ -147,15 +147,10 @@ const clearLoginInstructions = () => {
     }
 };
 
-const login = async (username, callbackFn) => {
+const login = async (username, challenge, callbackFn) => {
     updateLoginInstructions(tt('hiveauthservices.connecting'));
 
     setUsername(username);
-
-    const challenge = JSON.stringify({
-        login: auth.username,
-        ts: Date.now()
-    });
 
     const challengeData = {
         key_type: 'posting',
@@ -208,13 +203,13 @@ const login = async (username, callbackFn) => {
 
     const handleAuthSuccess = (message) => {
         const {
-            data, uuid, authData,
+            data, uuid, authData: { token, key, expire },
         } = message;
-        const { expire, token, challenge: challengeResponse } = data;
+        const { challenge: challengeResponse } = data;
 
-        auth.token = authData.token;
-        auth.key = authData.key;
-        auth.expire = authData.expire;
+        auth.token = token;
+        auth.key = key;
+        auth.expire =expire;
 
         console.log('Hive Auth: user has approved the auth request', challengeResponse);
         const verified = verifyChallenge(challenge, challengeResponse);
@@ -228,6 +223,7 @@ const login = async (username, callbackFn) => {
                     token,
                     expire,
                     uuid,
+                    challengeHex: challengeResponse.challenge,
                 }
             });
         } else {
@@ -301,8 +297,16 @@ const login = async (username, callbackFn) => {
     );
 };
 
+const logout = () => {
+    auth.username = undefined;
+    auth.token = undefined;
+    auth.expire = undefined;
+    auth.key = undefined;
+};
+
 export default {
     login,
+    logout,
     setUsername,
     setKey,
     setToken,
