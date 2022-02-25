@@ -10,7 +10,7 @@ import { accountAuthLookup } from 'app/redux/AuthSaga';
 import { getAccount } from 'app/redux/SagaShared';
 import * as userActions from 'app/redux/UserReducer';
 import { isLoggedInWithKeychain } from 'app/utils/HiveKeychain';
-import HiveAuthServices from 'app/utils/HiveAuthenticationServices.js';
+import HiveAuthUtils from 'app/utils/HiveAuthUtils';
 import { packLoginData, extractLoginData } from 'app/utils/UserUtil';
 import { browserHistory } from 'react-router';
 import {
@@ -250,20 +250,38 @@ function* usernamePasswordLogin2(options) {
         return;
     }
 
-    // return if already logged in using Hive Authentication Services
-    if (login_with_hiveauth) {
-        console.log('Logged in using Hive Authentication Services');
-        HiveAuthServices.setUsername(username);
-        HiveAuthServices.setKey(hiveauth_key);
-        HiveAuthServices.setToken(hiveauth_token);
-        HiveAuthServices.setExpire(hiveauth_token_expires);
-        yield put(
-            userActions.setUser({
-                username,
-                login_with_hiveauth: true,
-                effective_vests: effectiveVests(account),
-            })
-        );
+    // return if already logged in using HiveAuth
+    if (
+        login_with_hiveauth
+    ) {
+        const now = new Date().getTime();
+        const isTokenValid = now < hiveauth_token_expires;
+
+        if (
+            hiveauth_key
+            && hiveauth_token
+            && isTokenValid
+        ) {
+            console.log('Logged in using HiveAuth');
+            HiveAuthUtils.setUsername(username);
+            HiveAuthUtils.setKey(hiveauth_key);
+            HiveAuthUtils.setToken(hiveauth_token);
+            HiveAuthUtils.setExpire(hiveauth_token_expires);
+            yield put(
+                userActions.setUser({
+                    username,
+                    login_with_hiveauth: true,
+                    effective_vests: effectiveVests(account),
+                })
+            );
+        } else {
+            console.log('HiveAuth token has expired');
+            HiveAuthUtils.logout();
+            yield put(
+                userActions.logout({ type: 'default' })
+            );
+        }
+
         return;
     }
 
@@ -463,13 +481,17 @@ function* usernamePasswordLogin2(options) {
                 );
             } else if (useHiveAuth) {
                 const authResponse = yield new Promise((resolve) => {
-                    HiveAuthServices.login(username, (res) => {
+                    HiveAuthUtils.login(username, buf, (res) => {
                         resolve(res);
                     });
                 });
 
                 if (authResponse.success) {
-                    const { token, expire, key } = authResponse.hiveAuthData;
+                    const {
+                        token, expire, key, challengeHex,
+                    } = authResponse.hiveAuthData;
+                    signatures.posting = challengeHex;
+
                     yield put(
                         userActions.setUser({
                             username,

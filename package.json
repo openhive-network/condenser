@@ -56,7 +56,7 @@
     "extract-text-webpack-plugin": "^v4.0.0-beta.0",
     "foundation-sites": "git+https://gitlab.syncad.com/hive/foundation-sites.git#544fb8a26efcf45e9ba9ccaa77b04d0ae35b9722",
     "highlight.js": "^10.7.2",
-    "hive-auth-client": "^0.1.3",
+    "hive-auth-client": "^0.1.4",
     "hive-uri": "^0.2.3",
     "hivesigner": "3.2.7",
     "humanize-duration": "^3.27.0",

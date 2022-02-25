@@ -235,7 +235,7 @@ class Header extends React.Component {
                 break;
 
             case !!login_with_hiveauth:
-                loginProvider = 'Hive Authentication Services';
+                loginProvider = 'HiveAuth';
                 loginProviderLogo = '/images/hiveauth.png';
                 break;
 

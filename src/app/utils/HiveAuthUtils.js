@@ -1,15 +1,10 @@
+/* global $STM_Config */
 import tt from 'counterpart';
 import QRious from 'qrious';
 import { PublicKey, Signature, hash } from '@hiveio/hive-js/lib/auth/ecc';
 import { HasClient } from 'hive-auth-client';
 
 import { isLoggedIn, extractLoginData } from 'app/utils/UserUtil';
-
-const APP_META = {
-    name: 'Hive Blog',
-    description: 'Hive Blog',
-    icon: 'https://hive.blog/images/hive-blog-logo.png',
-};
 
 const client = new HasClient('hive-auth.arcange.eu', '', true);
 
@@ -43,11 +38,11 @@ const isLoggedInWithHiveAuth = () => {
 
     const now = new Date().getTime();
     const data = localStorage.getItem('autopost2');
-    const [,,,,,,,, login_with_hiveauth, hiveauth_key, hiveauth_token, hiveauth_tokenexpires] = extractLoginData(data);
+    const [,,,,,,,, login_with_hiveauth, hiveauth_key, hiveauth_token, hiveauth_token_expires] = extractLoginData(data);
     return !!login_with_hiveauth
         && !!hiveauth_key
         && !!hiveauth_token
-        && now < hiveauth_tokenexpires;
+        && now < hiveauth_token_expires;
 };
 
 const verifyChallenge = (challenge, data) => {
@@ -65,58 +60,97 @@ const updateModalMessage = (message) => {
 };
 
 const broadcast = (operations, type, callbackFn) => {
-    client.addEventHandler('SignPending', () => {
+    const handleSignPending = () => {
         updateModalMessage(tt('hiveauthservices.broadcastInstructions'));
-    });
+    };
 
-    client.addEventHandler('SignSuccess', (message) => {
+    const handleSignSuccess = (message) => {
         console.log('Hive Auth: broadcast successful', message);
         callbackFn({
             success: true,
         });
-    });
+        removeEventHandlers();
+    };
 
-    client.addEventHandler('SignFailure', (error) => {
+    const handleSignFailure = (error) => {
         console.warn('Hive Auth: broadcast failed', error);
         callbackFn({
             success: false,
             error: error.error || error.message,
         });
-    });
+        removeEventHandlers();
+    };
 
-    client.addEventHandler('SignError', (error) => {
+    const handleSignError = (error) => {
         console.warn('Hive Auth: server returned an error during broadcast', error);
         callbackFn({
             success: false,
             error: error.error || error.message,
         });
-    });
+        removeEventHandlers();
+    };
 
+    const handleRequestExpired = (error) => {
+        console.error('Hive Auth: server returned an error during broadcast', error.message);
+        updateModalMessage(tt('hiveauthservices.requestExpired'));
+
+        callbackFn({
+            success: false,
+            error: tt('hiveauthservices.requestExpired'),
+        });
+
+        removeEventHandlers();
+    };
+
+    const handleAttachFailure = (error) => {
+        console.error('Hive Auth: lost connection to server and failed re-attaching', error.message);
+        clearLoginInstructions();
+        callbackFn({
+            success: false,
+            error: tt('hiveauthservices.failedAttaching'),
+        });
+        removeEventHandlers();
+    };
+
+    const removeEventHandlers = () => {
+        client.removeEventHandler('SignPending', handleSignPending);
+        client.removeEventHandler('SignSuccess', handleSignSuccess);
+        client.removeEventHandler('SignFailure', handleSignFailure);
+        client.removeEventHandler('SignError', handleSignError);
+        client.removeEventHandler('RequestExpired', handleRequestExpired);
+        client.removeEventHandler('AttachFailure', handleAttachFailure);
+    };
+
+    client.addEventHandler('SignPending', handleSignPending);
+    client.addEventHandler('SignSuccess', handleSignSuccess);
+    client.addEventHandler('SignFailure', handleSignFailure);
+    client.addEventHandler('SignError', handleSignError);
+    client.addEventHandler('RequestExpired', handleRequestExpired);
+    client.addEventHandler('AttachFailure', handleAttachFailure);
     client.broadcast(auth, type, operations);
 };
 
 const updateLoginInstructions = (message) => {
     const instructionsElement = document.getElementById('hiveauth-instructions');
-    instructionsElement.innerHTML = message;
-    instructionsElement.classList.add('show');
+    if (instructionsElement) {
+        instructionsElement.innerHTML = message;
+        instructionsElement.classList.add('show');
+    }
 };
 
 const clearLoginInstructions = () => {
     updateLoginInstructions('');
     const qrElement = document.getElementById('hiveauth-qr');
-    const context = qrElement.getContext('2d');
-    context.clearRect(0, 0, 200, 200);
+    if (qrElement) {
+        const context = qrElement.getContext('2d');
+        context.clearRect(0, 0, 200, 200);
+    }
 };
 
-const login = async (username, callbackFn) => {
+const login = async (username, challenge, callbackFn) => {
     updateLoginInstructions(tt('hiveauthservices.connecting'));
 
     setUsername(username);
-
-    const challenge = JSON.stringify({
-        login: auth.username,
-        ts: Date.now()
-    });
 
     const challengeData = {
         key_type: 'posting',
@@ -125,7 +159,7 @@ const login = async (username, callbackFn) => {
 
     console.log('Hive Auth: requesting authentication');
 
-    client.addEventHandler('AuthPending', (message) => {
+    const handleAuthPending = (message) => {
         const {
             account, expire, key, uuid,
         } = message;
@@ -165,17 +199,17 @@ const login = async (username, callbackFn) => {
                 error: tt('hiveauthservices.tokenExpired'),
             });
         }
-    });
+    };
 
-    client.addEventHandler('AuthSuccess', (message) => {
+    const handleAuthSuccess = (message) => {
         const {
-            data, uuid, authData,
+            data, uuid, authData: { token, key, expire },
         } = message;
-        const { expire, token, challenge: challengeResponse } = data;
+        const { challenge: challengeResponse } = data;
 
-        auth.token = authData.token;
-        auth.key = authData.key;
-        auth.expire = authData.expire;
+        auth.token = token;
+        auth.key = key;
+        auth.expire =expire;
 
         console.log('Hive Auth: user has approved the auth request', challengeResponse);
         const verified = verifyChallenge(challenge, challengeResponse);
@@ -189,6 +223,7 @@ const login = async (username, callbackFn) => {
                     token,
                     expire,
                     uuid,
+                    challengeHex: challengeResponse.challenge,
                 }
             });
         } else {
@@ -199,9 +234,11 @@ const login = async (username, callbackFn) => {
                 error: tt('hiveauthservices.challengeValidationFailed'),
             });
         }
-    });
 
-    client.addEventHandler('AuthFailure', (message) => {
+        removeEventHandlers();
+    };
+
+    const handleAuthFailure = (message) => {
         const { uuid } = message;
         console.warn('Hive Auth: user has rejected the auth request', uuid);
         clearLoginInstructions();
@@ -209,32 +246,67 @@ const login = async (username, callbackFn) => {
             success: false,
             error: tt('hiveauthservices.userRejectedRequest'),
         });
-    });
+        removeEventHandlers();
+    };
 
-    client.addEventHandler('RequestExpired', (error) => {
+    const handleRequestExpired = (error) => {
         console.error('Hive Auth: server returned an error during authentication', error.message);
         clearLoginInstructions();
+        updateModalMessage(tt('hiveauthservices.requestExpired'));
 
         callbackFn({
             success: false,
             error: tt('hiveauthservices.requestExpired'),
         });
-    });
 
-    client.addEventHandler('AttachFailure', (error) => {
-       console.error('Hive Auth: lost connection to server and failed re-attaching', error.message);
+        removeEventHandlers();
+    };
+
+    const handleAttachFailure = (error) => {
+        console.error('Hive Auth: lost connection to server and failed re-attaching', error.message);
         clearLoginInstructions();
         callbackFn({
             success: false,
-            error: 'Failed attaching',
+            error: tt('hiveauthservices.failedAttaching'),
         });
-    });
+        removeEventHandlers();
+    };
 
-    client.authenticate(auth, APP_META, challengeData);
+    const removeEventHandlers = () => {
+        client.removeEventHandler('AuthPending', handleAuthPending);
+        client.removeEventHandler('AuthSuccess', handleAuthSuccess);
+        client.removeEventHandler('AuthFailure', handleAuthFailure);
+        client.removeEventHandler('RequestExpired', handleRequestExpired);
+        client.removeEventHandler('AttachFailure', handleAttachFailure);
+    };
+
+    client.addEventHandler('AuthPending', handleAuthPending);
+    client.addEventHandler('AuthSuccess', handleAuthSuccess);
+    client.addEventHandler('AuthFailure', handleAuthFailure);
+    client.addEventHandler('RequestExpired', handleRequestExpired);
+    client.addEventHandler('AttachFailure', handleAttachFailure);
+
+    client.authenticate(
+        auth,
+        {
+            name: 'Hive Blog',
+            description: 'Hive Blog',
+            icon: `${window.location.protocol}//${$STM_Config.site_domain}/images/hive-blog-twshare.png`,
+        },
+        challengeData
+    );
+};
+
+const logout = () => {
+    auth.username = undefined;
+    auth.token = undefined;
+    auth.expire = undefined;
+    auth.key = undefined;
 };
 
 export default {
     login,
+    logout,
     setUsername,
     setKey,
     setToken,
