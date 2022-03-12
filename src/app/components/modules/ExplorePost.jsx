@@ -41,7 +41,7 @@ class ExplorePost extends Component {
             frontends: [
                 'https://peakd.com',
                 'https://ecency.com',
-                'https://www.waivio.com',
+                'https://waivio.com',
             ],
             blockExplorers: [
                 'https://hiveblocks.com',
