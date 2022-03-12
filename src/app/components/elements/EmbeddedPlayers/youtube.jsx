@@ -70,7 +70,6 @@ export function extractMetadata(data) {
 
     const m2 = url.match(regex.contentId);
     const id = m2 && m2.length >= 2 ? m2[2] : null;
-    console.log('m2', m2);
 
     if (!id) return null;
 

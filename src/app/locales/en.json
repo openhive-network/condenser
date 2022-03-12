@@ -554,7 +554,8 @@
     "explorepost_jsx": {
         "copied": "Copied!",
         "copy": "COPY",
-        "alternative_sources": "Open in alternative Hive dApps"
+        "alternative_sources": "Open in alternative Hive dApps",
+        "block_explorers": "Open in block explorers"
     },
     "header_jsx": {
         "home": "home",

@@ -159,8 +159,7 @@ export async function getStateAsync(url, observer, ssr = false) {
         });
     }
 
-    const cleansed = stateCleaner(state);
-    return cleansed;
+    return stateCleaner(state);
 }
 
 async function loadThread(account, permlink, observer) {
@@ -185,7 +184,6 @@ async function loadThread(account, permlink, observer) {
 }
 
 async function loadPosts(sort, tag, observer) {
-    console.log('loadPosts');
     const account = tag && tag[0] == '@' ? tag.slice(1) : null;
 
     let posts;
