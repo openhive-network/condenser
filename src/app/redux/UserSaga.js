@@ -787,12 +787,15 @@ function* uploadImage({
     const username = stateUser.getIn(['current', 'username']);
     const keychainLogin = isLoggedInWithKeychain();
     const hiveSignerLogin = isLoggedInWithHiveSigner();
+    const hiveAuthLogin = HiveAuthUtils.isLoggedInWithHiveAuth();
+
     const d = stateUser.getIn(['current', 'private_keys', 'posting_private']);
     if (!username) {
         progress({ error: 'Please login first.' });
         return;
     }
-    if (!(keychainLogin || hiveSignerLogin || d)) {
+
+    if (!(keychainLogin || hiveSignerLogin || hiveAuthLogin || d)) {
         progress({ error: 'Login with your posting key' });
         return;
     }
@@ -840,22 +843,36 @@ function* uploadImage({
     if (hiveSignerLogin) {
         // verify user with access_token for HiveSigner login
         postUrl = `${$STM_Config.upload_image}/hs/${hiveSignerClient.accessToken}`;
-    } else {
-        if (keychainLogin) {
-            const response = yield new Promise((resolve) => {
-                window.hive_keychain.requestSignBuffer(username, JSON.stringify(buf), 'Posting', (res) => {
-                    resolve(res);
-                });
+    } else if (keychainLogin) {
+        const response = yield new Promise((resolve) => {
+            window.hive_keychain.requestSignBuffer(username, JSON.stringify(buf), 'Posting', (res) => {
+                resolve(res);
             });
-            if (response.success) {
-                sig = response.result;
-            } else {
-                progress({ error: response.message });
-                return;
-            }
+        });
+        if (response.success) {
+            sig = response.result;
+            postUrl = `${$STM_Config.upload_image}/${username}/${sig}`;
         } else {
-            sig = Signature.signBufferSha256(bufSha, d).toHex();
+            progress({ error: response.message });
+            return;
         }
+    } else if (hiveAuthLogin) {
+        const dataSha256 = Buffer.from(hash.sha256(data));
+        const checksumBuf = Buffer.concat([prefix, dataSha256]);
+        const response = yield new Promise((resolve) => {
+            HiveAuthUtils.signChallenge(JSON.stringify(checksumBuf, null, 0), 'posting', (res) => {
+                resolve(res);
+            });
+        });
+        if (response.success) {
+            sig = response.result;
+        } else {
+            progress({ error: response.message });
+            return;
+        }
+        postUrl = `${$STM_Config.upload_image}/cs/${username}/${sig}`;
+    } else {
+        sig = Signature.signBufferSha256(bufSha, d).toHex();
         postUrl = `${$STM_Config.upload_image}/${username}/${sig}`;
     }
 
