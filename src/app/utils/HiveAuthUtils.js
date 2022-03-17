@@ -130,6 +130,34 @@ const broadcast = (operations, type, callbackFn) => {
     client.broadcast(auth, type, operations);
 };
 
+const signChallenge = (data, keyType = 'posting', callbackFn) => {
+    const handleChallengePending = (e) => {
+        console.log('Challenge pending', e);
+    };
+
+    const handleChallengeSuccess = (e) => {
+        console.log('Challenge success', e);
+        callbackFn({});
+    };
+
+    const handleChallengeFailure = (e) => {
+        console.log('Challenge failure', e);
+    };
+
+    const handleChallengeError = (e) => {
+        console.log('Challenge error', e);
+    };
+
+    client.addEventHandler('ChallengePending', handleChallengePending);
+    client.addEventHandler('ChallengeSuccess', handleChallengeSuccess);
+    client.addEventHandler('ChallengeFailure', handleChallengeFailure);
+    client.addEventHandler('ChallengeError', handleChallengeError);
+    client.challenge(auth, {
+        key_type: keyType,
+        challenge: data,
+    });
+};
+
 const updateLoginInstructions = (message) => {
     const instructionsElement = document.getElementById('hiveauth-instructions');
     if (instructionsElement) {
@@ -313,4 +341,5 @@ export default {
     setExpire,
     isLoggedInWithHiveAuth,
     broadcast,
+    signChallenge,
 };

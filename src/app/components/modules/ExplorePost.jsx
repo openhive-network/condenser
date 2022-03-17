@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { serverApiRecordEvent } from 'app/utils/ServerApiClient';
 import Icon from 'app/components/elements/Icon';
 import CopyToClipboard from 'react-copy-to-clipboard';
 import tt from 'counterpart';
@@ -20,26 +19,6 @@ class ExplorePost extends Component {
         };
         this.onCopy = this.onCopy.bind(this);
         this.onCopyMD = this.onCopyMD.bind(this);
-        this.Hiveblocks = this.Hiveblocks.bind(this);
-        this.Hivedb = this.Hivedb.bind(this);
-        this.Peakd = this.Peakd.bind(this);
-        this.Ecency = this.Ecency.bind(this);
-    }
-
-    Hiveblocks() {
-        serverApiRecordEvent('HiveblocksView', this.props.permlink);
-    }
-
-    Hivedb() {
-        serverApiRecordEvent('HivedbView', this.props.permlink);
-    }
-
-    Peakd() {
-        serverApiRecordEvent('PeakdView', this.props.permlink);
-    }
-
-    Ecency() {
-        serverApiRecordEvent('EcencyView', this.props.permlink);
     }
 
     onCopy() {
@@ -57,14 +36,25 @@ class ExplorePost extends Component {
     render() {
         const link = this.props.permlink;
         const title = this.props.title;
-        const hiveblocks = 'https://hiveblocks.com' + link;
-        const hivedb = 'https://hive-db.com' + link;
-        const peakd = 'https://peakd.com' + link;
-        const ecency = 'https://ecency.com' + link;
+
+        const altDapps = {
+            frontends: [
+                'https://peakd.com',
+                'https://ecency.com',
+                'https://waivio.com',
+            ],
+            blockExplorers: [
+                'https://hiveblocks.com',
+                'https://hive.ausbit.dev',
+                'https://hiveblockexplorer.com',
+            ],
+        };
+
         const hiveblog = 'https://hive.blog' + link;
         const hiveblogMd = '[' + title + '](https://hive.blog' + link + ')';
         const text = this.state.copied == true ? tt('explorepost_jsx.copied') : tt('explorepost_jsx.copy');
         const textMD = this.state.copiedMD == true ? tt('explorepost_jsx.copied') : tt('explorepost_jsx.copy');
+
         return (
             <span className="ExplorePost">
                 <h4>{tt('g.share_this_post')}</h4>
@@ -103,34 +93,31 @@ class ExplorePost extends Component {
                 </div>
                 <h5>{tt('explorepost_jsx.alternative_sources')}</h5>
                 <ul>
-                    <li>
-                        <a href={hiveblocks} onClick={this.Hiveblocks} target="_blank" rel="noopener noreferrer">
-                            hiveblocks.com
-                            {' '}
-                            <Icon name="extlink" />
-                        </a>
-                    </li>
-                    <li>
-                        <a href={hivedb} onClick={this.Hivedb} target="_blank" rel="noopener noreferrer">
-                            hive-db.com
-                            {' '}
-                            <Icon name="extlink" />
-                        </a>
-                    </li>
-                    <li>
-                        <a href={peakd} onClick={this.Peakd} target="_blank" rel="noopener noreferrer">
-                            peakd.com
-                            {' '}
-                            <Icon name="extlink" />
-                        </a>
-                    </li>
-                    <li>
-                        <a href={ecency} onClick={this.Ecency} target="_blank" rel="noopener noreferrer">
-                            ecency.com
-                            {' '}
-                            <Icon name="extlink" />
-                        </a>
-                    </li>
+                    {altDapps.frontends.map((site) => {
+                        return (
+                            <li key={site}>
+                                <a href={site + link} target="_blank" rel="noopener noreferrer">
+                                    {site}
+                                    {' '}
+                                    <Icon name="extlink" />
+                                </a>
+                            </li>
+                        );
+                    })}
+                </ul>
+                <h5>{tt('explorepost_jsx.block_explorers')}</h5>
+                <ul>
+                    {altDapps.blockExplorers.map((site) => {
+                        return (
+                            <li key={site}>
+                                <a href={site + link} target="_blank" rel="noopener noreferrer">
+                                    {site}
+                                    {' '}
+                                    <Icon name="extlink" />
+                                </a>
+                            </li>
+                        );
+                    })}
                 </ul>
             </span>
         );

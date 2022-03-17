@@ -75,11 +75,11 @@ function logs {
 function build {
     case "$1" in
         "dev")
-            docker-compose -f docker-compose.dev.yml up --force-recreate --build --no-cache --remove-orphans --detach
+            docker-compose -f docker-compose.dev.yml up --force-recreate --build --remove-orphans --detach
         ;;
 
         "prod")
-            docker-compose -f docker-compose.prod.yml up --force-recreate --build --no-cache --remove-orphans --detach
+            docker-compose -f docker-compose.prod.yml up --force-recreate --build --remove-orphans --detach
         ;;
 
         "stg")
