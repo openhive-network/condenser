@@ -842,7 +842,7 @@ function* uploadImage({
     let postUrl;
     if (hiveSignerLogin) {
         // verify user with access_token for HiveSigner login
-        postUrl = `${$STM_Config.img_proxy_prefix}hs/${hiveSignerClient.accessToken}`;
+        postUrl = `${$STM_Config.upload_image}/hs/${hiveSignerClient.accessToken}`;
     } else if (keychainLogin) {
         const response = yield new Promise((resolve) => {
             window.hive_keychain.requestSignBuffer(username, JSON.stringify(buf), 'Posting', (res) => {
@@ -851,7 +851,7 @@ function* uploadImage({
         });
         if (response.success) {
             sig = response.result;
-            postUrl = `${$STM_Config.img_proxy_prefix}${username}/${sig}`;
+            postUrl = `${$STM_Config.upload_image}/${username}/${sig}`;
         } else {
             progress({ error: response.message });
             return;
@@ -873,10 +873,10 @@ function* uploadImage({
             progress({ error: response.message });
             return;
         }
-        postUrl = `${$STM_Config.img_proxy_prefix}cs/${username}/${sig}`;
+        postUrl = `${$STM_Config.upload_image}/cs/${username}/${sig}`;
     } else {
         sig = Signature.signBufferSha256(bufSha, d).toHex();
-        postUrl = `${$STM_Config.img_proxy_prefix}${username}/${sig}`;
+        postUrl = `${$STM_Config.upload_image}/${username}/${sig}`;
     }
 
     const xhr = new XMLHttpRequest();
