@@ -834,6 +834,7 @@
         "verifyPostingKeyInstructions": "'Please use your HiveAuth compatible mobile wallet app to verify your posting key.'",
         "publicKeyMatchingError": "failed matching signature to public key",
         "failedProcessingChallenge": "failed processing challenge",
-        "failedAttaching": "Failed attaching"
+        "failedAttaching": "Failed attaching",
+        "challengeError": "Challenge Error"
     }
 }

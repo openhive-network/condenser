@@ -131,21 +131,42 @@ const broadcast = (operations, type, callbackFn) => {
 };
 
 const signChallenge = (data, keyType = 'posting', callbackFn) => {
-    const handleChallengePending = (e) => {
-        console.log('Challenge pending', e);
+    const handleChallengePending = () => {
+        updateModalMessage(tt('hiveauthservices.broadcastInstructions'));
     };
 
     const handleChallengeSuccess = (e) => {
-        console.log('Challenge success', e);
-        callbackFn({});
+        console.log('Hive Auth: challenge success', e);
+        callbackFn({
+            result: e.data.challenge,
+            success: true,
+        });
+        removeEventHandlers();
     };
 
     const handleChallengeFailure = (e) => {
-        console.log('Challenge failure', e);
+        console.error('Hive Auth: challenge failure', e);
+        callbackFn({
+            success: false,
+            error: tt('hiveauthservices.challengeError'),
+        });
+        removeEventHandlers();
     };
 
     const handleChallengeError = (e) => {
-        console.log('Challenge error', e);
+        console.error('Hive Auth: challenge error', e);
+        callbackFn({
+            success: false,
+            error: tt('hiveauthservices.challengeError'),
+        });
+        removeEventHandlers();
+    };
+
+    const removeEventHandlers = () => {
+        client.removeEventHandler('ChallengePending', handleChallengePending);
+        client.removeEventHandler('ChallengeSuccess', handleChallengeSuccess);
+        client.removeEventHandler('ChallengeFailure', handleChallengeFailure);
+        client.removeEventHandler('ChallengeError', handleChallengeError);
     };
 
     client.addEventHandler('ChallengePending', handleChallengePending);
