@@ -91,7 +91,7 @@ const broadcast = (operations, type, callbackFn) => {
     };
 
     const handleRequestExpired = (error) => {
-        console.error('Hive Auth: server returned an error during broadcast', error.message);
+        console.error('Hive Auth: broadcast request expired', error.message);
         updateModalMessage(tt('hiveauthservices.requestExpired'));
 
         callbackFn({
@@ -162,6 +162,18 @@ const signChallenge = (data, keyType = 'posting', callbackFn) => {
         removeEventHandlers();
     };
 
+    const handleRequestExpired = (error) => {
+        console.error('Hive Auth: challenge request expired', error.message);
+        updateModalMessage(tt('hiveauthservices.requestExpired'));
+
+        callbackFn({
+            success: false,
+            error: tt('hiveauthservices.requestExpired'),
+        });
+
+        removeEventHandlers();
+    };
+
     const removeEventHandlers = () => {
         client.removeEventHandler('ChallengePending', handleChallengePending);
         client.removeEventHandler('ChallengeSuccess', handleChallengeSuccess);
@@ -173,6 +185,7 @@ const signChallenge = (data, keyType = 'posting', callbackFn) => {
     client.addEventHandler('ChallengeSuccess', handleChallengeSuccess);
     client.addEventHandler('ChallengeFailure', handleChallengeFailure);
     client.addEventHandler('ChallengeError', handleChallengeError);
+    client.addEventHandler('RequestExpired', handleRequestExpired);
     client.challenge(auth, {
         key_type: keyType,
         challenge: data,
@@ -299,7 +312,7 @@ const login = async (username, challenge, callbackFn) => {
     };
 
     const handleRequestExpired = (error) => {
-        console.error('Hive Auth: server returned an error during authentication', error.message);
+        console.error('Hive Auth: authentication request expired', error.message);
         clearLoginInstructions();
         updateModalMessage(tt('hiveauthservices.requestExpired'));
 

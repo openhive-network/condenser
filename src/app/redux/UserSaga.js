@@ -870,7 +870,7 @@ function* uploadImage({
         if (response.success) {
             sig = response.result;
         } else {
-            progress({ error: response.message });
+            progress({ error: response.error });
             return;
         }
         postUrl = `${$STM_Config.upload_image}/cs/${username}/${sig}`;
