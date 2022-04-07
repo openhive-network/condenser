@@ -148,7 +148,7 @@ const signChallenge = (data, keyType = 'posting', callbackFn) => {
         console.error('Hive Auth: challenge failure', e);
         callbackFn({
             success: false,
-            error: tt('hiveauthservices.challengeError'),
+            error: tt('hiveauthservices.userRejectedRequest'),
         });
         removeEventHandlers();
     };
