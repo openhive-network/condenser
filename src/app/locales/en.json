@@ -823,7 +823,7 @@
     },
     "hiveauthservices": {
         "pleaseWait": "Please wait",
-        "broadcastInstructions": "Broadcasting your operation via HiveAuth, please launch your compatible mobile wallet app and approve.",
+        "broadcastInstructions": "Broadcasting your operation via HiveAuth, please review and approve from your compatible mobile wallet app.",
         "unknownCommand": "unknown command",
         "connecting": "Connecting to HiveAuth...",
         "qrInstructions": "Please tap or scan the following QR code with your HiveAuth compatible mobile wallet app",
@@ -834,6 +834,7 @@
         "verifyPostingKeyInstructions": "'Please use your HiveAuth compatible mobile wallet app to verify your posting key.'",
         "publicKeyMatchingError": "failed matching signature to public key",
         "failedProcessingChallenge": "failed processing challenge",
-        "failedAttaching": "Failed attaching"
+        "failedAttaching": "Failed attaching",
+        "challengeError": "Challenge Error"
     }
 }
