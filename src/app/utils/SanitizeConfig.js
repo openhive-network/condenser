@@ -4,7 +4,6 @@ import { getPhishingWarningMessage, getExternalLinkWarningMessage } from 'shared
 
 import { validateIframeUrl as validateEmbbeddedPlayerIframeUrl } from 'app/components/elements/EmbeddedPlayers';
 
-export const noImageText = '(Image not shown due to low ratings)';
 export const allowedTags = `
     div, iframe, del,
     a, p, b, i, q, br, ul, li, ol, img, h1, h2, h3, h4, h5, h6, hr,
@@ -15,9 +14,17 @@ export const allowedTags = `
     .split(/,\s*/);
 
 // Medium insert plugin uses: div, figure, figcaption, iframe
-export default ({
- large = true, highQualityPost = true, noImage = false, sanitizeErrors = []
-}) => ({
+export default (
+    {
+        large = true,
+        highQualityPost = true,
+        noImage = false,
+        noImageText = '(Link not shown due to low ratings)',
+        sanitizeErrors = [],
+        noLink = false,
+        noLinkText = '(Image not shown due to low ratings)',
+    }
+) => ({
     allowedTags,
     // figure, figcaption,
 
@@ -93,7 +100,7 @@ export default ({
             return { tagName: 'div', text: `(Unsupported ${srcAtty})` };
         },
         img: (tagName, attribs) => {
-            if (noImage) return { tagName: 'div', text: noImageText };
+            if (noImage) return { tagName: 'i', text: noImageText };
             //See https://github.com/punkave/sanitize-html/issues/117
             let { src } = attribs;
             const { alt } = attribs;
@@ -160,6 +167,12 @@ export default ({
             };
         },
         a: (tagName, attribs) => {
+            if (noLink) {
+                return {
+                    tagName: 'i',
+                    text: noLinkText,
+                };
+            }
             let { href } = attribs;
             if (!href) href = '#';
             href = href.trim();
