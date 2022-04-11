@@ -1013,10 +1013,11 @@ Each account can vote for up to 30 witnesses.
 
 ## <span id="Where_can_I_ask_for_help_if_my_question_was_not_answered_here">Where can I ask for help if my question was not answered here?</span>
 
-If you post your question in the <a href="https://openhive.chat/channel/help">#help</a> channel on <a href="https://openhive.chat/home">OpenHive.Chat</a>, the users there may be able to help.
-Alternatively, there is a <a href="https://discord.gg/ZcG7jgX">Hive Discord</a> channel that may be able to answer your questions.
+If you post your question in the <a href="https://openhive.chat/channel/help">#help</a> channel on <a href="https://openhive.chat/home">OpenHive.Chat</a>, the community members there may be able to help.
 
-You can also create a post on hive.blog with the tag #help, and someone in the community may be able to answer it.
+Alternatively, there is a <a href="https://myhive.li/discord">Hive Discord</a> channel and a <a href="https://t.me/hiveblockchain">Hive Telegram</a> where other community members may answer your questions.
+
+Of course, writing a blog post with your question is another great way to get helpful responses! 
 
 <a href="#Table_of_Contents_Miscellaneous">^</a>
 
