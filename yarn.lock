@@ -2305,10 +2305,10 @@
     secure-random "^1.1.2"
     ws "^3.3.2"
 
-"@hiveio/hivescript@^1.2.8":
-  version "1.2.8"
-  resolved "https://registry.yarnpkg.com/@hiveio/hivescript/-/hivescript-1.2.8.tgz#0120234c6fc96e95b1b25e017ce3b15916430b12"
-  integrity sha512-gxjPMFUK91h/ch1ERF6IGIM8IBFGIEXStFZF6PLn0wlGJDTOi+PXD+uMsb+bVrnwVMWZjVlhWIZVqf/O/Kh8yQ==
+"@hiveio/hivescript@^1.2.9":
+  version "1.2.9"
+  resolved "https://registry.yarnpkg.com/@hiveio/hivescript/-/hivescript-1.2.9.tgz#02b6947cba6aa4869395c61a63583c91421711bb"
+  integrity sha512-KTwthTS2NdCiIHKguey881sxo8I/7vaPGA3Ideu5cBmZbgMobvODGPtrkYt3JrUZ8lNG1c1uaKQjXZPDyXrK7w==
 
 "@istanbuljs/load-nyc-config@^1.0.0":
   version "1.1.0"

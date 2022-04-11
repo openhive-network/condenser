@@ -12,6 +12,7 @@ import PromotePost from 'app/components/modules/PromotePost';
 import ExplorePost from 'app/components/modules/ExplorePost';
 import CommunitySubscriberList from './CommunitySubscriberList';
 import NotificationsList from '../cards/NotificationsList';
+import ExternalLinkWarning from './ExternalLinkWarning';
 
 class Dialogs extends PureComponent {
     static propTypes = {
@@ -70,6 +71,16 @@ class Dialogs extends PureComponent {
                         <Reveal onHide={this['hide_' + k]} show>
                             <CloseButton onClick={this['hide_' + k]} />
                             <NotificationsList username={v.getIn(['params', 'community', 'name'])} isLastPage={false} />
+                        </Reveal>
+                    </span>
+                ) : k === 'externalLinkWarning' ? (
+                    <span key={`dialog-${k}`}>
+                        <Reveal onHide={this['hide_' + k]} show>
+                            <CloseButton onClick={this['hide_' + k]} />
+                            <ExternalLinkWarning
+                                onClick={this['hide_' + k]}
+                                {...v.get('params').toJS()}
+                            />
                         </Reveal>
                     </span>
                 ) : null;

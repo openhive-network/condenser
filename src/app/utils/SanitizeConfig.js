@@ -53,7 +53,7 @@ export default (
         img: ['src', 'srcset', 'alt', 'class'],
 
         // title is only set in the case of an external link warning
-        a: ['href', 'rel', 'title'],
+        a: ['href', 'rel', 'title', 'class'],
     },
     allowedSchemes: ['http', 'https', 'steem', 'esteem'],
     transformTags: {
@@ -182,6 +182,7 @@ export default (
                 // attys.target = '_blank' // pending iframe impl https://mathiasbynens.github.io/rel-noopener/
                 attys.rel = highQualityPost ? 'noopener' : 'nofollow noopener';
                 attys.title = getExternalLinkWarningMessage();
+                attys.class = 'external_link';
             }
             return {
                 tagName,
