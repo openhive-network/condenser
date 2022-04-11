@@ -716,6 +716,7 @@ function* logout(action) {
         localStorage.removeItem('autopost2');
     }
 
+    HiveAuthUtils.logout();
     yield serverApiLogout();
 }
 
@@ -857,6 +858,7 @@ function* uploadImage({
             return;
         }
     } else if (hiveAuthLogin) {
+        yield put(userActions.showHiveAuthModal());
         const dataSha256 = Buffer.from(hash.sha256(data));
         const checksumBuf = Buffer.concat([prefix, dataSha256]);
         const response = yield new Promise((resolve) => {
@@ -864,10 +866,12 @@ function* uploadImage({
                 resolve(res);
             });
         });
+
+        yield put(userActions.hideHiveAuthModal());
         if (response.success) {
             sig = response.result;
         } else {
-            progress({ error: response.message });
+            progress({ error: response.error });
             return;
         }
         postUrl = `${$STM_Config.upload_image}/cs/${username}/${sig}`;

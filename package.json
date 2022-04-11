@@ -30,7 +30,7 @@
   "dependencies": {
     "@babel/runtime": "^7.12.5",
     "@hiveio/hive-js": "^2.0.4",
-    "@hiveio/hivescript": "^1.2.0",
+    "@hiveio/hivescript": "^1.2.9",
     "@steem/crypto-session": "git+https://github.com/steemit/crypto-session.git#83a90b319ce5bc6a70362d52a15a815de7e729bb",
     "assert": "1.4.1",
     "autoprefixer": "^9.6.1",
@@ -56,7 +56,7 @@
     "extract-text-webpack-plugin": "^v4.0.0-beta.0",
     "foundation-sites": "git+https://gitlab.syncad.com/hive/foundation-sites.git#544fb8a26efcf45e9ba9ccaa77b04d0ae35b9722",
     "highlight.js": "^10.7.2",
-    "hive-auth-client": "^0.1.4",
+    "hive-auth-client": "^0.1.5",
     "hive-uri": "^0.2.3",
     "hivesigner": "3.2.7",
     "humanize-duration": "^3.27.0",
