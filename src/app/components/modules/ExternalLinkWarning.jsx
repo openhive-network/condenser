@@ -26,7 +26,8 @@ class ExternalLinkWarning extends Component {
                     <a
                         className="button hollow open-external-link"
                         href={url}
-                        rel="nofollow noopener external"
+                        target="_blank"
+                        rel="noopener noreferrer nofollow external"
                     >
                         {tt('externallink_jsx.open_link')}
                     </a>
