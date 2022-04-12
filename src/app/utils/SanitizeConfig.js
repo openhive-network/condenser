@@ -58,6 +58,12 @@ export default (
     allowedSchemes: ['http', 'https', 'steem', 'esteem'],
     transformTags: {
         iframe: (tagName, attribs) => {
+            if (noLink) {
+                return {
+                    tagName: 'i',
+                    text: noLinkText,
+                };
+            }
             const srcAtty = attribs.src;
             const widthAtty = attribs.width;
             const heightAtty = attribs.height;
