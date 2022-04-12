@@ -31,6 +31,7 @@ import { Role } from 'app/utils/Community';
 import UserNames from 'app/components/elements/UserNames';
 import {List} from "immutable";
 import ContentEditedWrapper from '../elements/ContentEditedWrapper';
+import { isUrlWhitelisted } from "../../utils/Phishing";
 
 function TimeAuthorCategory({ post }) {
     return (
@@ -216,6 +217,17 @@ class PostFull extends React.Component {
             'top=' + winTop + ',left=' + winLeft + ',toolbar=0,status=0,width=' + winWidth + ',height=' + winHeight
         );
     }
+
+    postClickHandler = (e) => {
+        if (e.target.classList.contains('external_link')) {
+            const url = e.target.href;
+
+            if (!isUrlWhitelisted(url)) {
+                e.preventDefault();
+                this.props.showExternalLinkWarning(url);
+            }
+        }
+    };
 
     showPromotePost = () => {
         const { post } = this.props;
@@ -498,7 +510,12 @@ class PostFull extends React.Component {
 
         return (
             <div>
-                <article className={classnames('PostFull', 'hentry', { isMuted })} itemScope itemType="http://schema.org/Blog">
+                <article
+                    className={classnames('PostFull', 'hentry', { isMuted })}
+                    itemScope
+                    itemType="http://schema.org/Blog"
+                    onClick={this.postClickHandler}
+                >
                     {canFlag && <FlagButton post={post} />}
                     {showEdit ? (
                         renderedEditor
@@ -659,6 +676,14 @@ export default connect(
                     },
                     successCallback,
                     errorCallback,
+                })
+            );
+        },
+        showExternalLinkWarning: (url) => {
+            dispatch(
+                globalActions.showDialog({
+                    name: 'externalLinkWarning',
+                    params: { url },
                 })
             );
         },

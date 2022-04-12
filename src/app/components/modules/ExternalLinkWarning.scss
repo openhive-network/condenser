@@ -1,0 +1,14 @@
+.ExternalLinkWarning {
+  a.button.hollow.open-external-link {
+    border: 1px solid #ddd;
+    color: $color-hive-red;
+    transition: 0.2s all ease-in-out;
+    @include font-size(16px);
+
+    &:hover {
+      border: 1px solid purple;
+      color: $color-hive-red-dark;
+      box-shadow: 0 2px 4px 0 rgba(0,0,0,0.05);
+    }
+  }
+}
