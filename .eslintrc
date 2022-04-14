@@ -46,6 +46,7 @@ find node_modules/eslint-config-airbnb -name '*.js'|xargs sed -i "s/': 2/': 1/"
         "react/no-unused-state": 1,
         "no-unused-expressions": 1,
         "react/no-string-refs": 1,
+        "react/no-will-update-set-state": 0,
         "no-restricted-syntax": 0,
         "no-undef": 2,
         "no-case-declarations": 0,

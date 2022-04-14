@@ -153,7 +153,6 @@ class PostsIndex extends PureComponent {
 
         let postsIndexDisplay = (
             <PostsList
-                ref="list"
                 post_refs={posts}
                 loading={fetching}
                 order={order}

@@ -90,6 +90,7 @@ class Voting extends PureComponent {
         };
 
         this.voteUp = (e) => {
+            console.log('up click');
             e && e.preventDefault();
             this.voteUpOrDown(true);
         };
@@ -98,6 +99,7 @@ class Voting extends PureComponent {
             this.voteUpOrDown(false);
         };
         this.voteUpOrDown = (up) => {
+            console.log('voteUpOrDown');
             if (this.props.voting) return;
             this.setState({ votingUp: up, votingDown: !up });
             if (this.state.showWeight) this.setState({ showWeight: false });
@@ -500,8 +502,10 @@ class Voting extends PureComponent {
             // Vote weight adjust
             dropdown = (
                 <Dropdown
-                    show={showWeight && showWeightDir == 'up'}
-                    onHide={() => this.setState({ showWeight: false })}
+                    show={showWeight && showWeightDir === 'up'}
+                    onHide={() => {
+                        this.setState({ showWeight: false });
+                    }}
                     onShow={() => {
                         this.setState({
                             showWeight: true,

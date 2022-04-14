@@ -21,33 +21,22 @@ export default class Dropdown extends React.Component {
         href: null,
     };
 
-    constructor(props) {
-        super(props);
-        this.state = {
-            shown: false,
-        };
-    }
-
-    UNSAFE_componentWillReceiveProps(nextProps) {
-        if (nextProps.show !== this.state.shown) {
-            this.setState({ shown: nextProps.show });
-        }
-    }
-
     componentWillUnmount() {
         document.removeEventListener('click', this.hide);
     }
 
     toggle = (e) => {
-        const { shown } = this.state;
-        if (shown) {
+        const { show } = this.props;
+        if (show) {
             this.hide(e);
-        } else this.show(e);
+        } else {
+            this.show(e);
+        }
     };
 
     show = (e) => {
         e.preventDefault();
-        this.setState({ shown: true });
+        e.stopPropagation();
         this.props.onShow();
         document.addEventListener('click', this.hide);
     };
@@ -56,16 +45,17 @@ export default class Dropdown extends React.Component {
         // Do not hide the dropdown if there was a click within it.
         const inside_dropdown = !!findParent(e.target, 'dropdown__content');
         if (inside_dropdown) return;
+
         e.preventDefault();
-        this.setState({ shown: false });
+        e.stopPropagation();
         this.props.onHide();
         document.removeEventListener('click', this.hide);
     };
 
     render() {
         const {
- children, className, title, href, position
-} = this.props;
+            children, className, title, href, position, show,
+        } = this.props;
 
         const entry = (
             <a key="entry" href={href || '#'} onClick={this.toggle}>
@@ -78,10 +68,12 @@ export default class Dropdown extends React.Component {
                 {children}
             </div>
         );
+
         const cls = 'dropdown'
-            + (this.state.shown ? ' show' : '')
+            + (show ? ' show' : '')
             + (className ? ` ${className}` : '')
             + (position ? ` ${position}` : '');
+
         return React.createElement('div', { className: cls, key: 'dropdown' }, [entry, content]);
     }
 }

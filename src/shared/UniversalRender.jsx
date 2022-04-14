@@ -3,7 +3,7 @@
 // https://github.com/eslint/eslint/issues/4442
 import Iso from 'iso';
 import React from 'react';
-import { render } from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import { renderToString } from 'react-dom/server';
 import {
  Router, RouterContext, match, applyRouterMiddleware, browserHistory,
@@ -401,7 +401,10 @@ export function clientRender(initialState) {
         );
     }
 
-    return render(
+    const container = document.getElementById('content');
+    const root = createRoot(container);
+
+    return root.render(
         <Provider store={store}>
             <Translator>
                 <Router
@@ -412,7 +415,6 @@ export function clientRender(initialState) {
                 />
             </Translator>
         </Provider>,
-        document.getElementById('content')
     );
 }
 
