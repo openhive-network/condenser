@@ -63,7 +63,7 @@ class ListManagement extends React.Component {
         this.is_user_following_any_lists();
     }
 
-    componentWillMount() {
+    UNSAFE_componentWillMount() {
         const {
             profile, accountname, fetchProfile, username,
         } = this.props;

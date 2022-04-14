@@ -68,7 +68,7 @@ export default class UserProfile extends React.Component {
         this.loadMore = this.loadMore.bind(this);
     }
 
-    componentWillMount() {
+    UNSAFE_componentWillMount() {
         const {
             profile,
             hivebuzzBadges,

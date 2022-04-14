@@ -13,7 +13,7 @@ class PostCategoryBanner extends React.Component {
         };
     }
 
-    componentWillMount() {
+    UNSAFE_componentWillMount() {
         const { username, subscriptions, getAccountSubscriptions } = this.props;
 
         if (username && subscriptions.length === 0) {

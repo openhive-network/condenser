@@ -13,7 +13,7 @@ import { actions as fetchDataSagaActions } from 'app/redux/FetchDataSaga';
 import Callout from 'app/components/elements/Callout';
 
 class SubscriptionsList extends React.Component {
-    componentWillMount() {
+    UNSAFE_componentWillMount() {
         const { username, getAccountSubscriptions } = this.props;
         if (username) {
             getAccountSubscriptions(username);

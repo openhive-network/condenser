@@ -28,7 +28,7 @@ export default class Dropdown extends React.Component {
         };
     }
 
-    componentWillReceiveProps(nextProps) {
+    UNSAFE_componentWillReceiveProps(nextProps) {
         if (nextProps.show !== this.state.shown) {
             this.setState({ shown: nextProps.show });
         }

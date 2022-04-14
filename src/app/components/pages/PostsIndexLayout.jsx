@@ -25,7 +25,7 @@ const defaultProps = {
 };
 
 class PostsIndexLayout extends React.Component {
-    componentWillMount() {
+    UNSAFE_componentWillMount() {
         const { subscriptions, getSubscriptions, username } = this.props;
         if (!subscriptions && username) getSubscriptions(username);
     }

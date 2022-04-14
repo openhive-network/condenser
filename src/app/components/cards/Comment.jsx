@@ -110,7 +110,7 @@ class CommentImpl extends PureComponent {
         this.toggleCollapsed = this.toggleCollapsed.bind(this);
     }
 
-    componentWillMount() {
+    UNSAFE_componentWillMount() {
         this.initEditor(this.props);
         this._checkHide(this.props);
     }

@@ -14,7 +14,7 @@ class CheckLoginOwner extends React.Component {
         this.state = {};
     }
 
-    componentWillReceiveProps(nextProps) {
+    UNSAFE_componentWillReceiveProps(nextProps) {
         const { login_owner_pubkey } = nextProps;
         if (login_owner_pubkey && this.props.login_owner_pubkey !== login_owner_pubkey) this.props.lookupPreviousOwnerAuthority();
 

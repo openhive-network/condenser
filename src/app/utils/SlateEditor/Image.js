@@ -17,7 +17,7 @@ export default connect(
             progress: {},
         };
 
-        componentWillMount() {
+        UNSAFE_componentWillMount() {
             const file = this.props.node.data.get('file');
             // Save `file` for "Retry"
             // Try to load incase data url was loaded from a draft

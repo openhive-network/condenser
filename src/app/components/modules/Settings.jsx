@@ -33,7 +33,7 @@ class Settings extends React.Component {
         this.resetEndpointOptions = this.resetEndpointOptions.bind(this);
     }
 
-    componentWillMount() {
+    UNSAFE_componentWillMount() {
         const { account } = this.props;
         if (account) {
             this.initForm(this.props);

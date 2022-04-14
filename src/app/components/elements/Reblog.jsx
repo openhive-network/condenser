@@ -23,14 +23,14 @@ export default class Reblog extends PureComponent {
         this.state = { active: false, loading: false };
     }
 
-    componentWillMount() {
+    UNSAFE_componentWillMount() {
         const { account } = this.props;
         if (account) {
             this.setState({ active: this.isReblogged(account) });
         }
     }
 
-    componentWillReceiveProps(nextProps) {
+    UNSAFE_componentWillReceiveProps(nextProps) {
         if (nextProps.account) {
             this.setState({ active: this.isReblogged(nextProps.account) });
         }

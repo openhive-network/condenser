@@ -64,7 +64,7 @@ class PostsIndex extends PureComponent {
         // this.shouldComponentUpdate = shouldComponentUpdate(this, 'PostsIndex');
     }
 
-    componentWillMount() {
+    UNSAFE_componentWillMount() {
         const { subscriptions, getSubscriptions, username } = this.props;
         if (!subscriptions && username) getSubscriptions(username);
     }

@@ -135,7 +135,7 @@ class PostFull extends React.Component {
         };
     }
 
-    componentWillMount() {
+    UNSAFE_componentWillMount() {
         const { postref } = this.props;
         const formId = `postFull-${postref}`;
         this.setState({

@@ -14,7 +14,7 @@ class AuthorDropdown extends Component {
 
     static defaultProps = {};
 
-    componentWillMount() {
+    UNSAFE_componentWillMount() {
         const {
  profile, fetchProfile, author, username
 } = this.props;

@@ -35,12 +35,12 @@ class App extends React.Component {
         }
     }
 
-    componentWillReceiveProps(nextProps) {
+    UNSAFE_componentWillReceiveProps(nextProps) {
         const { nightmodeEnabled } = nextProps;
         this.toggleBodyNightmode(nightmodeEnabled);
     }
 
-    componentWillMount() {
+    UNSAFE_componentWillMount() {
         if (process.env.BROWSER) localStorage.removeItem('autopost'); // July 14 '16 compromise, renamed to autopost2
         this.props.loginUser();
     }

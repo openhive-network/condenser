@@ -10,7 +10,7 @@ class MutePost extends Component {
         this.state = { notes: '', disableSubmit: true };
     }
 
-    componentWillUpdate = (nextProps, nextState) => {
+    UNSAFE_componentWillUpdate = (nextProps, nextState) => {
         if (nextState.notes != this.state.notes) {
             this.setState({ disableSubmit: nextState.notes == '' });
         }
@@ -25,14 +25,15 @@ class MutePost extends Component {
     };
 
     render() {
-        const { notes, disableSubmit } = this.state;
+        const { disableSubmit } = this.state;
         const { isMuted } = this.props;
 
         return (
             <span>
                 {isMuted ? (
                     <div>
-                        <h4>{tt('g.unmute_this_post')}</h4> <p> {tt('g.unmute_this_post_description')}</p>
+                        <h4>{tt('g.unmute_this_post')}</h4>
+                        <p>{tt('g.unmute_this_post_description')}</p>
                     </div>
                 ) : (
                     <div>

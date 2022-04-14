@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-
 import tt from 'counterpart';
+
 const nl2li = (text) => text.split('\n').map((item, key) => <li key={key}>{item}</li>);
 
 class FlagCommunityPost extends Component {
@@ -11,7 +11,7 @@ class FlagCommunityPost extends Component {
         this.state = { notes: '', disableSubmit: true };
     }
 
-    componentWillUpdate = (nextProps, nextState) => {
+    UNSAFE_componentWillUpdate = (nextProps, nextState) => {
         if (nextState.notes != this.state.notes) {
             this.setState({ disableSubmit: nextState.notes == '' });
         }

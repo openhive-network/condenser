@@ -20,7 +20,7 @@ export default class CommunitiesIndex extends React.Component {
         };
     }
 
-    componentWillMount = () => {
+    UNSAFE_componentWillMount = () => {
         const {
  performSearch, username, searchQuery, searchOrder
 } = this.props;

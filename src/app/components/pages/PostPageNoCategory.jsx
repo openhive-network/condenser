@@ -6,7 +6,7 @@ import LoadingIndicator from 'app/components/elements/LoadingIndicator';
 import SvgImage from 'app/components/elements/SvgImage';
 
 class PostWrapper extends React.Component {
-    componentWillMount() {
+    UNSAFE_componentWillMount() {
         const {
  redirectUrl, loading, author, permlink
 } = this.props;
