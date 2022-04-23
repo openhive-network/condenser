@@ -40,6 +40,7 @@ $themes: (
     buttonBoxShadow: $color-transparent,
     modalBackgroundColor: $color-background-almost-white,
     modalTextColorPrimary: $color-text-dark,
+    commentBodyHighlightBackgroundColor: $color-background-almost-white-darker,
   ),
   light: (
     colorAccent: $color-hive-red,
@@ -83,6 +84,7 @@ $themes: (
     buttonBoxShadowHover: $color-hive-black,
     modalBackgroundColor: $color-white,
     modalTextColorPrimary: $color-text-dark,
+    commentBodyHighlightBackgroundColor: $color-background-almost-white-darker,
   ),
   dark: (
     colorAccent: $color-hive-red,
@@ -127,6 +129,7 @@ $themes: (
     inputPriceWarning: rgba(255, 153, 0, 0.83),
     modalBackgroundColor: $color-background-dark,
     modalTextColorPrimary: $color-text-white,
+    commentBodyHighlightBackgroundColor: $color-background-dark-lighter,
   ),
 );
 

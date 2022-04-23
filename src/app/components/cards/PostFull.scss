@@ -149,6 +149,9 @@
     @extend .link;
     @extend .link--accent;
   }
+  .isMuted & a {
+      pointer-events: none;
+  }
 }
 
 .PostFull__footer {

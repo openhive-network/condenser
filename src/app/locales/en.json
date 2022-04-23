@@ -118,6 +118,9 @@
         "reputation": "Reputation",
         "reveal_comment": "Reveal Comment",
         "will_be_hidden_due_to_low_rating": "Will be hidden due to low rating",
+        "images_links_disabled_due_to_low_rating": "Due to low rating, images and links from this post will be disabled.",
+        "no_image_text": "(Image not shown due to low ratings)",
+        "no_link_text": "(Link not shown due to low ratings or blacklist)",
         "request": "request",
         "required": "Required",
         "rewards": "Rewards",
@@ -554,7 +557,8 @@
     "explorepost_jsx": {
         "copied": "Copied!",
         "copy": "COPY",
-        "alternative_sources": "Open in alternative Hive dApps"
+        "alternative_sources": "Open in alternative Hive dApps",
+        "block_explorers": "Open in block explorers"
     },
     "header_jsx": {
         "home": "home",
@@ -822,7 +826,7 @@
     },
     "hiveauthservices": {
         "pleaseWait": "Please wait",
-        "broadcastInstructions": "Broadcasting your operation via HiveAuth, please launch your compatible mobile wallet app and approve.",
+        "broadcastInstructions": "Broadcasting your operation via HiveAuth, please review and approve from your compatible mobile wallet app.",
         "unknownCommand": "unknown command",
         "connecting": "Connecting to HiveAuth...",
         "qrInstructions": "Please tap or scan the following QR code with your HiveAuth compatible mobile wallet app",
@@ -833,6 +837,13 @@
         "verifyPostingKeyInstructions": "'Please use your HiveAuth compatible mobile wallet app to verify your posting key.'",
         "publicKeyMatchingError": "failed matching signature to public key",
         "failedProcessingChallenge": "failed processing challenge",
-        "failedAttaching": "Failed attaching"
+        "failedAttaching": "Failed attaching",
+        "challengeError": "Challenge Error"
+    },
+    "externallink_jsx": {
+        "about_to_leave_app": "You are about to leave this app.",
+        "the_link_you_clicked_is_external": "The link you've clicked on will lead you to the following website:",
+        "we_just_want_to_verify_to_continue": "We are just verifying with you that you want to continue.",
+        "open_link": "Open link"
     }
 }
