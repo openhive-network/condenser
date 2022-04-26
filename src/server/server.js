@@ -11,7 +11,6 @@ import staticCache from 'koa-static-cache';
 import isBot from 'koa-isbot';
 import session from '@steem/crypto-session';
 import csrf from 'koa-csrf';
-import minimist from 'minimist';
 import config from 'config';
 import secureRandom from 'secure-random';
 import koaLocale from 'koa-locale';
@@ -289,8 +288,6 @@ if (env !== 'test') {
             console.log(`  --> ${this.method} ${this.originalUrl} ${this.status} (BOT '${bot}')`);
         }
     });
-
-    minimist(process.argv.slice(2));
 
     const port = process.env.PORT ? parseInt(process.env.PORT) : 8080;
 

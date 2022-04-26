@@ -83,7 +83,6 @@
     "lodash.debounce": "4.0.8",
     "mem-stat": "1.0.5",
     "mini-css-extract-plugin": "^1.2.1",
-    "minimist": "~1.2.3",
     "mixpanel": "0.5.0",
     "node-cache": "4.2.0",
     "node-fetch": "^2.6.1",
@@ -166,12 +165,12 @@
     "@babel/preset-env": "^7.0.0",
     "@babel/preset-react": "^7.0.0",
     "@babel/register": "^7.12.1",
-    "@storybook/addon-actions": "^6.3.8",
-    "@storybook/addon-essentials": "^6.3.8",
-    "@storybook/addon-knobs": "^6.3.1",
-    "@storybook/addon-links": "^6.3.8",
+    "@storybook/addon-actions": "^6.4.22",
+    "@storybook/addon-essentials": "^6.4.22",
+    "@storybook/addon-knobs": "^6.4.0",
+    "@storybook/addon-links": "^6.4.22",
     "@storybook/addon-postcss": "^2.0.0",
-    "@storybook/react": "^6.3.8",
+    "@storybook/react": "^6.4.22",
     "babel-core": "^7.0.0-bridge.0",
     "babel-eslint": "10.1.0",
     "babel-jest": "^23.4.2",
@@ -201,7 +200,6 @@
     "koa-webpack-hot-middleware": "1.0.3",
     "lint-staged": "10.5.3",
     "mock-local-storage": "1.0.5",
-    "node-sass": "4.13.1",
     "node-watch": "0.5.5",
     "picturefill": "3.0.2",
     "prettier": "2.2.1",
@@ -209,7 +207,7 @@
     "react-test-renderer": "^18.0.0",
     "redux-devtools-extension": "2.13.5",
     "redux-mock-store": "1.5.1",
-    "sass-loader": "10.0.5",
+    "sass-loader": "^10.1.1",
     "storybook-addon-intl": "2.3.0",
     "style-loader": "2.0.0",
     "svg-inline-loader": "0.8.0",
@@ -245,5 +243,11 @@
   },
   "browserslist": [
     "defaults"
-  ]
+  ],
+  "resolutions": {
+    "lodash-es": "4.17.21",
+    "lodash": "4.17.21",
+    "minimist": "1.2.6",
+    "request": "2.88.2"
+  }
 }
