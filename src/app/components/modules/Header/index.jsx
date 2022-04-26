@@ -432,18 +432,31 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = (dispatch) => ({
     showLogin: (e) => {
-        if (e) e.preventDefault();
+        if (e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
         dispatch(userActions.showLogin({ type: 'basic' }));
     },
     logout: (e) => {
-        if (e) e.preventDefault();
+        if (e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
         dispatch(userActions.logout({ type: 'default' }));
     },
     toggleNightmode: (e) => {
-        if (e) e.preventDefault();
+        if (e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
         dispatch(appActions.toggleNightmode());
     },
-    showSidePanel: () => {
+    showSidePanel: (e) => {
+        if (e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
         dispatch(userActions.showSidePanel());
     },
     hideSidePanel: () => {

@@ -94,6 +94,10 @@ class ReplyEditor extends React.Component {
             userRc: undefined,
         };
         this.initForm(props);
+        this.textareaRef = React.createRef();
+        this.titleRef = React.createRef();
+        this.draftRef = React.createRef();
+        this.dropzoneRef = React.createRef();
     }
 
     async getUserRc(username) {
@@ -212,9 +216,9 @@ class ReplyEditor extends React.Component {
         this.getUserRc(username);
 
         setTimeout(() => {
-            if (this.refs.rte) this.refs.rte._focus();
-            else if (this.props.isStory) this.refs.titleRef.focus();
-            else if (this.refs.postRef) this.refs.postRef.focus();
+            // if (this.refs.rte) this.refs.rte._focus();
+            if (this.props.isStory) this.titleRef.current.focus();
+            else if (this.textareaRef.current) this.textareaRef.current.focus();
         }, 300);
     }
 
@@ -442,12 +446,11 @@ class ReplyEditor extends React.Component {
     };
 
     showDraftSaved() {
-        const { draft } = this.refs;
-        if (draft) {
-            draft.className = 'ReplyEditor__draft';
+        if (this.draftRef.current) {
+            this.draftRef.current.className = 'ReplyEditor__draft';
             // eslint-disable-next-line no-void
-            void draft.offsetWidth; // reset animation
-            draft.className = 'ReplyEditor__draft ReplyEditor__draft-saved';
+            void this.draftRef.current.offsetWidth; // reset animation
+            this.draftRef.current.className = 'ReplyEditor__draft ReplyEditor__draft-saved';
         }
     }
 
@@ -504,7 +507,7 @@ class ReplyEditor extends React.Component {
     };
 
     onOpenClick = () => {
-        this.dropzone.open();
+        this.dropzoneRef.current.open();
     };
 
     onPasteCapture = (e) => {
@@ -543,7 +546,7 @@ class ReplyEditor extends React.Component {
     insertPlaceHolders = () => {
         let { imagesUploadCount } = this.state;
         const { body } = this.state;
-        const { selectionStart } = this.refs.postRef;
+        const { selectionStart } = this.textareaRef.current;
         let placeholder = '';
 
         for (let ii = 0; ii < imagesToUpload.length; ii += 1) {
@@ -764,7 +767,7 @@ class ReplyEditor extends React.Component {
                         'large-6': enableSideBySide,
                     })}
                 >
-                    <div ref="draft" className="ReplyEditor__draft ReplyEditor__draft-hide">
+                    <div ref={this.draftRef} className="ReplyEditor__draft ReplyEditor__draft-hide">
                         {tt('reply_editor.draft_saved')}
                     </div>
                     <form
@@ -805,7 +808,7 @@ class ReplyEditor extends React.Component {
                                         disabled={loading}
                                         placeholder={tt('reply_editor.title')}
                                         autoComplete="off"
-                                        ref="titleRef"
+                                        ref={this.titleRef}
                                         tabIndex={0}
                                         {...title.props}
                                     />
@@ -844,21 +847,32 @@ class ReplyEditor extends React.Component {
                                         disableClick
                                         multiple
                                         accept="image/*"
-                                        ref={(node) => {
-                                            this.dropzone = node;
-                                        }}
+                                        ref={this.dropzoneRef}
                                     >
-                                        <textarea
-                                            {...body.props}
-                                            ref="postRef"
-                                            onPasteCapture={this.onPasteCapture}
-                                            className={type === 'submit_story' ? 'upload-enabled' : ''}
-                                            disabled={loading}
-                                            rows={isStory ? 10 : 3}
-                                            placeholder={isStory ? tt('g.write_your_story') : tt('g.reply')}
-                                            autoComplete="off"
-                                            tabIndex={0}
-                                        />
+                                        {({getRootProps, getInputProps}) => {
+                                            const inputProps = getInputProps();
+                                            delete inputProps.style;
+                                            delete inputProps.onChange;
+                                            delete inputProps.onClick;
+                                            console.log('inputProps', inputProps);
+
+                                            return (
+                                                <div {...getRootProps()}>
+                                                    <textarea
+                                                        {...body.props}
+                                                        {...inputProps}
+                                                        ref={this.textareaRef}
+                                                        onPasteCapture={this.onPasteCapture}
+                                                        className={type === 'submit_story' ? 'upload-enabled' : ''}
+                                                        disabled={loading}
+                                                        rows={isStory ? 10 : 3}
+                                                        placeholder={isStory ? tt('g.write_your_story') : tt('g.reply')}
+                                                        autoComplete="off"
+                                                        tabIndex={0}
+                                                    />
+                                                </div>
+                                            );
+                                        }}
                                     </Dropzone>
                                     {progress.message && <div className="info">{progress.message}</div>}
                                     {progress.error && (

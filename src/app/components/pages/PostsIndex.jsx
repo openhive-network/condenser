@@ -55,17 +55,15 @@ class PostsIndex extends PureComponent {
         username: PropTypes.string,
         blogmode: PropTypes.bool,
         topics: PropTypes.object,
+        subscriptions: PropTypes.object,
     };
 
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
         this.state = {};
         this.loadMore = this.loadMore.bind(this);
         // this.shouldComponentUpdate = shouldComponentUpdate(this, 'PostsIndex');
-    }
-
-    UNSAFE_componentWillMount() {
-        const { subscriptions, getSubscriptions, username } = this.props;
+        const { subscriptions, getSubscriptions, username } = props;
         if (!subscriptions && username) getSubscriptions(username);
     }
 
@@ -257,7 +255,7 @@ module.exports = {
             const username = state.user.getIn(['current', 'username']) || state.offchain.get('account');
 
             return {
-                subscriptions: state.global.getIn(['subscriptions', username]),
+                subscriptions: state.global.getIn(['subscriptions', username]) || null,
                 status: state.global.get('status'),
                 loading: state.app.get('loading'),
                 account_name,

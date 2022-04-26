@@ -38,11 +38,12 @@ export default class Reblog extends PureComponent {
 
     reblog = (e) => {
         e.preventDefault();
+        e.stopPropagation();
         if (this.state.active) return;
         this.setState({ loading: true });
         const {
- reblog, account, author, permlink
-} = this.props;
+            reblog, account, author, permlink
+        } = this.props;
         reblog(
             account,
             author,

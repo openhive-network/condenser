@@ -31,6 +31,7 @@ class Settings extends React.Component {
         this.initForm(props);
         this.onNsfwPrefChange = this.onNsfwPrefChange.bind(this);
         this.resetEndpointOptions = this.resetEndpointOptions.bind(this);
+        this.dropzoneRef = React.createRef();
     }
 
     UNSAFE_componentWillMount() {
@@ -149,7 +150,7 @@ class Settings extends React.Component {
         this.setState({
             imageInProgress: imageName,
         });
-        this.dropzone.open();
+        this.dropzoneRef.current.open();
     };
 
     upload = (file = '') => {
@@ -500,13 +501,37 @@ class Settings extends React.Component {
                                             disableClick
                                             multiple={false}
                                             accept="image/*"
-                                            ref={(node) => {
-                                                this.dropzone = node;
+                                            ref={this.dropzoneRef}
+                                        >
+                                            {({getRootProps, getInputProps}) => {
+                                                const rootProps = getRootProps();
+                                                delete rootProps.onClick;
+
+                                                const inputProps = getInputProps();
+                                                delete inputProps.onChange;
+                                                delete inputProps.onClick;
+
+                                                return (
+                                                    <div {...rootProps}>
+                                                        <input
+                                                            type="url"
+                                                            {...profile_image.props}
+                                                            autoComplete="off"
+                                                        />
+                                                        <input {...inputProps} />
+                                                    </div>
+                                                );
+                                            }}
+                                        </Dropzone>
+                                        <a
+                                            role="link"
+                                            tabIndex={0}
+                                            onClick={(e) => {
+                                                e.preventDefault();
+                                                e.stopPropagation();
+                                                this.onOpenClick('profile_image');
                                             }}
                                         >
-                                            <input type="url" {...profile_image.props} autoComplete="off" />
-                                        </Dropzone>
-                                        <a role="link" tabIndex={0} onClick={() => this.onOpenClick('profile_image')}>
                                             {tt('settings_jsx.upload_image')}
                                         </a>
                                     </label>
@@ -520,7 +545,15 @@ class Settings extends React.Component {
                                         {' '}
                                         <small>(Optimal: 2048 x 512 pixels)</small>
                                         <input type="url" {...cover_image.props} autoComplete="off" />
-                                        <a role="link" tabIndex={0} onClick={() => this.onOpenClick('cover_image')}>
+                                        <a
+                                            role="link"
+                                            tabIndex={0}
+                                            onClick={(e) => {
+                                                e.preventDefault();
+                                                e.stopPropagation();
+                                                this.onOpenClick('cover_image');
+                                            }}
+                                        >
                                             {tt('settings_jsx.upload_image')}
                                         </a>
                                     </label>
