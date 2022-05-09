@@ -1,0 +1,37 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<Author /> renders without crashing 1`] = `
+<div>
+  <span
+    class="Author"
+  >
+    <span
+      itemprop="author"
+      itemscope=""
+      itemtype="http://schema.org/Person"
+    >
+      <strong>
+        <a>
+          joeparys
+           
+          <span
+            class="Reputation"
+            title="missing translation: en.g.reputation"
+          >
+            (
+            16463091699678
+            )
+          </span>
+          <span
+            class="Icon dropdown-arrow"
+            style="display: inline-block; width: 1.12rem; height: 1.12rem;"
+          >
+            icon-mock
+          </span>
+        </a>
+      </strong>
+      <span />
+    </span>
+  </span>
+</div>
+`;

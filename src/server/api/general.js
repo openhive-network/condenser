@@ -165,25 +165,25 @@ export default function useGeneralApi(app) {
     });
 
     // eslint-disable-next-line require-yield
-    router.post('/setUserPreferences', koaBody, function* () {
+    router.post('/setUserPreferences', koaBody, async (ctx) => {
         const params = this.request.body;
         const { csrf, payload } = _parse(params);
         if (!checkCSRF(this, csrf)) return;
-        console.log('-- /setUserPreferences -->', this.session.user, this.session.uid, payload);
-        if (!this.session.a) {
-            this.body = 'missing logged in account';
-            this.status = 500;
+        console.log('-- /setUserPreferences -->', ctx.session.user, ctx.session.uid, payload);
+        if (!ctx.session.a) {
+            ctx.body = 'missing logged in account';
+            ctx.status = 500;
             return;
         }
         try {
             const json = JSON.stringify(payload);
             if (json.length > 1024) throw new Error('the data is too long');
-            this.session.user_prefs = json;
-            this.body = JSON.stringify({ status: 'ok' });
+            ctx.session.user_prefs = json;
+            ctx.body = JSON.stringify({ status: 'ok' });
         } catch (error) {
-            console.error('Error in /setUserPreferences api call', this.session.uid, error);
-            this.body = JSON.stringify({ error: error.message });
-            this.status = 500;
+            console.error('Error in /setUserPreferences api call', ctx.session.uid, error);
+            ctx.body = JSON.stringify({ error: error.message });
+            ctx.status = 500;
         }
     });
 

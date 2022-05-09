@@ -13,8 +13,9 @@ const path = require('path');
 
 const ROOT = path.join(__dirname, '../..');
 
-
+console.log('DEBUG: *********** app render file');
 async function appRender(ctx, locales = false, resolvedAssets = false) {
+    console.log('DEBUG: ********* app render fn');
     ctx.state.requestTimer.startTimer('appRender_ms');
     // This is the part of SSR where we make session-specific changes:
     try {
