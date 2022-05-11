@@ -54,8 +54,8 @@ class Translator extends React.Component {
             <IntlProvider
                 // to ensure dynamic language change, "key" property with same "locale" info must be added
                 // see: https://github.com/yahoo/react-intl/wiki/Components#multiple-intl-contexts
-                key={language}
-                locale={language}
+                key={language || DEFAULT_LANGUAGE}
+                locale={language || DEFAULT_LANGUAGE}
                 defaultLocale={DEFAULT_LANGUAGE}
             >
                 {children}

@@ -491,6 +491,7 @@ class Voting extends PureComponent {
                 onClick={voteUpClick}
                 title={myVote > 0 ? tt('g.remove_vote') : tt('g.upvote')}
                 id="upvote_button"
+                data-testid="upvote-btn"
             >
                 {up}
             </a>

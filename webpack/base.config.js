@@ -22,7 +22,10 @@ const plugins = [
         webpack_isomorphic_tools_plugin,
         new webpack.ProvidePlugin({
             Buffer: ['buffer', 'Buffer'],
-        })
+        }),
+        new webpack.ProvidePlugin({
+            process: 'process/browser',
+        }),
     ];
 if (!devMode) {
     plugins.push(new MiniCssExtractPlugin({

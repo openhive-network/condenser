@@ -212,6 +212,7 @@
     "node-watch": "0.5.5",
     "picturefill": "3.0.2",
     "prettier": "2.2.1",
+    "process": "^0.11.10",
     "raw-loader": "4.0.2",
     "react-test-renderer": "^18.0.0",
     "redux-devtools-extension": "2.13.5",
