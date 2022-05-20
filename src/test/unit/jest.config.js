@@ -29,5 +29,6 @@ module.exports = {
         '\\.svg': '<rootDir>/__mocks__/svgrMock.js',
         '^app/(.*)$': '<rootDir>/src/app/$1',
         '^assets/(.*)$': '<rootDir>/src/app/assets/$1',
+        '^shared/(.*)$': '<rootDir>/src/shared/$1',
     },
 };
