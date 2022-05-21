@@ -210,7 +210,6 @@ const onRouterError = (error) => {
  * @returns promise
  */
 export async function serverRender(location, initialState, ErrorPage, userPreferences, offchain, requestTimer) {
-    console.log('DEBUG: server render.');
     let error, renderProps;
 
     try {

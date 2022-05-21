@@ -18,19 +18,17 @@ export default class CommunitiesIndex extends React.Component {
             searchQuery: undefined,
             searchOrder: 'rank',
         };
-    }
 
-    UNSAFE_componentWillMount = () => {
         const {
- performSearch, username, searchQuery, searchOrder
-} = this.props;
+            performSearch, username, searchQuery, searchOrder
+        } = props;
         performSearch(username, searchQuery, searchOrder);
-    };
+    }
 
     componentDidUpdate = (prevProps) => {
         const {
- performSearch, username, searchQuery, searchOrder
-} = this.props;
+            performSearch, username, searchQuery, searchOrder
+        } = this.props;
 
         if (prevProps.username !== username) {
             performSearch(username, searchQuery, searchOrder);
@@ -39,8 +37,8 @@ export default class CommunitiesIndex extends React.Component {
 
     render() {
         const {
- communities, communities_idx, username, walletUrl, performSearch
-} = this.props;
+            communities, communities_idx, username, walletUrl, performSearch
+        } = this.props;
         const ordered = communities_idx !== null
                 ? communities_idx.map((name) => {
                       return communities.get(name);

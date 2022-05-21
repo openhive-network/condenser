@@ -75,8 +75,8 @@ class CommentImpl extends PureComponent {
         deletePost: PropTypes.func.isRequired,
     };
 
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
         this.state = { collapsed: false, hide_body: false, highlight: false };
         this.revealBody = this.revealBody.bind(this);
         //this.shouldComponentUpdate = shouldComponentUpdate(this, 'Comment');
@@ -108,15 +108,13 @@ class CommentImpl extends PureComponent {
             deletePost(post.get('author'), post.get('permlink'));
         };
         this.toggleCollapsed = this.toggleCollapsed.bind(this);
-    }
 
-    UNSAFE_componentWillMount() {
-        this.initEditor(this.props);
-        this._checkHide(this.props);
+        this.initEditor(props);
+        this._checkHide(props);
     }
 
     componentDidMount() {
-        if (window.location.hash == this.props.anchor_link) {
+        if (window.location.hash === this.props.anchor_link) {
             this.setState({ highlight: true }); // eslint-disable-line react/no-did-mount-set-state
         }
     }

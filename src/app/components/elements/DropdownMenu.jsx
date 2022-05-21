@@ -37,7 +37,6 @@ export default class DropdownMenu extends React.Component {
     }
 
     toggle = (e) => {
-        console.log('DEBUG: toggle');
         const { shown } = this.state;
         if (shown) this.hide(e);
         else this.show(e);

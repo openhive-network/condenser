@@ -41,10 +41,8 @@ class Header extends React.Component {
         this.state = {
             showAnnouncement: this.props.showAnnouncement,
         };
-    }
 
-    UNSAFE_componentWillMount() {
-        const { loggedIn, current_account_name, startNotificationsPolling } = this.props;
+        const { loggedIn, current_account_name, startNotificationsPolling } = props;
         if (loggedIn) {
             startNotificationsPolling(current_account_name);
         }
@@ -53,9 +51,9 @@ class Header extends React.Component {
     // Consider refactor.
     // I think 'last sort order' is something available through react-router-redux history.
     // Therefore no need to store it in the window global like this.
-    UNSAFE_componentWillReceiveProps(nextProps) {
-        if (nextProps.pathname !== this.props.pathname) {
-            const route = resolveRoute(nextProps.pathname);
+    componentDidUpdate(prevProps) {
+        if (prevProps.pathname !== this.props.pathname) {
+            const route = resolveRoute(prevProps.pathname);
             if (route && route.page === 'PostsIndex' && route.params && route.params.length > 0) {
                 const sort_order = route.params[0] !== 'home' ? route.params[0] : null;
                 if (sort_order) {

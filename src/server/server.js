@@ -29,8 +29,6 @@ import { SteemMarket } from './utils/SteemMarket';
 import StatsLoggerClient from './utils/StatsLoggerClient';
 import requestTime from './requesttimings';
 
-console.log('DEBUG: ***************** server');
-
 if (cluster.isMaster) console.log('application server starting, please wait.');
 
 // import uploadImage from 'server/upload-image' //medium-editor
@@ -139,7 +137,7 @@ app.use(async (ctx, next) => {
     ) {
         const p = ctx.originalUrl.toLowerCase();
         let userCheck = '';
-        if (routeRegex.Post.test(this.url)) {
+        if (routeRegex.Post.test(ctx.url)) {
             userCheck = p.split('/')[2].slice(1);
         } else {
             userCheck = p.split('/')[1].slice(1);
@@ -149,7 +147,7 @@ app.use(async (ctx, next) => {
             ctx.status = 451;
             return;
         }
-        if (p !== this.originalUrl) {
+        if (p !== ctx.originalUrl) {
             ctx.status = 301;
             ctx.redirect(p);
             return;
@@ -270,7 +268,6 @@ if (env === 'production') {
 }
 
 if (env !== 'test') {
-    console.log('DEBUG: ******* not test');
     const appRender = require('./app_render');
 
     // Load special posts and store them on the ctx for later use. Since
@@ -291,7 +288,7 @@ if (env !== 'test') {
         await appRender(ctx, supportedLocales, resolvedAssets);
         const bot = ctx.state.isBot;
         if (bot) {
-            console.log(`  --> ${this.method} ${this.originalUrl} ${this.status} (BOT '${bot}')`);
+            console.log(`  --> ${ctx.method} ${ctx.originalUrl} ${ctx.status} (BOT '${bot}')`);
         }
     });
 
@@ -325,7 +322,5 @@ if (process.send) process.send('online');
 // set PERFORMANCE_TRACING to the number of seconds desired for
 // logging hardware stats to the console
 if (process.env.PERFORMANCE_TRACING) setInterval(hardwareStats, 1000 * process.env.PERFORMANCE_TRACING);
-
-console.log('DEBUG: ***************** server end');
 
 module.exports = app;

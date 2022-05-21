@@ -1,11 +1,8 @@
 const Koa = require('koa');
 const webpack = require('webpack');
-const webpackMiddleware = require("koa-webpack-dev-middleware");
 const fs = require('fs');
 
 const koaWebPackDevMiddleWare = require('../src/server/utils/koa-webpack-dev-middleware');
-
-console.log('DEBUG: *********** DEV SERVER');
 
 if(!fs.existsSync('tmp')) {
     fs.mkdirSync('tmp');

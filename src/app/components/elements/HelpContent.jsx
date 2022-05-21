@@ -69,9 +69,7 @@ export default class HelpContent extends React.Component {
     constructor(props) {
         super(props);
         this.locale = 'en';
-    }
 
-    UNSAFE_componentWillMount() {
         const md_file_path_regexp = new RegExp(`/${this.locale}/(.+).md$`);
         req.keys()
             .filter((a) => {

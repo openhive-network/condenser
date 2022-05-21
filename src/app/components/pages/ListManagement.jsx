@@ -53,6 +53,11 @@ class ListManagement extends React.Component {
         this.toggle_help = this.toggle_help.bind(this);
         this.dismiss_intro = this.dismiss_intro.bind(this);
         this.follow_hive_blog_lists = this.follow_hive_blog_lists.bind(this);
+
+        const {
+            profile, accountname, fetchProfile, username,
+        } = props;
+        if (!profile) fetchProfile(accountname, username);
     }
 
     componentDidMount() {
@@ -61,13 +66,6 @@ class ListManagement extends React.Component {
             this.get_accounts_from_api();
         }, 5000);
         this.is_user_following_any_lists();
-    }
-
-    UNSAFE_componentWillMount() {
-        const {
-            profile, accountname, fetchProfile, username,
-        } = this.props;
-        if (!profile) fetchProfile(accountname, username);
     }
 
     componentWillUnmount() {

@@ -88,6 +88,7 @@ class ReplyEditor extends React.Component {
     constructor(props) {
         super();
         this.state = {
+            initialized: false,
             progress: {},
             imagesUploadCount: 0,
             enableSideBySide: true,
@@ -109,8 +110,14 @@ class ReplyEditor extends React.Component {
         }
     }
 
-    UNSAFE_componentWillMount() {
+    componentDidUpdate() {
         const { formId } = this.props;
+
+        // Only need to do it on first time to load drafts etc...
+        // This also prevents infinite rerender due to the use of setState below
+        if (this.state.initialized === true) {
+            return;
+        }
 
         if (process.env.BROWSER) {
             // Check for rte editor preference
@@ -152,6 +159,7 @@ class ReplyEditor extends React.Component {
 
             // console.log("initial reply body:", raw || '(empty)')
             body.props.onChange(raw);
+            // eslint-disable-next-line react/no-did-update-set-state
             this.setState({
                 rte,
                 rte_value: rte ? stateFromHtml(raw) : null,
@@ -209,6 +217,8 @@ class ReplyEditor extends React.Component {
         if (qualifiedBeneficiaries.length > 0) {
             this.props.setBeneficiaries(formId, qualifiedBeneficiaries);
         }
+
+        this.state.initialized = true;
     }
 
     componentDidMount() {
@@ -224,26 +234,26 @@ class ReplyEditor extends React.Component {
 
     // shouldComponentUpdate = shouldComponentUpdate(this, 'ReplyEditor');
 
-    UNSAFE_componentWillUpdate(nextProps, nextState) {
+    getSnapshotBeforeUpdate(prevProps, prevState) {
         if (process.env.BROWSER) {
-            const ts = this.state;
-            const ns = nextState;
-            const tp = this.props;
-            const np = nextProps;
+            const ts = prevState;
+            const ns = this.state;
+            const tp = prevState;
+            const np = this.props;
 
-            if (typeof nextProps.postTemplateName !== 'undefined' && nextProps.postTemplateName !== null) {
+            if (typeof np.postTemplateName !== 'undefined' && np.postTemplateName !== null) {
                 const { formId } = tp;
 
-                if (nextProps.postTemplateName.indexOf('create_') === 0) {
-                    const { username } = tp;
+                if (np.postTemplateName.indexOf('create_') === 0) {
+                    const { username } = this.props;
                     const {
                         body, title, summary, altAuthor, tags
                     } = ns;
                     const { payoutType, beneficiaries } = np;
                     const userTemplates = loadUserTemplates(username);
-                    const newTemplateName = nextProps.postTemplateName.replace('create_', '');
+                    const newTemplateName = np.postTemplateName.replace('create_', '');
                     const newTemplate = {
-                        name: nextProps.postTemplateName.replace('create_', ''),
+                        name: np.postTemplateName.replace('create_', ''),
                         beneficiaries,
                         payoutType,
                         markdown: body !== undefined ? body.value : '',
@@ -269,11 +279,11 @@ class ReplyEditor extends React.Component {
 
                     this.props.setPostTemplateName(formId, null);
                 } else {
-                    const userTemplates = loadUserTemplates(nextProps.username);
+                    const userTemplates = loadUserTemplates(np.username);
 
                     for (let ti = 0; ti < userTemplates.length; ti += 1) {
                         const template = userTemplates[ti];
-                        if (template.name === nextProps.postTemplateName) {
+                        if (template.name === np.postTemplateName) {
                             this.state.body.props.onChange(template.markdown);
                             this.state.title.props.onChange(template.title);
                             this.state.summary.props.onChange(template.summary);

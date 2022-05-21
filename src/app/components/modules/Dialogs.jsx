@@ -27,8 +27,8 @@ class Dialogs extends PureComponent {
         };
     }
 
-    UNSAFE_componentWillReceiveProps(nextProps) {
-        const { active_dialogs, hide } = nextProps;
+    componentDidUpdate(prevProps) {
+        const { active_dialogs, hide } = prevProps;
         active_dialogs.forEach((v, k) => {
             if (!this['hide_' + k]) this['hide_' + k] = () => hide(k);
         });

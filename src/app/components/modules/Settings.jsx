@@ -32,12 +32,10 @@ class Settings extends React.Component {
         this.onNsfwPrefChange = this.onNsfwPrefChange.bind(this);
         this.resetEndpointOptions = this.resetEndpointOptions.bind(this);
         this.dropzoneRef = React.createRef();
-    }
 
-    UNSAFE_componentWillMount() {
-        const { account } = this.props;
+        const { account } = props;
         if (account) {
-            this.initForm(this.props);
+            this.initForm(props);
         }
     }
 

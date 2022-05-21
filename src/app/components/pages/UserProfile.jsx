@@ -63,12 +63,10 @@ const emptyPostsText = (section, account, isMyAccount) => {
 };
 
 export default class UserProfile extends React.Component {
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
         this.loadMore = this.loadMore.bind(this);
-    }
 
-    UNSAFE_componentWillMount() {
         const {
             profile,
             hivebuzzBadges,
@@ -78,7 +76,7 @@ export default class UserProfile extends React.Component {
             fetchHivebuzzBadges,
             fetchPeakdBadges,
             username,
-        } = this.props;
+        } = props;
         if (!profile) {
             fetchProfile(accountname, username);
         }

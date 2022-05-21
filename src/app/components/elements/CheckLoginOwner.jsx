@@ -14,7 +14,7 @@ class CheckLoginOwner extends React.Component {
         this.state = {};
     }
 
-    UNSAFE_componentWillReceiveProps(nextProps) {
+    static getDerivedStateFromProps(nextProps) {
         const { login_owner_pubkey } = nextProps;
         if (login_owner_pubkey && this.props.login_owner_pubkey !== login_owner_pubkey) this.props.lookupPreviousOwnerAuthority();
 
@@ -27,9 +27,11 @@ class CheckLoginOwner extends React.Component {
                 if (!/Z$/.test(last_valid_time)) last_valid_date = last_valid_time + 'Z';
                 last_valid_date = new Date(last_valid_date);
 
-                this.setState({ last_valid_time, last_valid_date });
+                return { last_valid_time, last_valid_date };
             }
         }
+
+        return null;
     }
 
     hide = () => {

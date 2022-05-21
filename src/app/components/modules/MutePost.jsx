@@ -10,9 +10,10 @@ class MutePost extends Component {
         this.state = { notes: '', disableSubmit: true };
     }
 
-    UNSAFE_componentWillUpdate = (nextProps, nextState) => {
-        if (nextState.notes != this.state.notes) {
-            this.setState({ disableSubmit: nextState.notes == '' });
+    componentDidUpdate = (prevProps, prevState) => {
+        if (prevState.notes !== this.state.notes) {
+            // eslint-disable-next-line react/no-did-update-set-state
+            this.setState({ disableSubmit: prevState.notes === '' });
         }
     };
 

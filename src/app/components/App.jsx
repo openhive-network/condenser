@@ -23,6 +23,9 @@ class App extends React.Component {
             showBanner: true,
         };
         this.listenerActive = null;
+
+        if (process.env.BROWSER) localStorage.removeItem('autopost'); // July 14 '16 compromise, renamed to autopost2
+        props.loginUser();
     }
 
     toggleBodyNightmode(nightmodeEnabled) {
@@ -35,14 +38,9 @@ class App extends React.Component {
         }
     }
 
-    UNSAFE_componentWillReceiveProps(nextProps) {
-        const { nightmodeEnabled } = nextProps;
+    componentDidUpdate() {
+        const { nightmodeEnabled } = this.props;
         this.toggleBodyNightmode(nightmodeEnabled);
-    }
-
-    UNSAFE_componentWillMount() {
-        if (process.env.BROWSER) localStorage.removeItem('autopost'); // July 14 '16 compromise, renamed to autopost2
-        this.props.loginUser();
     }
 
     componentDidMount() {
@@ -52,8 +50,8 @@ class App extends React.Component {
 
     shouldComponentUpdate(nextProps, nextState) {
         const {
- pathname, new_visitor, nightmodeEnabled, showAnnouncement
-} = this.props;
+            pathname, new_visitor, nightmodeEnabled, showAnnouncement
+        } = this.props;
         const n = nextProps;
         return (
             pathname !== n.pathname

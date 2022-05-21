@@ -35,7 +35,7 @@ export default class Follow extends PureComponent {
         // this.shouldComponentUpdate = shouldComponentUpdate(this, 'Follow');
     }
 
-    UNSAFE_componentWillUpdate(nextProps) {
+    componentDidUpdate(nextProps) {
         this.initEvents(nextProps);
     }
 

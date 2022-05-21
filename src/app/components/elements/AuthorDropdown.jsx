@@ -14,17 +14,19 @@ class AuthorDropdown extends Component {
 
     static defaultProps = {};
 
-    UNSAFE_componentWillMount() {
+    constructor(props) {
+        super(props);
+
         const {
- profile, fetchProfile, author, username
-} = this.props;
+            profile, fetchProfile, author, username
+        } = props;
         if (!profile) fetchProfile(author, username);
     }
 
     render() {
         const {
- author, simple, profile, blacklists
-} = this.props;
+            author, simple, profile, blacklists
+        } = this.props;
 
         if (simple) {
             return (
@@ -41,8 +43,8 @@ class AuthorDropdown extends Component {
         const { name, about } = profile ? profile.getIn(['metadata', 'profile']).toJS() : {};
 
         const {
- following, followers, sp, rank
-} = profile ? profile.getIn(['stats']).toJS() : {};
+            following, followers, sp, rank
+        } = profile ? profile.getIn(['stats']).toJS() : {};
 
         const { created, active } = profile ? profile.toJS() : {};
 
