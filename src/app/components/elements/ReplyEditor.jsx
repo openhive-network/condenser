@@ -888,8 +888,8 @@ class ReplyEditor extends React.Component {
                                     {progress.error && (
                                         <div className="error">
                                             {tt('reply_editor.image_upload')}
-                                            {' '}
                                             :
+                                            {' '}
                                             {progress.error}
                                         </div>
                                     )}

@@ -14,6 +14,7 @@ import * as userActions from 'app/redux/UserReducer';
 import TimeAgoWrapper from 'app/components/elements/TimeAgoWrapper';
 import Userpic from 'app/components/elements/Userpic';
 import * as transactionActions from 'app/redux/TransactionReducer';
+import * as globalActions from 'app/redux/GlobalReducer';
 import tt from 'counterpart';
 import { Long } from 'bytebuffer';
 import ImageUserBlockList from 'app/utils/ImageUserBlockList';
@@ -21,6 +22,7 @@ import { allowDelete } from 'app/utils/StateFunctions';
 import { Role } from 'app/utils/Community';
 import Icon from 'app/components/elements/Icon';
 import ContentEditedWrapper from '../elements/ContentEditedWrapper';
+import {isUrlWhitelisted} from "../../utils/Phishing";
 
 export function sortComments(cont, comments, sort_order) {
     const rshares = (post) => Long.fromString(String(post.get('net_rshares')));
@@ -172,10 +174,21 @@ class CommentImpl extends PureComponent {
         this.setState({ PostReplyEditor, PostEditEditor });
     }
 
+    postClickHandler = (e) => {
+        if (e.target.classList.contains('external_link')) {
+            const url = e.target.href;
+
+            if (!isUrlWhitelisted(url)) {
+                e.preventDefault();
+                this.props.showExternalLinkWarning(url);
+            }
+        }
+    };
+
     render() {
         const {
- cont, post, postref, viewer_role
-} = this.props;
+            cont, post, postref, viewer_role
+        } = this.props;
 
         // Don't server-side render the comment if it has a certain number of newlines
         if (!post || (global.process !== undefined && (post.get('body').match(/\r?\n/g) || '').length > 25)) {
@@ -184,7 +197,7 @@ class CommentImpl extends PureComponent {
                     {tt('g.loading')}
                     ...
                 </div>
-);
+            );
         }
 
         const { onShowReply, onShowEdit, onDeletePost } = this;
@@ -313,7 +326,14 @@ class CommentImpl extends PureComponent {
         }
 
         return (
-            <div className={commentClasses.join(' ')} id={anchor_link} itemScope itemType="http://schema.org/comment">
+            // eslint-disable-next-line jsx-a11y/no-static-element-interactions
+            <div
+                className={commentClasses.join(' ')}
+                id={anchor_link}
+                itemScope
+                itemType="http://schema.org/comment"
+                onClick={this.postClickHandler}
+            >
                 <div className={innerCommentClass}>
                     <div className="Comment__Userpic show-for-medium">
                         <Userpic account={author} />
@@ -417,6 +437,14 @@ const Comment = connect(
                     type: 'delete_comment',
                     operation: { author, permlink },
                     confirm: tt('g.are_you_sure'),
+                })
+            );
+        },
+        showExternalLinkWarning: (url) => {
+            dispatch(
+                globalActions.showDialog({
+                    name: 'externalLinkWarning',
+                    params: { url },
                 })
             );
         },

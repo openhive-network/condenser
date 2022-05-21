@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router';
+import classnames from 'classnames';
 import TimeAgoWrapper from 'app/components/elements/TimeAgoWrapper';
 import Icon from 'app/components/elements/Icon';
 import { connect } from 'react-redux';
@@ -28,7 +29,9 @@ import LoadingIndicator from 'app/components/elements/LoadingIndicator';
 import { allowDelete } from 'app/utils/StateFunctions';
 import { Role } from 'app/utils/Community';
 import UserNames from 'app/components/elements/UserNames';
+import {List} from "immutable";
 import ContentEditedWrapper from '../elements/ContentEditedWrapper';
+import { isUrlWhitelisted } from "../../utils/Phishing";
 
 function TimeAuthorCategory({ post }) {
     return (
@@ -102,6 +105,7 @@ class PostFull extends React.Component {
         showPromotePost: PropTypes.func.isRequired,
         showExplorePost: PropTypes.func.isRequired,
         togglePinnedPost: PropTypes.func.isRequired,
+        muteList: PropTypes.object,
     };
 
     constructor(props) {
@@ -138,6 +142,8 @@ class PostFull extends React.Component {
         this.redditShare = this.redditShare.bind(this);
         this.linkedInShare = this.linkedInShare.bind(this);
         this.showExplorePost = this.showExplorePost.bind(this);
+
+        this.state = { showMutedList: false };
 
         this.onShowReply = () => {
             const {
@@ -218,6 +224,17 @@ class PostFull extends React.Component {
         );
     }
 
+    postClickHandler = (e) => {
+        if (e.target.classList.contains('external_link')) {
+            const url = e.target.href;
+
+            if (!isUrlWhitelisted(url)) {
+                e.preventDefault();
+                this.props.showExternalLinkWarning(url);
+            }
+        }
+    };
+
     showPromotePost = () => {
         const { post } = this.props;
         if (!post) return;
@@ -234,8 +251,8 @@ class PostFull extends React.Component {
 
     onTogglePin = (isPinned) => {
         const {
- community, username, post, postref
-} = this.props;
+            community, username, post, postref
+        } = this.props;
         if (!community || !username) console.error('pin fail', this.props);
 
         const key = ['content', postref, 'stats', 'is_pinned'];
@@ -249,10 +266,11 @@ class PostFull extends React.Component {
     render() {
         const {
             props: {
-                username, post, community, viewer_role
+                username, post, community, viewer_role, muteList,
             },
             state: {
-                PostFullReplyEditor, PostFullEditEditor, formId, showReply, showEdit
+                PostFullReplyEditor, PostFullEditEditor, formId, showReply, showEdit,
+                showMutedList,
             },
             onShowReply,
             onShowEdit,
@@ -317,7 +335,7 @@ class PostFull extends React.Component {
         const bShowLoading = false;
 
         // hide images if user is on blacklist
-        const hideImages = ImageUserBlockList.includes(author);
+        const authorIsBlocked = ImageUserBlockList.includes(author);
 
         const replyParams = {
             author,
@@ -407,6 +425,20 @@ class PostFull extends React.Component {
             </div>
         );
 
+        const allowReply = Role.canComment(community, viewer_role);
+        const canReblog = !isReply;
+        const canPromote = false && !post.get('is_paidout') && !isReply;
+        const canPin = post.get('depth') == 0 && Role.atLeast(viewer_role, 'mod');
+        const canMute = username && Role.atLeast(viewer_role, 'mod');
+        const canFlag = username && community && Role.atLeast(viewer_role, 'guest');
+        const canReply = allowReply && post.get('depth') < 255;
+        const canEdit = username === author && !showEdit;
+        const canDelete = username === author && allowDelete(post);
+        const isGray = post.getIn(['stats', 'gray']);
+        const isMuted = muteList.has(post.get('author')) && !showMutedList;
+
+        const isPinned = post.getIn(['stats', 'is_pinned'], false);
+
         if (isReply) {
             const rooturl = post.get('url');
             const prnturl = `/${category}/@${parent_author}/${parent_permlink}`;
@@ -431,38 +463,65 @@ class PostFull extends React.Component {
             );
         }
 
-        const allowReply = Role.canComment(community, viewer_role);
-        const canReblog = !isReply;
-        const canPromote = false && !post.get('is_paidout') && !isReply;
-        const canPin = post.get('depth') == 0 && Role.atLeast(viewer_role, 'mod');
-        const canMute = username && Role.atLeast(viewer_role, 'mod');
-        const canFlag = username && community && Role.atLeast(viewer_role, 'guest');
-        const canReply = allowReply && post.get('depth') < 255;
-        const canEdit = username === author && !showEdit;
-        const canDelete = username === author && allowDelete(post);
-
-        const isPinned = post.getIn(['stats', 'is_pinned'], false);
+        if (isMuted) {
+            post_header = (
+                <div className="callout">
+                    <div>
+                        <h4>This user is in your mute list.</h4>
+                        <p>For safety reasons, links on this post will be disabled.</p>
+                    </div>
+                    <ul>
+                        <li>
+                            <a
+                                role="link"
+                                tabIndex={0}
+                                onClick={() => {
+                                    this.setState((prevState) => {
+                                        return { showMutedList: !prevState.showMutedList };
+                                    });
+                                }}
+                            >
+                                Enable links
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            );
+        }
 
         let contentBody;
 
         if (bShowLoading) {
             contentBody = <LoadingIndicator type="circle-strong" />;
         } else {
+            const noLink = isGray || authorIsBlocked;
+            const noLinkText = tt('g.no_link_text');
+            const noImage = isGray;
+            const noImageText = tt('g.no_image_text');
+
             contentBody = (
                 <MarkdownViewer
                     formId={formId + '-viewer'}
                     text={content_body}
                     large
                     highQualityPost={high_quality_post}
-                    noImage={post.getIn(['stats', 'gray'])}
-                    hideImages={hideImages}
+                    noImage={noImage}
+                    noImageText={noImageText}
+                    hideImages={authorIsBlocked}
+                    noLink={noLink}
+                    noLinkText={noLinkText}
                 />
             );
         }
 
         return (
             <div>
-                <article className="PostFull hentry" itemScope itemType="http://schema.org/Blog">
+                <article
+                    className={classnames('PostFull', 'hentry', { isMuted })}
+                    itemScope
+                    itemType="http://schema.org/Blog"
+                    onClick={this.postClickHandler}
+                >
                     {canFlag && <FlagButton post={post} />}
                     {showEdit ? (
                         renderedEditor
@@ -555,17 +614,19 @@ class PostFull extends React.Component {
 
 export default connect(
     (state, ownProps) => {
+        const username = state.user.getIn(['current', 'username']);
         const postref = ownProps.post;
         const post = ownProps.cont.get(postref);
-
         const category = post.get('category');
         const community = state.global.getIn(['community', category, 'name']);
+        const muteList = state.global.getIn(['follow', 'getFollowingAsync', username, 'ignore_result'], List());
 
         return {
             post,
             postref,
             community,
-            username: state.user.getIn(['current', 'username']),
+            username,
+            muteList,
             viewer_role: state.global.getIn(['community', community, 'context', 'role'], 'guest'),
         };
     },
@@ -621,6 +682,14 @@ export default connect(
                     },
                     successCallback,
                     errorCallback,
+                })
+            );
+        },
+        showExternalLinkWarning: (url) => {
+            dispatch(
+                globalActions.showDialog({
+                    name: 'externalLinkWarning',
+                    params: { url },
                 })
             );
         },

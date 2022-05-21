@@ -349,6 +349,7 @@ export default `
 /coins/@manojsharma/cashman-casino-free-coins-get-100-bonus-coins-android-ios-2018
 /financials/@sfrj/vertical-common-size-analysis-of-financial-statements
 /technology/@samuel2009/dial-coinbase-customer-service-1
+/hydragun/@hydragun/gde-kupit-poddelnyi-pasport
 `
     .trim()
     .split('\n');
