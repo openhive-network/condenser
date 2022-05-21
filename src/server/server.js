@@ -25,7 +25,6 @@ import useGeneralApi from './api/general';
 import useRedirects from './redirects';
 import prod_logger from './prod_logger';
 import hardwareStats from './hardwarestats';
-import { SteemMarket } from './utils/SteemMarket';
 import StatsLoggerClient from './utils/StatsLoggerClient';
 import requestTime from './requesttimings';
 
@@ -100,13 +99,6 @@ function convertEntriesToArrays(obj) {
         return result;
     }, {});
 }
-
-// Fetch cached currency data for homepage
-const steemMarket = new SteemMarket();
-app.use(async (ctx, next) => {
-    ctx.steemMarketData = await steemMarket.get();
-    await next();
-});
 
 // some redirects and health status
 app.use(async (ctx, next) => {
@@ -282,7 +274,6 @@ if (env !== 'test') {
         });
     }, 300000);
 
-    console.log('DEBUG ******** setup appRender');
     app.use(async (ctx) => {
         console.log('DEBUG launch appRender');
         await appRender(ctx, supportedLocales, resolvedAssets);

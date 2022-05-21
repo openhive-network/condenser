@@ -7,7 +7,6 @@ import { actions as fetchDataSagaActions } from 'app/redux/FetchDataSaga';
 import SidebarLinks from 'app/components/elements/SidebarLinks';
 import SidebarNewUsers from 'app/components/elements/SidebarNewUsers';
 import Notices from 'app/components/elements/Notices';
-import SteemMarket from 'app/components/elements/SteemMarket';
 import CommunityPane from 'app/components/elements/CommunityPane';
 import CommunityPaneMobile from 'app/components/elements/CommunityPaneMobile';
 import Topics from './Topics';
@@ -58,7 +57,6 @@ class PostsIndexLayout extends React.Component {
                     {isBrowser && !community && !username && <SidebarNewUsers />}
                     {isBrowser && !community && username && <SidebarLinks username={username} topics={topics} />}
                     {false && !community && <Notices />}
-                    {!community && <SteemMarket />}
                 </aside>
 
                 <aside className="c-sidebar c-sidebar--left">
