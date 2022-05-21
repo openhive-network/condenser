@@ -29,7 +29,6 @@ export const routeRegex = {
 };
 
 export default function resolveRoute(path) {
-    console.log('resolveRoute path', path);
     // index
     if (path === '/') return { page: 'PostsIndex', params: ['trending'] };
 

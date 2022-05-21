@@ -109,7 +109,6 @@ export default function reducer(state = defaultState, action = {}) {
                     }
                 }
             }
-            console.log('Merging state', state.mergeDeep(fromJS(payload)).toJS());
             return state.mergeDeep(fromJS(payload));
         }
 
@@ -186,7 +185,6 @@ export default function reducer(state = defaultState, action = {}) {
         case RECEIVE_CONTENT: {
             const content = fromJS(payload.content);
             const _key = content.get('author') + '/' + content.get('permlink');
-            console.log('received content...', payload.content);
 
             // merge content object into map
             let new_state = state.updateIn(['content', _key], Map(), (c) => c.mergeDeep(content));
