@@ -135,6 +135,7 @@ class PostFull extends React.Component {
             PostFullEditEditor: ReplyEditor(_formId + '-edit'),
             ...(editorReplyState && { ...editorReplyState }),
             ...(editorEditState && { ...editorEditState }),
+            showMutedList: false,
         };
 
         this.fbShare = this.fbShare.bind(this);
@@ -142,8 +143,6 @@ class PostFull extends React.Component {
         this.redditShare = this.redditShare.bind(this);
         this.linkedInShare = this.linkedInShare.bind(this);
         this.showExplorePost = this.showExplorePost.bind(this);
-
-        this.state = { showMutedList: false };
 
         this.onShowReply = () => {
             const {
@@ -276,6 +275,7 @@ class PostFull extends React.Component {
             onShowEdit,
             onDeletePost,
         } = this;
+
         if (!post) return null;
         const content = post.toJS();
         const {

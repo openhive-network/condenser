@@ -57,7 +57,7 @@ function commentUrl(post, rootRef) {
     return `/${post.category}/${root}@${post.author}/${post.permlink}`;
 }
 
-class CommentImpl extends PureComponent {
+class Comment extends PureComponent {
     static propTypes = {
         // html props
         cont: PropTypes.object.isRequired,
@@ -73,8 +73,8 @@ class CommentImpl extends PureComponent {
         // redux props
         username: PropTypes.string,
         rootComment: PropTypes.string,
-        anchor_link: PropTypes.string.isRequired,
-        deletePost: PropTypes.func.isRequired,
+        anchor_link: PropTypes.string,
+        deletePost: PropTypes.func,
     };
 
     constructor(props) {
@@ -111,14 +111,38 @@ class CommentImpl extends PureComponent {
         };
         this.toggleCollapsed = this.toggleCollapsed.bind(this);
 
-        this.initEditor(props);
+        this._initEditor(props);
         this._checkHide(props);
     }
 
-    componentDidMount() {
-        if (window.location.hash === this.props.anchor_link) {
-            this.setState({ highlight: true }); // eslint-disable-line react/no-did-mount-set-state
+    _initEditor() {
+        if (this.state.PostReplyEditor) return;
+        const { post, postref } = this.props;
+        if (!post) return;
+        const PostReplyEditor = ReplyEditor(postref + '-reply');
+        const PostEditEditor = ReplyEditor(postref + '-edit');
+
+        let showReply;
+        let showEdit;
+        if (process.env.BROWSER) {
+            let showEditor = localStorage.getItem('showEditor-' + postref);
+            if (showEditor) {
+                showEditor = JSON.parse(showEditor);
+                if (showEditor.type === 'reply') {
+                    showReply = { showReply: true };
+                }
+                if (showEditor.type === 'edit') {
+                    showEdit = { showEdit: true };
+                }
+            }
         }
+        this.state = {
+            ...this.state,
+            PostReplyEditor,
+            PostEditEditor,
+            showReply,
+            showEdit,
+        };
     }
 
     /**
@@ -139,7 +163,17 @@ class CommentImpl extends PureComponent {
             }
 
             const notOwn = this.props.username !== post.get('author');
-            this.setState({ hide, hide_body: notOwn && (hide || gray) });
+            this.state = {
+                ...this.state,
+                hide,
+                hide_body: notOwn && (hide || gray),
+            };
+        }
+    }
+
+    componentDidMount() {
+        if (window.location.hash === this.props.anchor_link) {
+            this.setState({ highlight: true }); // eslint-disable-line react/no-did-mount-set-state
         }
     }
 
@@ -150,28 +184,6 @@ class CommentImpl extends PureComponent {
 
     revealBody() {
         this.setState({ hide_body: false });
-    }
-
-    initEditor() {
-        if (this.state.PostReplyEditor) return;
-        const { post, postref } = this.props;
-        if (!post) return;
-        const PostReplyEditor = ReplyEditor(postref + '-reply');
-        const PostEditEditor = ReplyEditor(postref + '-edit');
-        if (process.env.BROWSER) {
-            const formId = postref;
-            let showEditor = localStorage.getItem('showEditor-' + formId);
-            if (showEditor) {
-                showEditor = JSON.parse(showEditor);
-                if (showEditor.type === 'reply') {
-                    this.setState({ showReply: true });
-                }
-                if (showEditor.type === 'edit') {
-                    this.setState({ showEdit: true });
-                }
-            }
-        }
-        this.setState({ PostReplyEditor, PostEditEditor });
     }
 
     postClickHandler = (e) => {
@@ -392,7 +404,7 @@ class CommentImpl extends PureComponent {
     }
 }
 
-const Comment = connect(
+export default connect(
     // mapStateToProps
     (state, ownProps) => {
         const { postref, cont } = ownProps;
@@ -449,5 +461,4 @@ const Comment = connect(
             );
         },
     })
-)(CommentImpl);
-export default Comment;
+)(Comment);
