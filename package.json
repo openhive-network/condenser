@@ -12,7 +12,7 @@
     "test": "jest -c src/test/unit/jest.config.js",
     "eslint": "LIST=`git diff-index --diff-filter=ACMR --name-only HEAD | grep .*\\.js | grep -v json`; if [ \"$LIST\" ]; then eslint $LIST; fi",
     "eslint:fix": "LIST=`git diff-index --diff-filter=ACMR --name-only HEAD | grep .*\\.js | grep -v json`; if [ \"$LIST\" ]; then eslint --fix $LIST; fi",
-    "ci:test": "jest --coverage",
+    "ci:test": "jest -c src/test/unit/jest.config.js --coverage",
     "ci:eslint": "eslint src/",
     "fmt": "prettier --config .prettierrc --write 'src/**/*.+(js|jsx)'",
     "precommit": "lint-staged",
