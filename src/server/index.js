@@ -1,6 +1,6 @@
 import config from 'config';
 
-import * as steem from '@hiveio/hive-js';
+import * as hivejs from '@hiveio/hive-js';
 
 const path = require('path');
 
@@ -45,7 +45,7 @@ const WebpackIsomorphicToolsConfig = require('../../webpack/webpack-isotools-con
 global.webpackIsomorphicTools = new WebpackIsomorphicTools(WebpackIsomorphicToolsConfig);
 
 global.webpackIsomorphicTools.server(ROOT, () => {
-    steem.api.setOptions({
+    hivejs.api.setOptions({
         url: config.steemd_connection_server,
         retry: {
             retries: 10,
@@ -59,8 +59,8 @@ global.webpackIsomorphicTools.server(ROOT, () => {
         failover_threshold: config.get('failover_threshold'),
         rebranded_api: true,
     });
-    steem.config.set('address_prefix', config.get('address_prefix'));
-    steem.config.set('rebranded_api', true);
+    hivejs.config.set('address_prefix', config.get('address_prefix'));
+    hivejs.config.set('rebranded_api', true);
 
     // const CliWalletClient = require('shared/api_client/CliWalletClient').default;
     // if (process.env.NODE_ENV === 'production') connect_promises.push(CliWalletClient.instance().connect_promise());
