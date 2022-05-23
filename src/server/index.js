@@ -28,7 +28,7 @@ global.$STM_Config = {
     address_prefix: config.get('address_prefix'),
     img_proxy_prefix: config.get('img_proxy_prefix'),
     read_only_mode: config.get('read_only_mode'),
-    upload_image: config.get('upload_image'),
+    upload_image: config.get('upload_image') || config.get('img_proxy_prefix'),
     site_domain: config.get('site_domain'),
     google_analytics_id: config.get('google_analytics_id'),
     wallet_url: config.get('wallet_url'),

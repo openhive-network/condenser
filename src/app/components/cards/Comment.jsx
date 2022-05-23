@@ -14,6 +14,7 @@ import * as userActions from 'app/redux/UserReducer';
 import TimeAgoWrapper from 'app/components/elements/TimeAgoWrapper';
 import Userpic from 'app/components/elements/Userpic';
 import * as transactionActions from 'app/redux/TransactionReducer';
+import * as globalActions from 'app/redux/GlobalReducer';
 import tt from 'counterpart';
 import { Long } from 'bytebuffer';
 import ImageUserBlockList from 'app/utils/ImageUserBlockList';
@@ -21,6 +22,7 @@ import { allowDelete } from 'app/utils/StateFunctions';
 import { Role } from 'app/utils/Community';
 import Icon from 'app/components/elements/Icon';
 import ContentEditedWrapper from '../elements/ContentEditedWrapper';
+import {isUrlWhitelisted} from "../../utils/Phishing";
 
 export function sortComments(cont, comments, sort_order) {
     const rshares = (post) => Long.fromString(String(post.get('net_rshares')));
@@ -55,7 +57,7 @@ function commentUrl(post, rootRef) {
     return `/${post.category}/${root}@${post.author}/${post.permlink}`;
 }
 
-class CommentImpl extends PureComponent {
+class Comment extends PureComponent {
     static propTypes = {
         // html props
         cont: PropTypes.object.isRequired,
@@ -71,12 +73,12 @@ class CommentImpl extends PureComponent {
         // redux props
         username: PropTypes.string,
         rootComment: PropTypes.string,
-        anchor_link: PropTypes.string.isRequired,
-        deletePost: PropTypes.func.isRequired,
+        anchor_link: PropTypes.string,
+        deletePost: PropTypes.func,
     };
 
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
         this.state = { collapsed: false, hide_body: false, highlight: false };
         this.revealBody = this.revealBody.bind(this);
         //this.shouldComponentUpdate = shouldComponentUpdate(this, 'Comment');
@@ -108,17 +110,39 @@ class CommentImpl extends PureComponent {
             deletePost(post.get('author'), post.get('permlink'));
         };
         this.toggleCollapsed = this.toggleCollapsed.bind(this);
+
+        this._initEditor(props);
+        this._checkHide(props);
     }
 
-    componentWillMount() {
-        this.initEditor(this.props);
-        this._checkHide(this.props);
-    }
+    _initEditor() {
+        if (this.state.PostReplyEditor) return;
+        const { post, postref } = this.props;
+        if (!post) return;
+        const PostReplyEditor = ReplyEditor(postref + '-reply');
+        const PostEditEditor = ReplyEditor(postref + '-edit');
 
-    componentDidMount() {
-        if (window.location.hash == this.props.anchor_link) {
-            this.setState({ highlight: true }); // eslint-disable-line react/no-did-mount-set-state
+        let showReply;
+        let showEdit;
+        if (process.env.BROWSER) {
+            let showEditor = localStorage.getItem('showEditor-' + postref);
+            if (showEditor) {
+                showEditor = JSON.parse(showEditor);
+                if (showEditor.type === 'reply') {
+                    showReply = { showReply: true };
+                }
+                if (showEditor.type === 'edit') {
+                    showEdit = { showEdit: true };
+                }
+            }
         }
+        this.state = {
+            ...this.state,
+            PostReplyEditor,
+            PostEditEditor,
+            showReply,
+            showEdit,
+        };
     }
 
     /**
@@ -139,7 +163,17 @@ class CommentImpl extends PureComponent {
             }
 
             const notOwn = this.props.username !== post.get('author');
-            this.setState({ hide, hide_body: notOwn && (hide || gray) });
+            this.state = {
+                ...this.state,
+                hide,
+                hide_body: notOwn && (hide || gray),
+            };
+        }
+    }
+
+    componentDidMount() {
+        if (window.location.hash === this.props.anchor_link) {
+            this.setState({ highlight: true }); // eslint-disable-line react/no-did-mount-set-state
         }
     }
 
@@ -152,32 +186,21 @@ class CommentImpl extends PureComponent {
         this.setState({ hide_body: false });
     }
 
-    initEditor() {
-        if (this.state.PostReplyEditor) return;
-        const { post, postref } = this.props;
-        if (!post) return;
-        const PostReplyEditor = ReplyEditor(postref + '-reply');
-        const PostEditEditor = ReplyEditor(postref + '-edit');
-        if (process.env.BROWSER) {
-            const formId = postref;
-            let showEditor = localStorage.getItem('showEditor-' + formId);
-            if (showEditor) {
-                showEditor = JSON.parse(showEditor);
-                if (showEditor.type === 'reply') {
-                    this.setState({ showReply: true });
-                }
-                if (showEditor.type === 'edit') {
-                    this.setState({ showEdit: true });
-                }
+    postClickHandler = (e) => {
+        if (e.target.classList.contains('external_link')) {
+            const url = e.target.href;
+
+            if (!isUrlWhitelisted(url)) {
+                e.preventDefault();
+                this.props.showExternalLinkWarning(url);
             }
         }
-        this.setState({ PostReplyEditor, PostEditEditor });
-    }
+    };
 
     render() {
         const {
- cont, post, postref, viewer_role
-} = this.props;
+            cont, post, postref, viewer_role
+        } = this.props;
 
         // Don't server-side render the comment if it has a certain number of newlines
         if (!post || (global.process !== undefined && (post.get('body').match(/\r?\n/g) || '').length > 25)) {
@@ -186,7 +209,7 @@ class CommentImpl extends PureComponent {
                     {tt('g.loading')}
                     ...
                 </div>
-);
+            );
         }
 
         const { onShowReply, onShowEdit, onDeletePost } = this;
@@ -315,7 +338,14 @@ class CommentImpl extends PureComponent {
         }
 
         return (
-            <div className={commentClasses.join(' ')} id={anchor_link} itemScope itemType="http://schema.org/comment">
+            // eslint-disable-next-line jsx-a11y/no-static-element-interactions
+            <div
+                className={commentClasses.join(' ')}
+                id={anchor_link}
+                itemScope
+                itemType="http://schema.org/comment"
+                onClick={this.postClickHandler}
+            >
                 <div className={innerCommentClass}>
                     <div className="Comment__Userpic show-for-medium">
                         <Userpic account={author} />
@@ -374,7 +404,7 @@ class CommentImpl extends PureComponent {
     }
 }
 
-const Comment = connect(
+export default connect(
     // mapStateToProps
     (state, ownProps) => {
         const { postref, cont } = ownProps;
@@ -422,6 +452,13 @@ const Comment = connect(
                 })
             );
         },
+        showExternalLinkWarning: (url) => {
+            dispatch(
+                globalActions.showDialog({
+                    name: 'externalLinkWarning',
+                    params: { url },
+                })
+            );
+        },
     })
-)(CommentImpl);
-export default Comment;
+)(Comment);

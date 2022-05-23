@@ -489,6 +489,7 @@ class Voting extends PureComponent {
                 onClick={voteUpClick}
                 title={myVote > 0 ? tt('g.remove_vote') : tt('g.upvote')}
                 id="upvote_button"
+                data-testid="upvote-btn"
             >
                 {up}
             </a>
@@ -500,8 +501,10 @@ class Voting extends PureComponent {
             // Vote weight adjust
             dropdown = (
                 <Dropdown
-                    show={showWeight && showWeightDir == 'up'}
-                    onHide={() => this.setState({ showWeight: false })}
+                    show={showWeight && showWeightDir === 'up'}
+                    onHide={() => {
+                        this.setState({ showWeight: false });
+                    }}
                     onShow={() => {
                         this.setState({
                             showWeight: true,

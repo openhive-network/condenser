@@ -1,3 +1,4 @@
+const webpack = require('webpack');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 const path = require('path');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
@@ -19,6 +20,12 @@ const plugins = [
             this.hooks.done.tap('WriteStats', writeStats);
         },
         webpack_isomorphic_tools_plugin,
+        new webpack.ProvidePlugin({
+            Buffer: ['buffer', 'Buffer'],
+        }),
+        new webpack.ProvidePlugin({
+            process: 'process/browser',
+        }),
     ];
 if (!devMode) {
     plugins.push(new MiniCssExtractPlugin({
@@ -138,12 +145,19 @@ module.exports = {
         alias: {
             react: path.join(__dirname, '../node_modules', 'react'),
             assets: path.join(__dirname, '../src/app/assets'),
+            app: path.resolve(__dirname, '../src/app'),
         },
         extensions: ['.js', '.json', '.jsx'],
         modules: [
             path.resolve(__dirname, '../src'),
             'node_modules'
-        ]
+        ],
+        fallback: {
+            stream: require.resolve('stream-browserify'),
+            crypto: require.resolve('crypto-browserify'),
+            vm: require.resolve('vm-browserify'),
+            buffer: require.resolve('buffer/'),
+        },
     },
     externals: {},
 };

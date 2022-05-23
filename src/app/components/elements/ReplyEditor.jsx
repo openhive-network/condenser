@@ -88,12 +88,17 @@ class ReplyEditor extends React.Component {
     constructor(props) {
         super();
         this.state = {
+            initialized: false,
             progress: {},
             imagesUploadCount: 0,
             enableSideBySide: true,
             userRc: undefined,
         };
         this.initForm(props);
+        this.textareaRef = React.createRef();
+        this.titleRef = React.createRef();
+        this.draftRef = React.createRef();
+        this.dropzoneRef = React.createRef();
     }
 
     async getUserRc(username) {
@@ -105,8 +110,14 @@ class ReplyEditor extends React.Component {
         }
     }
 
-    componentWillMount() {
+    componentDidUpdate() {
         const { formId } = this.props;
+
+        // Only need to do it on first time to load drafts etc...
+        // This also prevents infinite rerender due to the use of setState below
+        if (this.state.initialized === true) {
+            return;
+        }
 
         if (process.env.BROWSER) {
             // Check for rte editor preference
@@ -148,6 +159,7 @@ class ReplyEditor extends React.Component {
 
             // console.log("initial reply body:", raw || '(empty)')
             body.props.onChange(raw);
+            // eslint-disable-next-line react/no-did-update-set-state
             this.setState({
                 rte,
                 rte_value: rte ? stateFromHtml(raw) : null,
@@ -205,6 +217,8 @@ class ReplyEditor extends React.Component {
         if (qualifiedBeneficiaries.length > 0) {
             this.props.setBeneficiaries(formId, qualifiedBeneficiaries);
         }
+
+        this.state.initialized = true;
     }
 
     componentDidMount() {
@@ -212,34 +226,34 @@ class ReplyEditor extends React.Component {
         this.getUserRc(username);
 
         setTimeout(() => {
-            if (this.refs.rte) this.refs.rte._focus();
-            else if (this.props.isStory) this.refs.titleRef.focus();
-            else if (this.refs.postRef) this.refs.postRef.focus();
+            // if (this.refs.rte) this.refs.rte._focus();
+            if (this.props.isStory) this.titleRef.current.focus();
+            else if (this.textareaRef.current) this.textareaRef.current.focus();
         }, 300);
     }
 
     // shouldComponentUpdate = shouldComponentUpdate(this, 'ReplyEditor');
 
-    componentWillUpdate(nextProps, nextState) {
+    getSnapshotBeforeUpdate(prevProps, prevState) {
         if (process.env.BROWSER) {
-            const ts = this.state;
-            const ns = nextState;
-            const tp = this.props;
-            const np = nextProps;
+            const ts = prevState;
+            const ns = this.state;
+            const tp = prevState;
+            const np = this.props;
 
-            if (typeof nextProps.postTemplateName !== 'undefined' && nextProps.postTemplateName !== null) {
+            if (typeof np.postTemplateName !== 'undefined' && np.postTemplateName !== null) {
                 const { formId } = tp;
 
-                if (nextProps.postTemplateName.indexOf('create_') === 0) {
-                    const { username } = tp;
+                if (np.postTemplateName.indexOf('create_') === 0) {
+                    const { username } = this.props;
                     const {
                         body, title, summary, altAuthor, tags
                     } = ns;
                     const { payoutType, beneficiaries } = np;
                     const userTemplates = loadUserTemplates(username);
-                    const newTemplateName = nextProps.postTemplateName.replace('create_', '');
+                    const newTemplateName = np.postTemplateName.replace('create_', '');
                     const newTemplate = {
-                        name: nextProps.postTemplateName.replace('create_', ''),
+                        name: np.postTemplateName.replace('create_', ''),
                         beneficiaries,
                         payoutType,
                         markdown: body !== undefined ? body.value : '',
@@ -265,11 +279,11 @@ class ReplyEditor extends React.Component {
 
                     this.props.setPostTemplateName(formId, null);
                 } else {
-                    const userTemplates = loadUserTemplates(nextProps.username);
+                    const userTemplates = loadUserTemplates(np.username);
 
                     for (let ti = 0; ti < userTemplates.length; ti += 1) {
                         const template = userTemplates[ti];
-                        if (template.name === nextProps.postTemplateName) {
+                        if (template.name === np.postTemplateName) {
                             this.state.body.props.onChange(template.markdown);
                             this.state.title.props.onChange(template.title);
                             this.state.summary.props.onChange(template.summary);
@@ -351,8 +365,6 @@ class ReplyEditor extends React.Component {
         }
 
         tags.props.onChange(currentTags.join(' '));
-
-        console.log('Post tags:', tags.value);
     };
 
     initForm(props) {
@@ -383,10 +395,10 @@ class ReplyEditor extends React.Component {
                         && (!values.title || values.title.trim() === ''
                             ? tt('g.required')
                             : values.title.length > 255
-                              ? tt('reply_editor.shorten_title')
-                              : markdownRegex.test(values.title)
-                                ? tt('reply_editor.markdown_not_supported')
-                                : htmlTagRegex.test(values.title) ? tt('reply_editor.html_not_supported') : null),
+                                ? tt('reply_editor.shorten_title')
+                                : markdownRegex.test(values.title)
+                                    ? tt('reply_editor.markdown_not_supported')
+                                    : htmlTagRegex.test(values.title) ? tt('reply_editor.html_not_supported') : null),
                     tags: isStory && validateTagInput(values.tags, !isEdit),
                     body: bodyValidation,
                     summary:
@@ -394,15 +406,15 @@ class ReplyEditor extends React.Component {
                         && (values.summary.length > 140
                             ? tt('reply_editor.shorten_summary')
                             : markdownRegex.test(values.summary)
-                              ? tt('reply_editor.markdown_not_supported')
-                              : htmlTagRegex.test(values.summary) ? tt('reply_editor.html_not_supported') : null),
+                                ? tt('reply_editor.markdown_not_supported')
+                                : htmlTagRegex.test(values.summary) ? tt('reply_editor.html_not_supported') : null),
                     altAuthor:
                         isStory
                         && (values.altAuthor.length > 50
                             ? tt('reply_editor.shorten_alt_author')
                             : values.altAuthor && !altAuthorAllowedCharactersRegex.test(values.altAuthor)
-                              ? tt('reply_editor.invalid_username')
-                              : null),
+                                ? tt('reply_editor.invalid_username')
+                                : null),
                 };
             },
         });
@@ -442,12 +454,11 @@ class ReplyEditor extends React.Component {
     };
 
     showDraftSaved() {
-        const { draft } = this.refs;
-        if (draft) {
-            draft.className = 'ReplyEditor__draft';
+        if (this.draftRef.current) {
+            this.draftRef.current.className = 'ReplyEditor__draft';
             // eslint-disable-next-line no-void
-            void draft.offsetWidth; // reset animation
-            draft.className = 'ReplyEditor__draft ReplyEditor__draft-saved';
+            void this.draftRef.current.offsetWidth; // reset animation
+            this.draftRef.current.className = 'ReplyEditor__draft ReplyEditor__draft-saved';
         }
     }
 
@@ -504,7 +515,7 @@ class ReplyEditor extends React.Component {
     };
 
     onOpenClick = () => {
-        this.dropzone.open();
+        this.dropzoneRef.current.open();
     };
 
     onPasteCapture = (e) => {
@@ -543,7 +554,7 @@ class ReplyEditor extends React.Component {
     insertPlaceHolders = () => {
         let { imagesUploadCount } = this.state;
         const { body } = this.state;
-        const { selectionStart } = this.refs.postRef;
+        const { selectionStart } = this.textareaRef.current;
         let placeholder = '';
 
         for (let ii = 0; ii < imagesToUpload.length; ii += 1) {
@@ -561,8 +572,8 @@ class ReplyEditor extends React.Component {
         // Insert the temporary tag where the cursor currently is
         body.props.onChange(
             body.value.substring(0, selectionStart)
-                + placeholder
-                + body.value.substring(selectionStart, body.value.length)
+            + placeholder
+            + body.value.substring(selectionStart, body.value.length)
         );
     };
 
@@ -585,14 +596,14 @@ class ReplyEditor extends React.Component {
 
                 this.uploadNextImage();
             } else if (Object.prototype.hasOwnProperty.call(progress, 'error')) {
-                    this.displayErrorMessage(progress.error);
-                    const imageMd = `![${image.file.name}](UPLOAD FAILED)`;
+                this.displayErrorMessage(progress.error);
+                const imageMd = `![${image.file.name}](UPLOAD FAILED)`;
 
-                    // Remove temporary image MD tag
-                    body.props.onChange(body.value.replace(image.temporaryTag, imageMd));
-                } else {
-                    this.setState({ progress });
-                }
+                // Remove temporary image MD tag
+                body.props.onChange(body.value.replace(image.temporaryTag, imageMd));
+            } else {
+                this.setState({ progress });
+            }
         });
     };
 
@@ -764,7 +775,7 @@ class ReplyEditor extends React.Component {
                         'large-6': enableSideBySide,
                     })}
                 >
-                    <div ref="draft" className="ReplyEditor__draft ReplyEditor__draft-hide">
+                    <div ref={this.draftRef} className="ReplyEditor__draft ReplyEditor__draft-hide">
                         {tt('reply_editor.draft_saved')}
                     </div>
                     <form
@@ -774,9 +785,9 @@ class ReplyEditor extends React.Component {
                         })}
                         onSubmit={handleSubmit(({ data }) => {
                             const startLoadingIndicator = () => this.setState({
-                                    loading: true,
-                                    postError: undefined,
-                                });
+                                loading: true,
+                                postError: undefined,
+                            });
                             const replyPayload = {
                                 ...data,
                                 ...replyParams,
@@ -792,7 +803,7 @@ class ReplyEditor extends React.Component {
                         <div className={vframe_section_shrink_class}>
                             <a href="#" onClick={toggleSideBySide}>
                                 {(enableSideBySide && tt('reply_editor.disable_sidebyside'))
-                                    || tt('reply_editor.enable_sidebyside')}
+                                || tt('reply_editor.enable_sidebyside')}
                             </a>
                         </div>
                         <div className={vframe_section_shrink_class}>
@@ -805,7 +816,7 @@ class ReplyEditor extends React.Component {
                                         disabled={loading}
                                         placeholder={tt('reply_editor.title')}
                                         autoComplete="off"
-                                        ref="titleRef"
+                                        ref={this.titleRef}
                                         tabIndex={0}
                                         {...title.props}
                                     />
@@ -844,21 +855,31 @@ class ReplyEditor extends React.Component {
                                         disableClick
                                         multiple
                                         accept="image/*"
-                                        ref={(node) => {
-                                            this.dropzone = node;
-                                        }}
+                                        ref={this.dropzoneRef}
                                     >
-                                        <textarea
-                                            {...body.props}
-                                            ref="postRef"
-                                            onPasteCapture={this.onPasteCapture}
-                                            className={type === 'submit_story' ? 'upload-enabled' : ''}
-                                            disabled={loading}
-                                            rows={isStory ? 10 : 3}
-                                            placeholder={isStory ? tt('g.write_your_story') : tt('g.reply')}
-                                            autoComplete="off"
-                                            tabIndex={0}
-                                        />
+                                        {({getRootProps, getInputProps}) => {
+                                            const inputProps = getInputProps();
+                                            delete inputProps.style;
+                                            delete inputProps.onChange;
+                                            delete inputProps.onClick;
+
+                                            return (
+                                                <div {...getRootProps()}>
+                                                    <textarea
+                                                        {...body.props}
+                                                        {...inputProps}
+                                                        ref={this.textareaRef}
+                                                        onPasteCapture={this.onPasteCapture}
+                                                        className={type === 'submit_story' ? 'upload-enabled' : ''}
+                                                        disabled={loading}
+                                                        rows={isStory ? 10 : 3}
+                                                        placeholder={isStory ? tt('g.write_your_story') : tt('g.reply')}
+                                                        autoComplete="off"
+                                                        tabIndex={0}
+                                                    />
+                                                </div>
+                                            );
+                                        }}
                                     </Dropzone>
                                     {progress.message && <div className="info">{progress.message}</div>}
                                     {progress.error && (
@@ -916,11 +937,11 @@ class ReplyEditor extends React.Component {
                                         tabIndex={0}
                                     />
                                     {(tags.touched || tags.value) && (
-                                    <div className="error">
-                                        {tags.error}
-                                        {' '}
-                                    </div>
-)}
+                                        <div className="error">
+                                            {tags.error}
+                                            {' '}
+                                        </div>
+                                    )}
                                 </span>
                             )}
                         </div>
@@ -978,54 +999,54 @@ class ReplyEditor extends React.Component {
                         )}
                         <div className={vframe_section_shrink_class} style={{ marginTop: '0.5rem' }}>
                             {isStory
-                                && !isEdit && (
-                                    <div className="ReplyEditor__options">
-                                        <h5>
-                                            {tt('reply_editor.post_options')}
-                                            :
-                                        </h5>
-                                        <div>
-                                            {this.props.maxAcceptedPayout !== null
-                                                && this.props.maxAcceptedPayout !== 0 && (
-                                                    <div>
-                                                        {tt('post_advanced_settings_jsx.max_accepted_payout')}
-                                                        {': '}
-                                                        {this.props.maxAcceptedPayout}
-                                                        {' '}
-                                                        HBD
-                                                    </div>
-                                                )}
+                            && !isEdit && (
+                                <div className="ReplyEditor__options">
+                                    <h5>
+                                        {tt('reply_editor.post_options')}
+                                        :
+                                    </h5>
+                                    <div>
+                                        {this.props.maxAcceptedPayout !== null
+                                        && this.props.maxAcceptedPayout !== 0 && (
                                             <div>
-                                                {tt('post_advanced_settings_jsx.payout_option_header')}
+                                                {tt('post_advanced_settings_jsx.max_accepted_payout')}
                                                 {': '}
-                                                {this.props.payoutType === '0%' && tt('reply_editor.decline_payout')}
-                                                {this.props.payoutType === '50%' && tt('reply_editor.default_50_50')}
-                                                {this.props.payoutType === '100%' && tt('reply_editor.power_up_100')}
+                                                {this.props.maxAcceptedPayout}
+                                                {' '}
+                                                HBD
                                             </div>
-                                            <div>
-                                                {beneficiaries
-                                                    && beneficiaries.length > 0 && (
-                                                        <span>
-                                                            {tt('g.beneficiaries')}
-                                                            {': '}
-                                                            {tt('reply_editor.beneficiaries_set', {
-                                                                count: beneficiaries.length,
-                                                            })}
-                                                        </span>
-                                                    )}
-                                            </div>
-                                            <Tooltip
-                                                content={<FormattedHTMLMessage id="reply_editor.advanced_tooltip" />}
-                                                arrow={false}
-                                            >
-                                                <a href="#" onClick={this.showAdvancedSettings}>
-                                                    {tt('reply_editor.advanced_settings')}
-                                                </a>
-                                            </Tooltip>
-                                            {' '}
-                                            <br />
+                                        )}
+                                        <div>
+                                            {tt('post_advanced_settings_jsx.payout_option_header')}
+                                            {': '}
+                                            {this.props.payoutType === '0%' && tt('reply_editor.decline_payout')}
+                                            {this.props.payoutType === '50%' && tt('reply_editor.default_50_50')}
+                                            {this.props.payoutType === '100%' && tt('reply_editor.power_up_100')}
                                         </div>
+                                        <div>
+                                            {beneficiaries
+                                            && beneficiaries.length > 0 && (
+                                                <span>
+                                                    {tt('g.beneficiaries')}
+                                                    {': '}
+                                                    {tt('reply_editor.beneficiaries_set', {
+                                                        count: beneficiaries.length,
+                                                    })}
+                                                </span>
+                                            )}
+                                        </div>
+                                        <Tooltip
+                                            content={<FormattedHTMLMessage id="reply_editor.advanced_tooltip" />}
+                                            arrow={false}
+                                        >
+                                            <a href="#" onClick={this.showAdvancedSettings}>
+                                                {tt('reply_editor.advanced_settings')}
+                                            </a>
+                                        </Tooltip>
+                                        {' '}
+                                        <br />
                                     </div>
+                                </div>
                             )}
                         </div>
                         {rcStats && (
@@ -1056,14 +1077,14 @@ class ReplyEditor extends React.Component {
                             className={classnames(vframe_section_shrink_class, 'ReplyEditor--submit-buttons-container')}
                         >
                             {isStory
-                                && !isEdit
-                                && username && (
-                                    <PostCategoryBanner
-                                        category={community}
-                                        username={username}
-                                        onChange={this.onPostDestinationChange}
-                                    />
-                                )}
+                            && !isEdit
+                            && username && (
+                                <PostCategoryBanner
+                                    category={community}
+                                    username={username}
+                                    onChange={this.onPostDestinationChange}
+                                />
+                            )}
                             {!loading && (
                                 <button type="submit" className="button" disabled={disabled} tabIndex={0}>
                                     {isEdit ? tt('reply_editor.update_post') : postLabel}
@@ -1078,40 +1099,40 @@ class ReplyEditor extends React.Component {
                             &nbsp;
                             {' '}
                             {!loading
-                                && this.props.onCancel && (
-                                    <button
-                                        type="button"
-                                        className="secondary hollow button no-border"
-                                        tabIndex={0}
-                                        onClick={onCancel}
-                                    >
-                                        {tt('g.cancel')}
-                                    </button>
-                                )}
+                            && this.props.onCancel && (
+                                <button
+                                    type="button"
+                                    className="secondary hollow button no-border"
+                                    tabIndex={0}
+                                    onClick={onCancel}
+                                >
+                                    {tt('g.cancel')}
+                                </button>
+                            )}
                             {!loading
-                                && !this.props.onCancel && (
-                                    <button
-                                        type="button"
-                                        className="button hollow no-border"
-                                        tabIndex={0}
-                                        disabled={submitting}
-                                        onClick={onCancel}
-                                    >
-                                        {tt('g.clear')}
-                                    </button>
-                                )}
+                            && !this.props.onCancel && (
+                                <button
+                                    type="button"
+                                    className="button hollow no-border"
+                                    tabIndex={0}
+                                    disabled={submitting}
+                                    onClick={onCancel}
+                                >
+                                    {tt('g.clear')}
+                                </button>
+                            )}
                             {!isStory
-                                && !isEdit
-                                && this.props.payoutType != '50%' && (
-                                    <div className="ReplyEditor__options float-right text-right">
-                                        {tt('g.rewards')}
-                                        {': '}
-                                        {this.props.payoutType == '0%' && tt('reply_editor.decline_payout')}
-                                        {this.props.payoutType == '100%' && tt('reply_editor.power_up_100')}
-                                        {'. '}
-                                        <a href={'/@' + username + '/settings'}>Update settings</a>
-                                    </div>
-                                )}
+                            && !isEdit
+                            && this.props.payoutType != '50%' && (
+                                <div className="ReplyEditor__options float-right text-right">
+                                    {tt('g.rewards')}
+                                    {': '}
+                                    {this.props.payoutType == '0%' && tt('reply_editor.decline_payout')}
+                                    {this.props.payoutType == '100%' && tt('reply_editor.power_up_100')}
+                                    {'. '}
+                                    <a href={'/@' + username + '/settings'}>Update settings</a>
+                                </div>
+                            )}
                         </div>
                     </form>
                 </div>
@@ -1139,17 +1160,17 @@ class ReplyEditor extends React.Component {
                         )}
                     </div>
                     {!loading
-                        && body.value && (
-                            <div
-                                className={classnames({
-                                    Preview: true,
-                                    'side-by-side': enableSideBySide,
-                                    vframe_section_shrink_class: true,
-                                })}
-                            >
-                                <MarkdownViewer text={body.value} large={isStory} />
-                            </div>
-                        )}
+                    && body.value && (
+                        <div
+                            className={classnames({
+                                Preview: true,
+                                'side-by-side': enableSideBySide,
+                                vframe_section_shrink_class: true,
+                            })}
+                        >
+                            <MarkdownViewer text={body.value} large={isStory} />
+                        </div>
+                    )}
                 </div>
             </div>
         );
@@ -1163,12 +1184,12 @@ const isHtmlTest = (text) => /^<html>/.test(text);
 
 function stateFromHtml() {
     return null;
-/*
-    if (html) html = stripHtmlWrapper(html);
-    if (html && html.trim() == '') html = null;
-    return html ? deserializeHtml(html) : getDemoState();
+    /*
+        if (html) html = stripHtmlWrapper(html);
+        if (html && html.trim() == '') html = null;
+        return html ? deserializeHtml(html) : getDemoState();
 
- */
+     */
 }
 
 //var htmlclean = require('htmlclean');
@@ -1178,335 +1199,334 @@ function stateFromMarkdown(markdown) {
         html = remarkable.render(markdown);
         html = HtmlReady(html).html; // TODO: option to disable youtube conversion, @-links, img proxy
         //html = htmlclean(html) // normalize whitespace
-        console.log('markdown converted to:', html);
     }
     return stateFromHtml(html);
 }
 
 export default (formId) => connect(
-        // mapStateToProps
-        (state, ownProps) => {
-            const username = state.user.getIn(['current', 'username']);
-            const referralSystem = state.app.getIn(['user_preferences', 'referralSystem']);
-            const defaultBeneficiaries = state.user.getIn(['current', 'defaultBeneficiaries']);
-            const fields = ['body'];
-            const {
-                author, permlink, type, parent_author
-            } = ownProps;
-            const isEdit = type === 'edit';
-            const isStory = /submit_story/.test(type) || (isEdit && !parent_author);
-            if (isStory) fields.push('title');
-            if (isStory) fields.push('tags');
-            if (isStory) fields.push('summary');
-            if (isStory) fields.push('altAuthor');
+    // mapStateToProps
+    (state, ownProps) => {
+        const username = state.user.getIn(['current', 'username']);
+        const referralSystem = state.app.getIn(['user_preferences', 'referralSystem']);
+        const defaultBeneficiaries = state.user.getIn(['current', 'defaultBeneficiaries']);
+        const fields = ['body'];
+        const {
+            author, permlink, type, parent_author
+        } = ownProps;
+        const isEdit = type === 'edit';
+        const isStory = /submit_story/.test(type) || (isEdit && !parent_author);
+        if (isStory) fields.push('title');
+        if (isStory) fields.push('tags');
+        if (isStory) fields.push('summary');
+        if (isStory) fields.push('altAuthor');
 
-            const { summary, altAuthor } = ownProps;
-            let { category, title, body } = ownProps;
-            if (/submit_/.test(type)) {
-                title = '';
-                body = '';
-            }
-            // type: PropTypes.oneOf(['submit_story', 'submit_comment', 'edit'])
+        const { summary, altAuthor } = ownProps;
+        let { category, title, body } = ownProps;
+        if (/submit_/.test(type)) {
+            title = '';
+            body = '';
+        }
+        // type: PropTypes.oneOf(['submit_story', 'submit_comment', 'edit'])
 
-            const {query} = state.routing.locationBeforeTransitions;
-            if (query && query.category) {
-                category = query.category;
-            }
+        const {query} = state.routing.locationBeforeTransitions;
+        if (query && query.category) {
+            category = query.category;
+        }
 
-            const jsonMetadata = ownProps.jsonMetadata
-                ? ownProps.jsonMetadata instanceof Map ? ownProps.jsonMetadata.toJS() : ownProps.jsonMetadata
-                : {};
+        const jsonMetadata = ownProps.jsonMetadata
+            ? ownProps.jsonMetadata instanceof Map ? ownProps.jsonMetadata.toJS() : ownProps.jsonMetadata
+            : {};
 
-            let tags = category;
-            if (isStory && jsonMetadata && jsonMetadata.tags) {
-                tags = OrderedSet([category, ...jsonMetadata.tags]).join(' ');
-            }
-            let isNSFWCommunity = false;
-            isNSFWCommunity = state.global.getIn(['community', category, 'is_nsfw']);
-            if (isNSFWCommunity) {
-                tags = `${tags} nsfw`;
-            }
-            const defaultPayoutType = state.app.getIn(
-                ['user_preferences', isStory ? 'defaultBlogPayout' : 'defaultCommentPayout'],
-                '50%'
+        let tags = category;
+        if (isStory && jsonMetadata && jsonMetadata.tags) {
+            tags = OrderedSet([category, ...jsonMetadata.tags]).join(' ');
+        }
+        let isNSFWCommunity = false;
+        isNSFWCommunity = state.global.getIn(['community', category, 'is_nsfw']);
+        if (isNSFWCommunity) {
+            tags = `${tags} nsfw`;
+        }
+        const defaultPayoutType = state.app.getIn(
+            ['user_preferences', isStory ? 'defaultBlogPayout' : 'defaultCommentPayout'],
+            '50%'
+        );
+        let payoutType = state.user.getIn(['current', 'post', formId, 'payoutType']);
+        let maxAcceptedPayout;
+        if (isEdit) {
+            maxAcceptedPayout = parseFloat(
+                state.global.getIn(['content', `${author}/${permlink}`, 'max_accepted_payout'])
             );
-            let payoutType = state.user.getIn(['current', 'post', formId, 'payoutType']);
-            let maxAcceptedPayout;
-            if (isEdit) {
-                maxAcceptedPayout = parseFloat(
-                    state.global.getIn(['content', `${author}/${permlink}`, 'max_accepted_payout'])
-                );
-            } else {
-                maxAcceptedPayout = state.user.getIn(['current', 'post', formId, 'maxAcceptedPayout']);
-            }
-            if (!payoutType) {
-                payoutType = defaultPayoutType;
-            }
-            let beneficiaries = state.user.getIn(['current', 'post', formId, 'beneficiaries']);
-            const postTemplateName = state.user.getIn(['current', 'post', formId, 'postTemplateName']);
-            beneficiaries = beneficiaries ? beneficiaries.toJS() : [];
+        } else {
+            maxAcceptedPayout = state.user.getIn(['current', 'post', formId, 'maxAcceptedPayout']);
+        }
+        if (!payoutType) {
+            payoutType = defaultPayoutType;
+        }
+        let beneficiaries = state.user.getIn(['current', 'post', formId, 'beneficiaries']);
+        const postTemplateName = state.user.getIn(['current', 'post', formId, 'postTemplateName']);
+        beneficiaries = beneficiaries ? beneficiaries.toJS() : [];
 
-            // Post full
-            /*
-            const replyParams = {
-                author,
-                permlink,
-                parent_author,
-                parent_permlink,
-                category,
-                title,
-                body: post.get('body'),
-            }; */
+        // Post full
+        /*
+        const replyParams = {
+            author,
+            permlink,
+            parent_author,
+            parent_permlink,
+            category,
+            title,
+            body: post.get('body'),
+        }; */
 
-            //ownProps:
-            //  {...comment},
-            //  author, permlink,
-            //  body, title, category
-            //  parent_author, parent_permlink,
-            //  type, successCallback,
-            //  successCallBack, onCancel
-            return {
-                ...ownProps,
-                type, //XX
-                jsonMetadata, //XX (if not reply)
-                category,
-                fields,
-                isStory,
-                username,
-                referralSystem,
-                defaultBeneficiaries,
-                defaultPayoutType,
-                payoutType,
-                beneficiaries,
-                postTemplateName,
-                maxAcceptedPayout,
-                initialValues: {
-                    title, summary, altAuthor, body, tags
-                },
-                formId,
-            };
-        },
-
-        // mapDispatchToProps
-        (dispatch) => ({
-            uploadImage: (file, progress) => dispatch(userActions.uploadImage({ file, progress })),
-            showAdvancedSettings: (_formId) => dispatch(userActions.showPostAdvancedSettings({ _formId })),
-            setPayoutType: (_formId, payoutType) => dispatch(
-                    userActions.set({
-                        key: ['current', 'post', _formId, 'payoutType'],
-                        value: payoutType,
-                    })
-                ),
-            setMaxAcceptedPayout: (_formId, maxAcceptedPayout) => dispatch(
-                    userActions.set({
-                        key: ['current', 'post', _formId, 'maxAcceptedPayout'],
-                        value: maxAcceptedPayout,
-                    })
-                ),
-            setBeneficiaries: (_formId, beneficiaries) => dispatch(
-                    userActions.set({
-                        key: ['current', 'post', _formId, 'beneficiaries'],
-                        value: fromJS(beneficiaries),
-                    })
-                ),
-            setPostTemplateName: (_formId, postTemplateName) => dispatch(
-                    userActions.set({
-                        key: ['current', 'post', _formId, 'postTemplateName'],
-                        value: postTemplateName,
-                    })
-                ),
-            reply: ({
-                tags,
-                title,
-                summary,
-                altAuthor,
-                body,
-                author,
-                permlink,
-                parent_author,
-                parent_permlink,
-                isHtml,
-                isStory,
-                type,
-                originalPost,
-                payoutType = '50%',
-                maxAcceptedPayout = null,
-                beneficiaries = [],
-                username,
-                jsonMetadata,
-                successCallback,
-                errorCallback,
-                startLoadingIndicator,
-                selectedCoverImage,
-            }) => {
-                const isEdit = type === 'edit';
-                const isNew = /^submit_/.test(type);
-
-                // Wire up the current and parent props for either an Edit or a Submit (new post)
-                //'submit_story', 'submit_comment', 'edit'
-                const linkProps = isNew
-                    ? {
-                          // submit new
-                          parent_author: author,
-                          parent_permlink: permlink,
-                          author: username,
-                          // permlink,  assigned in TransactionSaga
-                      }
-                    : isEdit ? { // edit existing
-                        author, permlink, parent_author, parent_permlink
-                    } : null;
-
-                if (!linkProps) throw new Error('Unknown type: ' + type);
-
-                let rtags;
-                {
-                    const html = isHtml ? body : remarkable.render(body);
-                    rtags = HtmlReady(html, { mutate: false });
-                }
-
-                allowedTags.forEach((tag) => {
-                    rtags.htmltags.delete(tag);
-                });
-                if (isHtml) rtags.htmltags.delete('html'); // html tag allowed only in HTML mode
-                if (rtags.htmltags.size) {
-                    errorCallback(
-                        'Please remove the following HTML elements from your post: '
-                            + Array(...rtags.htmltags)
-                                .map((tag) => `<${tag}>`)
-                                .join(', ')
-                    );
-                    return;
-                }
-
-                const metaTags = allTags(tags, originalPost.category, rtags.hashtags);
-
-                // merge
-                const meta = isEdit ? jsonMetadata : {};
-
-                if (metaTags.size) {
-                    meta.tags = metaTags.toJS();
-                } else {
-                    delete meta.tags;
-                }
-
-                if (rtags.usertags.size) {
-                    meta.users = Array.from(rtags.usertags);
-                } else {
-                    delete meta.users;
-                }
-
-                if (rtags.images.size) {
-                    const moveToFirst = (array, first) => {
-                        array.sort((x, y) => {
-                            return x === first ? -1 : y === first ? 1 : 0;
-                        });
-                    };
-                    meta.image = Array.from(rtags.images);
-
-                    // If a cover image has been manually selected,
-                    // move it to the first element of the image array.
-                    if (selectedCoverImage) {
-                        moveToFirst(meta.image, selectedCoverImage);
-                    }
-                } else {
-                    delete meta.image;
-                }
-                if (rtags.links.size) {
-                    meta.links = Array.from(rtags.links).slice(0, 1);
-                } else {
-                    delete meta.links;
-                }
-
-                meta.app = 'hiveblog/0.1';
-                if (isStory) {
-                    meta.format = isHtml ? 'html' : 'markdown';
-                    if (summary) {
-                        meta.description = summary;
-                    }
-                    if (altAuthor) {
-                        meta.author = altAuthor;
-                    }
-                }
-
-                const sanitizeErrors = [];
-                sanitize(body, sanitizeConfig({ sanitizeErrors }));
-                if (sanitizeErrors.length) {
-                    errorCallback(sanitizeErrors.join('.  '));
-                    return;
-                }
-
-                if (meta.tags && meta.tags.length > MAX_TAGS) {
-                    const includingCategory = isEdit
-                        ? tt('reply_editor.including_the_category', {
-                              rootCategory: originalPost.category,
-                          })
-                        : '';
-                    errorCallback(
-                        tt('reply_editor.use_limited_amount_of_tags', {
-                            tagsLength: meta.tags.length,
-                            includingCategory,
-                        })
-                    );
-                    return;
-                }
-
-                startLoadingIndicator();
-
-                const originalBody = isEdit ? originalPost.body : null;
-                const __config = {
-                    originalBody,
-                    comment_options: isEdit ? null : {},
-                };
-                // Avoid changing payout option during edits #735
-                if (!isEdit) {
-                    switch (payoutType) {
-                        case '0%': // decline payout
-                            __config.comment_options.max_accepted_payout = '0.000 HBD';
-                            break;
-                        case '100%': // 100% steem power payout
-                            __config.comment_options.percent_hbd = 0; // 10000 === 100% (of 50%)
-                            break;
-                        default: // 50% steem power, 50% sd+steem
-                    }
-                    if (beneficiaries && beneficiaries.length > 0) {
-                        __config.comment_options.extensions = [
-                            [
-                                0,
-                                {
-                                    beneficiaries: beneficiaries
-                                        .sort(
-                                            (a, b) => (a.username < b.username ? -1 : a.username > b.username ? 1 : 0)
-                                        )
-                                        .map((elt) => ({
-                                            account: elt.username,
-                                            weight: parseInt(elt.percent) * 100,
-                                        })),
-                                },
-                            ],
-                        ];
-                    }
-                    if (maxAcceptedPayout !== null && maxAcceptedPayout !== 0) {
-                        __config.comment_options.max_accepted_payout = `${maxAcceptedPayout.toFixed(3)} HBD`;
-                    }
-                }
-
-                const operation = {
-                    ...linkProps,
-                    category: originalPost.category || metaTags.first(),
-                    title,
-                    body,
-                    json_metadata: JSON.stringify(meta),
-                    __config,
-                };
-
-                dispatch(
-                    transactionActions.broadcastOperation({
-                        type: 'comment',
-                        operation,
-                        errorCallback,
-                        successCallback,
-                    })
-                );
+        //ownProps:
+        //  {...comment},
+        //  author, permlink,
+        //  body, title, category
+        //  parent_author, parent_permlink,
+        //  type, successCallback,
+        //  successCallBack, onCancel
+        return {
+            ...ownProps,
+            type, //XX
+            jsonMetadata, //XX (if not reply)
+            category,
+            fields,
+            isStory,
+            username,
+            referralSystem,
+            defaultBeneficiaries,
+            defaultPayoutType,
+            payoutType,
+            beneficiaries,
+            postTemplateName,
+            maxAcceptedPayout,
+            initialValues: {
+                title, summary, altAuthor, body, tags
             },
-        })
-    )(ReplyEditor);
+            formId,
+        };
+    },
+
+    // mapDispatchToProps
+    (dispatch) => ({
+        uploadImage: (file, progress) => dispatch(userActions.uploadImage({ file, progress })),
+        showAdvancedSettings: (_formId) => dispatch(userActions.showPostAdvancedSettings({ _formId })),
+        setPayoutType: (_formId, payoutType) => dispatch(
+            userActions.set({
+                key: ['current', 'post', _formId, 'payoutType'],
+                value: payoutType,
+            })
+        ),
+        setMaxAcceptedPayout: (_formId, maxAcceptedPayout) => dispatch(
+            userActions.set({
+                key: ['current', 'post', _formId, 'maxAcceptedPayout'],
+                value: maxAcceptedPayout,
+            })
+        ),
+        setBeneficiaries: (_formId, beneficiaries) => dispatch(
+            userActions.set({
+                key: ['current', 'post', _formId, 'beneficiaries'],
+                value: fromJS(beneficiaries),
+            })
+        ),
+        setPostTemplateName: (_formId, postTemplateName) => dispatch(
+            userActions.set({
+                key: ['current', 'post', _formId, 'postTemplateName'],
+                value: postTemplateName,
+            })
+        ),
+        reply: ({
+                    tags,
+                    title,
+                    summary,
+                    altAuthor,
+                    body,
+                    author,
+                    permlink,
+                    parent_author,
+                    parent_permlink,
+                    isHtml,
+                    isStory,
+                    type,
+                    originalPost,
+                    payoutType = '50%',
+                    maxAcceptedPayout = null,
+                    beneficiaries = [],
+                    username,
+                    jsonMetadata,
+                    successCallback,
+                    errorCallback,
+                    startLoadingIndicator,
+                    selectedCoverImage,
+                }) => {
+            const isEdit = type === 'edit';
+            const isNew = /^submit_/.test(type);
+
+            // Wire up the current and parent props for either an Edit or a Submit (new post)
+            //'submit_story', 'submit_comment', 'edit'
+            const linkProps = isNew
+                ? {
+                    // submit new
+                    parent_author: author,
+                    parent_permlink: permlink,
+                    author: username,
+                    // permlink,  assigned in TransactionSaga
+                }
+                : isEdit ? { // edit existing
+                    author, permlink, parent_author, parent_permlink
+                } : null;
+
+            if (!linkProps) throw new Error('Unknown type: ' + type);
+
+            let rtags;
+            {
+                const html = isHtml ? body : remarkable.render(body);
+                rtags = HtmlReady(html, { mutate: false });
+            }
+
+            allowedTags.forEach((tag) => {
+                rtags.htmltags.delete(tag);
+            });
+            if (isHtml) rtags.htmltags.delete('html'); // html tag allowed only in HTML mode
+            if (rtags.htmltags.size) {
+                errorCallback(
+                    'Please remove the following HTML elements from your post: '
+                    + Array(...rtags.htmltags)
+                        .map((tag) => `<${tag}>`)
+                        .join(', ')
+                );
+                return;
+            }
+
+            const metaTags = allTags(tags, originalPost.category, rtags.hashtags);
+
+            // merge
+            const meta = isEdit ? jsonMetadata : {};
+
+            if (metaTags.size) {
+                meta.tags = metaTags.toJS();
+            } else {
+                delete meta.tags;
+            }
+
+            if (rtags.usertags.size) {
+                meta.users = Array.from(rtags.usertags);
+            } else {
+                delete meta.users;
+            }
+
+            if (rtags.images.size) {
+                const moveToFirst = (array, first) => {
+                    array.sort((x, y) => {
+                        return x === first ? -1 : y === first ? 1 : 0;
+                    });
+                };
+                meta.image = Array.from(rtags.images);
+
+                // If a cover image has been manually selected,
+                // move it to the first element of the image array.
+                if (selectedCoverImage) {
+                    moveToFirst(meta.image, selectedCoverImage);
+                }
+            } else {
+                delete meta.image;
+            }
+            if (rtags.links.size) {
+                meta.links = Array.from(rtags.links).slice(0, 1);
+            } else {
+                delete meta.links;
+            }
+
+            meta.app = 'hiveblog/0.1';
+            if (isStory) {
+                meta.format = isHtml ? 'html' : 'markdown';
+                if (summary) {
+                    meta.description = summary;
+                }
+                if (altAuthor) {
+                    meta.author = altAuthor;
+                }
+            }
+
+            const sanitizeErrors = [];
+            sanitize(body, sanitizeConfig({ sanitizeErrors }));
+            if (sanitizeErrors.length) {
+                errorCallback(sanitizeErrors.join('.  '));
+                return;
+            }
+
+            if (meta.tags && meta.tags.length > MAX_TAGS) {
+                const includingCategory = isEdit
+                    ? tt('reply_editor.including_the_category', {
+                        rootCategory: originalPost.category,
+                    })
+                    : '';
+                errorCallback(
+                    tt('reply_editor.use_limited_amount_of_tags', {
+                        tagsLength: meta.tags.length,
+                        includingCategory,
+                    })
+                );
+                return;
+            }
+
+            startLoadingIndicator();
+
+            const originalBody = isEdit ? originalPost.body : null;
+            const __config = {
+                originalBody,
+                comment_options: isEdit ? null : {},
+            };
+            // Avoid changing payout option during edits #735
+            if (!isEdit) {
+                switch (payoutType) {
+                    case '0%': // decline payout
+                        __config.comment_options.max_accepted_payout = '0.000 HBD';
+                        break;
+                    case '100%': // 100% steem power payout
+                        __config.comment_options.percent_hbd = 0; // 10000 === 100% (of 50%)
+                        break;
+                    default: // 50% steem power, 50% sd+steem
+                }
+                if (beneficiaries && beneficiaries.length > 0) {
+                    __config.comment_options.extensions = [
+                        [
+                            0,
+                            {
+                                beneficiaries: beneficiaries
+                                    .sort(
+                                        (a, b) => (a.username < b.username ? -1 : a.username > b.username ? 1 : 0)
+                                    )
+                                    .map((elt) => ({
+                                        account: elt.username,
+                                        weight: parseInt(elt.percent) * 100,
+                                    })),
+                            },
+                        ],
+                    ];
+                }
+                if (maxAcceptedPayout !== null && maxAcceptedPayout !== 0) {
+                    __config.comment_options.max_accepted_payout = `${maxAcceptedPayout.toFixed(3)} HBD`;
+                }
+            }
+
+            const operation = {
+                ...linkProps,
+                category: originalPost.category || metaTags.first(),
+                title,
+                body,
+                json_metadata: JSON.stringify(meta),
+                __config,
+            };
+
+            dispatch(
+                transactionActions.broadcastOperation({
+                    type: 'comment',
+                    operation,
+                    errorCallback,
+                    successCallback,
+                })
+            );
+        },
+    })
+)(ReplyEditor);

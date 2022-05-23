@@ -53,7 +53,7 @@ export default (
         img: ['src', 'srcset', 'alt', 'class'],
 
         // title is only set in the case of an external link warning
-        a: ['href', 'rel', 'title', 'class'],
+        a: ['href', 'rel', 'title', 'class', 'target'],
     },
     allowedSchemes: ['http', 'https', 'steem', 'esteem'],
     transformTags: {
@@ -179,8 +179,8 @@ export default (
             const attys = { href };
             // If it's not a (relative or absolute) hive URL...
             if (!href.match(`^(/(?!/)|https://${$STM_Config.site_domain})`)) {
-                // attys.target = '_blank' // pending iframe impl https://mathiasbynens.github.io/rel-noopener/
-                attys.rel = highQualityPost ? 'noopener' : 'nofollow noopener';
+                attys.target = '_blank';
+                attys.rel = highQualityPost ? 'noreferrer noopener' : 'nofollow noreferrer noopener';
                 attys.title = getExternalLinkWarningMessage();
                 attys.class = 'external_link';
             }

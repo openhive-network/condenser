@@ -9,11 +9,7 @@ const startKoa = require('./utils/start-koa');
 
 module.exports = {
     ...baseConfig,
-    devtool: 'cheap-module-eval-source-map',
-    output: {
-        ...baseConfig.output,
-        publicPath: '/assets/'
-    },
+    // devtool: 'eval-cheap-module-source-map',
     module: {
         ...baseConfig.module,
         rules: [
@@ -30,8 +26,7 @@ module.exports = {
         }),
         ...baseConfig.plugins,
         function () {
-            console.log("Please wait for app server startup (~60s)"
-                + " after webpack server startup...");
+            console.log("Please wait for app server startup (~60s) after webpack server startup...");
             this.hooks.done.tap('StartKoa', startKoa);
         },
         new LiveReloadPlugin({

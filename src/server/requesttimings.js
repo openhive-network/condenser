@@ -1,16 +1,16 @@
 import RequestTimer from './utils/RequestTimer';
 
 function requestTime(statsLoggerClient) {
-    return function* (next) {
-        this.state.requestTimer = new RequestTimer(
+    return async (ctx, next) => {
+        ctx.state.requestTimer = new RequestTimer(
             statsLoggerClient,
             'request',
-            `method=${this.request.method} path=${this.request.path}`
+            `method=${ctx.request.method} path=${ctx.request.path}`
         );
 
-        yield* next;
+        await next();
 
-        this.state.requestTimer.finish();
+        ctx.state.requestTimer.finish();
     };
 }
 
