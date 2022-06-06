@@ -79,9 +79,7 @@ class CommentImpl extends PureComponent {
 
     constructor() {
         super();
-        this.state = {
-            collapsed: false, hide_body: false, highlight: false, low_rating: false,
-        };
+        this.state = { collapsed: false, hide_body: false, highlight: false };
         this.revealBody = this.revealBody.bind(this);
         //this.shouldComponentUpdate = shouldComponentUpdate(this, 'Comment');
         this.onShowReply = () => {
@@ -133,11 +131,8 @@ class CommentImpl extends PureComponent {
     _checkHide(props) {
         const { post } = props;
         if (post) {
-            const notOwn = this.props.username !== post.get('author');
-            const hide = post.getIn(['stats', 'hide']);
+            const hide = false && post.getIn(['stats', 'hide']);
             const gray = post.getIn(['stats', 'gray']);
-            const hide_body = notOwn && (hide || gray);
-            const low_rating = post.get('net_rshares') < 0;
 
             if (hide) {
                 // trigger parent component to show 'reveal comments' button
@@ -145,7 +140,8 @@ class CommentImpl extends PureComponent {
                 if (onHide) onHide();
             }
 
-            this.setState({ hide, hide_body, low_rating });
+            const notOwn = this.props.username !== post.get('author');
+            this.setState({ hide, hide_body: notOwn && (hide || gray) });
         }
     }
 
@@ -213,8 +209,7 @@ class CommentImpl extends PureComponent {
         } = this.props;
 
         const {
-            PostReplyEditor, PostEditEditor, showReply, showEdit, hide, hide_body,
-            low_rating,
+            PostReplyEditor, PostEditEditor, showReply, showEdit, hide, hide_body
         } = this.state;
 
         if (!showNegativeComments && (hide || ignored)) return null;
@@ -222,10 +217,8 @@ class CommentImpl extends PureComponent {
         const Editor = showReply ? PostReplyEditor : PostEditEditor;
 
         const author = post.get('author');
-        const isMutedInCommunity = post.get('author_role') === 'muted';
-        const negativeReputation = post.get('author_reputation') < 0;
         const comment = post.toJS();
-        const gray = comment.stats.gray || ImageUserBlockList.includes(author) || low_rating;
+        const gray = comment.stats.gray || ImageUserBlockList.includes(author);
 
         const allowReply = Role.canComment(community, viewer_role);
         const canEdit = username && username === author;
@@ -237,7 +230,6 @@ class CommentImpl extends PureComponent {
         let body = null;
         let controls = null;
         if (!this.state.collapsed && !hide_body) {
-            // If gray don't render Markdown
             body = gray ? (
                 <pre style={{ opacity: 0.5, whiteSpace: 'pre-wrap' }}>{comment.body}</pre>
             ) : (
@@ -335,24 +327,6 @@ class CommentImpl extends PureComponent {
             );
         }
 
-        let reasonForGray;
-        if (!this.state.collapsed && !hide_body && (ignored || gray)) {
-            switch (true) {
-                case isMutedInCommunity:
-                    reasonForGray = tt('g.muted_by_community');
-                    break;
-
-                case negativeReputation:
-                    reasonForGray = tt('g.low_reputation');
-                    break;
-
-                case low_rating:
-                default:
-                    reasonForGray = tt('g.low_rating');
-                    break;
-            }
-        }
-
         return (
             // eslint-disable-next-line jsx-a11y/no-static-element-interactions
             <div
@@ -389,25 +363,24 @@ class CommentImpl extends PureComponent {
                             <Icon name="link" className="chain-rotated" />
                         </Link>
                         {(this.state.collapsed || hide_body) && <Voting post={post} showList={false} />}
-                        {this.state.collapsed && comment.children > 0 && (
-                            <span>
-                                {tt('g.reply_count', {
-                                    count: comment.children,
-                                })}
-                            </span>
-                        )}
-                        {!this.state.collapsed && hide_body && (
-                            <a role="link" tabIndex={0} onClick={this.revealBody}>
-                                {tt('g.reveal_comment')}
-                                ...
-                            </a>
-                        )}
-                        {reasonForGray && (
-                            <span>
-                                &middot;&nbsp;
-                                {reasonForGray}
-                            </span>
-                        )}
+                        {this.state.collapsed
+                            && comment.children > 0 && (
+                                <span>
+                                    {tt('g.reply_count', {
+                                        count: comment.children,
+                                    })}
+                                </span>
+                            )}
+                        {!this.state.collapsed
+                            && hide_body && <a role="link" tabIndex={0} onClick={this.revealBody}>{tt('g.reveal_comment')}</a>}
+                        {!this.state.collapsed
+                            && !hide_body
+                            && (ignored || gray) && (
+                                <span>
+                                    &middot;&nbsp;
+                                    {tt('g.will_be_hidden_due_to_low_rating')}
+                                </span>
+                            )}
                     </div>
                     <div className="Comment__body entry-content">{showEdit ? renderedEditor : body}</div>
                     <div className="Comment__footer">{controls}</div>

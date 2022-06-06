@@ -430,7 +430,6 @@ class PostFull extends React.Component {
         const canDelete = username === author && allowDelete(post);
         const isGray = post.getIn(['stats', 'gray']);
         const isMuted = muteList.has(post.get('author')) && !showMutedList;
-        const isLowRating = post.get('net_rshares') < 0;
 
         const isPinned = post.getIn(['stats', 'is_pinned'], false);
 
@@ -489,7 +488,7 @@ class PostFull extends React.Component {
         if (bShowLoading) {
             contentBody = <LoadingIndicator type="circle-strong" />;
         } else {
-            const noLink = isGray || authorIsBlocked || isLowRating;
+            const noLink = isGray || authorIsBlocked;
             const noLinkText = tt('g.no_link_text');
             const noImage = isGray;
             const noImageText = tt('g.no_image_text');

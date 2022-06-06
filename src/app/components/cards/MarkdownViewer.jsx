@@ -126,17 +126,13 @@ class MarkdownViewer extends Component {
         for (let section of cleanText.split('~~~ embed:')) {
             const embedMd = EmbeddedPlayerGenerateMd(section, idx, large);
             if (embedMd) {
-                if (!noLink) {
-                    const { section: newSection, markdown } = embedMd;
-                    section = newSection;
-                    sections.push(markdown);
+                const { section: newSection, markdown } = embedMd;
+                section = newSection;
+                sections.push(markdown);
 
-                    if (section === '') {
-                        // eslint-disable-next-line no-continue
-                        continue;
-                    }
-                } else {
-                    section = `<i>${noLinkText}</i>`;
+                if (section === '') {
+                    // eslint-disable-next-line no-continue
+                    continue;
                 }
             }
 
