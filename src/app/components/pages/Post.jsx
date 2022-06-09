@@ -5,12 +5,10 @@ import tt from 'counterpart';
 import { SIGNUP_URL } from 'shared/constants';
 import PostFull from 'app/components/cards/PostFull';
 import NotFoundMessage from 'app/components/cards/NotFoundMessage';
-import Comment, { sortComments } from 'app/components/cards/Comment';
-import DropdownMenu from 'app/components/elements/DropdownMenu';
+import Comments from 'app/components/cards/Comments';
 import { serverApiRecordEvent } from 'app/utils/ServerApiClient';
 import { isLoggedIn } from 'app/utils/UserUtil';
 import LoadingIndicator from 'app/components/elements/LoadingIndicator';
-import Pagination from "../cards/Pagination";
 
 function isEmptyPost(post) {
     // check if the post doesn't exist
@@ -60,9 +58,7 @@ class Post extends React.Component {
         const {
             content, sortOrder, post, dis, loading,
         } = this.props;
-        const {
-            showNegativeComments, commentHidden, showAnyway, currentReplyPage,
-        } = this.state;
+        const { showAnyway } = this.state;
 
         if (!content || !dis) {
             if (loading) {
@@ -111,69 +107,6 @@ class Post extends React.Component {
             postBody = <PostFull post={post} cont={content} />;
         }
 
-        let replies = dis.get('replies').toJS();
-
-        sortComments(content, replies, sortOrder);
-
-        const nbRepliesPerPage = 100;
-        const replyStartIndex = (currentReplyPage - 1) * nbRepliesPerPage;
-        const replyEndIndex = replyStartIndex + (nbRepliesPerPage - 1);
-        const nbReplies = replies.length;
-        replies = replies.slice(replyStartIndex, replyEndIndex);
-
-        const handlePaginationClick = (page) => {
-            this.setState({ currentReplyPage: page });
-            document.getElementById('comments').scrollIntoView();
-        };
-
-        const positiveComments = replies.map((reply) => {
-            return (
-                <div key={post + reply}>
-                    <Comment
-                        postref={reply}
-                        cont={content}
-                        sort_order={sortOrder}
-                        showNegativeComments={showNegativeComments}
-                        onHide={this.onHideComment}
-                    />
-                </div>
-            );
-        });
-
-        const negativeGroup = commentHidden && (
-            <div className="hentry Comment root Comment__negative_group">
-                <p>
-                    {showNegativeComments
-                        ? tt('post_jsx.now_showing_comments_with_low_ratings')
-                        : tt('post_jsx.comments_were_hidden_due_to_low_ratings')}
-                    .
-                    {' '}
-                    <button type="button" className="button hollow tiny float-right" onClick={(e) => this.toggleNegativeReplies(e)}>
-                        {showNegativeComments ? tt('g.hide') : tt('g.show')}
-                    </button>
-                </p>
-            </div>
-        );
-
-        const sort_orders = ['trending', 'votes', 'new'];
-        const sort_labels = [
-            tt('post_jsx.comment_sort_order.trending'),
-            tt('post_jsx.comment_sort_order.votes'),
-            tt('post_jsx.comment_sort_order.age'),
-        ];
-        const sort_menu = [];
-        let sort_label;
-        const selflink = `/${dis.get('category')}/@${post}`;
-        // eslint-disable-next-line no-plusplus
-        for (let o = 0; o < sort_orders.length; ++o) {
-            if (sort_orders[o] == sortOrder) sort_label = sort_labels[o];
-            sort_menu.push({
-                value: sort_orders[o],
-                label: sort_labels[o],
-                link: selflink + '?sort=' + sort_orders[o] + '#comments',
-            });
-        }
-
         const enableSignup = false;
         return (
             <div className="Post">
@@ -200,33 +133,11 @@ class Post extends React.Component {
                 )}
                 <div id="comments" className="Post_comments row hfeed">
                     <div className="column large-12">
-                        <div className="Post_comments__content">
-                            {positiveComments.length ? (
-                                <div className="Post__comments_sort_order float-right">
-                                    {tt('post_jsx.sort_order')}
-                                    : &nbsp;
-                                    <DropdownMenu items={sort_menu} el="li" selected={sort_label} position="left" />
-                                </div>
-                            ) : null}
-                            <Pagination
-                                nbReplies={nbReplies}
-                                currentReplyPage={currentReplyPage}
-                                nbRepliesPerPage={nbRepliesPerPage}
-                                replyStartIndex={replyStartIndex}
-                                replyEndIndex={replyEndIndex}
-                                onClick={handlePaginationClick}
-                            />
-                            {positiveComments}
-                            <Pagination
-                                nbReplies={nbReplies}
-                                currentReplyPage={currentReplyPage}
-                                nbRepliesPerPage={nbRepliesPerPage}
-                                replyStartIndex={replyStartIndex}
-                                replyEndIndex={replyEndIndex}
-                                onClick={handlePaginationClick}
-                            />
-                            {negativeGroup}
-                        </div>
+                        <Comments
+                            content={content}
+                            post={dis}
+                            sortOrder={sortOrder}
+                        />
                     </div>
                 </div>
             </div>
