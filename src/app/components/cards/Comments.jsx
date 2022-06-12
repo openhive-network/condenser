@@ -63,7 +63,7 @@ const Comments = (props) => {
         if (currentDepth > 7) {
             return (
                 <Link
-                    key={post + commentIdentifier}
+                    key={rootRef + commentIdentifier}
                     to={commentUrl(comment.toJS())}
                 >
                     {tt('notificationslist_jsx.load_more')}
@@ -72,7 +72,7 @@ const Comments = (props) => {
         }
 
         return (
-            <div key={post + commentIdentifier}>
+            <div key={rootRef + commentIdentifier}>
                 <Comment
                     postref={commentIdentifier}
                     cont={content}
@@ -100,7 +100,8 @@ const Comments = (props) => {
         document.getElementById('comments').scrollIntoView();
     };
 
-    const selflink = `/${post.get('category')}/@${post}`;
+    const selflink = `/${post.get('category')}/@${rootRef}`;
+    console.log('DEBUG: selflink', selflink);
     const sort_menu = [];
     const sort_orders = ['trending', 'votes', 'new'];
     const sort_labels = [
