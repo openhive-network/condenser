@@ -101,7 +101,6 @@ const Comments = (props) => {
     };
 
     const selflink = `/${post.get('category')}/@${rootRef}`;
-    console.log('DEBUG: selflink', selflink);
     const sort_menu = [];
     const sort_orders = ['trending', 'votes', 'new'];
     const sort_labels = [
