@@ -135,6 +135,7 @@ class Post extends React.Component {
                     <div className="column large-12">
                         <Comments
                             content={content}
+                            rootRef={post}
                             post={dis}
                             sortOrder={sortOrder}
                         />

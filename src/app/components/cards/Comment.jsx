@@ -23,10 +23,10 @@ import Icon from 'app/components/elements/Icon';
 import ContentEditedWrapper from '../elements/ContentEditedWrapper';
 import {isUrlWhitelisted} from "../../utils/Phishing";
 
-function commentUrl(post, rootRef) {
+export const commentUrl = (post, rootRef) => {
     const root = rootRef ? `@${rootRef}#` : '';
     return `/${post.category}/${root}@${post.author}/${post.permlink}`;
-}
+};
 
 class Comment extends PureComponent {
     static propTypes = {

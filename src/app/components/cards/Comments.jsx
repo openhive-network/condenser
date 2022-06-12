@@ -1,14 +1,17 @@
 import React, { useCallback, useState } from 'react';
 import { connect } from 'react-redux';
 import {Long} from "bytebuffer";
+import { Link } from 'react-router';
+import tt from 'counterpart';
 
-import tt from "counterpart";
-import Comment from './Comment';
+import Comment, { commentUrl } from './Comment';
 import DropdownMenu from "../elements/DropdownMenu";
 import Pagination from "./Pagination";
 
 const Comments = (props) => {
-    const { content, post, sortOrder } = props;
+    const {
+        content, post, sortOrder, rootRef,
+    } = props;
     const [currentReplyPage, setCurrentReplyPage] = useState(1);
     const initialDepth = post.get('depth');
     let replies = post.get('replies').toJS();
@@ -55,6 +58,19 @@ const Comments = (props) => {
         const childComments = comment.get('replies').toJS();
         sortComments(content, childComments, sortOrder);
 
+        const currentDepth = commentDepth - initialDepth;
+
+        if (currentDepth > 7) {
+            return (
+                <Link
+                    key={post + commentIdentifier}
+                    to={commentUrl(comment.toJS())}
+                >
+                    {tt('notificationslist_jsx.load_more')}
+                </Link>
+            );
+        }
+
         return (
             <div key={post + commentIdentifier}>
                 <Comment
@@ -62,13 +78,14 @@ const Comments = (props) => {
                     cont={content}
                     sort_order={sortOrder}
                     showNegativeComments
-                    depth={commentDepth - initialDepth}
+                    depth={currentDepth}
+                    rootComment={rootRef}
                 >
                     {childComments && childComments.map(constructCommentList)}
                 </Comment>
             </div>
         );
-    }, [content]);
+    }, [content, initialDepth]);
 
     sortComments(content, replies, sortOrder);
 
