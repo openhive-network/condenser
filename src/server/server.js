@@ -10,13 +10,14 @@ import os from 'os';
 import favicon from 'koa-favicon';
 import staticCache from 'koa-static-cache';
 import isBot from 'koa-isbot';
-import session from '@steem/crypto-session';
 import csrf from 'koa-csrf';
+import koaBody from 'koa-body';
 import config from 'config';
 import secureRandom from 'secure-random';
 import koaLocale from 'koa-locale';
 import { routeRegex } from 'app/ResolveRoute';
 import userIllegalContent from 'app/utils/userIllegalContent';
+import session from './hive-crypto-session';
 import { getSupportedLocales } from './utils/misc';
 import { specialPosts } from './utils/SpecialPosts';
 import usePostJson from './json/post_json';
@@ -83,7 +84,16 @@ session(app, {
     key: config.get('session_cookie_key'),
 });
 
-app.use(new csrf(app));
+app.use(koaBody());
+
+app.use(new csrf({
+    invalidTokenMessage: 'Invalid CSRF token',
+    invalidTokenStatusCode: 403,
+    excludedMethods: ['GET', 'HEAD', 'OPTIONS'],
+    disableQuery: true,
+}));
+
+useGeneralApi(app);
 
 koaLocale(app);
 
@@ -262,7 +272,6 @@ if (env !== 'test') {
 useRedirects(app);
 useUserJson(app);
 usePostJson(app);
-useGeneralApi(app);
 
 // Logging
 if (env === 'production') {
