@@ -128,7 +128,7 @@ export default function useGeneralApi(app) {
 
     router.post('/logout_account', async (ctx) => {
         // if (rateLimitReq(this, this.req)) return; - logout maybe immediately followed with login_attempt event
-        logRequest('logout_account', this);
+        logRequest('logout_account', ctx);
         try {
             ctx.session.a = null;
             ctx.body = JSON.stringify({ status: 'ok' });
