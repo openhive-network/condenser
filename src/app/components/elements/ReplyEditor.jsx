@@ -234,6 +234,10 @@ class ReplyEditor extends React.Component {
 
     // shouldComponentUpdate = shouldComponentUpdate(this, 'ReplyEditor');
 
+    // getSnapshotBeforeUpdate() is invoked right before the most recently rendered output is committed to e.g. the DOM.
+    // It enables your component to capture some information from the DOM (e.g. scroll position)
+    // before it is potentially changed. Any value returned by this lifecycle method will be passed
+    // as a parameter to componentDidUpdate().
     getSnapshotBeforeUpdate(prevProps, prevState) {
         if (process.env.BROWSER) {
             const ts = prevState;
@@ -341,6 +345,8 @@ class ReplyEditor extends React.Component {
                 this.checkTagsCommunity(ns.tags.value);
             }
         }
+
+        return null;
     }
 
     checkTagsCommunity(tagsInput) {
@@ -852,22 +858,19 @@ class ReplyEditor extends React.Component {
                                     <Dropzone
                                         onDrop={this.onDrop}
                                         className={type === 'submit_story' ? 'dropzone' : 'none'}
-                                        disableClick
+                                        noClick
                                         multiple
                                         accept="image/*"
                                         ref={this.dropzoneRef}
                                     >
                                         {({getRootProps, getInputProps}) => {
                                             const inputProps = getInputProps();
-                                            delete inputProps.style;
-                                            delete inputProps.onChange;
                                             delete inputProps.onClick;
 
                                             return (
                                                 <div {...getRootProps()}>
                                                     <textarea
                                                         {...body.props}
-                                                        {...inputProps}
                                                         ref={this.textareaRef}
                                                         onPasteCapture={this.onPasteCapture}
                                                         className={type === 'submit_story' ? 'upload-enabled' : ''}
@@ -877,6 +880,7 @@ class ReplyEditor extends React.Component {
                                                         autoComplete="off"
                                                         tabIndex={0}
                                                     />
+                                                    <input {...inputProps} />
                                                 </div>
                                             );
                                         }}
@@ -893,14 +897,16 @@ class ReplyEditor extends React.Component {
                                 </span>
                             )}
                         </div>
-                        <p className="drag-and-drop">
-                            {tt('reply_editor.insert_images_by_dragging_dropping')}
-                            {noClipboardData ? '' : tt('reply_editor.pasting_from_the_clipboard')}
-                            {tt('reply_editor.or_by')}
-                            {' '}
-                            <a role="link" tabIndex={0} onClick={this.onOpenClick}>{tt('reply_editor.selecting_them')}</a>
-                            .
-                        </p>
+                        {!rte && (
+                            <p className="drag-and-drop">
+                                {tt('reply_editor.insert_images_by_dragging_dropping')}
+                                {noClipboardData ? '' : tt('reply_editor.pasting_from_the_clipboard')}
+                                {tt('reply_editor.or_by')}
+                                {' '}
+                                <a role="link" tabIndex={0} onClick={this.onOpenClick}>{tt('reply_editor.selecting_them')}</a>
+                                .
+                            </p>
+                        )}
                         <div className={vframe_section_shrink_class}>
                             <div className="error">
                                 {body.touched && body.error && body.error !== 'Required' && body.error}

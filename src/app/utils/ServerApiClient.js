@@ -14,7 +14,7 @@ export async function serverApiLogin(account, signatures) {
 
     const response = await axios.post(
         '/api/v1/login_account',
-        { account, signatures, __csrf: $STM_csrf },
+        { account, signatures, _csrf: $STM_csrf },
         {
             'Content-Type': 'application/json',
             Accept: 'application/json',
