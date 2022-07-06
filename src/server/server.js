@@ -3,20 +3,21 @@ import path from 'path';
 import Koa from 'koa';
 import mount from 'koa-mount';
 import helmet from 'koa-helmet';
+import proxy from 'koa-proxy';
 import koa_logger from 'koa-logger';
 import cluster from 'cluster';
 import os from 'os';
 import favicon from 'koa-favicon';
 import staticCache from 'koa-static-cache';
 import isBot from 'koa-isbot';
-import session from '@steem/crypto-session';
 import csrf from 'koa-csrf';
-import minimist from 'minimist';
+import koaBody from 'koa-body';
 import config from 'config';
 import secureRandom from 'secure-random';
 import koaLocale from 'koa-locale';
 import { routeRegex } from 'app/ResolveRoute';
 import userIllegalContent from 'app/utils/userIllegalContent';
+import session from './hive-crypto-session';
 import { getSupportedLocales } from './utils/misc';
 import { specialPosts } from './utils/SpecialPosts';
 import usePostJson from './json/post_json';
@@ -25,7 +26,6 @@ import useGeneralApi from './api/general';
 import useRedirects from './redirects';
 import prod_logger from './prod_logger';
 import hardwareStats from './hardwarestats';
-import { SteemMarket } from './utils/SteemMarket';
 import StatsLoggerClient from './utils/StatsLoggerClient';
 import requestTime from './requesttimings';
 
@@ -41,23 +41,19 @@ const cacheOpts = { maxAge: 86400000, gzip: true, buffer: true };
 
 // Serve static assets without fanfare
 app.use(favicon(path.join(__dirname, '../app/assets/images/favicons/favicon.ico')));
-
 app.use(mount('/favicons', staticCache(path.join(__dirname, '../app/assets/images/favicons'), cacheOpts)));
-
 app.use(mount('/images', staticCache(path.join(__dirname, '../app/assets/images'), cacheOpts)));
-
 app.use(mount('/javascripts', staticCache(path.join(__dirname, '../app/assets/javascripts'), cacheOpts)));
 
 // Proxy asset folder to webpack development server in development mode
 if (env === 'development') {
     const webpack_dev_port = process.env.PORT ? parseInt(process.env.PORT) + 1 : 8081;
     const proxyhost = 'http://0.0.0.0:' + webpack_dev_port;
-    console.log('proxying to webpack dev server at ' + proxyhost);
-    const proxy = require('koa-proxy')({
+
+    app.use(proxy({
         host: proxyhost,
-        map: (filePath) => 'assets/' + filePath,
-    });
-    app.use(mount('/assets', proxy));
+        match: /^\/assets\//,
+    }));
 } else {
     app.use(mount('/assets', staticCache(path.join(__dirname, '../../dist'), cacheOpts)));
 }
@@ -76,20 +72,28 @@ app.use(isBot());
 // set number of processes equal to number of cores
 // (unless passed in as an env var)
 const numProcesses = process.env.NUM_PROCESSES || os.cpus().length;
-
 const statsLoggerClient = new StatsLoggerClient(process.env.STATSD_IP);
 
 app.use(requestTime(statsLoggerClient));
 
 app.keys = [config.get('session_key')];
-
 const crypto_key = config.get('server_session_secret');
 session(app, {
     maxAge: 1000 * 3600 * 24 * 60,
     crypto_key,
     key: config.get('session_cookie_key'),
 });
-csrf(app);
+
+app.use(koaBody());
+
+app.use(new csrf({
+    invalidTokenMessage: 'Invalid CSRF token',
+    invalidTokenStatusCode: 403,
+    excludedMethods: ['GET', 'HEAD', 'OPTIONS'],
+    disableQuery: true,
+}));
+
+useGeneralApi(app);
 
 koaLocale(app);
 
@@ -100,18 +104,11 @@ function convertEntriesToArrays(obj) {
     }, {});
 }
 
-// Fetch cached currency data for homepage
-const steemMarket = new SteemMarket();
-app.use(function* (next) {
-    this.steemMarketData = yield steemMarket.get();
-    yield next;
-});
-
 // some redirects and health status
-app.use(function* (next) {
-    if (this.method === 'GET' && this.url === '/.well-known/healthcheck.json') {
-        this.status = 200;
-        this.body = {
+app.use(async (ctx, next) => {
+    if (ctx.method === 'GET' && ctx.url === '/.well-known/healthcheck.json') {
+        ctx.status = 200;
+        ctx.body = {
             status: 'ok',
             docker_tag: process.env.DOCKER_TAG ? process.env.DOCKER_TAG : false,
             source_commit: process.env.SOURCE_COMMIT ? process.env.SOURCE_COMMIT : false,
@@ -120,55 +117,55 @@ app.use(function* (next) {
     }
 
     // redirect to home page/feed if known account
-    if (this.method === 'GET' && this.url === '/' && this.session.a) {
-        this.status = 302;
+    if (ctx.method === 'GET' && ctx.url === '/' && ctx.session.a) {
+        ctx.status = 302;
         //this.redirect(`/@${this.session.a}/feed`);
-        this.redirect(`/trending/my`);
+        ctx.redirect(`/trending/my`);
         return;
     }
 
     // normalize user name url from cased params
     if (
-        this.method === 'GET'
-        && (routeRegex.UserProfile.test(this.url)
-            || routeRegex.PostNoCategory.test(this.url)
-            || routeRegex.Post.test(this.url))
+        ctx.method === 'GET'
+        && (routeRegex.UserProfile.test(ctx.url)
+            || routeRegex.PostNoCategory.test(ctx.url)
+            || routeRegex.Post.test(ctx.url))
     ) {
-        const p = this.originalUrl.toLowerCase();
+        const p = ctx.originalUrl.toLowerCase();
         let userCheck = '';
-        if (routeRegex.Post.test(this.url)) {
+        if (routeRegex.Post.test(ctx.url)) {
             userCheck = p.split('/')[2].slice(1);
         } else {
             userCheck = p.split('/')[1].slice(1);
         }
         if (userIllegalContent.includes(userCheck)) {
             console.log('Illegal content user found blocked', userCheck);
-            this.status = 451;
+            ctx.status = 451;
             return;
         }
-        if (p !== this.originalUrl) {
-            this.status = 301;
-            this.redirect(p);
+        if (p !== ctx.originalUrl) {
+            ctx.status = 301;
+            ctx.redirect(p);
             return;
         }
     }
 
     // normalize top category filtering from cased params
-    if (this.method === 'GET' && routeRegex.CategoryFilters.test(this.url)) {
-        const p = this.originalUrl.toLowerCase();
-        if (p !== this.originalUrl) {
-            this.status = 301;
-            this.redirect(p);
+    if (ctx.method === 'GET' && routeRegex.CategoryFilters.test(ctx.url)) {
+        const p = ctx.originalUrl.toLowerCase();
+        if (p !== ctx.originalUrl) {
+            ctx.status = 301;
+            ctx.redirect(p);
             return;
         }
     }
 
     // this.url is a relative URL, it does not include the scheme
-    const [pathString, queryString] = this.url.split('?');
+    const [pathString, queryString] = ctx.url.split('?');
     const urlParams = new URLSearchParams(queryString);
 
     let paramFound = false;
-    if (this.url.indexOf('?') !== -1) {
+    if (ctx.url.indexOf('?') !== -1) {
         const paramsToProcess = ['ch', 'cn', 'r'];
 
         paramsToProcess.forEach((paramToProcess) => {
@@ -176,7 +173,7 @@ app.use(function* (next) {
                 const paramValue = urlParams.get(paramToProcess);
                 if (paramValue) {
                     paramFound = true;
-                    this.session[paramToProcess] = paramValue;
+                    ctx.session[paramToProcess] = paramValue;
                     urlParams.delete(paramToProcess);
                 }
             }
@@ -187,10 +184,10 @@ app.use(function* (next) {
         const newQueryString = urlParams.toString();
         const redir = `${pathString.replace(/\/\//g, '/')}${newQueryString ? `?${newQueryString}` : ''}`;
 
-        this.status = 302;
-        this.redirect(redir);
+        ctx.status = 302;
+        ctx.redirect(redir);
     } else {
-        yield next;
+        await next();
     }
 });
 
@@ -201,55 +198,36 @@ if (env === 'production') {
     app.use(require('koa-compressor')());
 }
 
-// Logging
-if (env === 'production') {
-    app.use(prod_logger());
-} else {
-    app.use(koa_logger());
-}
-
-// app.use(
-//     helmet({
-//         hsts: false,
-//     })
-// );
-
 app.use(mount('/static', staticCache(path.join(__dirname, '../app/assets/static'), cacheOpts)));
 
-app.use(
-    // eslint-disable-next-line require-yield
-    mount('/robots.txt', function* () {
-        this.set('Cache-Control', 'public, max-age=86400000');
-        this.type = 'text/plain';
-        this.body = 'User-agent: *\nAllow: /';
-    })
-);
+async function robotsTxt(ctx, next) {
+    await next();
+    ctx.set('Cache-Control', 'public, max-age=86400000');
+    ctx.type = 'text/plain';
+    ctx.body = 'User-agent: *\nAllow: /';
+}
+
+app.use(mount('/robots.txt', robotsTxt));
 
 // set user's uid - used to identify users in logs and some other places
 // FIXME SECURITY PRIVACY cycle this uid after a period of time
-app.use(function* (next) {
-    const { last_visit } = this.session;
+app.use(async (ctx, next) => {
+    const { last_visit } = ctx.session;
     // eslint-disable-next-line no-bitwise
-    this.session.last_visit = (new Date().getTime() / 1000) | 0;
-    const from_link = this.request.headers.referer;
-    if (!this.session.uid) {
-        this.session.uid = secureRandom.randomBuffer(13).toString('hex');
-        this.session.new_visit = true;
-        if (from_link) this.session.r = from_link;
+    ctx.session.last_visit = (new Date().getTime() / 1000) | 0;
+    const from_link = ctx.request.headers.referer;
+    if (!ctx.session.uid) {
+        ctx.session.uid = secureRandom.randomBuffer(13).toString('hex');
+        ctx.session.new_visit = true;
+        if (from_link) ctx.session.r = from_link;
     } else {
-        this.session.new_visit = this.session.last_visit - last_visit > 1800;
-        if (!this.session.r && from_link) {
-            this.session.r = from_link;
+        ctx.session.new_visit = ctx.session.last_visit - last_visit > 1800;
+        if (!ctx.session.r && from_link) {
+            ctx.session.r = from_link;
         }
     }
-    yield next;
+    await next();
 });
-
-useRedirects(app);
-useUserJson(app);
-usePostJson(app);
-
-useGeneralApi(app);
 
 // helmet wants some things as bools and some as lists, makes config difficult.
 // our config uses strings, this splits them to lists on whitespace.
@@ -282,40 +260,50 @@ if (env !== 'test') {
         });
     }, 300000);
 
-    app.use(function* () {
-        yield appRender(this, supportedLocales, resolvedAssets);
-        const bot = this.state.isBot;
+    app.use(async (ctx) => {
+        await appRender(ctx, supportedLocales, resolvedAssets);
+        const bot = ctx.state.isBot;
         if (bot) {
-            console.log(`  --> ${this.method} ${this.originalUrl} ${this.status} (BOT '${bot}')`);
+            console.log(`  --> ${ctx.method} ${ctx.originalUrl} ${ctx.status} (BOT '${bot}')`);
         }
     });
+}
 
-    minimist(process.argv.slice(2));
+useRedirects(app);
+useUserJson(app);
+usePostJson(app);
 
-    const port = process.env.PORT ? parseInt(process.env.PORT) : 8080;
+// Logging
+if (env === 'production') {
+    app.use(prod_logger());
+} else {
+    app.use(koa_logger());
+}
 
-    if (env === 'production' && process.env.DISABLE_CLUSTERING !== 'true') {
-        if (cluster.isMaster) {
-            for (let i = 0; i < numProcesses; i += 1) {
-                cluster.fork();
-            }
-            // if a worker dies replace it so application keeps running
-            cluster.on('exit', (worker) => {
-                console.log('error: worker %d died, starting a new one', worker.id);
-                cluster.fork();
-            });
-        } else {
-            app.listen(port);
-            if (process.send) process.send('online');
-            console.log(`Worker process started for port ${port}`);
+const port = process.env.PORT ? parseInt(process.env.PORT) : 8080;
+if (env === 'production' && process.env.DISABLE_CLUSTERING !== 'true') {
+    if (cluster.isMaster) {
+        for (let i = 0; i < numProcesses; i += 1) {
+            cluster.fork();
         }
+        // if a worker dies replace it so application keeps running
+        cluster.on('exit', (worker) => {
+            console.log('error: worker %d died, starting a new one', worker.id);
+            cluster.fork();
+        });
     } else {
-        // spawn a single thread if not running in production mode
         app.listen(port);
         if (process.send) process.send('online');
-        console.log(`Application started on port ${port}`);
+        console.log(`Worker process started for port ${port}`);
     }
+} else if (env !== 'test') {
+    // spawn a single thread if not running in production mode
+    app.listen(port);
+    if (process.send) process.send('online');
+    console.log(`Application started on port ${port}`);
 }
+
+if (process.send) process.send('online');
 
 // set PERFORMANCE_TRACING to the number of seconds desired for
 // logging hardware stats to the console

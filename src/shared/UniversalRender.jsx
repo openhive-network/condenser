@@ -3,10 +3,10 @@
 // https://github.com/eslint/eslint/issues/4442
 import Iso from 'iso';
 import React from 'react';
-import { render } from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import { renderToString } from 'react-dom/server';
 import {
- Router, RouterContext, match, applyRouterMiddleware, browserHistory
+ Router, RouterContext, match, applyRouterMiddleware, browserHistory,
 } from 'react-router';
 import { Provider } from 'react-redux';
 import { api } from '@hiveio/hive-js';
@@ -187,7 +187,12 @@ const bindMiddleware = (middleware) => {
 };
 
 const runRouter = (location, routes) => {
-    return new Promise((resolve) => match({ routes, location }, (...args) => resolve(args)));
+    return new Promise((resolve) => {
+        return match(
+            { routes, location },
+            (...args) => resolve(args)
+        );
+    });
 };
 
 const onRouterError = (error) => {
@@ -210,7 +215,7 @@ export async function serverRender(location, initialState, ErrorPage, userPrefer
     try {
         [error,, renderProps] = await runRouter(location, RootRoute);
     } catch (e) {
-        console.error('Routing error:', e.toString(), location);
+        console.error('Routing error:', e.toString(), location, e);
         return {
             title: 'Routing error - Hive',
             statusCode: 500,
@@ -396,7 +401,10 @@ export function clientRender(initialState) {
         );
     }
 
-    return render(
+    const container = document.getElementById('content');
+    const root = createRoot(container);
+
+    return root.render(
         <Provider store={store}>
             <Translator>
                 <Router
@@ -407,7 +415,6 @@ export function clientRender(initialState) {
                 />
             </Translator>
         </Provider>,
-        document.getElementById('content')
     );
 }
 

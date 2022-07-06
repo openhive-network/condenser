@@ -65,9 +65,6 @@ class LoginForm extends Component {
             });
         };
         this.initForm(props);
-    }
-
-    componentWillMount() {
         this.loginWithHiveSigner();
     }
 

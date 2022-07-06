@@ -226,6 +226,7 @@ class UserProfileHeader extends React.Component {
                                 <Icon name="calendar" />
                                 {' '}
                                 Active
+                                {' '}
                                 <TimeAgoWrapper date={profile.get('active')} />
                             </p>
                         </div>

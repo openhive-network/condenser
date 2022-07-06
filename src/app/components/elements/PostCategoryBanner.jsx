@@ -11,10 +11,8 @@ class PostCategoryBanner extends React.Component {
         this.state = {
             postDestination: category,
         };
-    }
 
-    componentWillMount() {
-        const { username, subscriptions, getAccountSubscriptions } = this.props;
+        const { username, subscriptions, getAccountSubscriptions } = props;
 
         if (username && subscriptions.length === 0) {
             getAccountSubscriptions(username);

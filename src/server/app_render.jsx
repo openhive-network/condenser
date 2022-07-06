@@ -13,7 +13,6 @@ const path = require('path');
 
 const ROOT = path.join(__dirname, '../..');
 
-
 async function appRender(ctx, locales = false, resolvedAssets = false) {
     ctx.state.requestTimer.startTimer('appRender_ms');
     // This is the part of SSR where we make session-specific changes:
@@ -57,7 +56,6 @@ async function appRender(ctx, locales = false, resolvedAssets = false) {
                 viewMode: determineViewMode(ctx.request.search),
                 env: process.env.NODE_ENV,
                 walletUrl: config.wallet_url,
-                steemMarket: ctx.steemMarketData,
             },
         };
 

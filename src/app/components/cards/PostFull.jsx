@@ -109,6 +109,33 @@ class PostFull extends React.Component {
     constructor(props) {
         super(props);
 
+        const { postref } = this.props;
+        const _formId = `postFull-${postref}`;
+
+        let editorReplyState;
+        let editorEditState;
+        if (process.env.BROWSER) {
+            let showEditor = localStorage.getItem('showEditor-' + _formId);
+            if (showEditor) {
+                showEditor = JSON.parse(showEditor);
+                if (showEditor.type === 'reply') {
+                    editorReplyState = { showReply: true };
+                }
+                if (showEditor.type === 'edit') {
+                    editorEditState = { showEdit: true };
+                }
+            }
+        }
+
+        this.state = {
+            formId: _formId,
+            PostFullReplyEditor: ReplyEditor(_formId + '-reply'),
+            PostFullEditEditor: ReplyEditor(_formId + '-edit'),
+            ...(editorReplyState && { ...editorReplyState }),
+            ...(editorEditState && { ...editorEditState }),
+            showMutedList: false,
+        };
+
         this.fbShare = this.fbShare.bind(this);
         this.twitterShare = this.twitterShare.bind(this);
         this.redditShare = this.redditShare.bind(this);
@@ -122,6 +149,7 @@ class PostFull extends React.Component {
             this.setState({ showReply: !showReply, showEdit: false });
             saveOnShow(formId, !showReply ? 'reply' : null);
         };
+
         this.onShowEdit = () => {
             const {
                 state: { showEdit, formId },
@@ -129,34 +157,13 @@ class PostFull extends React.Component {
             this.setState({ showEdit: !showEdit, showReply: false });
             saveOnShow(formId, !showEdit ? 'edit' : null);
         };
+
         this.onDeletePost = () => {
             const {
                 props: { deletePost, post },
             } = this;
             deletePost(post.get('author'), post.get('permlink'));
         };
-    }
-
-    componentWillMount() {
-        const { postref } = this.props;
-        const formId = `postFull-${postref}`;
-        this.setState({
-            formId,
-            PostFullReplyEditor: ReplyEditor(formId + '-reply'),
-            PostFullEditEditor: ReplyEditor(formId + '-edit'),
-        });
-        if (process.env.BROWSER) {
-            let showEditor = localStorage.getItem('showEditor-' + formId);
-            if (showEditor) {
-                showEditor = JSON.parse(showEditor);
-                if (showEditor.type === 'reply') {
-                    this.setState({ showReply: true });
-                }
-                if (showEditor.type === 'edit') {
-                    this.setState({ showEdit: true });
-                }
-            }
-        }
     }
 
     fbShare(e) {
@@ -256,15 +263,16 @@ class PostFull extends React.Component {
     render() {
         const {
             props: {
- username, post, community, viewer_role
-},
+                username, post, community, viewer_role,
+            },
             state: {
- PostFullReplyEditor, PostFullEditEditor, formId, showReply, showEdit
-},
+                PostFullReplyEditor, PostFullEditEditor, formId, showReply, showEdit
+            },
             onShowReply,
             onShowEdit,
             onDeletePost,
         } = this;
+
         if (!post) return null;
         const content = post.toJS();
         const {

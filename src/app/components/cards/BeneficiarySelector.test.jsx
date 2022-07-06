@@ -1,13 +1,10 @@
 import React from 'react';
 import reactForm from 'app/utils/ReactForm';
-import { configure, mount } from 'enzyme';
-import Adapter from 'enzyme-adapter-react-16';
 
+import { render, fireEvent } from '../../../test/unit/tools';
 import { BeneficiarySelector, validateBeneficiaries } from './BeneficiarySelector';
 
 require('app/Translator');
-
-configure({ adapter: new Adapter() });
 
 class FormWrapper extends React.Component {
     constructor() {
@@ -34,45 +31,52 @@ class FormWrapper extends React.Component {
 
 describe('BeneficiarySelector', () => {
     it('it should add, set and remove beneficiary', () => {
-        const wrapper = mount(<FormWrapper />);
+        const { container } = render(<FormWrapper />);
 
-        const component = wrapper.instance();
-        expect(component.state.beneficiaries.value.length).toBe(0);
-        expect(wrapper.find('input #remainingPercent').get(0).props.value).toBe(100);
+        expect(container.querySelectorAll('input.input-group-field')).toHaveLength(1);
+
+        const remainingPercentInput = container.querySelector('input#remainingPercent');
+        expect(remainingPercentInput).toHaveAttribute('value', '100');
 
         // add beneficiary
-        wrapper.find('a #add').simulate('click');
-        expect(component.state.beneficiaries.value.length).toBe(1);
+        const addButton = container.querySelector('a#add');
+        fireEvent.click(addButton);
+        expect(container.querySelectorAll('input.input-group-field')).toHaveLength(2);
 
         // add name and percent
-        wrapper.find('input #percent').simulate('change', { target: { value: 20 } });
-        expect(wrapper.find('input #remainingPercent').get(0).props.value).toBe(80);
-        wrapper.find('input #user').simulate('change', { target: { value: 'testuser' } });
-        expect(component.state.beneficiaries.value[0].percent).toBe(20);
-        expect(component.state.beneficiaries.value[0].username).toBe('testuser');
+        const percentInput = container.querySelector('input#percent');
+        fireEvent.change(percentInput, { target: { value: 20 } });
+        expect(percentInput).toHaveAttribute('value', '20');
+        expect(remainingPercentInput).toHaveAttribute('value', '80');
+
+        const userInput = container.querySelector('input#user');
+        fireEvent.change(userInput, { target: { value: 'testuser2' } });
+        expect(userInput).toHaveAttribute('value', 'testuser2');
 
         // remove beneficiary
-        wrapper.find('a #remove').simulate('click');
-        expect(component.state.beneficiaries.value.length).toBe(0);
-        expect(wrapper.find('input #remainingPercent').get(0).props.value).toBe(100);
+        const removeButton = container.querySelector('a#remove');
+        fireEvent.click(removeButton);
+        expect(container.querySelectorAll('input.input-group-field')).toHaveLength(1);
+        expect(remainingPercentInput).toHaveAttribute('value', '100');
     });
 });
 
 describe('BeneficiarySelector_maxEntries', () => {
     it('it should hide add after 8 entries', () => {
-        const wrapper = mount(<FormWrapper />);
+        const { container } = render(<FormWrapper />);
 
-        const component = wrapper.instance();
-        expect(component.state.beneficiaries.value.length).toBe(0);
-        expect(wrapper.find('input #remainingPercent').get(0).props.value).toBe(100);
+        expect(container.querySelectorAll('input.input-group-field')).toHaveLength(1);
+
+        const remainingPercentInput = container.querySelector('input#remainingPercent');
+        expect(remainingPercentInput).toHaveAttribute('value', '100');
 
         // add beneficiary 8 times
+        const addButton = container.querySelector('a#add');
         for (let i = 0; i < 8; i += 1) {
-            wrapper.find('a #add').simulate('click');
+            fireEvent.click(addButton);
         }
-        expect(component.state.beneficiaries.value.length).toBe(8);
-
-        expect(wrapper.find('a #add').get(0).props.hidden).toBe(true);
+        expect(container.querySelectorAll('input.input-group-field')).toHaveLength(9);
+        expect(addButton).toHaveAttribute('hidden');
     });
 });
 
@@ -82,7 +86,9 @@ describe('BeneficiarySelector_validate', () => {
         for (let i = 0; i < 9; i += 1) {
             beneficiaries[i] = { username: 'abc' + i, percent: 1 };
         }
-        expect(validateBeneficiaries('', beneficiaries, true)).toContain('at most 8 beneficiaries');
+
+        // @TODO update this test after fixing loading of translations into unit tests
+        expect(validateBeneficiaries('', beneficiaries, true)).toContain('exceeds_max_beneficiaries');
     });
 
     it('beneficiary cannot have duplicate', () => {

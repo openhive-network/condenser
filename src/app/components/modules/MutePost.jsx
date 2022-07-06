@@ -10,9 +10,10 @@ class MutePost extends Component {
         this.state = { notes: '', disableSubmit: true };
     }
 
-    componentWillUpdate = (nextProps, nextState) => {
-        if (nextState.notes != this.state.notes) {
-            this.setState({ disableSubmit: nextState.notes == '' });
+    componentDidUpdate = (prevProps, prevState) => {
+        if (prevState.notes !== this.state.notes) {
+            // eslint-disable-next-line react/no-did-update-set-state
+            this.setState({ disableSubmit: prevState.notes === '' });
         }
     };
 
@@ -25,14 +26,15 @@ class MutePost extends Component {
     };
 
     render() {
-        const { notes, disableSubmit } = this.state;
+        const { disableSubmit } = this.state;
         const { isMuted } = this.props;
 
         return (
             <span>
                 {isMuted ? (
                     <div>
-                        <h4>{tt('g.unmute_this_post')}</h4> <p> {tt('g.unmute_this_post_description')}</p>
+                        <h4>{tt('g.unmute_this_post')}</h4>
+                        <p>{tt('g.unmute_this_post_description')}</p>
                     </div>
                 ) : (
                     <div>
