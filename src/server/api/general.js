@@ -6,7 +6,8 @@ import coBody from 'co-body';
 import Mixpanel from 'mixpanel';
 import { PublicKey, Signature, hash } from '@hiveio/hive-js/lib/auth/ecc';
 import { api } from '@hiveio/hive-js';
-import fetch from 'node-fetch';
+
+const axios = require('axios').default;
 
 const ACCEPTED_TOS_TAG = 'accepted_tos_20180614';
 
@@ -229,24 +230,22 @@ export default function useGeneralApi(app) {
     });
 
     router.post('/search', async (ctx) => {
-        const passThrough = {
-            method: ctx.request.method,
-            headers: {
-                'Content-type': 'application/json',
-                Authorization: config.get('esteem_elastic_search_api_key'),
-            },
-            body: JSON.stringify({
-                ...ctx.request.body,
-                _csrf: undefined,
-            }),
-            // NOTE: agentOptions purely for testing, localhost vs SSL.
-            //agentOptions: { checkServerIdentity: () => {} },
-        };
-
         try {
-            const searchResult = await fetch('https://api.hivesearcher.com/search', passThrough);
-            const resultJson = await searchResult.json();
-            ctx.body = JSON.stringify(resultJson);
+            const response = await axios.post(
+                'https://api.hivesearcher.com/search',
+                {
+                    ...ctx.request.body,
+                    _csrf: undefined,
+                },
+                {
+                    headers: {
+                        Accept: 'application/json',
+                        Authorization: config.get('esteem_elastic_search_api_key'),
+                        'Content-Type': 'application/json',
+                    },
+                },
+            );
+            ctx.body = JSON.stringify(response.data);
             ctx.status = 200;
         } catch (error) {
             console.error('Error in /search api call', ctx.session.uid, error);

@@ -539,7 +539,7 @@ function* usernamePasswordLogin2(options) {
 
             console.log('Logging in as', username);
             const response = yield serverApiLogin(username, signatures);
-            yield response.json();
+            yield response.data;
         }
     } catch (error) {
         // Does not need to be fatal
