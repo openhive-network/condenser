@@ -17,8 +17,6 @@ import {
     serverApiLogin,
     serverApiLogout,
     serverApiRecordEvent,
-    isTosAccepted,
-    acceptTos,
 } from 'app/utils/ServerApiClient';
 import { loadFollows } from 'app/redux/FollowSaga';
 import { translate } from 'app/Translator';
@@ -40,13 +38,6 @@ export const userWatches = [
     takeLatest(userActions.LOGOUT, logout),
     takeLatest(userActions.LOGIN_ERROR, loginError),
     takeLatest(userActions.UPLOAD_IMAGE, uploadImage),
-    takeLatest(userActions.ACCEPT_TERMS, function* () {
-        try {
-            yield call(acceptTos);
-        } catch (e) {
-            // TODO: log error to server, conveyor is unavailable
-        }
-    }),
 ];
 
 function effectiveVests(account) {
@@ -547,16 +538,6 @@ function* usernamePasswordLogin2(options) {
     }
 
     if (!autopost && saveLogin) yield put(userActions.saveLogin());
-    // Feature Flags
-    if (useKeychain || useHiveSigner || useHiveAuth || private_keys.get('posting_private')) {
-        yield fork(
-            getFeatureFlags,
-            username,
-            useKeychain || useHiveSigner || useHiveAuth ? null : private_keys.get('posting_private').toString()
-        );
-    }
-    // TOS acceptance
-    yield fork(promptTosAcceptance, username);
 
     // Redirect user to the appropriate page after login.
     const path = useHiveSigner ? lastPath : document.location.pathname;
@@ -571,56 +552,6 @@ function* usernamePasswordLogin2(options) {
     } else if (useHiveSigner && lastPath) {
         browserHistory.push(lastPath);
     }
-}
-
-function* promptTosAcceptance(username) {
-    try {
-        const accepted = yield call(isTosAccepted, username);
-        if (!accepted) {
-            yield put(userActions.showTerms());
-        }
-    } catch (e) {
-        // TODO: log error to server, conveyor is unavailable
-    }
-}
-
-// eslint-disable-next-line require-yield
-function* getFeatureFlags(/*username, posting_private*/) {
-    // not yet in use
-    return null;
-    /*
-        try {
-            let flags;
-            if (!posting_private && hasCompatibleKeychain()) {
-                flags = yield new Promise((resolve, reject) => {
-                    window.hive_keychain.requestSignedCall(
-                        username,
-                        'conveyor.get_feature_flags',
-                        { account: username },
-                        'posting',
-                        (response) => {
-                            if (!response.success) {
-                                reject(response.message);
-                            } else {
-                                resolve(response.result);
-                            }
-                        }
-                    );
-                });
-            } else {
-                flags = yield call(
-                    [api, api.signedCallAsync],
-                    'conveyor.get_feature_flags',
-                    { account: username },
-                    username,
-                    posting_private
-                );
-            }
-            yield put(receiveFeatureFlags(flags));
-        } catch (error) {
-            // Do nothing; feature flags are not ready yet. Or posting_private is not available.
-        }
-     */
 }
 
 function* saveLogin_localStorage() {

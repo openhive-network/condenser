@@ -6,8 +6,6 @@ const SHOW_LOGIN = 'user/SHOW_LOGIN';
 const SHOW_LOGIN_WARNING = 'user/SHOW_LOGIN_WARNING';
 const HIDE_LOGIN = 'user/HIDE_LOGIN';
 const HIDE_LOGIN_WARNING = 'user/HIDE_LOGIN_WARNING';
-const SHOW_TERMS = 'user/SHOW_TERMS';
-export const ACCEPT_TERMS = 'user/ACCEPT_TERMS';
 export const SAVE_LOGIN_CONFIRM = 'user/SAVE_LOGIN_CONFIRM';
 export const SAVE_LOGIN = 'user/SAVE_LOGIN';
 const REMOVE_HIGH_SECURITY_KEYS = 'user/REMOVE_HIGH_SECURITY_KEYS';
@@ -85,23 +83,6 @@ export default function reducer(state = defaultState, action) {
 
         case HIDE_LOGIN_WARNING:
             return state.set('show_login_warning', false);
-
-        case SHOW_TERMS: {
-            let termsDefault;
-            if (payload) {
-                termsDefault = fromJS(payload.termsDefault);
-            }
-            return state.merge({
-                show_terms_modal: true,
-                termsDefault,
-            });
-        }
-
-        case ACCEPT_TERMS:
-            return state.merge({
-                show_terms_modal: false,
-                termsDefault: undefined,
-            });
 
         case SAVE_LOGIN_CONFIRM:
             return state.set('saveLoginConfirm', payload);
@@ -256,13 +237,6 @@ export const hideLoginWarning = (payload) => ({
     type: HIDE_LOGIN_WARNING,
     payload,
 });
-
-export const showTerms = (payload) => ({
-    type: SHOW_TERMS,
-    payload,
-});
-
-export const acceptTerms = () => ({ type: ACCEPT_TERMS });
 
 export const saveLoginConfirm = (payload) => ({
     type: SAVE_LOGIN_CONFIRM,

@@ -11,7 +11,6 @@ import * as transactionActions from 'app/redux/TransactionReducer';
 import LoginForm from 'app/components/modules/LoginForm';
 import ConfirmTransactionForm from 'app/components/modules/ConfirmTransactionForm';
 // import shouldComponentUpdate  from 'app/utils/shouldComponentUpdate';
-import TermsAgree from 'app/components/modules/TermsAgree';
 import PostAdvancedSettings from 'app/components/modules/PostAdvancedSettings';
 
 class Modals extends PureComponent {
@@ -19,7 +18,6 @@ class Modals extends PureComponent {
         username: '',
         notifications: undefined,
         removeNotification: () => {},
-        show_terms_modal: false,
         show_bandwidth_error_modal: false,
         show_confirm_modal: false,
         show_login_modal: false,
@@ -42,7 +40,6 @@ class Modals extends PureComponent {
         hidePostAdvancedSettings: PropTypes.func.isRequired,
         // eslint-disable-next-line react/forbid-prop-types
         notifications: PropTypes.object,
-        show_terms_modal: PropTypes.bool,
         removeNotification: PropTypes.func,
         loginBroadcastOperation: PropTypes.shape({
             type: PropTypes.string,
@@ -63,7 +60,6 @@ class Modals extends PureComponent {
             show_post_advanced_settings_modal,
             hideLogin,
             hideConfirm,
-            show_terms_modal,
             notifications,
             removeNotification,
             hideBandwidthError,
@@ -103,11 +99,6 @@ class Modals extends PureComponent {
                     <Reveal onHide={hideConfirm} show={show_confirm_modal}>
                         <CloseButton onClick={hideConfirm} />
                         <ConfirmTransactionForm onCancel={hideConfirm} />
-                    </Reveal>
-                )}
-                {show_terms_modal && (
-                    <Reveal show={show_terms_modal}>
-                        <TermsAgree onCancel={hideLogin} />
                     </Reveal>
                 )}
                 {show_bandwidth_error_modal && (
@@ -184,10 +175,6 @@ export default connect(
             show_confirm_modal: state.transaction.get('show_confirm_modal'),
             show_promote_post_modal: state.user.get('show_promote_post_modal'),
             notifications: state.app.get('notifications'),
-            show_terms_modal:
-                state.user.get('show_terms_modal')
-                && state.routing.locationBeforeTransitions.pathname !== '/tos.html'
-                && state.routing.locationBeforeTransitions.pathname !== '/privacy.html',
             show_bandwidth_error_modal: rcErr,
             show_post_advanced_settings_modal: state.user.get('show_post_advanced_settings_modal'),
             loginBroadcastOperation,

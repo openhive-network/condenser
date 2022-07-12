@@ -9,8 +9,6 @@ import { api } from '@hiveio/hive-js';
 
 const axios = require('axios').default;
 
-const ACCEPTED_TOS_TAG = 'accepted_tos_20180614';
-
 const mixpanel = config.get('mixpanel') ? Mixpanel.init(config.get('mixpanel')) : null;
 
 const _stringval = (v) => (typeof v === 'string' ? v : JSON.stringify(v));
@@ -174,56 +172,6 @@ export default function useGeneralApi(app) {
             ctx.body = JSON.stringify({ status: 'ok' });
         } catch (error) {
             console.error('Error in /setUserPreferences api call', ctx.session.uid, error);
-            ctx.body = JSON.stringify({ error: error.message });
-            ctx.status = 500;
-        }
-    });
-
-    router.post('/isTosAccepted', async (ctx) => {
-        ctx.body = '{}';
-        ctx.status = 200;
-
-        if (!ctx.session.a) {
-            ctx.body = 'missing username';
-            ctx.status = 500;
-            return;
-        }
-
-        try {
-            const res = await api.signedCallAsync(
-                'conveyor.get_tags_for_user',
-                [ctx.session.a],
-                config.get('conveyor_username'),
-                config.get('conveyor_posting_wif')
-            );
-
-            ctx.body = JSON.stringify(res.includes(ACCEPTED_TOS_TAG));
-        } catch (error) {
-            console.error('Error in /isTosAccepted api call', ctx.session.a, error);
-            ctx.body = JSON.stringify({ error: error.message });
-            ctx.status = 500;
-        }
-    });
-
-    router.post('/acceptTos', async (ctx) => {
-        if (!ctx.session.a) {
-            ctx.body = 'missing logged in account';
-            ctx.status = 500;
-            return;
-        }
-        try {
-            await api.signedCallAsync(
-                'conveyor.assign_tag',
-                {
-                    uid: ctx.session.a,
-                    tag: ACCEPTED_TOS_TAG,
-                },
-                config.get('conveyor_username'),
-                config.get('conveyor_posting_wif')
-            );
-            ctx.body = JSON.stringify({ status: 'ok' });
-        } catch (error) {
-            console.error('Error in /acceptTos api call', ctx.session.uid, error);
             ctx.body = JSON.stringify({ error: error.message });
             ctx.status = 500;
         }
