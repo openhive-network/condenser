@@ -17,8 +17,6 @@ import {
     serverApiLogin,
     serverApiLogout,
     serverApiRecordEvent,
-    isTosAccepted,
-    acceptTos,
 } from 'app/utils/ServerApiClient';
 import { loadFollows } from 'app/redux/FollowSaga';
 import { translate } from 'app/Translator';
@@ -40,13 +38,6 @@ export const userWatches = [
     takeLatest(userActions.LOGOUT, logout),
     takeLatest(userActions.LOGIN_ERROR, loginError),
     takeLatest(userActions.UPLOAD_IMAGE, uploadImage),
-    takeLatest(userActions.ACCEPT_TERMS, function* () {
-        try {
-            yield call(acceptTos);
-        } catch (e) {
-            // TODO: log error to server, conveyor is unavailable
-        }
-    }),
 ];
 
 function effectiveVests(account) {
@@ -555,8 +546,6 @@ function* usernamePasswordLogin2(options) {
             useKeychain || useHiveSigner || useHiveAuth ? null : private_keys.get('posting_private').toString()
         );
     }
-    // TOS acceptance
-    yield fork(promptTosAcceptance, username);
 
     // Redirect user to the appropriate page after login.
     const path = useHiveSigner ? lastPath : document.location.pathname;
@@ -570,17 +559,6 @@ function* usernamePasswordLogin2(options) {
         browserHistory.push('/trending/my');
     } else if (useHiveSigner && lastPath) {
         browserHistory.push(lastPath);
-    }
-}
-
-function* promptTosAcceptance(username) {
-    try {
-        const accepted = yield call(isTosAccepted, username);
-        if (!accepted) {
-            yield put(userActions.showTerms());
-        }
-    } catch (e) {
-        // TODO: log error to server, conveyor is unavailable
     }
 }
 

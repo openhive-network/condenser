@@ -661,16 +661,6 @@
         "deadline_for_recovery_is": "Ostateczny czas na odzyskanie",
         "i_understand_dont_show_again": "Rozumiem, nie pokazuj mi tego ponownie"
     },
-    "termsagree_jsx": {
-        "please_review": "Proszę przejrzeć nasze warunki, aby kontynuować",
-        "hi_user": "Cześć %(username)s,",
-        "blurb": "Nasze Warunki korzystania z usługi określają zasady i wytyczne, które użytkownik musi zaakceptować i przestrzegać, aby korzystać z Hive, a nasza Polityka prywatności wyjaśnia, jakie informacje zbieramy i co z nimi robimy. Nie martw się, nie sprzedajemy nikomu Twoich danych. Używamy ich, aby spełnić wymogi prawne i dowiedzieć się, jak ulepszyć Hive.",
-        "i_agree_to_hives": "Zgadzam się na",
-        "terms_of_service": "Warunki Korzystania z Usług",
-        "privacy_policy": "Polityka Prywatności",
-        "continue": "Kontynuuj",
-        "cancel": "Anuluj"
-    },
     "confirmtransactionform_jsx": {
         "confirm": "Potwierdź %(transactionType)s"
     },

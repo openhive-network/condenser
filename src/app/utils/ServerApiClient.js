@@ -54,25 +54,6 @@ export function setUserPreferences(payload) {
     return fetch('/api/v1/setUserPreferences', request);
 }
 
-export async function isTosAccepted() {
-    if (process.env.NODE_ENV !== 'production') {
-        // TODO: remove this. endpoint in dev currently down.
-        return true;
-    }
-
-    const response = await axios.post(
-        '/api/v1/isTosAccepted',
-        { _csrf: $STM_csrf },
-        { headers: requestHeaders },
-    );
-
-    return response.data;
-}
-
-export function acceptTos() {
-    const request = { ...requestBase, body: JSON.stringify({ _csrf: $STM_csrf }) };
-    return fetch('/api/v1/acceptTos', request);
-}
 export function conductSearch(req) {
     const bodyWithCSRF = {
         ...req.body,
