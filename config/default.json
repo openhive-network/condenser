@@ -42,8 +42,6 @@
   "default_observer":"hive.blog",
   "failover_threshold": 3,
   "address_prefix": "STM",
-  "conveyor_posting_wif": false,
-  "conveyor_username": false,
   "special_posts_url": false,
   "wallet_url": "https://wallet.hive.blog",
   "cookie_consent_enabled": null,
