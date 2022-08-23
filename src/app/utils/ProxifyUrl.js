@@ -19,7 +19,7 @@ export const defaultSrcSet = (url) => {
     return `${url} 1x, ${url.replace(CAPPED_SIZE, DOUBLE_CAPPED_SIZE)} 2x`;
 };
 export const getDoubleSize = (url) => {
-    return `${url.replace(CAPPED_SIZE, DOUBLE_CAPPED_SIZE)} 2x`;
+    return url.replace(CAPPED_SIZE, DOUBLE_CAPPED_SIZE);
 };
 export const isDefaultImageSize = (url) => {
     return url.startsWith(`${imageProxy()}${CAPPED_SIZE}`);
@@ -37,7 +37,7 @@ export const defaultWidth = () => {
  * @param {boolean} allowNaturalSize
  * @returns string
  */
-export const proxifyImageUrl = (url, dimensions, allowNaturalSize = false) => {
+export const proxifyImageUrl = (url, dimensions) => {
     const proxyList = url.match(rProxyDomainsDimensions);
     let respUrl = url;
     if (proxyList) {
@@ -52,7 +52,7 @@ export const proxifyImageUrl = (url, dimensions, allowNaturalSize = false) => {
 
         // NOTE: This forces the dimensions to be `CAPPED_SIZE` to save on
         // bandwidth costs. Do not modify gifs.
-        if (!allowNaturalSize && !respUrl.match(/\.gif$/) && dims === NATURAL_SIZE) {
+        if (!respUrl.match(/\.gif$/) && dims === NATURAL_SIZE) {
             dims = CAPPED_SIZE;
         }
 

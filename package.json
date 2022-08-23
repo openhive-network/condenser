@@ -133,6 +133,7 @@
     "scroll-behavior": "^0.9.5",
     "secure-random": "1.1.1",
     "selection-position": "1.0.0",
+    "simple-react-lightbox": "^3.6.9-0",
     "slate": "~0.43",
     "slate-drop-or-paste-images": "0.9.1",
     "slate-insert-block-on-enter": "0.4.0",

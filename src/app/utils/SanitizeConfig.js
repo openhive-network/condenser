@@ -170,7 +170,7 @@ export default ({
             };
             // If it's not a (relative or absolute) hive URL...
             if (
-                href.indexOf('#') !== 0
+                !href.match(`^(/(?!/)|${$STM_Config.img_proxy_prefix})`)
                 && !href.match(`^(/(?!/)|https://${$STM_Config.site_domain})`)
             ) {
                 attys.target = '_blank';
