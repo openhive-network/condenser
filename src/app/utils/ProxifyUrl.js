@@ -34,9 +34,10 @@ export const defaultWidth = () => {
  * @param {string|boolean} dimensions - optional -  if provided. url is proxied && global var $STM_Config.img_proxy_prefix is avail. resp will be "$STM_Config.img_proxy_prefix{dimensions}/{sanitized url}"
  *                                          if falsy, all proxies are stripped.
  *                                          if true, preserves the first {int}x{int} in a proxy url. If not found, uses 0x0
+ * @param {boolean} allowNaturalSize
  * @returns string
  */
-export const proxifyImageUrl = (url, dimensions = false, allowNaturalSize = false) => {
+export const proxifyImageUrl = (url, dimensions, allowNaturalSize = false) => {
     const proxyList = url.match(rProxyDomainsDimensions);
     let respUrl = url;
     if (proxyList) {
@@ -51,7 +52,7 @@ export const proxifyImageUrl = (url, dimensions = false, allowNaturalSize = fals
 
         // NOTE: This forces the dimensions to be `CAPPED_SIZE` to save on
         // bandwidth costs. Do not modify gifs.
-        if (!allowNaturalSize && respUrl.match(/\.gif$/) && dims === NATURAL_SIZE) {
+        if (!allowNaturalSize && !respUrl.match(/\.gif$/) && dims === NATURAL_SIZE) {
             dims = CAPPED_SIZE;
         }
 
