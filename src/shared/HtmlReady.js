@@ -74,17 +74,21 @@ const XMLSerializer = new xmldom.XMLSerializer();
 //   return sections
 // }
 
+let imageCount = 0;
+
 /** Embed videos, link mentions and hashtags, etc...
     If hideImages and mutate is set to true all images will be replaced
     by <pre> elements containing just the image url.
 */
-export default function (html, { mutate = true, hideImages = false } = {}) {
+export default function (html, { mutate = true, hideImages = false, lightbox = false } = {}) {
     const state = { mutate };
     state.hashtags = new Set();
     state.usertags = new Set();
     state.htmltags = new Set();
     state.images = new Set();
     state.links = new Set();
+    state.lightbox = lightbox;
+    imageCount = 0;
     try {
         const doc = DOMParser.parseFromString(preprocessHtml(html), 'text/html');
         traverse(doc, state);
@@ -203,6 +207,7 @@ function iframe(state, child) {
 }
 
 function img(state, child) {
+    imageCount += 1;
     const url = child.getAttribute('src');
     if (url) {
         state.images.add(url);
@@ -216,6 +221,17 @@ function img(state, child) {
                 child.setAttribute('src', url2);
             }
         }
+    }
+
+    if (state.lightbox && process.env.BROWSER) {
+        child.parentNode.replaceChild(DOMParser.parseFromString(`<div>
+        <a href="#lightbox-${imageCount}">
+            <img src="${url}" alt="Click to view large image"/>
+        </a>
+        <a href="#_" class="lightbox" id="lightbox-${imageCount}">
+            <span data-bg="${proxifyImageUrl(url, true, true)}"/>
+        </a>
+    </div>`), child);
     }
 }
 

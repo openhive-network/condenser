@@ -471,6 +471,7 @@ class PostFull extends React.Component {
                     highQualityPost={high_quality_post}
                     noImage={post.getIn(['stats', 'gray'])}
                     hideImages={hideImages}
+                    lightbox
                 />
             );
         }
