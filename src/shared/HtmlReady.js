@@ -2,7 +2,7 @@ import xmldom from 'xmldom';
 import tt from 'counterpart';
 import linksRe, { any as linksAny } from 'app/utils/Links';
 import { validate_account_name } from 'app/utils/ChainValidation';
-import { proxifyImageUrl } from 'app/utils/ProxifyUrl';
+import { proxifyImageUrl, getDoubleSize } from 'app/utils/ProxifyUrl';
 import * as Phishing from 'app/utils/Phishing';
 import { embedNode as EmbeddedPlayerEmbedNode, preprocessHtml } from 'app/components/elements/EmbeddedPlayers';
 import { extractMetadata as youTubeId } from 'app/components/elements/EmbeddedPlayers/youtube';
@@ -78,13 +78,14 @@ const XMLSerializer = new xmldom.XMLSerializer();
     If hideImages and mutate is set to true all images will be replaced
     by <pre> elements containing just the image url.
 */
-export default function (html, { mutate = true, hideImages = false } = {}) {
+export default function (html, { mutate = true, hideImages = false, lightbox = false } = {}) {
     const state = { mutate };
     state.hashtags = new Set();
     state.usertags = new Set();
     state.htmltags = new Set();
     state.images = new Set();
     state.links = new Set();
+    state.lightbox = lightbox;
     try {
         const doc = DOMParser.parseFromString(preprocessHtml(html), 'text/html');
         traverse(doc, state);
@@ -98,7 +99,7 @@ export default function (html, { mutate = true, hideImages = false } = {}) {
                     image.parentNode.replaceChild(pre, image);
                 }
             } else {
-                proxifyImages(doc);
+                proxifyImages(doc, state);
             }
         }
         if (!mutate) return state;
@@ -219,7 +220,7 @@ function img(state, child) {
     }
 }
 
-function proxifyImages(doc) {
+function proxifyImages(doc, state) {
     if (!doc) return;
 
     Array.from(doc.getElementsByTagName('img')).forEach((node) => {
@@ -228,6 +229,18 @@ function proxifyImages(doc) {
         if (!linksRe.local.test(url)) {
             const proxifiedImageUrl = proxifyImageUrl(url, true);
             node.setAttribute('src', proxifiedImageUrl);
+
+            if (state.lightbox && process.env.BROWSER) {
+                node.parentNode.replaceChild(
+                    DOMParser.parseFromString(`<a href="${getDoubleSize(proxifyImageUrl(url, true))}">
+                        <img
+                            src="${url}"
+                            alt="Click to view large version"
+                        />
+                    </a>`),
+                    node
+                );
+            }
         }
     });
 }

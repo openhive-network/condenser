@@ -9,7 +9,7 @@ export const allowedTags = `
     div, iframe, del,
     a, p, b, i, q, br, ul, li, ol, img, h1, h2, h3, h4, h5, h6, hr,
     blockquote, pre, code, em, strong, center, table, thead, tbody, tr, th, td,
-    strike, sup, sub
+    strike, sup, sub, span
 `
     .trim()
     .split(/,\s*/);
@@ -46,7 +46,8 @@ export default ({
         img: ['src', 'srcset', 'alt', 'class'],
 
         // title is only set in the case of an external link warning
-        a: ['href', 'rel', 'title', 'class', 'target'],
+        a: ['href', 'rel', 'title', 'class', 'target', 'id'],
+        span: ['data-bg', 'style'],
     },
     allowedSchemes: ['http', 'https', 'steem', 'esteem'],
     transformTags: {
@@ -163,9 +164,15 @@ export default ({
             let { href } = attribs;
             if (!href) href = '#';
             href = href.trim();
-            const attys = { href };
+            const attys = {
+                ...attribs,
+                href
+            };
             // If it's not a (relative or absolute) hive URL...
-            if (!href.match(`^(/(?!/)|https://${$STM_Config.site_domain})`)) {
+            if (
+                !href.match(`^(/(?!/)|${$STM_Config.img_proxy_prefix})`)
+                && !href.match(`^(/(?!/)|https://${$STM_Config.site_domain})`)
+            ) {
                 attys.target = '_blank';
                 attys.rel = highQualityPost ? 'noreferrer noopener' : 'nofollow noreferrer noopener';
                 attys.title = getExternalLinkWarningMessage();
@@ -176,5 +183,16 @@ export default ({
                 attribs: attys,
             };
         },
+        span: (tagName, attribs) => {
+            const data = {
+                tagName,
+                attribs: {
+                    ...(('data-bg' in attribs) ? {
+                        style: `background-image: url(${attribs['data-bg']})`,
+                    } : {}),
+                },
+            };
+            return data;
+        }
     },
 });

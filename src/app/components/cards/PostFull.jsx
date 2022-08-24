@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { SRLWrapper } from "simple-react-lightbox";
 import { Link } from 'react-router';
 import classnames from 'classnames';
 import TimeAgoWrapper from 'app/components/elements/TimeAgoWrapper';
@@ -248,9 +249,11 @@ class PostFull extends React.Component {
 
     onTogglePin = (isPinned) => {
         const {
- community, username, post, postref
-} = this.props;
-        if (!community || !username) console.error('pin fail', this.props);
+            community, username, post, postref
+        } = this.props;
+        if (!community || !username) {
+            console.error('pin fail', this.props);
+        }
 
         const key = ['content', postref, 'stats', 'is_pinned'];
         this.props.stateSet(key, !isPinned);
@@ -464,14 +467,17 @@ class PostFull extends React.Component {
             contentBody = <LoadingIndicator type="circle-strong" />;
         } else {
             contentBody = (
-                <MarkdownViewer
-                    formId={formId + '-viewer'}
-                    text={content_body}
-                    large
-                    highQualityPost={high_quality_post}
-                    noImage={post.getIn(['stats', 'gray'])}
-                    hideImages={hideImages}
-                />
+                <SRLWrapper>
+                    <MarkdownViewer
+                        formId={formId + '-viewer'}
+                        text={content_body}
+                        large
+                        highQualityPost={high_quality_post}
+                        noImage={post.getIn(['stats', 'gray'])}
+                        hideImages={hideImages}
+                        lightbox
+                    />
+                </SRLWrapper>
             );
         }
 
