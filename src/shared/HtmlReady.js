@@ -225,6 +225,7 @@ function proxifyImages(doc, state) {
 
     Array.from(doc.getElementsByTagName('img')).forEach((node) => {
         const url = node.getAttribute('src');
+        const alt = node.getAttribute('alt');
 
         if (!linksRe.local.test(url)) {
             const proxifiedImageUrl = proxifyImageUrl(url, true);
@@ -235,7 +236,7 @@ function proxifyImages(doc, state) {
                     DOMParser.parseFromString(`<a href="${getDoubleSize(proxifyImageUrl(url, true))}">
                         <img
                             src="${url}"
-                            alt="Click to view large version"
+                            alt="${alt}"
                         />
                     </a>`),
                     node
