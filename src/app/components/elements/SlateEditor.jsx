@@ -32,7 +32,7 @@ if (process.env.BROWSER) {
 
     plugins.push(
         InsertImages({
-            extensions: ['jpeg', 'png', 'gif'],
+            extensions: ['jpeg', 'jpg', 'png', 'gif', 'webp'],
             applyTransform: (transform, file) => {
                 return transform.insertInline({
                     type: 'image',
