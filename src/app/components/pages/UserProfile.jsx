@@ -14,7 +14,7 @@ import { isFetchingOrRecentlyUpdated } from 'app/utils/StateFunctions';
 import tt from 'counterpart';
 import Callout from 'app/components/elements/Callout';
 import userIllegalContent from 'app/utils/userIllegalContent';
-import { actions as UserProfilesSagaActions } from 'app/redux/UserProfilesSaga';
+import {actions as UserProfilesSagaActions} from 'app/redux/UserProfilesSaga';
 import UserProfileHeader from 'app/components/cards/UserProfileHeader';
 import SubscriptionsList from '../cards/SubscriptionsList';
 
@@ -76,6 +76,8 @@ export default class UserProfile extends React.Component {
             fetchHivebuzzBadges,
             fetchPeakdBadges,
             username,
+            twitterUsername,
+            fetchTwitterUsername,
         } = props;
         if (!profile) {
             fetchProfile(accountname, username);
@@ -85,6 +87,9 @@ export default class UserProfile extends React.Component {
         }
         if (!peakdBadges) {
             fetchPeakdBadges(accountname);
+        }
+        if (!twitterUsername) {
+            fetchTwitterUsername(accountname);
         }
     }
 
@@ -98,11 +103,14 @@ export default class UserProfile extends React.Component {
             fetchHivebuzzBadges,
             fetchPeakdBadges,
             username,
+            twitterUsername,
+            fetchTwitterUsername,
         } = this.props;
         if (prevProps.accountname != accountname || prevProps.username != username) {
             if (!profile) fetchProfile(accountname, username);
             if (!hivebuzzBadges) fetchHivebuzzBadges(accountname);
             if (!peakdBadges) fetchPeakdBadges(accountname);
+            if (!twitterUsername) fetchTwitterUsername(accountname);
         }
     }
 
@@ -156,6 +164,7 @@ export default class UserProfile extends React.Component {
                 profile,
                 hivebuzzBadges,
                 peakdBadges,
+                twitterUsername,
                 notifications,
                 subscriptions,
                 routeParams,
@@ -252,6 +261,7 @@ export default class UserProfile extends React.Component {
                     accountname={accountname}
                     profile={profile}
                     routeParams={routeParams}
+                    twitterUsername={twitterUsername}
                 />
                 <div className="row">
                     <div className={classnames('UserProfile__tab_content', 'column', 'layout-list')}>
@@ -291,6 +301,7 @@ module.exports = {
                 profile: state.userProfiles.getIn(['profiles', accountname]),
                 hivebuzzBadges: state.userProfiles.getIn(['hivebuzzBadges', accountname]),
                 peakdBadges: state.userProfiles.getIn(['peakdBadges', accountname]),
+                twitterUsername: state.userProfiles.getIn(['twitterUsername', accountname]),
                 walletUrl: walletUrl + '/@' + accountname + '/transfers',
                 section,
                 order,
@@ -316,6 +327,9 @@ module.exports = {
             fetchPeakdBadges: (account) => {
                 dispatch(UserProfilesSagaActions.fetchPeakdBadges({ account }));
             },
+            fetchTwitterUsername: (account) => {
+                dispatch(UserProfilesSagaActions.fetchPoshTwitterUsername({ account }));
+            }
         })
     )(UserProfile),
 };
