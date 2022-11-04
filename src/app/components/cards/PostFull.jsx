@@ -130,6 +130,8 @@ class PostFull extends React.Component {
             }
         }
 
+        hljs.highlightAll();
+
         this.state = {
             formId: _formId,
             PostFullReplyEditor: ReplyEditor(_formId + '-reply'),
@@ -167,10 +169,6 @@ class PostFull extends React.Component {
             } = this;
             deletePost(post.get('author'), post.get('permlink'));
         };
-    }
-
-    componentDidMount() {
-        hljs.highlightAll();
     }
 
     fbShare(e) {
