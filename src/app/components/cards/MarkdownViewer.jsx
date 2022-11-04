@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import Remarkable from 'remarkable';
 import sanitizeConfig, { noImageText } from 'app/utils/SanitizeConfig';
 import sanitize from 'sanitize-html';
-import HtmlReady from 'shared/HtmlReady';
+import HtmlReady, { highlightCodes } from 'shared/HtmlReady';
 import tt from 'counterpart';
 import { generateMd as EmbeddedPlayerGenerateMd } from 'app/components/elements/EmbeddedPlayers';
 
@@ -121,6 +121,9 @@ class MarkdownViewer extends Component {
             console.error('Refusing to render script tag in post text', cleanText);
             return <div />;
         }
+
+        // Needs to be done here so that the tags added by HighlightJS won't be filtered of by the sanitizer
+        cleanText = highlightCodes(cleanText).html;
 
         const noImageActive = cleanText.indexOf(noImageText) !== -1;
 

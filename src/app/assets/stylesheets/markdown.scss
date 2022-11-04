@@ -69,6 +69,8 @@
 
   pre > code {
     display: block;
+    overflow-y: hidden;
+    overflow-x: auto;
   }
 
   strong {

@@ -1,5 +1,6 @@
 import xmldom from 'xmldom';
 import tt from 'counterpart';
+import hljs from 'highlight.js';
 import linksRe, { any as linksAny } from 'app/utils/Links';
 import { validate_account_name } from 'app/utils/ChainValidation';
 import { proxifyImageUrl, getDoubleSize } from 'app/utils/ProxifyUrl';
@@ -128,6 +129,28 @@ function traverse(node, state, depth = 0) {
 
         traverse(child, state, depth + 1);
     });
+}
+
+function traverseForCodeHighlight(node, depth = 0) {
+    if (!node || !node.childNodes) return;
+    Array.from(node.childNodes).forEach((child) => {
+        const tag = child.tagName ? child.tagName.toLowerCase() : null;
+        if (tag === 'code' && child.textContent.match(/\n/)) {
+            const highlightedContent = hljs.highlightAuto(child.textContent).value;
+
+            child.parentNode.replaceChild(DOMParser.parseFromString(`<code>${highlightedContent}</code>`), child);
+        }
+
+        traverseForCodeHighlight(child, depth + 1);
+    });
+}
+
+export function highlightCodes(html) {
+    const doc = DOMParser.parseFromString(html, 'text/html');
+    traverseForCodeHighlight(doc);
+    return {
+        html: doc ? XMLSerializer.serializeToString(doc) : '',
+    };
 }
 
 function link(state, child) {
