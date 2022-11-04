@@ -457,6 +457,7 @@
         "past_payouts": "Past Payouts $%(value)s",
         "past_payouts_author": " - Author $%(value)s",
         "past_payouts_curators": " - Curators $%(value)s",
+        "past_payouts_curators_and_beneficiaries": " - Curators & beneficiaries $%(value)s",
         "removing_your_vote": "Removing your vote",
         "removing_your_vote_will_reset_curation_rewards_for_this_post": "Removing your vote will reset your curation rewards for this post",
         "changing_to_an_upvote": "Changing to an Up-Vote",
