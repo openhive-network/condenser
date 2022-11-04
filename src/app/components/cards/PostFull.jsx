@@ -3,6 +3,8 @@ import PropTypes from 'prop-types';
 import { SRLWrapper } from "simple-react-lightbox";
 import { Link } from 'react-router';
 import classnames from 'classnames';
+import hljs from 'highlight.js/lib/common';
+import 'highlight.js/styles/default.css';
 import TimeAgoWrapper from 'app/components/elements/TimeAgoWrapper';
 import Icon from 'app/components/elements/Icon';
 import { connect } from 'react-redux';
@@ -126,6 +128,10 @@ class PostFull extends React.Component {
                     editorEditState = { showEdit: true };
                 }
             }
+        }
+
+        if (process.env.BROWSER) {
+            hljs.highlightAll();
         }
 
         this.state = {

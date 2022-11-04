@@ -41,6 +41,8 @@ $themes: (
     modalBackgroundColor: $color-background-almost-white,
     modalTextColorPrimary: $color-text-dark,
     commentBodyHighlightBackgroundColor: $color-background-almost-white-darker,
+    htmlhtmlCodeColor: #333333,
+    htmlhtmlCodeBackgroundColor: #f4f4f4,
   ),
   light: (
     colorAccent: $color-hive-red,
@@ -85,6 +87,8 @@ $themes: (
     modalBackgroundColor: $color-white,
     modalTextColorPrimary: $color-text-dark,
     commentBodyHighlightBackgroundColor: $color-background-almost-white-darker,
+    htmlCodeColor: #333333,
+    htmlCodeBackgroundColor: #f4f4f4,
   ),
   dark: (
     colorAccent: $color-hive-red,
@@ -130,6 +134,8 @@ $themes: (
     modalBackgroundColor: $color-background-dark,
     modalTextColorPrimary: $color-text-white,
     commentBodyHighlightBackgroundColor: $color-background-dark-lighter,
+    htmlCodeColor: #c5c8c6,
+    htmlCodeBackgroundColor: #1d1f21,
   ),
 );
 
