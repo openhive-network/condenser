@@ -1,6 +1,6 @@
 import xmldom from 'xmldom';
 import tt from 'counterpart';
-import hljs from 'highlight.js';
+import hljs from 'highlight.js/lib/common';
 import linksRe, { any as linksAny } from 'app/utils/Links';
 import { validate_account_name } from 'app/utils/ChainValidation';
 import { proxifyImageUrl, getDoubleSize } from 'app/utils/ProxifyUrl';
