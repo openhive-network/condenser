@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { SRLWrapper } from "simple-react-lightbox";
+import { Map } from 'immutable';
 import { Link } from 'react-router';
 import classnames from 'classnames';
 import hljs from 'highlight.js/lib/common';
@@ -54,7 +55,10 @@ function TimeAuthorCategory({ post }) {
 
 function TimeAuthorCategoryLarge({ post }) {
     const jsonMetadata = post.get('json_metadata');
-    const authoredBy = jsonMetadata.get('author');
+    let authoredBy;
+    if (jsonMetadata instanceof Map) {
+        authoredBy = jsonMetadata.get('author');
+    }
     let author = post.get('author');
     let created = post.get('created');
     let updated = post.get('updated');
