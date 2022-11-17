@@ -18,6 +18,9 @@ export const imageProxy = () => $STM_Config.img_proxy_prefix;
 export const defaultSrcSet = (url) => {
     return `${url} 1x, ${url.replace(CAPPED_SIZE, DOUBLE_CAPPED_SIZE)} 2x`;
 };
+export const getDoubleSize = (url) => {
+    return url.replace(CAPPED_SIZE, DOUBLE_CAPPED_SIZE);
+};
 export const isDefaultImageSize = (url) => {
     return url.startsWith(`${imageProxy()}${CAPPED_SIZE}`);
 };
@@ -31,9 +34,10 @@ export const defaultWidth = () => {
  * @param {string|boolean} dimensions - optional -  if provided. url is proxied && global var $STM_Config.img_proxy_prefix is avail. resp will be "$STM_Config.img_proxy_prefix{dimensions}/{sanitized url}"
  *                                          if falsy, all proxies are stripped.
  *                                          if true, preserves the first {int}x{int} in a proxy url. If not found, uses 0x0
+ * @param {boolean} allowNaturalSize
  * @returns string
  */
-export const proxifyImageUrl = (url, dimensions = false) => {
+export const proxifyImageUrl = (url, dimensions) => {
     const proxyList = url.match(rProxyDomainsDimensions);
     let respUrl = url;
     if (proxyList) {

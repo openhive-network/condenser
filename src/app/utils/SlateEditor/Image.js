@@ -13,11 +13,13 @@ export default connect(
     })
 )(
     class Image extends React.Component {
-        state = {
-            progress: {},
-        };
+        constructor(props) {
+            super(props);
 
-        componentWillMount() {
+            this.state = state = {
+                progress: {},
+            };
+
             const file = this.props.node.data.get('file');
             // Save `file` for "Retry"
             // Try to load incase data url was loaded from a draft

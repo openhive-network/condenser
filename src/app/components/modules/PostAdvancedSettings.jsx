@@ -134,11 +134,11 @@ class PostAdvancedSettings extends Component {
 
     render() {
         const {
- formId, username, defaultPayoutType, initialPayoutType, initialMaxAcceptedPayout
-} = this.props;
+            formId, username, defaultPayoutType, initialPayoutType, initialMaxAcceptedPayout
+        } = this.props;
         const {
- beneficiaries, payoutType, postTemplateName, maxAcceptedPayout, maxAcceptedPayoutType
-} = this.state;
+            beneficiaries, payoutType, postTemplateName, maxAcceptedPayout, maxAcceptedPayoutType
+        } = this.state;
         const loadingTemplate = postTemplateName && postTemplateName.indexOf('create_') === -1;
         const { submitting, valid, handleSubmit } = this.state.advancedSettings;
         const userTemplates = loadUserTemplates(username);
@@ -254,7 +254,7 @@ class PostAdvancedSettings extends Component {
                 />
                 <div className="error">
                     {(beneficiaries.touched || beneficiaries.value) && beneficiaries.error}
-&nbsp;
+                    &nbsp;
                 </div>
                 <div className="row">
                     <div className="column">

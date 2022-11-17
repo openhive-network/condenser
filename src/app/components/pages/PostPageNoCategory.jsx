@@ -6,20 +6,22 @@ import LoadingIndicator from 'app/components/elements/LoadingIndicator';
 import SvgImage from 'app/components/elements/SvgImage';
 
 class PostWrapper extends React.Component {
-    componentWillMount() {
+    constructor(props) {
+        super(props);
+
         const {
- redirectUrl, loading, author, permlink
-} = this.props;
+            redirectUrl, loading, author, permlink
+        } = props;
         if (redirectUrl) {
             if (browserHistory) browserHistory.replace(redirectUrl);
         } else if (loading) {
-            this.props.getPostHeader({ author, permlink });
+            props.getPostHeader({ author, permlink });
         }
     }
 
     componentDidUpdate(prevProps) {
         const { redirectUrl } = this.props;
-        if (redirectUrl && redirectUrl != prevProps.redirectUrl) {
+        if (redirectUrl && redirectUrl !== prevProps.redirectUrl) {
             if (browserHistory) browserHistory.replace(redirectUrl);
         }
     }

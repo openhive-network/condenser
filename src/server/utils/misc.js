@@ -1,15 +1,15 @@
 import path from 'path';
 import fs from 'fs';
 
-export function getRemoteIp(req) {
-    const remote_address = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+export function getRemoteIp(request) {
+    const remote_address = request.headers['x-forwarded-for'] || request.ip;
     const ip_match = remote_address ? remote_address.match(/(\d+\.\d+\.\d+\.\d+)/) : null;
     return ip_match ? ip_match[1] : remote_address;
 }
 
 const ip_last_hit = new Map();
-export function rateLimitReq(ctx, req) {
-    const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+export function rateLimitReq(ctx, request) {
+    const ip = request.headers['x-forwarded-for'] || request.ip;
     const now = Date.now();
 
     // purge hits older than minutes_max
@@ -42,7 +42,7 @@ export function checkCSRF(ctx, csrf) {
     } catch (e) {
         ctx.status = 403;
         ctx.body = 'invalid csrf token';
-        console.log('-- invalid csrf token -->', ctx.request.method, ctx.request.url, ctx.session.uid);
+        console.log('-- invalid csrf token -->', e, ctx.request.method, ctx.request.url, ctx.session.uid);
         return false;
     }
     return true;

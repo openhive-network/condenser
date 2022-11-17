@@ -20,29 +20,28 @@ export default class Reblog extends PureComponent {
     constructor(props) {
         super(props);
         // this.shouldComponentUpdate = shouldComponentUpdate(this, 'Reblog');
-        this.state = { active: false, loading: false };
+        const { account } = props;
+        this.state = {
+            active: account ? this.isReblogged(account) : false,
+            loading: false,
+        };
     }
 
-    componentWillMount() {
-        const { account } = this.props;
-        if (account) {
-            this.setState({ active: this.isReblogged(account) });
-        }
-    }
-
-    componentWillReceiveProps(nextProps) {
-        if (nextProps.account) {
-            this.setState({ active: this.isReblogged(nextProps.account) });
+    componentDidMount() {
+        if (this.props.account) {
+            const active = this.isReblogged(this.props.account);
+            this.setState({ active });
         }
     }
 
     reblog = (e) => {
         e.preventDefault();
+        e.stopPropagation();
         if (this.state.active) return;
         this.setState({ loading: true });
         const {
- reblog, account, author, permlink
-} = this.props;
+            reblog, account, author, permlink
+        } = this.props;
         reblog(
             account,
             author,
@@ -59,7 +58,7 @@ export default class Reblog extends PureComponent {
 
     isReblogged(account) {
         const { author, permlink } = this.props;
-        return getRebloggedList(account).includes(author + '/' + permlink);
+        return getRebloggedList(account).includes(`${author}/${permlink}`);
     }
 
     setReblogged(account) {
@@ -127,6 +126,7 @@ function getRebloggedList(account) {
     } catch (e) {
         cachedPosts = [];
     }
+
     return cachedPosts;
 }
 

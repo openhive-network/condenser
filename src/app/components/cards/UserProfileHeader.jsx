@@ -18,7 +18,7 @@ import DropdownMenu from 'app/components/elements/DropdownMenu';
 class UserProfileHeader extends React.Component {
     render() {
         const {
-            current_user, accountname, profile, walletUrl, section,
+            current_user, accountname, profile, walletUrl, section, twitterUsername,
         } = this.props;
         const {
             name, location, about, website, cover_image
@@ -145,6 +145,15 @@ class UserProfileHeader extends React.Component {
                                     />
                                 </a>
                             </Tooltip>
+                            {twitterUsername && (
+                                <Tooltip
+                                    t={tt('user_profile.twitter_badge')}
+                                >
+                                    <a href={`https://twitter.com/${twitterUsername}`} target="_blank" rel="noopener noreferrer">
+                                        <Icon name="twitter" className="UserProfile__badge_image_twitter" />
+                                    </a>
+                                </Tooltip>
+                            )}
                             {blacklists}
                             {AffiliationMap[accountname] ? (
                                 <span className="affiliation">{tt('g.affiliation_' + AffiliationMap[accountname])}</span>
@@ -226,6 +235,7 @@ class UserProfileHeader extends React.Component {
                                 <Icon name="calendar" />
                                 {' '}
                                 Active
+                                {' '}
                                 <TimeAgoWrapper date={profile.get('active')} />
                             </p>
                         </div>

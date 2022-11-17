@@ -2,17 +2,20 @@ import { call, put, takeLatest } from 'redux-saga/effects';
 import { callBridge, getHivePowerForUser } from 'app/utils/steemApi';
 import HivebuzzApi from 'app/utils/hivebuzzApi';
 import PeakdApi from 'app/utils/peakdApi';
+import PoshApi from 'app/utils/poshApi';
 import * as userProfileActions from './UserProfilesReducer';
 
 const FETCH_PROFILE = 'userProfilesSaga/FETCH_PROFILE';
 const FETCH_LISTS = 'userProfilesSaga/FETCH_LISTS';
 const FETCH_HIVEBUZZ_BADGES = 'userProfileSaga/FETCH_HIVEBUZZ_BADGES';
 const FETCH_PEAKD_BADGES = 'userProfileSaga/FETCH_PEAKD_BADGES';
+const FETCH_POSH_TWITTER_USERNAME = 'userProfileSaga/FETCH_POSH_TWITTER_USERNAME';
 
 export const userProfilesWatches = [
     takeLatest(FETCH_PROFILE, fetchUserProfile),
     takeLatest(FETCH_HIVEBUZZ_BADGES, fetchUserHivebuzzBadges),
     takeLatest(FETCH_PEAKD_BADGES, fetchUserPeakdBadges),
+    takeLatest(FETCH_POSH_TWITTER_USERNAME, fetchUserPoshTwitterUsername),
 ];
 
 export function* fetchUserProfile(action) {
@@ -86,6 +89,35 @@ export function* fetchUserPeakdBadges(action) {
     }
 }
 
+export function* fetchUserPoshTwitterUsername(action) {
+    const { account } = action.payload;
+    try {
+        const ret = yield call(PoshApi.getTwitterInfo, { account });
+        if (!ret) {
+            console.error('Posh API error');
+            yield put(
+                userProfileActions.setError({
+                    error: true,
+                })
+            );
+        } else {
+            yield put(
+                userProfileActions.addTwitterUsername({
+                    username: account,
+                    twitterUsername: ret.twitter_username,
+                })
+            );
+        }
+    } catch (e) {
+        console.error('Posh API error');
+        yield put(
+            userProfileActions.setError({
+                error: true,
+            })
+        );
+    }
+}
+
 // Action creators
 export const actions = {
     fetchProfile: (payload) => ({
@@ -104,4 +136,8 @@ export const actions = {
         type: FETCH_PEAKD_BADGES,
         payload,
     }),
+    fetchPoshTwitterUsername: (payload) => ({
+        type: FETCH_POSH_TWITTER_USERNAME,
+        payload,
+    })
 };

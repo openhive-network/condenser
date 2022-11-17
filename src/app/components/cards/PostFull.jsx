@@ -1,7 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { SRLWrapper } from "simple-react-lightbox";
+import { Map } from 'immutable';
 import { Link } from 'react-router';
 import classnames from 'classnames';
+import hljs from 'highlight.js/lib/common';
+import 'highlight.js/styles/default.css';
 import TimeAgoWrapper from 'app/components/elements/TimeAgoWrapper';
 import Icon from 'app/components/elements/Icon';
 import { connect } from 'react-redux';
@@ -29,7 +33,6 @@ import LoadingIndicator from 'app/components/elements/LoadingIndicator';
 import { allowDelete } from 'app/utils/StateFunctions';
 import { Role } from 'app/utils/Community';
 import UserNames from 'app/components/elements/UserNames';
-import {List} from "immutable";
 import ContentEditedWrapper from '../elements/ContentEditedWrapper';
 import { isUrlWhitelisted } from "../../utils/Phishing";
 
@@ -52,7 +55,10 @@ function TimeAuthorCategory({ post }) {
 
 function TimeAuthorCategoryLarge({ post }) {
     const jsonMetadata = post.get('json_metadata');
-    const authoredBy = jsonMetadata.get('author');
+    let authoredBy;
+    if (jsonMetadata instanceof Map) {
+        authoredBy = jsonMetadata.get('author');
+    }
     let author = post.get('author');
     let created = post.get('created');
     let updated = post.get('updated');
@@ -105,19 +111,47 @@ class PostFull extends React.Component {
         showPromotePost: PropTypes.func.isRequired,
         showExplorePost: PropTypes.func.isRequired,
         togglePinnedPost: PropTypes.func.isRequired,
-        muteList: PropTypes.object,
     };
 
     constructor(props) {
         super(props);
+
+        const { postref } = this.props;
+        const _formId = `postFull-${postref}`;
+
+        let editorReplyState;
+        let editorEditState;
+        if (process.env.BROWSER) {
+            let showEditor = localStorage.getItem('showEditor-' + _formId);
+            if (showEditor) {
+                showEditor = JSON.parse(showEditor);
+                if (showEditor.type === 'reply') {
+                    editorReplyState = { showReply: true };
+                }
+                if (showEditor.type === 'edit') {
+                    editorEditState = { showEdit: true };
+                }
+            }
+        }
+
+        if (process.env.BROWSER) {
+            hljs.highlightAll();
+        }
+
+        this.state = {
+            formId: _formId,
+            PostFullReplyEditor: ReplyEditor(_formId + '-reply'),
+            PostFullEditEditor: ReplyEditor(_formId + '-edit'),
+            ...(editorReplyState && { ...editorReplyState }),
+            ...(editorEditState && { ...editorEditState }),
+            showMutedList: false,
+        };
 
         this.fbShare = this.fbShare.bind(this);
         this.twitterShare = this.twitterShare.bind(this);
         this.redditShare = this.redditShare.bind(this);
         this.linkedInShare = this.linkedInShare.bind(this);
         this.showExplorePost = this.showExplorePost.bind(this);
-
-        this.state = { showMutedList: false };
 
         this.onShowReply = () => {
             const {
@@ -126,6 +160,7 @@ class PostFull extends React.Component {
             this.setState({ showReply: !showReply, showEdit: false });
             saveOnShow(formId, !showReply ? 'reply' : null);
         };
+
         this.onShowEdit = () => {
             const {
                 state: { showEdit, formId },
@@ -133,34 +168,13 @@ class PostFull extends React.Component {
             this.setState({ showEdit: !showEdit, showReply: false });
             saveOnShow(formId, !showEdit ? 'edit' : null);
         };
+
         this.onDeletePost = () => {
             const {
                 props: { deletePost, post },
             } = this;
             deletePost(post.get('author'), post.get('permlink'));
         };
-    }
-
-    componentWillMount() {
-        const { postref } = this.props;
-        const formId = `postFull-${postref}`;
-        this.setState({
-            formId,
-            PostFullReplyEditor: ReplyEditor(formId + '-reply'),
-            PostFullEditEditor: ReplyEditor(formId + '-edit'),
-        });
-        if (process.env.BROWSER) {
-            let showEditor = localStorage.getItem('showEditor-' + formId);
-            if (showEditor) {
-                showEditor = JSON.parse(showEditor);
-                if (showEditor.type === 'reply') {
-                    this.setState({ showReply: true });
-                }
-                if (showEditor.type === 'edit') {
-                    this.setState({ showEdit: true });
-                }
-            }
-        }
     }
 
     fbShare(e) {
@@ -247,7 +261,9 @@ class PostFull extends React.Component {
         const {
             community, username, post, postref
         } = this.props;
-        if (!community || !username) console.error('pin fail', this.props);
+        if (!community || !username) {
+            console.error('pin fail', this.props);
+        }
 
         const key = ['content', postref, 'stats', 'is_pinned'];
         this.props.stateSet(key, !isPinned);
@@ -260,16 +276,16 @@ class PostFull extends React.Component {
     render() {
         const {
             props: {
-                username, post, community, viewer_role, muteList
+                username, post, community, viewer_role,
             },
             state: {
-                PostFullReplyEditor, PostFullEditEditor, formId, showReply, showEdit,
-                showMutedList,
+                PostFullReplyEditor, PostFullEditEditor, formId, showReply, showEdit
             },
             onShowReply,
             onShowEdit,
             onDeletePost,
         } = this;
+
         if (!post) return null;
         const content = post.toJS();
         const {
@@ -329,7 +345,7 @@ class PostFull extends React.Component {
         const bShowLoading = false;
 
         // hide images if user is on blacklist
-        const authorIsBlocked = ImageUserBlockList.includes(author);
+        const hideImages = ImageUserBlockList.includes(author);
 
         const replyParams = {
             author,
@@ -419,20 +435,6 @@ class PostFull extends React.Component {
             </div>
         );
 
-        const allowReply = Role.canComment(community, viewer_role);
-        const canReblog = !isReply;
-        const canPromote = false && !post.get('is_paidout') && !isReply;
-        const canPin = post.get('depth') == 0 && Role.atLeast(viewer_role, 'mod');
-        const canMute = username && Role.atLeast(viewer_role, 'mod');
-        const canFlag = username && community && Role.atLeast(viewer_role, 'guest');
-        const canReply = allowReply && post.get('depth') < 255;
-        const canEdit = username === author && !showEdit;
-        const canDelete = username === author && allowDelete(post);
-        const isGray = post.getIn(['stats', 'gray']);
-        const isMuted = muteList.has(post.get('author')) && !showMutedList;
-
-        const isPinned = post.getIn(['stats', 'is_pinned'], false);
-
         if (isReply) {
             const rooturl = post.get('url');
             const prnturl = `/${category}/@${parent_author}/${parent_permlink}`;
@@ -457,61 +459,42 @@ class PostFull extends React.Component {
             );
         }
 
-        if (isMuted) {
-            post_header = (
-                <div className="callout">
-                    <div>
-                        <h4>This user is in your mute list.</h4>
-                        <p>For safety reasons, links on this post will be disabled.</p>
-                    </div>
-                    <ul>
-                        <li>
-                            <a
-                                role="link"
-                                tabIndex={0}
-                                onClick={() => {
-                                    this.setState((prevState) => {
-                                        return { showMutedList: !prevState.showMutedList };
-                                    });
-                                }}
-                            >
-                                Enable links
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            );
-        }
+        const allowReply = Role.canComment(community, viewer_role);
+        const canReblog = !isReply;
+        const canPromote = false && !post.get('is_paidout') && !isReply;
+        const canPin = post.get('depth') == 0 && Role.atLeast(viewer_role, 'mod');
+        const canMute = username && Role.atLeast(viewer_role, 'mod');
+        const canFlag = username && community && Role.atLeast(viewer_role, 'guest');
+        const canReply = allowReply && post.get('depth') < 255;
+        const canEdit = username === author && !showEdit;
+        const canDelete = username === author && allowDelete(post);
+
+        const isPinned = post.getIn(['stats', 'is_pinned'], false);
 
         let contentBody;
 
         if (bShowLoading) {
             contentBody = <LoadingIndicator type="circle-strong" />;
         } else {
-            const noLink = isGray || authorIsBlocked;
-            const noLinkText = tt('g.no_link_text');
-            const noImage = isGray;
-            const noImageText = tt('g.no_image_text');
-
             contentBody = (
-                <MarkdownViewer
-                    formId={formId + '-viewer'}
-                    text={content_body}
-                    large
-                    highQualityPost={high_quality_post}
-                    noImage={noImage}
-                    noImageText={noImageText}
-                    hideImages={authorIsBlocked}
-                    noLink={noLink}
-                    noLinkText={noLinkText}
-                />
+                <SRLWrapper>
+                    <MarkdownViewer
+                        formId={formId + '-viewer'}
+                        text={content_body}
+                        large
+                        highQualityPost={high_quality_post}
+                        noImage={post.getIn(['stats', 'gray'])}
+                        hideImages={hideImages}
+                        lightbox
+                    />
+                </SRLWrapper>
             );
         }
 
         return (
             <div>
                 <article
-                    className={classnames('PostFull', 'hentry', { isMuted })}
+                    className={classnames('PostFull', 'hentry')}
                     itemScope
                     itemType="http://schema.org/Blog"
                     onClick={this.postClickHandler}
@@ -608,19 +591,17 @@ class PostFull extends React.Component {
 
 export default connect(
     (state, ownProps) => {
-        const username = state.user.getIn(['current', 'username']);
         const postref = ownProps.post;
         const post = ownProps.cont.get(postref);
+
         const category = post.get('category');
         const community = state.global.getIn(['community', category, 'name']);
-        const muteList = state.global.getIn(['follow', 'getFollowingAsync', username, 'ignore_result'], List());
 
         return {
             post,
             postref,
             community,
-            username,
-            muteList,
+            username: state.user.getIn(['current', 'username']),
             viewer_role: state.global.getIn(['community', community, 'context', 'role'], 'guest'),
         };
     },

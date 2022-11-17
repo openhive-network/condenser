@@ -3,9 +3,9 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
 import Remarkable from 'remarkable';
-import sanitizeConfig from 'app/utils/SanitizeConfig';
+import sanitizeConfig, { noImageText } from 'app/utils/SanitizeConfig';
 import sanitize from 'sanitize-html';
-import HtmlReady from 'shared/HtmlReady';
+import HtmlReady, { highlightCodes } from 'shared/HtmlReady';
 import tt from 'counterpart';
 import { generateMd as EmbeddedPlayerGenerateMd } from 'app/components/elements/EmbeddedPlayers';
 
@@ -26,6 +26,29 @@ const remarkableToSpec = new Remarkable({
 });
 
 class MarkdownViewer extends Component {
+    static propTypes = {
+        // HTML properties
+        text: PropTypes.string,
+        className: PropTypes.string,
+        large: PropTypes.bool,
+        highQualityPost: PropTypes.bool,
+        noImage: PropTypes.bool,
+        allowDangerousHTML: PropTypes.bool,
+        hideImages: PropTypes.bool, // whether to replace images with just a span containing the src url
+        breaks: PropTypes.bool, // true to use bastardized markdown that cares about newlines
+        // used for the ImageUserBlockList
+        lightbox: PropTypes.bool,
+    };
+
+    static defaultProps = {
+        allowDangerousHTML: false,
+        breaks: true,
+        className: '',
+        hideImages: false,
+        large: false,
+        lightbox: false,
+    };
+
     constructor() {
         super();
         this.state = { allowNoImage: true };
@@ -42,9 +65,7 @@ class MarkdownViewer extends Component {
     };
 
     render() {
-        const {
-            noImage, hideImages, noLink, noImageText, noLinkText
-        } = this.props;
+        const { noImage, hideImages, lightbox } = this.props;
         const { allowNoImage } = this.state;
         let { text } = this.props;
         if (!text) text = ''; // text can be empty, still view the link meta data
@@ -77,7 +98,7 @@ class MarkdownViewer extends Component {
         }
 
         // Embed videos, link mentions and hashtags, etc...
-        if (renderedText) renderedText = HtmlReady(renderedText, { hideImages }).html;
+        if (renderedText) renderedText = HtmlReady(renderedText, { hideImages, lightbox }).html;
 
         // Complete removal of javascript and other dangerous tags..
         // The must remain as close as possible to dangerouslySetInnerHTML
@@ -91,9 +112,6 @@ class MarkdownViewer extends Component {
                     large,
                     highQualityPost,
                     noImage: noImage && allowNoImage,
-                    noImageText,
-                    noLink,
-                    noLinkText,
                 })
             );
         }
@@ -102,6 +120,12 @@ class MarkdownViewer extends Component {
             // Not meant to be complete checking, just a secondary trap and red flag (code can change)
             console.error('Refusing to render script tag in post text', cleanText);
             return <div />;
+        }
+
+        // Needs to be done here so that the tags added by HighlightJS won't be filtered of by the sanitizer
+        const higlightedText = highlightCodes(cleanText).html;
+        if (higlightedText) {
+            cleanText = higlightedText;
         }
 
         const noImageActive = cleanText.indexOf(noImageText) !== -1;
@@ -167,36 +191,6 @@ class MarkdownViewer extends Component {
         );
     }
 }
-
-MarkdownViewer.propTypes = {
-    // HTML properties
-    text: PropTypes.string,
-    className: PropTypes.string,
-    large: PropTypes.bool,
-    highQualityPost: PropTypes.bool,
-    noImage: PropTypes.bool,
-    noImageText: PropTypes.string,
-    noLink: PropTypes.bool,
-    noLinkText: PropTypes.string,
-    allowDangerousHTML: PropTypes.bool,
-    hideImages: PropTypes.bool, // whether to replace images with just a span containing the src url
-    breaks: PropTypes.bool, // true to use bastardized markdown that cares about newlines
-    // used for the ImageUserBlockList
-};
-
-MarkdownViewer.defaultProps = {
-    allowDangerousHTML: false,
-    breaks: true,
-    className: '',
-    hideImages: false,
-    large: false,
-    text: undefined,
-    highQualityPost: false,
-    noImage: false,
-    noImageText: undefined,
-    noLink: false,
-    noLinkText: undefined,
-};
 
 export default connect((state, ownProps) => {
     return { ...ownProps };

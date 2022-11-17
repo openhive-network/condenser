@@ -5,6 +5,7 @@ const ADD_USER_PROFILE = 'user_profile/ADD';
 const ADD_LISTED_ACCOUNTS = 'user_profile/LISTED';
 const ADD_HIVEBUZZ_BADGES = 'user_profile/HIVEBUZZ_BADGES';
 const ADD_PEAKD_BADGES = 'user_profile/PEAKD_BADGES';
+const ADD_TWITTER_USERNAME = 'user_profile/TWITTER_USERNAME';
 const SET_ERROR = 'user_profile/ERROR';
 
 const defaultState = fromJS({
@@ -12,6 +13,7 @@ const defaultState = fromJS({
     error: false,
     hivebuzzBadges: [],
     peakdBadges: [],
+    twitterUsername: '',
 });
 
 export default function reducer(state = defaultState, action) {
@@ -76,6 +78,16 @@ export default function reducer(state = defaultState, action) {
             return state;
         }
 
+        case ADD_TWITTER_USERNAME: {
+            if (payload) {
+                return state.setIn(
+                    ['twitterUsername', payload.username],
+                    payload.twitterUsername,
+                );
+            }
+            return state;
+        }
+
         case SET_ERROR: {
             if (payload) {
                 const { error } = payload;
@@ -103,6 +115,11 @@ export const addHivebuzzBadges = (payload) => ({
 
 export const addPeakdBadges = (payload) => ({
     type: ADD_PEAKD_BADGES,
+    payload,
+});
+
+export const addTwitterUsername = (payload) => ({
+    type: ADD_TWITTER_USERNAME,
     payload,
 });
 

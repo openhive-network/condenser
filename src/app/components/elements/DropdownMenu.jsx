@@ -44,6 +44,7 @@ export default class DropdownMenu extends React.Component {
 
     show = (e) => {
         e.preventDefault();
+        e.stopPropagation();
         this.setState({ shown: true });
         document.addEventListener('click', this.hide);
     };
@@ -54,6 +55,7 @@ export default class DropdownMenu extends React.Component {
         if (inside_dropdown) return;
 
         e.preventDefault();
+        e.stopPropagation();
         this.setState({ shown: false });
         document.removeEventListener('click', this.hide);
     };
@@ -74,8 +76,8 @@ export default class DropdownMenu extends React.Component {
 
     render() {
         const {
- el, items, selected, children, className, title, href, position
-} = this.props;
+            el, items, selected, children, className, title, href, position
+        } = this.props;
         const hasDropdown = items.length > 0;
 
         let entry = children || (
@@ -89,7 +91,7 @@ export default class DropdownMenu extends React.Component {
             <a key="entry" href={href || '#'} onClick={this.toggle}>
                 {entry}
             </a>
-            ); }
+        ); }
 
         const menu = <VerticalMenu key="menu" title={title} items={items} hideValue={selected} />;
         const cls = 'DropdownMenu'

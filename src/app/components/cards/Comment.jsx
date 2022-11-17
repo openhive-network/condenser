@@ -16,7 +16,6 @@ import Userpic from 'app/components/elements/Userpic';
 import * as transactionActions from 'app/redux/TransactionReducer';
 import * as globalActions from 'app/redux/GlobalReducer';
 import tt from 'counterpart';
-import { Long } from 'bytebuffer';
 import ImageUserBlockList from 'app/utils/ImageUserBlockList';
 import { allowDelete } from 'app/utils/StateFunctions';
 import { Role } from 'app/utils/Community';
@@ -24,40 +23,12 @@ import Icon from 'app/components/elements/Icon';
 import ContentEditedWrapper from '../elements/ContentEditedWrapper';
 import {isUrlWhitelisted} from "../../utils/Phishing";
 
-export function sortComments(cont, comments, sort_order) {
-    const rshares = (post) => Long.fromString(String(post.get('net_rshares')));
-    const demote = (post) => post.getIn(['stats', 'gray']);
-    const upvotes = (post) => post.get('active_votes').filter((v) => v.get('rshares') != '0').size;
-    const ts = (post) => Date.parse(post.get('created'));
-    const payout = (post) => post.get('payout');
-
-    const sort_orders = {
-        votes: (pa, pb) => {
-            return upvotes(cont.get(pb)) - upvotes(cont.get(pa));
-        },
-        new: (pa, pb) => {
-            const a = cont.get(pa);
-            const b = cont.get(pb);
-            if (demote(a) != demote(b)) return demote(a) ? 1 : -1;
-            return ts(b) - ts(a);
-        },
-        trending: (pa, pb) => {
-            const a = cont.get(pa);
-            const b = cont.get(pb);
-            if (demote(a) != demote(b)) return demote(a) ? 1 : -1;
-            if (payout(a) !== payout(b)) return payout(b) - payout(a);
-            return rshares(b).compare(rshares(a));
-        },
-    };
-    comments.sort(sort_orders[sort_order]);
-}
-
-function commentUrl(post, rootRef) {
+export const commentUrl = (post, rootRef) => {
     const root = rootRef ? `@${rootRef}#` : '';
     return `/${post.category}/${root}@${post.author}/${post.permlink}`;
-}
+};
 
-class CommentImpl extends PureComponent {
+class Comment extends PureComponent {
     static propTypes = {
         // html props
         cont: PropTypes.object.isRequired,
@@ -73,12 +44,12 @@ class CommentImpl extends PureComponent {
         // redux props
         username: PropTypes.string,
         rootComment: PropTypes.string,
-        anchor_link: PropTypes.string.isRequired,
-        deletePost: PropTypes.func.isRequired,
+        anchor_link: PropTypes.string,
+        deletePost: PropTypes.func,
     };
 
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
         this.state = { collapsed: false, hide_body: false, highlight: false };
         this.revealBody = this.revealBody.bind(this);
         //this.shouldComponentUpdate = shouldComponentUpdate(this, 'Comment');
@@ -110,17 +81,39 @@ class CommentImpl extends PureComponent {
             deletePost(post.get('author'), post.get('permlink'));
         };
         this.toggleCollapsed = this.toggleCollapsed.bind(this);
+
+        this._initEditor(props);
+        this._checkHide(props);
     }
 
-    componentWillMount() {
-        this.initEditor(this.props);
-        this._checkHide(this.props);
-    }
+    _initEditor() {
+        if (this.state.PostReplyEditor) return;
+        const { post, postref } = this.props;
+        if (!post) return;
+        const PostReplyEditor = ReplyEditor(postref + '-reply');
+        const PostEditEditor = ReplyEditor(postref + '-edit');
 
-    componentDidMount() {
-        if (window.location.hash == this.props.anchor_link) {
-            this.setState({ highlight: true }); // eslint-disable-line react/no-did-mount-set-state
+        let showReply;
+        let showEdit;
+        if (process.env.BROWSER) {
+            let showEditor = localStorage.getItem('showEditor-' + postref);
+            if (showEditor) {
+                showEditor = JSON.parse(showEditor);
+                if (showEditor.type === 'reply') {
+                    showReply = { showReply: true };
+                }
+                if (showEditor.type === 'edit') {
+                    showEdit = { showEdit: true };
+                }
+            }
         }
+        this.state = {
+            ...this.state,
+            PostReplyEditor,
+            PostEditEditor,
+            showReply,
+            showEdit,
+        };
     }
 
     /**
@@ -141,7 +134,17 @@ class CommentImpl extends PureComponent {
             }
 
             const notOwn = this.props.username !== post.get('author');
-            this.setState({ hide, hide_body: notOwn && (hide || gray) });
+            this.state = {
+                ...this.state,
+                hide,
+                hide_body: notOwn && (hide || gray),
+            };
+        }
+    }
+
+    componentDidMount() {
+        if (window.location.hash === this.props.anchor_link) {
+            this.setState({ highlight: true }); // eslint-disable-line react/no-did-mount-set-state
         }
     }
 
@@ -152,28 +155,6 @@ class CommentImpl extends PureComponent {
 
     revealBody() {
         this.setState({ hide_body: false });
-    }
-
-    initEditor() {
-        if (this.state.PostReplyEditor) return;
-        const { post, postref } = this.props;
-        if (!post) return;
-        const PostReplyEditor = ReplyEditor(postref + '-reply');
-        const PostEditEditor = ReplyEditor(postref + '-edit');
-        if (process.env.BROWSER) {
-            const formId = postref;
-            let showEditor = localStorage.getItem('showEditor-' + formId);
-            if (showEditor) {
-                showEditor = JSON.parse(showEditor);
-                if (showEditor.type === 'reply') {
-                    this.setState({ showReply: true });
-                }
-                if (showEditor.type === 'edit') {
-                    this.setState({ showEdit: true });
-                }
-            }
-        }
-        this.setState({ PostReplyEditor, PostEditEditor });
     }
 
     postClickHandler = (e) => {
@@ -188,9 +169,7 @@ class CommentImpl extends PureComponent {
     };
 
     render() {
-        const {
-            cont, post, postref, viewer_role
-        } = this.props;
+        const { post, postref, viewer_role } = this.props;
 
         // Don't server-side render the comment if it has a certain number of newlines
         if (!post || (global.process !== undefined && (post.get('body').match(/\r?\n/g) || '').length > 25)) {
@@ -205,7 +184,8 @@ class CommentImpl extends PureComponent {
         const { onShowReply, onShowEdit, onDeletePost } = this;
 
         const {
-            username, depth, anchor_link, showNegativeComments, ignored, rootComment, community
+            username, depth, anchor_link, showNegativeComments, ignored, rootComment, community,
+            children,
         } = this.props;
 
         const {
@@ -254,38 +234,6 @@ class CommentImpl extends PureComponent {
                     </span>
                 </div>
             );
-        }
-
-        let replies = null;
-        if (!this.state.collapsed && comment.children > 0) {
-            if (depth > 7) {
-                replies = (
-                    <Link to={commentUrl(comment)}>
-                        Show
-                        {' '}
-                        {comment.children}
-                        {' '}
-                        more
-                        {' '}
-                        {comment.children == 1 ? 'reply' : 'replies'}
-                    </Link>
-                );
-            } else {
-                replies = comment.replies;
-                sortComments(cont, replies, this.props.sort_order);
-                replies = replies.map((reply) => (
-                    <Comment
-                        key={reply}
-                        postref={reply}
-                        cont={cont}
-                        sort_order={this.props.sort_order}
-                        depth={depth + 1}
-                        rootComment={rootComment}
-                        showNegativeComments={showNegativeComments}
-                        onHide={this.props.onHide}
-                    />
-                ));
-            }
         }
 
         const commentClasses = ['hentry'];
@@ -364,37 +312,37 @@ class CommentImpl extends PureComponent {
                         </Link>
                         {(this.state.collapsed || hide_body) && <Voting post={post} showList={false} />}
                         {this.state.collapsed
-                            && comment.children > 0 && (
-                                <span>
-                                    {tt('g.reply_count', {
-                                        count: comment.children,
-                                    })}
-                                </span>
-                            )}
+                        && comment.children > 0 && (
+                            <span>
+                                {tt('g.reply_count', {
+                                    count: comment.children,
+                                })}
+                            </span>
+                        )}
                         {!this.state.collapsed
-                            && hide_body && <a role="link" tabIndex={0} onClick={this.revealBody}>{tt('g.reveal_comment')}</a>}
+                        && hide_body && <a role="link" tabIndex={0} onClick={this.revealBody}>{tt('g.reveal_comment')}</a>}
                         {!this.state.collapsed
-                            && !hide_body
-                            && (ignored || gray) && (
-                                <span>
-                                    &middot;&nbsp;
-                                    {tt('g.will_be_hidden_due_to_low_rating')}
-                                </span>
-                            )}
+                        && !hide_body
+                        && (ignored || gray) && (
+                            <span>
+                                &middot;&nbsp;
+                                {tt('g.will_be_hidden_due_to_low_rating')}
+                            </span>
+                        )}
                     </div>
                     <div className="Comment__body entry-content">{showEdit ? renderedEditor : body}</div>
                     <div className="Comment__footer">{controls}</div>
-                </div>
-                <div className="Comment__replies hfeed comment-editor">
-                    {showReply && renderedEditor}
-                    {replies}
+                    <div className="Comment__replies hfeed comment-editor">
+                        {showReply && renderedEditor}
+                        {children}
+                    </div>
                 </div>
             </div>
         );
     }
 }
 
-const Comment = connect(
+export default connect(
     // mapStateToProps
     (state, ownProps) => {
         const { postref, cont } = ownProps;
@@ -405,8 +353,8 @@ const Comment = connect(
         const author = post.get('author');
         const username = state.user.getIn(['current', 'username']);
         const ignored = author && username
-                ? state.global.hasIn(['follow', 'getFollowingAsync', username, 'ignore_result', author])
-                : null;
+            ? state.global.hasIn(['follow', 'getFollowingAsync', username, 'ignore_result', author])
+            : null;
 
         const depth = ownProps.depth || 1;
         const rootComment = ownProps.rootComment || postref;
@@ -451,5 +399,4 @@ const Comment = connect(
             );
         },
     })
-)(CommentImpl);
-export default Comment;
+)(Comment);

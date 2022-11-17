@@ -1,19 +1,17 @@
 import React from 'react';
-import { IntlProvider } from 'react-intl';
 import { Provider } from 'react-redux';
 import { createStore } from 'redux';
-import { configure, shallow } from 'enzyme';
-import Adapter from 'enzyme-adapter-react-16';
+import { IntlProvider } from 'react-intl';
 import { fromJS, Map } from 'immutable';
 import renderer from 'react-test-renderer';
 import rootReducer from 'app/redux/RootReducer';
 import configureMockStore from 'redux-mock-store';
+
 import Voting from './Voting';
+import { render, fireEvent } from '../../../test/unit/tools';
 
 global.window = {};
 window.localStorage = global.localStorage;
-
-configure({ adapter: new Adapter() });
 
 const mockGlobal = Map({
     props: Map({ hbd_print_rate: 99 }),
@@ -61,7 +59,7 @@ describe('Voting', () => {
             routing: {},
             app: {},
         });
-        const wrapped = shallow(
+        const { container, getByTitle } = render(
             <Voting
                 flag
                 vote={() => {}}
@@ -70,11 +68,9 @@ describe('Voting', () => {
                 hbd_print_rate={10000}
                 store={mockStore}
             />
-        ).dive();
-        expect(wrapped.find('.Voting').length).toEqual(1);
-        expect(wrapped.find('.Voting__button-down').html()).toContain(
-            '<a href="#" title="Downvote" id="downvote_button" class="flag">'
         );
+        expect(container.firstChild).toHaveClass('Voting');
+        expect(getByTitle('Downvote')).toHaveClass('flag');
     });
 
     it('should dispatch an action when flag is clicked and myVote is negative', () => {
@@ -87,7 +83,7 @@ describe('Voting', () => {
             routing: {},
             app: {},
         });
-        const wrapped = shallow(
+        const { getByTitle } = render(
             <Voting
                 flag
                 myVote={-666}
@@ -97,8 +93,12 @@ describe('Voting', () => {
                 hbd_print_rate={10000}
                 store={mockStore}
             />
-        ).dive();
-        wrapped.find('#revoke_downvote_button').simulate('click');
+        );
+
+        const downvoteBtn = getByTitle('Downvote');
+        expect(downvoteBtn).toHaveClass('flag');
+        fireEvent.click(downvoteBtn);
+
         expect(mockStore.getActions()[0].type).toEqual('transaction/BROADCAST_OPERATION');
         expect(mockStore.getActions()[0].payload.operation.weight).toEqual(0);
         expect(mockStore.getActions()[0].payload.operation.voter).toEqual('Janice');
@@ -114,7 +114,7 @@ describe('Voting', () => {
             routing: {},
             app: {},
         });
-        const wrapped = shallow(
+        const { container, getByTitle } = render(
             <Voting
                 flag={false}
                 vote={() => {}}
@@ -123,9 +123,9 @@ describe('Voting', () => {
                 hbd_print_rate={10000}
                 store={mockStore}
             />
-        ).dive();
-        expect(wrapped.find('#downvote_button').length).toEqual(1);
-        expect(wrapped.find('.upvote').length).toEqual(1);
+        );
+        expect(getByTitle('Downvote')).toBeInTheDocument();
+        expect(container.getElementsByClassName('upvote')).toHaveLength(1);
     });
 
     it('should dispatch an action with payload when upvote button is clicked.', () => {
@@ -138,7 +138,7 @@ describe('Voting', () => {
             routing: {},
             app: {},
         });
-        const wrapped = shallow(
+        const { getByTestId } = render(
             <Voting
                 flag={false}
                 vote={() => {}}
@@ -147,8 +147,11 @@ describe('Voting', () => {
                 hbd_print_rate={10000}
                 store={mockStore}
             />
-        ).dive();
-        wrapped.find('#upvote_button').simulate('click');
+        );
+
+        const upvoteBtn = getByTestId('upvote-btn');
+        fireEvent.click(upvoteBtn);
+
         expect(mockStore.getActions()[0].type).toEqual('transaction/BROADCAST_OPERATION');
         expect(mockStore.getActions()[0].payload.operation.weight).toEqual(10000);
         expect(mockStore.getActions()[0].payload.operation.voter).toEqual('Janice');
