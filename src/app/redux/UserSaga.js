@@ -530,6 +530,29 @@ function* usernamePasswordLogin2(options) {
 
             console.log('Logging in as', username);
             const response = yield serverApiLogin(username, signatures);
+
+
+            // Check if there is an ongoing oauth process
+            // if yes, generate a token and redirect
+            // TODO: still it is unknown why this is not satisfying rocket.chat
+            // TODO: also figure out why rocket.chat doesn't come back for the last
+            // token exchange step for retrieving access_token.
+            if (sessionStorage.getItem('oauth')) {
+                try {
+                    const params = new URLSearchParams(sessionStorage.getItem('oauth'));
+                    const msg = { authors: [username], timestamp: Date.now(), signed_message: 'login' };
+                    const h = hash.sha256(JSON.stringify(msg));
+                    const signature = Signature.sign(h, private_keys.get('posting_private'));
+                    const code = Buffer.from(signature.toHex(), 'hex').toString('base64');
+                    const url = params.get('redirect_uri') + '?code=' + code + '&state=' + params.get('state') + '&username=' + username;
+
+                    window.location.href = url;
+                    sessionStorage.removeItem('oauth');
+                } catch (err) {
+                    sessionStorage.removeItem('oauth');
+                }
+            }
+
             yield response.data;
         }
     } catch (error) {
