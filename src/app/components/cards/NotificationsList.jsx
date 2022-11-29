@@ -25,6 +25,7 @@ const notificationsIcon = (type) => {
         error: 'cog',
         reblog: 'reblog',
         mention: 'chatboxes',
+        subscribe: 'bell',
     };
 
     let icon = 'chain';
