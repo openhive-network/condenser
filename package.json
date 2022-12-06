@@ -263,5 +263,8 @@
     "minimist": "1.2.6",
     "request": "2.88.2",
     "node-fetch": "2.6.7"
+  },
+  "volta": {
+    "node": "12.22.6"
   }
 }
