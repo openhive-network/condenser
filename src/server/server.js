@@ -116,24 +116,6 @@ app.use(async (ctx, next) => {
         return;
     }
 
-    if (ctx.method === 'GET' && ['/oauth/authorize', '/oauth/token'].includes(ctx.URL.pathname)) {
-        // TODO: strictly check if incoming origin is "opehive_oauth_origin" from config
-        const params = new URLSearchParams(ctx.URL.search);
-        if (!params.has('state') && !params.has('redirect_uri') && !params.has('scope')) {
-            ctx.redirect('/');
-            return;
-        }
-
-        ctx.redirect('/login.html?' + params.toString());
-        return;
-    }
-    // openhive.chat token exchange
-    if (ctx.method === 'GET' && ctx.URL.pathname === '/oauth/token') {
-        const params = new URLSearchParams(ctx.URL.search);
-        console.log(params);
-        return;
-    }
-
     // redirect to home page/feed if known account
     if (ctx.method === 'GET' && ctx.url === '/' && ctx.session.a) {
         ctx.status = 302;
