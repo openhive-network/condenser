@@ -330,9 +330,13 @@ class Voting extends PureComponent {
             + (votingUpActive ? ' votingUp' : '');
 
         const payoutItems = [];
+        const isPending = !post.get('is_paidout') && pending_payout > 0;
+        const isPaidOut = post.get('is_paidout') && total_payout > 0;
+
+        const beneficiaries = post.get('beneficiaries');
 
         // pending payout info
-        if (!post.get('is_paidout') && pending_payout > 0) {
+        if (isPending) {
             payoutItems.push({
                 value: tt('voting_jsx.pending_payout', {
                     value: fmt(pending_payout),
@@ -351,7 +355,6 @@ class Voting extends PureComponent {
                 });
             }
 
-            const beneficiaries = post.get('beneficiaries');
             if (beneficiaries) {
                 beneficiaries.forEach((key) => {
                     payoutItems.push({
@@ -378,7 +381,7 @@ class Voting extends PureComponent {
         }
 
         // max payout / payout declined
-        if (max_payout == 0) {
+        if (max_payout === 0) {
             payoutItems.push({ value: tt('voting_jsx.payout_declined') });
         } else if (max_payout < 1000000) {
             payoutItems.push({
@@ -398,7 +401,7 @@ class Voting extends PureComponent {
         }
 
         // past payout stats
-        if (post.get('is_paidout') && total_payout > 0) {
+        if (isPaidOut) {
             payoutItems.push({
                 value: tt('voting_jsx.past_payouts', {
                     value: fmt(total_payout),
@@ -409,11 +412,29 @@ class Voting extends PureComponent {
                     value: fmt(author_payout),
                 }),
             });
-            payoutItems.push({
-                value: tt('voting_jsx.past_payouts_curators', {
-                    value: fmt(curator_payout),
-                }),
-            });
+            if (beneficiaries && beneficiaries.size > 0) {
+                payoutItems.push({
+                    value: tt('voting_jsx.past_payouts_curators_and_beneficiaries', {
+                        value: fmt(curator_payout),
+                    }),
+                });
+
+                beneficiaries.forEach((key) => {
+                    const authorReward = total_payout / 2;
+                    const beneficiaryPayout = `$${fmt((authorReward * parseFloat(key.get('weight'))) / 10000)}`;
+
+                    payoutItems.push({
+                        value: ` > ${key.get('account')}: ${beneficiaryPayout}`,
+                        link: `/@${key.get('account')}`,
+                    });
+                });
+            } else {
+                payoutItems.push({
+                    value: tt('voting_jsx.past_payouts_curators', {
+                        value: fmt(curator_payout),
+                    }),
+                });
+            }
         }
 
         const payoutEl = (

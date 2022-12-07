@@ -150,4 +150,8 @@
     .hljs-strong {
         font-weight: bold;
     }
+
+    .hljs-tag .hljs-attr, .hljs-tag .hljs-name {
+        color: #bbbbbb;
+    }
 }

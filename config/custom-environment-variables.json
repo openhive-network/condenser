@@ -35,8 +35,6 @@
   "chain_id": "SDC_CHAIN_ID",
   "alternative_api_endpoints": "SDC_ALT_API_ENDPOINTS",
   "address_prefix": "SDC_ADDRESS_PREFIX",
-  "conveyor_posting_wif": "CONVEYOR_POSTING_WIF",
-  "conveyor_username": "CONVEYOR_USERNAME",
   "special_posts_url": "SPECIAL_POSTS_URL",
   "wallet_url": "WALLET_URL",
   "steem_market_endpoint": "STEEM_MARKET_ENDPOINT",

@@ -13,6 +13,7 @@ import Modals from 'app/components/modules/Modals';
 import WelcomePanel from 'app/components/elements/WelcomePanel';
 import tt from 'counterpart';
 import { VIEW_MODE_WHISTLE } from 'shared/constants';
+import SimpleReactLightbox from 'simple-react-lightbox';
 
 class App extends React.Component {
     constructor(props) {
@@ -124,28 +125,33 @@ class App extends React.Component {
         const themeClass = nightmodeEnabled ? ' theme-dark' : ' theme-light';
 
         return (
-            <div
-                className={classNames('App', themeClass, {
-                    'index-page': ip,
-                    'whistle-view': whistleView,
-                    withAnnouncement: this.props.showAnnouncement,
-                })}
-                ref="App_root"
-            >
-                <ConnectedSidePanel alignment="right" />
+            <SimpleReactLightbox>
+                <div
+                    className={classNames('App', themeClass, {
+                        'index-page': ip,
+                        'whistle-view': whistleView,
+                        withAnnouncement: this.props.showAnnouncement,
+                    })}
+                    ref="App_root"
+                >
+                    <ConnectedSidePanel alignment="right" />
 
-                {headerHidden ? null : <Header pathname={pathname} category={category} order={order} />}
+                    {headerHidden ? null : <Header pathname={pathname} category={category} order={order} />}
 
-                <div className="App__content">
-                    {process.env.BROWSER && ip && new_visitor && this.state.showBanner ? (
-                        <WelcomePanel setShowBannerFalse={this.setShowBannerFalse} />
-                    ) : null}
-                    {callout}
-                    {children}
+                    <div className="App__content">
+                        {process.env.BROWSER && ip && new_visitor && this.state.showBanner ? (
+                            <WelcomePanel setShowBannerFalse={this.setShowBannerFalse} />
+                        ) : null}
+                        {callout}
+                        {children}
+                    </div>
+                    <Dialogs />
+                    <Modals />
+                    <div className="lightbox" id="lightbox-container">
+                        <span />
+                    </div>
                 </div>
-                <Dialogs />
-                <Modals />
-            </div>
+            </SimpleReactLightbox>
         );
     }
 }

@@ -496,7 +496,7 @@ class Settings extends React.Component {
                                         <Dropzone
                                             onDrop={this.onDrop}
                                             className="none"
-                                            disableClick
+                                            noClick
                                             multiple={false}
                                             accept="image/*"
                                             ref={this.dropzoneRef}
@@ -506,7 +506,6 @@ class Settings extends React.Component {
                                                 delete rootProps.onClick;
 
                                                 const inputProps = getInputProps();
-                                                delete inputProps.onChange;
                                                 delete inputProps.onClick;
 
                                                 return (

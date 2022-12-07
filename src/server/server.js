@@ -10,13 +10,14 @@ import os from 'os';
 import favicon from 'koa-favicon';
 import staticCache from 'koa-static-cache';
 import isBot from 'koa-isbot';
-import session from '@steem/crypto-session';
 import csrf from 'koa-csrf';
+import koaBody from 'koa-body';
 import config from 'config';
 import secureRandom from 'secure-random';
 import koaLocale from 'koa-locale';
 import { routeRegex } from 'app/ResolveRoute';
 import userIllegalContent from 'app/utils/userIllegalContent';
+import session from './hive-crypto-session';
 import { getSupportedLocales } from './utils/misc';
 import { specialPosts } from './utils/SpecialPosts';
 import usePostJson from './json/post_json';
@@ -40,11 +41,8 @@ const cacheOpts = { maxAge: 86400000, gzip: true, buffer: true };
 
 // Serve static assets without fanfare
 app.use(favicon(path.join(__dirname, '../app/assets/images/favicons/favicon.ico')));
-
 app.use(mount('/favicons', staticCache(path.join(__dirname, '../app/assets/images/favicons'), cacheOpts)));
-
 app.use(mount('/images', staticCache(path.join(__dirname, '../app/assets/images'), cacheOpts)));
-
 app.use(mount('/javascripts', staticCache(path.join(__dirname, '../app/assets/javascripts'), cacheOpts)));
 
 // Proxy asset folder to webpack development server in development mode
@@ -74,14 +72,11 @@ app.use(isBot());
 // set number of processes equal to number of cores
 // (unless passed in as an env var)
 const numProcesses = process.env.NUM_PROCESSES || os.cpus().length;
-
 const statsLoggerClient = new StatsLoggerClient(process.env.STATSD_IP);
 
 app.use(requestTime(statsLoggerClient));
 
-
 app.keys = [config.get('session_key')];
-
 const crypto_key = config.get('server_session_secret');
 session(app, {
     maxAge: 1000 * 3600 * 24 * 60,
@@ -89,7 +84,16 @@ session(app, {
     key: config.get('session_cookie_key'),
 });
 
-app.use(new csrf(app));
+app.use(koaBody());
+
+app.use(new csrf({
+    invalidTokenMessage: 'Invalid CSRF token',
+    invalidTokenStatusCode: 403,
+    excludedMethods: ['GET', 'HEAD', 'OPTIONS'],
+    disableQuery: true,
+}));
+
+useGeneralApi(app);
 
 koaLocale(app);
 
@@ -194,19 +198,6 @@ if (env === 'production') {
     app.use(require('koa-compressor')());
 }
 
-// Logging
-if (env === 'production') {
-    app.use(prod_logger());
-} else {
-    app.use(koa_logger());
-}
-
-// app.use(
-//     helmet({
-//         hsts: false,
-//     })
-// );
-
 app.use(mount('/static', staticCache(path.join(__dirname, '../app/assets/static'), cacheOpts)));
 
 async function robotsTxt(ctx, next) {
@@ -237,11 +228,6 @@ app.use(async (ctx, next) => {
     }
     await next();
 });
-
-useRedirects(app);
-useUserJson(app);
-usePostJson(app);
-useGeneralApi(app);
 
 // helmet wants some things as bools and some as lists, makes config difficult.
 // our config uses strings, this splits them to lists on whitespace.
@@ -275,37 +261,46 @@ if (env !== 'test') {
     }, 300000);
 
     app.use(async (ctx) => {
-        console.log('DEBUG launch appRender');
         await appRender(ctx, supportedLocales, resolvedAssets);
         const bot = ctx.state.isBot;
         if (bot) {
             console.log(`  --> ${ctx.method} ${ctx.originalUrl} ${ctx.status} (BOT '${bot}')`);
         }
     });
+}
 
-    const port = process.env.PORT ? parseInt(process.env.PORT) : 8080;
+useRedirects(app);
+useUserJson(app);
+usePostJson(app);
 
-    if (env === 'production' && process.env.DISABLE_CLUSTERING !== 'true') {
-        if (cluster.isMaster) {
-            for (let i = 0; i < numProcesses; i += 1) {
-                cluster.fork();
-            }
-            // if a worker dies replace it so application keeps running
-            cluster.on('exit', (worker) => {
-                console.log('error: worker %d died, starting a new one', worker.id);
-                cluster.fork();
-            });
-        } else {
-            app.listen(port);
-            if (process.send) process.send('online');
-            console.log(`Worker process started for port ${port}`);
+// Logging
+if (env === 'production') {
+    app.use(prod_logger());
+} else {
+    app.use(koa_logger());
+}
+
+const port = process.env.PORT ? parseInt(process.env.PORT) : 8080;
+if (env === 'production' && process.env.DISABLE_CLUSTERING !== 'true') {
+    if (cluster.isMaster) {
+        for (let i = 0; i < numProcesses; i += 1) {
+            cluster.fork();
         }
+        // if a worker dies replace it so application keeps running
+        cluster.on('exit', (worker) => {
+            console.log('error: worker %d died, starting a new one', worker.id);
+            cluster.fork();
+        });
     } else {
-        // spawn a single thread if not running in production mode
         app.listen(port);
         if (process.send) process.send('online');
-        console.log(`Application started on port ${port}`);
+        console.log(`Worker process started for port ${port}`);
     }
+} else if (env !== 'test') {
+    // spawn a single thread if not running in production mode
+    app.listen(port);
+    if (process.send) process.send('online');
+    console.log(`Application started on port ${port}`);
 }
 
 if (process.send) process.send('online');

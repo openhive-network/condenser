@@ -26,6 +26,7 @@ ARG SOURCE_COMMIT
 ENV SOURCE_COMMIT ${SOURCE_COMMIT}
 ARG DOCKER_TAG
 ENV DOCKER_TAG ${DOCKER_TAG}
+ENV NO_DEPRECATION koa
 
 COPY --from=dependencies /var/app/package.json /var/app/package.json
 COPY --from=dependencies /var/app/config /var/app/config

@@ -1,15 +1,13 @@
 /*eslint no-underscore-dangle: "warn"*/
 import koa_router from 'koa-router';
-import koa_body from 'koa-body';
 import config from 'config';
-import { getRemoteIp, rateLimitReq, checkCSRF } from 'server/utils/misc';
+import { getRemoteIp, rateLimitReq } from 'server/utils/misc';
 import coBody from 'co-body';
 import Mixpanel from 'mixpanel';
 import { PublicKey, Signature, hash } from '@hiveio/hive-js/lib/auth/ecc';
 import { api } from '@hiveio/hive-js';
-import fetch from 'node-fetch';
 
-const ACCEPTED_TOS_TAG = 'accepted_tos_20180614';
+const axios = require('axios').default;
 
 const mixpanel = config.get('mixpanel') ? Mixpanel.init(config.get('mixpanel')) : null;
 
@@ -29,7 +27,7 @@ const _parse = (params) => {
 };
 
 function logRequest(path, ctx, extra) {
-    const d = { ip: getRemoteIp(ctx.req) };
+    const d = { ip: getRemoteIp(ctx.request) };
     if (ctx.session) {
         if (ctx.session.user) {
             d.user = ctx.session.user;
@@ -56,26 +54,24 @@ function logRequest(path, ctx, extra) {
 export default function useGeneralApi(app) {
     const router = koa_router({ prefix: '/api/v1' });
     app.use(router.routes());
-    const koaBody = koa_body();
 
-    router.post('/login_account', koaBody, function* () {
+    router.post('/login_account', async (ctx) => {
         // if (rateLimitReq(this, this.req)) return;
-        const params = this.request.body;
-        const { csrf, account, signatures } = _parse(params);
-        if (!checkCSRF(this, csrf)) return;
+        const params = ctx.request.body;
+        const { account, signatures } = _parse(params);
 
-        logRequest('login_account', this, { account });
+        logRequest('login_account', ctx, { account });
         try {
             if (signatures) {
-                if (!this.session.login_challenge) {
+                if (!ctx.session.login_challenge) {
                     console.error('/login_account missing this.session.login_challenge');
                 } else {
-                    const [chainAccount] = yield api.getAccountsAsync([account]);
+                    const [chainAccount] = await api.getAccountsAsync([account]);
                     if (!chainAccount) {
                         console.error('/login_account missing blockchain account', account);
                     } else {
                         const auth = { posting: false };
-                        const bufSha = hash.sha256(JSON.stringify({ token: this.session.login_challenge }, null, 0));
+                        const bufSha = hash.sha256(JSON.stringify({ token: ctx.session.login_challenge }, null, 0));
                         const verify = (type, sigHex, pubkey, weight, weight_threshold) => {
                             if (!sigHex) return;
                             if (weight !== 1 || weight_threshold !== 1) {
@@ -89,7 +85,7 @@ export default function useGeneralApi(app) {
                                 if (!verified) {
                                     console.error(
                                         '/login_account verification failed',
-                                        this.session.uid,
+                                        ctx.session.uid,
                                         account,
                                         pubkey
                                     );
@@ -104,71 +100,65 @@ export default function useGeneralApi(app) {
                             },
                         } = chainAccount;
                         verify('posting', signatures.posting, posting_pubkey, weight, weight_threshold);
-                        if (auth.posting) this.session.a = account;
+                        if (auth.posting) ctx.session.a = account;
                     }
                 }
             }
 
-            this.body = JSON.stringify({
+            ctx.body = JSON.stringify({
                 status: 'ok',
             });
-            const remote_ip = getRemoteIp(this.req);
+            const remote_ip = getRemoteIp(ctx.request);
             if (mixpanel) {
-                mixpanel.people.set(this.session.uid, {
+                mixpanel.people.set(ctx.session.uid, {
                     ip: remote_ip,
                     $ip: remote_ip,
                 });
-                mixpanel.people.increment(this.session.uid, 'Logins', 1);
+                mixpanel.people.increment(ctx.session.uid, 'Logins', 1);
             }
         } catch (error) {
-            console.error('Error in /login_account api call', this.session.uid, error.message);
-            this.body = JSON.stringify({
+            console.error('Error in /login_account api call', ctx.session.uid, error.message);
+            ctx.body = JSON.stringify({
                 error: error.message,
             });
-            this.status = 500;
+            ctx.status = 500;
         }
     });
 
-    // eslint-disable-next-line require-yield
-    router.post('/logout_account', koaBody, function* () {
+    router.post('/logout_account', async (ctx) => {
         // if (rateLimitReq(this, this.req)) return; - logout maybe immediately followed with login_attempt event
-        const params = this.request.body;
-        const { csrf } = _parse(params);
-        if (!checkCSRF(this, csrf)) return;
-        logRequest('logout_account', this);
+        logRequest('logout_account', ctx);
         try {
-            this.session.a = null;
-            this.body = JSON.stringify({ status: 'ok' });
+            ctx.session.a = null;
+            ctx.body = JSON.stringify({ status: 'ok' });
         } catch (error) {
-            console.error('Error in /logout_account api call', this.session.uid, error);
-            this.body = JSON.stringify({ error: error.message });
-            this.status = 500;
+            console.error('Error in /logout_account api call', ctx.session.uid, error);
+            ctx.body = JSON.stringify({ error: error.message });
+            ctx.status = 500;
         }
     });
 
-    router.post('/csp_violation', function* () {
-        if (rateLimitReq(this, this.req)) return;
+    router.post('/csp_violation', async (ctx) => {
+        if (rateLimitReq(ctx, ctx.request)) return;
         let params;
         try {
-            params = yield coBody(this);
+            params = await coBody(ctx);
         } catch (error) {
             console.log('-- /csp_violation error -->', error);
         }
         if (params && params['csp-report']) {
             const csp_report = params['csp-report'];
             const value = `${csp_report['document-uri']} : ${csp_report['blocked-uri']}`;
-            console.log('-- /csp_violation -->', value, '--', this.req.headers['user-agent']);
+            console.log('-- /csp_violation -->', value, '--', ctx.request.headers['user-agent']);
         } else {
-            console.log('-- /csp_violation [no csp-report] -->', params, '--', this.req.headers['user-agent']);
+            console.log('-- /csp_violation [no csp-report] -->', params, '--', ctx.request.headers['user-agent']);
         }
-        this.body = '';
+        ctx.body = '';
     });
 
-    // eslint-disable-next-line require-yield
-    router.post('/setUserPreferences', koaBody, async (ctx) => {
-        const params = this.request.body;
-        const { csrf, payload } = _parse(params);
-        if (!checkCSRF(this, csrf)) return;
+    router.post('/setUserPreferences', async (ctx) => {
+        const params = ctx.request.body;
+        const { payload } = _parse(params);
         console.log('-- /setUserPreferences -->', ctx.session.user, ctx.session.uid, payload);
         if (!ctx.session.a) {
             ctx.body = 'missing logged in account';
@@ -187,86 +177,28 @@ export default function useGeneralApi(app) {
         }
     });
 
-    router.post('/isTosAccepted', koaBody, function* () {
-        const params = this.request.body;
-        const { csrf } = _parse(params);
-        if (!checkCSRF(this, csrf)) return;
-
-        this.body = '{}';
-        this.status = 200;
-
-        if (!this.session.a) {
-            this.body = 'missing username';
-            this.status = 500;
-            return;
-        }
-
+    router.post('/search', async (ctx) => {
         try {
-            const res = yield api.signedCallAsync(
-                'conveyor.get_tags_for_user',
-                [this.session.a],
-                config.get('conveyor_username'),
-                config.get('conveyor_posting_wif')
-            );
-
-            this.body = JSON.stringify(res.includes(ACCEPTED_TOS_TAG));
-        } catch (error) {
-            console.error('Error in /isTosAccepted api call', this.session.a, error);
-            this.body = JSON.stringify({ error: error.message });
-            this.status = 500;
-        }
-    });
-
-    router.post('/acceptTos', koaBody, function* () {
-        const params = this.request.body;
-        const { csrf } = _parse(params);
-        if (!checkCSRF(this, csrf)) return;
-
-        if (!this.session.a) {
-            this.body = 'missing logged in account';
-            this.status = 500;
-            return;
-        }
-        try {
-            yield api.signedCallAsync(
-                'conveyor.assign_tag',
+            const response = await axios.post(
+                'https://api.hivesearcher.com/search',
                 {
-                    uid: this.session.a,
-                    tag: ACCEPTED_TOS_TAG,
+                    ...ctx.request.body,
+                    _csrf: undefined,
                 },
-                config.get('conveyor_username'),
-                config.get('conveyor_posting_wif')
+                {
+                    headers: {
+                        Accept: 'application/json',
+                        Authorization: config.get('esteem_elastic_search_api_key'),
+                        'Content-Type': 'application/json',
+                    },
+                },
             );
-            this.body = JSON.stringify({ status: 'ok' });
+            ctx.body = JSON.stringify(response.data);
+            ctx.status = 200;
         } catch (error) {
-            console.error('Error in /acceptTos api call', this.session.uid, error);
-            this.body = JSON.stringify({ error: error.message });
-            this.status = 500;
-        }
-    });
-    router.post('/search', koaBody, function* () {
-        const params = this.request.body;
-        const passThrough = {
-            method: this.request.method,
-            headers: {
-                'Content-type': 'application/json',
-                Authorization: config.get('esteem_elastic_search_api_key'),
-            },
-            body: this.request.body,
-            // NOTE: agentOptions purely for testing, localhost vs SSL.
-            //agentOptions: { checkServerIdentity: () => {} },
-        };
-        const { csrf } = typeof params === 'string' ? JSON.parse(params) : params;
-        if (!checkCSRF(this, csrf)) return;
-        try {
-            const searchResult = yield fetch('https://api.hivesearcher.com/search', passThrough);
-            const resultJson = yield searchResult.json();
-            this.body = JSON.stringify(resultJson);
-            this.status = 200;
-        } catch (error) {
-            console.error('Error in /search api call', this.session.uid, error);
-            this.body = JSON.stringify({ error: error.message });
-            this.status = 500;
+            console.error('Error in /search api call', ctx.session.uid, error);
+            ctx.body = JSON.stringify({ error: error.message });
+            ctx.status = 500;
         }
     });
 }

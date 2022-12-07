@@ -93,6 +93,7 @@ function runApp(initial_state) {
 
     steem.api.setOptions({
         url: currentApiEndpoint,
+        uri: currentApiEndpoint,
         retry: true,
         useAppbaseApi: !!config.steemd_use_appbase,
         alternative_api_endpoints: alternativeApiEndpoints,
@@ -101,6 +102,7 @@ function runApp(initial_state) {
     });
     steem.config.set('address_prefix', config.address_prefix);
     steem.config.set('rebranded_api', true);
+    steem.config.set('chain_id', config.chain_id);
 
     window.$STM_Config = config;
     plugins(config);
