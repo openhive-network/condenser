@@ -9,3 +9,10 @@
   height: 100%;
   overflow-y: auto;
 }
+
+details {
+  @include themify($themes) {
+    background-color: themed('backgroundColorOpaque');
+    outline: dotted 1px themed('backgroundColorOpaque');
+  }
+}
