@@ -3007,10 +3007,10 @@
   resolved "https://registry.yarnpkg.com/@polka/url/-/url-1.0.0-next.21.tgz#5de5a2385a35309427f6011992b544514d559aa1"
   integrity sha512-a5Sab1C4/icpTZVzZc5Ghpz88yQtGOyNqYXcZgOssB2uuAr+wF/MvN6bgtW32q7HHrvBki+BsZ0OuNv6EV3K9g==
 
-"@quochuync/remarkable-spoiler@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@quochuync/remarkable-spoiler/-/remarkable-spoiler-1.0.0.tgz#ad0ec6cdf4a150be3492d753fd35099f7dd46dc7"
-  integrity sha512-hy5GlGudg6ehuQyEuAQpVbxhLOUd8bEhqk/ibVdYhDU5/WvqM4D5m9uLYn7K21/WyyJvscfbXTalujik767ycg==
+"@quochuync/remarkable-spoiler@^1.2.0":
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/@quochuync/remarkable-spoiler/-/remarkable-spoiler-1.2.0.tgz#c5f0bdfe7fa9b96a0405ba8c1d8d9f10ddb91620"
+  integrity sha512-/t9hDKAZWxDHMIrKY0ltbQZTJjV8W6yGb2KOEViN+PO0ewLDABlMc1IAQ9WtETqT8QcPYulk1YgWGTEtx1h2Xw==
 
 "@sinclair/typebox@^0.23.3":
   version "0.23.5"
