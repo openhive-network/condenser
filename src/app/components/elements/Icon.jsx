@@ -56,6 +56,7 @@ export const icons = [
     'pencil2',
     'pin',
     'pin-disabled',
+    'bell',
 ];
 const icons_map = {};
 // eslint-disable-next-line global-require,import/no-dynamic-require

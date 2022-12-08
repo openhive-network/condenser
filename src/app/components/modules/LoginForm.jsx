@@ -65,10 +65,10 @@ class LoginForm extends Component {
             });
         };
         this.initForm(props);
-        this.loginWithHiveSigner();
     }
 
     componentDidMount() {
+        this.loginWithHiveSigner();
         // eslint-disable-next-line react/no-string-refs
         if (this.refs.username && !this.refs.username.value) this.refs.username.focus();
         // eslint-disable-next-line react/no-string-refs
@@ -182,6 +182,15 @@ class LoginForm extends Component {
                             loading
                             ...
                         </p>
+                    </div>
+                </div>
+            );
+        }
+        if (this.state.isHiveSigner) {
+            return (
+                <div className="row">
+                    <div className="column">
+                        <p>{tt('g.loading')}</p>
                     </div>
                 </div>
             );
