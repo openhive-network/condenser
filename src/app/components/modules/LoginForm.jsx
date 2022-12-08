@@ -190,9 +190,7 @@ class LoginForm extends Component {
             return (
                 <div className="row">
                     <div className="column">
-                        <p>
-                            signing in...
-                        </p>
+                        <p>{tt('g.loading')}</p>
                     </div>
                 </div>
             );
