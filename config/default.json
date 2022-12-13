@@ -58,5 +58,5 @@
     "max_fee_creator": 100,
     "max_fee_provider": 100
   },
-  "opehive_oauth_origin": "https://openhive.chat" 
+  "openhive_oauth_origin": "https://openhive.chat"
 }

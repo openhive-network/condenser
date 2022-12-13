@@ -119,7 +119,7 @@ app.use(async (ctx, next) => {
     // if (ctx.method === 'GET' && ['/oauth/authorize', '/oauth/token'].includes(ctx.URL.pathname)) {
     if (ctx.method === 'GET' && ['/oauth/authorize'].includes(ctx.URL.pathname)) {
             console.log('bamboo 1');
-        // TODO: strictly check if incoming origin is "opehive_oauth_origin" from config
+        // TODO: strictly check if incoming origin is "openhive_oauth_origin" from config
         const params = new URLSearchParams(ctx.URL.search);
         console.log('params', params);
 
