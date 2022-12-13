@@ -89,7 +89,13 @@ app.use(koaBody());
 app.use(new csrf({
     invalidTokenMessage: 'Invalid CSRF token',
     invalidTokenStatusCode: 403,
+
+    // excludedMethods: ['GET', 'HEAD', 'OPTIONS'],
+
+    // FIXME We must not exclude POST, of course. Set this way for
+    // testing login to openhive.chat via hive.blog.
     excludedMethods: ['GET', 'HEAD', 'OPTIONS', 'POST'],
+
     disableQuery: true,
 }));
 
