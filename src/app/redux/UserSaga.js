@@ -531,25 +531,38 @@ function* usernamePasswordLogin2(options) {
             console.log('Logging in as', username);
             const response = yield serverApiLogin(username, signatures);
 
-
-            // Check if there is an ongoing oauth process
-            // if yes, generate a token and redirect
-            // TODO: still it is unknown why this is not satisfying rocket.chat
-            // TODO: also figure out why rocket.chat doesn't come back for the last
-            // token exchange step for retrieving access_token.
+            // Check if there is an ongoing oauth process.
+            // If yes, generate a token and redirect.
             if (sessionStorage.getItem('oauth')) {
                 try {
                     const params = new URLSearchParams(sessionStorage.getItem('oauth'));
-                    const msg = { authors: [username], timestamp: Date.now(), signed_message: 'login' };
+                    const msg = { authors: [username], timestamp: Date.now(), signed_message: {type: 'code', app: 'condenser'} };
                     const h = hash.sha256(JSON.stringify(msg));
                     const signature = Signature.sign(h, private_keys.get('posting_private'));
                     const code = Buffer.from(signature.toHex(), 'hex').toString('base64');
+
                     const url = params.get('redirect_uri') + '?code=' + code + '&state=' + params.get('state') + '&username=' + username;
 
-                    window.location.href = url;
+                    const query = new URLSearchParams({
+                        code: encodeURIComponent(code),
+                        state: encodeURIComponent(params.get('state')),
+                        username: encodeURIComponent(username),
+                    });
+
+                    // https://openhive.chat/_oauth/condenser?code=IH04YePIwNHeiaF1UGQPdMaXp+oN541nAuP8YdqmXtKsIm9OrW1yTx0mUqdlF2kJzOqMW3tAv3o2KzBoZnQVt9s=&state=eyJsb2dpblN0eWxlIjoicmVkaXJlY3QiLCJjcmVkZW50aWFsVG9rZW4iOiJhb3otV2szd1BmbERwdWRxZFBXM1Q3QnBCRk1mQmJlR2MwaTRaVGlVdzNEIiwiaXNDb3Jkb3ZhIjpmYWxzZSwicmVkaXJlY3RVcmwiOiJodHRwczovL29wZW5oaXZlLmNoYXQvaG9tZSJ9&username=stirlitz
+
+                    console.log('bamboo 1 sessionStorage oauth', sessionStorage.getItem('oauth'));
+                    console.log('bamboo 1 url', query.toString());
+                    alert('Just stopped to see console');
                     sessionStorage.removeItem('oauth');
+
+                    window.location = url;
+                    // window.location = params.get('redirect_uri') + `?${query.toString()}`;
+
                 } catch (err) {
+                    console.error('bamboo got error');
                     sessionStorage.removeItem('oauth');
+                    throw err;
                 }
             }
 
