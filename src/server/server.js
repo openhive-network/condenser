@@ -86,18 +86,21 @@ session(app, {
 
 app.use(koaBody());
 
-app.use(new csrf({
+// Setup CSRF protection, but allow some exceptions.
+const csrfProtect = new csrf({
     invalidTokenMessage: 'Invalid CSRF token',
     invalidTokenStatusCode: 403,
-
-    // excludedMethods: ['GET', 'HEAD', 'OPTIONS'],
-
-    // FIXME We must not exclude POST, of course. Set this way for
-    // testing login to openhive.chat via hive.blog.
-    excludedMethods: ['GET', 'HEAD', 'OPTIONS', 'POST'],
-
+    excludedMethods: ['GET', 'HEAD', 'OPTIONS'],
     disableQuery: true,
-}));
+});
+const csrfIgnore = ['/oauth/token'];
+app.use(async (ctx, next) => {
+    if (csrfIgnore.includes(ctx.req.url)) {
+        await next();
+    } else {
+        await csrfProtect(ctx, next);
+    }
+});
 
 useGeneralApi(app);
 
