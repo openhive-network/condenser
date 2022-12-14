@@ -138,21 +138,14 @@ app.use(async (ctx, next) => {
         return;
     }
     // openhive.chat token exchange
-    if (ctx.URL.pathname === '/oauth/token') {
+    if (ctx.method === 'POST' && ctx.URL.pathname === '/oauth/token') {
         const body = ctx.request.body;
-
-        // Token on blocktrades.us
-        // access_token: "U1g30zQE8Iu3OrIKtgQfBUBUiu9_xWwpjkISSvDpk_o.0zqsNg2JthX7FjzyrgryBhAd-Yw4LBntGRH4FJ0PP6k"
-        // expires_in: 3599
-        // id_token: "eyJhbGciOiJSUzI1NiIsImtpZCI6InB1YmxpYzplZWE4ZDBkYS0yOTllLTRhMjItOGYzYS02YWFkOTdhNTJlNmMiLCJ0eXAiOiJKV1QifQ.eyJhdF9oYXNoIjoienhObzVRNzY3dENuRDc3ZXk5dUIxdyIsImF1ZCI6WyIyMjVhZmM1MS0wN2M0LTQwNjktYjFhNS02MzMzMmM0OWUyMWIiXSwiYXV0aF90aW1lIjoxNjcwOTMyNDIxLCJlbWFpbCI6IndiYXJjaWtAc3luY2FkLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJleHAiOjE2NzA5MzYwMjQsImlhdCI6MTY3MDkzMjQyNCwiaXNzIjoiaHR0cHM6Ly9ibG9ja3RyYWRlcy51cy8iLCJqdGkiOiIzODhjNzVlMi01YmNhLTRjNDQtOTdlOS1mYWU0NDA3YWY1ZWYiLCJub25jZSI6IiIsInJhdCI6MTY3MDkzMjM3OCwic2lkIjoiOTA4OTU3NzktMzU0Ni00NzI3LTk4ZTAtNTAyOTNiZjhlNWRiIiwic3ViIjoiOGIwNzg3ZDQtZjc1MC00NGFiLThiOTgtZDUzNTQ1NzczZTEzIn0.sRfwS84_J_JQ2eGKZLsaAW7bbI3NW4WflbAJpMSllJA4JLEA7HYh0DrL4qBLFDyU6QYHLGU3YlhbgeikDAACF6lTCck9eBpkn9Tyl5-ohgTKqFwvRz8xvr_WpIxEc0ed1PfZsskE5Hnuisp5wR92fzd-h1albEXu8CgA0EvUjeXDhiYhg_gaKKCcPa5D0kYRb2sd0KFZZxUwBMT02bWO-ZRSvxtLDfUG76N6ME4Bzudlc8Li2WdT8BhbfPoanBMt3eY4ykbH7sooapBMbKdndvoYBe_ejNKUI7S6lj30a-DZNITvh1G5kU7IF-QI87aI0W4j1-rbIpuTFVKYzCvZMU13nGsfTuYt0ofEv_zeHX_n6UkxtNDRonpi3J1RH4_s1Wzpk10mrCfprVufczhkIZ0LWHZOo__MULiQ2PPVHEeDcSM0OYQPUyG9LY8Gggi6r4xNP3ptQiFkap-UCRmOKzCbJryshGyTIrp-FVs4ggtb1S8rX12dmyprT5rMLq7ll5W1q8QYQUBqlpwEXcLDMQwfjrpZkxsTxqZUjU-8wsQ2V6arVR3KBZvZn3ElHPGnoAlaKLRE1qv6yu2FZxRKUs95raYFcS5jCPDbvN_nNCbwqo1odF4veGrr360POUcLGytV-YClBpf5wZtr0R_GOBL8PbtRhpyVNPV2XOyhDzY"
-        // scope: "openid email profile view_price_estimates create_new_mappings view_all_mappings update_existing_mappings view_all_transaction_history view_balances withdraw view_declarations change_declarations view_authorization_requests create_authorization_requests change_login"
-        // token_type: "bearer"
 
         ctx.body = {
             state: body.state,
             // Can be JWT.
             access_token: Math.random().toString(36).slice(2),
-            expires_in: 60,
+            expires_in: 60 * 60 * 12,
             // id_token should be JWT. Should contain user data and expire time.
             // id_token: 'angala-456',
             scope: 'openid',
