@@ -551,8 +551,8 @@ function* usernamePasswordLogin2(options) {
 
                     // https://openhive.chat/_oauth/condenser?code=IH04YePIwNHeiaF1UGQPdMaXp+oN541nAuP8YdqmXtKsIm9OrW1yTx0mUqdlF2kJzOqMW3tAv3o2KzBoZnQVt9s=&state=eyJsb2dpblN0eWxlIjoicmVkaXJlY3QiLCJjcmVkZW50aWFsVG9rZW4iOiJhb3otV2szd1BmbERwdWRxZFBXM1Q3QnBCRk1mQmJlR2MwaTRaVGlVdzNEIiwiaXNDb3Jkb3ZhIjpmYWxzZSwicmVkaXJlY3RVcmwiOiJodHRwczovL29wZW5oaXZlLmNoYXQvaG9tZSJ9&username=stirlitz
 
-                    console.log('bamboo 1 sessionStorage oauth', sessionStorage.getItem('oauth'));
-                    console.log('bamboo 1 url', query.toString());
+                    console.log('bamboo sessionStorage oauth', sessionStorage.getItem('oauth'));
+                    console.log('bamboo url', query.toString());
                     alert('Just stopped to see console');
                     sessionStorage.removeItem('oauth');
 

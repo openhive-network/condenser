@@ -122,12 +122,16 @@ app.use(async (ctx, next) => {
         return;
     }
 
-    // if (ctx.method === 'GET' && ['/oauth/authorize', '/oauth/token'].includes(ctx.URL.pathname)) {
     if (ctx.method === 'GET' && ['/oauth/authorize'].includes(ctx.URL.pathname)) {
-            console.log('bamboo 1');
+
         // TODO: strictly check if incoming origin is "openhive_oauth_origin" from config
         const params = new URLSearchParams(ctx.URL.search);
-        console.log('params', params);
+
+        const date = new Date();
+        console.log(`${date.toISOString()} Got request to /oauth/authorize`);
+        console.log('request.body', ctx.request.body);
+        console.log('response.body', ctx.response.body);
+        console.log('ctx', ctx);
 
         if (!params.has('state') && !params.has('redirect_uri') && !params.has('scope')) {
             ctx.redirect('/');
