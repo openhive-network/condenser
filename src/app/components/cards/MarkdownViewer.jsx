@@ -1,29 +1,14 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-
-import Remarkable from 'remarkable';
+import { Remarkable } from 'remarkable';
 import sanitizeConfig, { noImageText } from 'app/utils/SanitizeConfig';
 import sanitize from 'sanitize-html';
 import HtmlReady, { highlightCodes } from 'shared/HtmlReady';
 import tt from 'counterpart';
 import { generateMd as EmbeddedPlayerGenerateMd } from 'app/components/elements/EmbeddedPlayers';
-
-const remarkable = new Remarkable({
-    html: true, // remarkable renders first then sanitize runs...
-    breaks: true,
-    linkify: false, // linkify is done locally
-    typographer: false, // https://github.com/jonschlinkert/remarkable/issues/142#issuecomment-221546793
-    quotes: '“”‘’',
-});
-
-const remarkableToSpec = new Remarkable({
-    html: true,
-    breaks: false, // real markdown uses \n\n for paragraph breaks
-    linkify: false,
-    typographer: false,
-    quotes: '“”‘’',
-});
+import RemarkableSpoiler from '@quochuync/remarkable-spoiler';
+import '@quochuync/remarkable-spoiler/styles.css';
 
 class MarkdownViewer extends Component {
     static propTypes = {
@@ -85,10 +70,15 @@ class MarkdownViewer extends Component {
         // Strip out HTML comments. "JS-DOS" bug.
         text = text.replace(/<!--([\s\S]+?)(-->|$)/g, '(html comment removed: $1)');
 
-        let renderer = remarkableToSpec;
-        if (this.props.breaks === true) {
-            renderer = remarkable;
-        }
+        const renderer = new Remarkable({
+            html: true, // remarkable renders first then sanitize runs...
+            xhtmlOut: true,
+            breaks: this.props.breaks,
+            typographer: false, // https://github.com/jonschlinkert/remarkable/issues/142#issuecomment-221546793
+            quotes: '“”‘’',
+        });
+
+        renderer.use(RemarkableSpoiler);
 
         let renderedText = html ? text : renderer.render(text);
 

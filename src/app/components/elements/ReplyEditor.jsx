@@ -17,7 +17,7 @@ import sanitizeConfig, { allowedTags } from 'app/utils/SanitizeConfig';
 import sanitize from 'sanitize-html';
 import HtmlReady from 'shared/HtmlReady';
 import { fromJS, Map, OrderedSet } from 'immutable';
-import Remarkable from 'remarkable';
+import { Remarkable } from 'remarkable';
 import Dropzone from 'react-dropzone';
 import tt from 'counterpart';
 import { loadUserTemplates, saveUserTemplates } from 'app/utils/UserTemplates';
