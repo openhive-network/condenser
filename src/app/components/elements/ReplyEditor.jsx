@@ -28,7 +28,7 @@ import HumanizeDuration from "humanize-duration";
 import VisualEditor from './VisualEditor';
 import { calculateRcStats } from "../../utils/UserUtil";
 
-const remarkable = new Remarkable({ html: true, linkify: false, breaks: true });
+const remarkable = new Remarkable({ html: true, breaks: true });
 
 const RTE_DEFAULT = false;
 const MAX_TAGS = 8;
