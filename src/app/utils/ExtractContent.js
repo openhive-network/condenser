@@ -2,7 +2,7 @@ import remarkableStripper from 'app/utils/RemarkableStripper';
 import sanitize from 'sanitize-html';
 import { htmlDecode } from 'app/utils/Html';
 import HtmlReady from 'shared/HtmlReady';
-import Remarkable from 'remarkable';
+import { Remarkable } from 'remarkable';
 import _ from 'lodash';
 
 const remarkable = new Remarkable({ html: true, linkify: false });

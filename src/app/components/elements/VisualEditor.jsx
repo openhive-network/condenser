@@ -37,9 +37,38 @@ class VisualEditor extends Component {
     };
 
     render() {
+        const onClick = () => {
+            const spoilerMd = '>! [Click to reveal] Your spoiler content';
+            const newValue = RichTextEditor.createValueFromString(this.props.value + spoilerMd, 'markdown');
+            this.setState({ value: newValue } );
+
+            if (this.props.onChange) {
+                this.props.onChange(newValue.toString('markdown'));
+            }
+        };
+        const customControls = [
+            () => { return (
+                <button
+                    title="Add spoiler block"
+                    type="button"
+                    key="spoiler"
+                    className="IconButton__root___3tqZW Button__root___1gz0c"
+                    onClick={onClick}
+                >
+                    Spoiler
+                </button>
+            ); },
+        ];
+
         return (
             <div className="visual-editor">
-                {RichTextEditor && <RichTextEditor value={this.state.value} onChange={this.onChange} />}
+                {RichTextEditor && (
+                    <RichTextEditor
+                        value={this.state.value}
+                        onChange={this.onChange}
+                        customControls={customControls}
+                    />
+                )}
             </div>
         );
     }
