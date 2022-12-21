@@ -5,7 +5,7 @@ import HtmlReady from 'shared/HtmlReady';
 import { Remarkable } from 'remarkable';
 import _ from 'lodash';
 
-const remarkable = new Remarkable({ html: true, linkify: false });
+const remarkable = new Remarkable({ html: true });
 
 const getValidImage = (array) => {
     return array && Array.isArray(array) && array.length >= 1 && typeof array[0] === 'string' ? array[0] : null;
