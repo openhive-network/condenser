@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { renderToString } from 'react-dom/server';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Remarkable } from 'remarkable';
@@ -120,37 +121,21 @@ class MarkdownViewer extends Component {
 
         const noImageActive = cleanText.indexOf(noImageText) !== -1;
 
+        const regex = /~~~ embed:(.*? ~~~)/gm;
+        let matches;
+        let processedText = cleanText;
         // In addition to inserting the youtube component, this allows
         // react to compare separately preventing excessive re-rendering.
         let idx = 0;
-        const sections = [];
 
-        function checksum(s) {
-            let chk = 0x12345678;
-            const len = s.length;
-            for (let i = 0; i < len; i += 1) {
-                chk += s.charCodeAt(i) * (i + 1);
+        while ((matches = regex.exec(processedText)) !== null) {
+            // This is necessary to avoid infinite loops with zero-width matches
+            if (matches.index === regex.lastIndex) {
+                regex.lastIndex += 1;
             }
 
-            // eslint-disable-next-line no-bitwise
-            return (chk & 0xffffffff).toString(16);
-        }
-
-        // HtmlReady inserts ~~~ embed:${id} type ~~~
-        for (let section of cleanText.split('~~~ embed:')) {
-            const embedMd = EmbeddedPlayerGenerateMd(section, idx, large);
-            if (embedMd) {
-                const { section: newSection, markdown } = embedMd;
-                section = newSection;
-                sections.push(markdown);
-
-                if (section === '') {
-                    // eslint-disable-next-line no-continue
-                    continue;
-                }
-            }
-
-            sections.push(<div key={checksum(section)} dangerouslySetInnerHTML={{ __html: section }} />);
+            const embedMd = EmbeddedPlayerGenerateMd(matches[1], idx, large);
+            processedText = processedText.replace(matches[0], renderToString(embedMd.markdown));
 
             idx += 1;
         }
@@ -162,7 +147,7 @@ class MarkdownViewer extends Component {
 
         return (
             <div className={'MarkdownViewer ' + cn}>
-                {sections}
+                <div dangerouslySetInnerHTML={{ __html: processedText }} />
                 {noImageActive && allowNoImage && (
                     <div
                         role="link"
