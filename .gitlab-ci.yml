@@ -16,8 +16,6 @@ variables:
         - public-runner-docker
     services:
         - docker:dind
-    before_script:
-        - echo $HUB_TOKEN | docker login -u $HUB_USERNAME --password-stdin
 
 .docker-remote-host-review: &docker-remote-host-review
     before_script:
@@ -35,6 +33,7 @@ variables:
         - echo "$STAGING_TLSCACERT" > $CERTS/ca.pem
         - echo "$STAGING_TLSCERT" > $CERTS/cert.pem
         - echo "$STAGING_TLSKEY" > $CERTS/key.pem
+        - echo $CI_JOB_TOKEN | DOCKER_CERT_PATH=$CERTS docker -H $STAGING_HOST --tlsverify login -u $CI_REGISTRY_USER $CI_REGISTRY --password-stdin
     after_script:
         - rm -fR $CERTS
 
@@ -128,6 +127,8 @@ build-staging:
         SOURCE_COMMIT: $CI_COMMIT_SHA
     only:
         - develop
+    before_script:
+        - echo $CI_JOB_TOKEN | docker login -u $CI_REGISTRY_USER $CI_REGISTRY --password-stdin
     script:
         - docker build -t $DOCKER_TAG -t $DOCKER_TAG_MAIN --build-arg SOURCE_COMMIT --build-arg DOCKER_TAG .
         - docker push $DOCKER_TAG
