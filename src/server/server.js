@@ -93,9 +93,9 @@ const csrfProtect = new csrf({
     excludedMethods: ['GET', 'HEAD', 'OPTIONS'],
     disableQuery: true,
 });
-const csrfIgnore = ['/oauth/token'];
+const csrfIgnoreUrlList = ['/oauth/token'];
 app.use(async (ctx, next) => {
-    if (csrfIgnore.includes(ctx.req.url)) {
+    if (csrfIgnoreUrlList.includes(ctx.req.url)) {
         await next();
     } else {
         await csrfProtect(ctx, next);
@@ -115,6 +115,12 @@ function convertEntriesToArrays(obj) {
 
 // some redirects and health status
 app.use(async (ctx, next) => {
+    if (ctx.session) {
+        console.log('bamboo ctx.session', ctx.session);
+    } else {
+        console.log('bamboo no ctx.session');
+    }
+
     if (ctx.method === 'GET' && ctx.url === '/.well-known/healthcheck.json') {
         ctx.status = 200;
         ctx.body = {
@@ -144,6 +150,7 @@ app.use(async (ctx, next) => {
         ctx.redirect('/login.html?' + params.toString());
         return;
     }
+
     // openhive.chat token exchange
     if (ctx.method === 'POST' && ctx.URL.pathname === '/oauth/token') {
         const body = ctx.request.body;
@@ -155,7 +162,7 @@ app.use(async (ctx, next) => {
             expires_in: 60 * 60 * 12,
             // id_token should be JWT. Should contain user data and expire time.
             // id_token: 'angala-456',
-            scope: 'openid',
+            scope: 'login',
             token_type: 'Bearer',
         };
         ctx.status = 200;

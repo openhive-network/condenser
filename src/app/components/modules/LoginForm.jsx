@@ -75,6 +75,7 @@ class LoginForm extends Component {
         if (this.refs.username && this.refs.username.value) this.refs.pw.focus();
 
         this.registerOauthRequest();
+        console.log('bamboo end of componentDidMount');
     }
 
     componentDidUpdate() {
@@ -148,10 +149,8 @@ class LoginForm extends Component {
 
     registerOauthRequest = () => {
         const params = new URLSearchParams(window.location.search);
-        // if (params.has('redirect_uri') && params.get('scope').split(' ').includes('login')
-        //         && params.has('state')) {
         if (params.has('redirect_uri') && params.has('state')
-                && params.get('scope').split(' ').includes('openid')) {
+                && params.get('scope').split(' ').includes('profile')) {
             sessionStorage.setItem('oauth', decodeURIComponent( params.toString()));
         }
     }

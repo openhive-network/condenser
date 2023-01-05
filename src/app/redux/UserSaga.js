@@ -40,6 +40,78 @@ export const userWatches = [
     takeLatest(userActions.UPLOAD_IMAGE, uploadImage),
 ];
 
+// Check if there is an ongoing oauth process.
+// If yes, generate a token and redirect.
+function oauthRedirect(username, private_keys) {
+    if (!username || !private_keys) {
+        console.log('bamboo oauthRedirect no username or no private_keys', {username, private_keys});
+        return;
+    }
+    const oauthItem = sessionStorage.getItem('oauth');
+    if (!oauthItem) {
+        console.log('bamboo oauthRedirect no oauthItem');
+        return;
+    }
+
+    const params = new URLSearchParams(oauthItem);
+
+    const msg = { authors: [username], timestamp: Date.now(), signed_message: {type: 'code', app: 'condenser'} };
+    const h = hash.sha256(JSON.stringify(msg));
+    //
+    // TODO We don't know, what type of private key we have.
+    //
+    const signature = Signature.sign(h, private_keys.get('posting_private'));
+    const code = Buffer.from(signature.toHex(), 'hex').toString('base64');
+
+    // const query = new URLSearchParams({
+    //     code: encodeURIComponent(code),
+    //     state: encodeURIComponent(params.get('state')),
+    //     username: encodeURIComponent(username),
+    // });
+
+    const header = {
+        alg: 'RS256',
+        typ: 'JWT'
+    };
+    const iat = Math.floor(Date.now() / 1000);
+    const payload = {
+        iss: 'hive.blog',
+        sub: username,
+        aud: 'openhive.chat',
+        iat,
+        nbf: iat,
+        exp: iat + 60 * 5,
+    };
+    // const token = `${(JSON.stringify(header)).toString('base64')}.${(JSON.stringify(payload)).toString('base64')}`;
+
+    const headerEncoded = Buffer.from(JSON.stringify(header)).toString('base64');
+    const payloadEncoded = Buffer.from(JSON.stringify(payload)).toString('base64');
+    const token = `${headerEncoded}.${payloadEncoded}`;
+
+    const tokenHash = hash.sha256(token);
+    const tokenSignature = Signature.sign(tokenHash, private_keys.get('posting_private'));
+    const tokenSignatureEncoded = Buffer.from(tokenSignature.toHex(), 'hex').toString('base64');
+    const signedToken = `${token}.${tokenSignatureEncoded}`;
+    console.log('bamboo signedToken', signedToken);
+
+    const query = new URLSearchParams({
+        code: username + '.' + code,
+        state: params.get('state'),
+        username
+    });
+
+    // https://openhive.chat/_oauth/condenser?code=IH04YePIwNHeiaF1UGQPdMaXp+oN541nAuP8YdqmXtKsIm9OrW1yTx0mUqdlF2kJzOqMW3tAv3o2KzBoZnQVt9s=&state=eyJsb2dpblN0eWxlIjoicmVkaXJlY3QiLCJjcmVkZW50aWFsVG9rZW4iOiJhb3otV2szd1BmbERwdWRxZFBXM1Q3QnBCRk1mQmJlR2MwaTRaVGlVdzNEIiwiaXNDb3Jkb3ZhIjpmYWxzZSwicmVkaXJlY3RVcmwiOiJodHRwczovL29wZW5oaXZlLmNoYXQvaG9tZSJ9&username=stirlitz
+
+    console.log('bamboo sessionStorage oauth', sessionStorage.getItem('oauth'));
+    console.log('bamboo url', query.toString());
+    alert('Just stopped to see console');
+    sessionStorage.removeItem('oauth');
+
+    window.location = params.get('redirect_uri') + '?' + query.toString();
+    // window.location = params.get('redirect_uri') + `?${query.toString()}`;
+
+}
+
 function effectiveVests(account) {
     const vests = parseFloat(account.get('vesting_shares'));
     const delegated = parseFloat(account.get('delegated_vesting_shares'));
@@ -93,6 +165,7 @@ function* usernamePasswordLogin(action) {
     // If the user hasn't previously hidden the announcement in this session,
     // or if the user's browser does not support session storage,
     // show the announcement.
+    console.log('bamboo running usernamePasswordLogin, action', action);
     if (
         typeof sessionStorage === 'undefined'
         || (typeof sessionStorage !== 'undefined' && sessionStorage.getItem('hideAnnouncement') !== 'true')
@@ -107,6 +180,17 @@ function* usernamePasswordLogin(action) {
     yield call(usernamePasswordLogin2, action.payload);
     const current = yield select((state) => state.user.get('current'));
     const username = current ? current.get('username') : null;
+
+    try {
+        const user = yield select((state) => state.user);
+        const authority = yield select((state) => state.user.get('authority'));
+        console.log('bamboo running usernamePasswordLogin, current', current ? Object.fromEntries(current) : null);
+        console.log('bamboo running usernamePasswordLogin, authority', authority ? Object.fromEntries(authority) : null);
+        console.log('bamboo running usernamePasswordLogin, username', username);
+        console.log('bamboo running usernamePasswordLogin, user', user ? Object.fromEntries(user) : null);
+    } catch (error) {
+        console.error('bamboo running usernamePasswordLogin', error);
+    }
 
     if (username) {
         yield put(userActions.generateSessionId());
@@ -147,6 +231,7 @@ function* usernamePasswordLogin2(options) {
     let feedURL = false;
     let autopost, memoWif, login_owner_pubkey, login_wif_owner_pubkey, login_with_keychain, login_with_hivesigner,
         login_with_hiveauth;
+    console.log('bamboo running usernamePasswordLogin2, options', options);
     if (!username && !password) {
         const data = localStorage.getItem('autopost2');
 
@@ -437,7 +522,6 @@ function* usernamePasswordLogin2(options) {
             );
         }
     }
-
     try {
         // const challengeString = yield serverApiLoginChallenge()
         const offchainData = yield select((state) => state.offchain);
@@ -531,40 +615,7 @@ function* usernamePasswordLogin2(options) {
             console.log('Logging in as', username);
             const response = yield serverApiLogin(username, signatures);
 
-            // Check if there is an ongoing oauth process.
-            // If yes, generate a token and redirect.
-            if (sessionStorage.getItem('oauth')) {
-                try {
-                    const params = new URLSearchParams(sessionStorage.getItem('oauth'));
-                    const msg = { authors: [username], timestamp: Date.now(), signed_message: {type: 'code', app: 'condenser'} };
-                    const h = hash.sha256(JSON.stringify(msg));
-                    const signature = Signature.sign(h, private_keys.get('posting_private'));
-                    const code = Buffer.from(signature.toHex(), 'hex').toString('base64');
-
-                    const url = params.get('redirect_uri') + '?code=' + code + '&state=' + params.get('state') + '&username=' + username;
-
-                    const query = new URLSearchParams({
-                        code: encodeURIComponent(code),
-                        state: encodeURIComponent(params.get('state')),
-                        username: encodeURIComponent(username),
-                    });
-
-                    // https://openhive.chat/_oauth/condenser?code=IH04YePIwNHeiaF1UGQPdMaXp+oN541nAuP8YdqmXtKsIm9OrW1yTx0mUqdlF2kJzOqMW3tAv3o2KzBoZnQVt9s=&state=eyJsb2dpblN0eWxlIjoicmVkaXJlY3QiLCJjcmVkZW50aWFsVG9rZW4iOiJhb3otV2szd1BmbERwdWRxZFBXM1Q3QnBCRk1mQmJlR2MwaTRaVGlVdzNEIiwiaXNDb3Jkb3ZhIjpmYWxzZSwicmVkaXJlY3RVcmwiOiJodHRwczovL29wZW5oaXZlLmNoYXQvaG9tZSJ9&username=stirlitz
-
-                    console.log('bamboo sessionStorage oauth', sessionStorage.getItem('oauth'));
-                    console.log('bamboo url', query.toString());
-                    alert('Just stopped to see console');
-                    sessionStorage.removeItem('oauth');
-
-                    window.location = url;
-                    // window.location = params.get('redirect_uri') + `?${query.toString()}`;
-
-                } catch (err) {
-                    console.error('bamboo got error');
-                    sessionStorage.removeItem('oauth');
-                    throw err;
-                }
-            }
+            oauthRedirect(username, private_keys);
 
             yield response.data;
         }

@@ -13,7 +13,7 @@ const requestBase = {
 
 export async function serverApiLogin(account, signatures) {
     if (!process.env.BROWSER || window.$STM_ServerBusy) return undefined;
-
+    console.log('bamboo signatures', signatures);
     const response = await axios.post(
         '/api/v1/login_account',
         { account, signatures, _csrf: $STM_csrf },

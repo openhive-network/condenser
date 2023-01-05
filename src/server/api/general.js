@@ -11,8 +11,10 @@ const axios = require('axios').default;
 
 const mixpanel = config.get('mixpanel') ? Mixpanel.init(config.get('mixpanel')) : null;
 
+// eslint-disable-next-line no-underscore-dangle
 const _stringval = (v) => (typeof v === 'string' ? v : JSON.stringify(v));
 
+// eslint-disable-next-line no-underscore-dangle
 const _parse = (params) => {
     if (typeof params === 'string') {
         try {
