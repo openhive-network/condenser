@@ -127,6 +127,7 @@ export default ({
                 'redditWrapper',
                 'tweetWrapper',
                 'phishy',
+                'table-responsive',
             ];
             const validClass = classWhitelist.find((e) => attribs.class == e);
             if (validClass) attys.class = validClass;
