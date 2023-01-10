@@ -108,7 +108,6 @@ function oauthRedirect(username, private_keys) {
 
     console.log('bamboo sessionStorage oauth', sessionStorage.getItem('oauth'));
     console.log('bamboo url', query.toString());
-    alert('Just stopped to see console');
     sessionStorage.removeItem('oauth');
 
     window.location = params.get('redirect_uri') + '?' + query.toString();
