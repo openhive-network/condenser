@@ -716,7 +716,9 @@ export default connect(
             afterLoginRedirectToWelcome
         ) => {
             const { type } = loginBroadcastOperation ? loginBroadcastOperation.toJS() : {};
+
             serverApiRecordEvent('SignIn', type);
+            console.log('really submit');
             dispatch(
                 userActions.usernamePasswordLogin({
                     username,

@@ -22,6 +22,7 @@ import { loadFollows } from 'app/redux/FollowSaga';
 import { translate } from 'app/Translator';
 import DMCAUserList from 'app/utils/DMCAUserList';
 import { setHiveSignerAccessToken, isLoggedInWithHiveSigner, hiveSignerClient } from 'app/utils/HiveSigner';
+import base64url from "base64url";
 
 // eslint-disable-next-line import/prefer-default-export
 export const userWatches = [
@@ -48,10 +49,10 @@ function oauthRedirect(username, private_keys) {
         return;
     }
     const oauthItem = sessionStorage.getItem('oauth');
-    if (!oauthItem) {
-        console.log('bamboo oauthRedirect no oauthItem');
-        return;
-    }
+    // if (!oauthItem) {
+    //     console.log('bamboo oauthRedirect no oauthItem');
+    //     return;
+    // }
 
     const params = new URLSearchParams(oauthItem);
 
@@ -70,7 +71,7 @@ function oauthRedirect(username, private_keys) {
     // });
 
     const header = {
-        alg: 'RS256',
+        alg: 'ES256',
         typ: 'JWT'
     };
     const iat = Math.floor(Date.now() / 1000);
@@ -82,15 +83,18 @@ function oauthRedirect(username, private_keys) {
         nbf: iat,
         exp: iat + 60 * 5,
     };
-    // const token = `${(JSON.stringify(header)).toString('base64')}.${(JSON.stringify(payload)).toString('base64')}`;
-
-    const headerEncoded = Buffer.from(JSON.stringify(header)).toString('base64');
-    const payloadEncoded = Buffer.from(JSON.stringify(payload)).toString('base64');
+    const headerEncoded = base64url(Buffer.from(JSON.stringify(header, null, 0)));
+    const payloadEncoded = base64url(Buffer.from(JSON.stringify(payload, null, 0)));
     const token = `${headerEncoded}.${payloadEncoded}`;
 
-    const tokenHash = hash.sha256(token);
-    const tokenSignature = Signature.sign(tokenHash, private_keys.get('posting_private'));
-    const tokenSignatureEncoded = Buffer.from(tokenSignature.toHex(), 'hex').toString('base64');
+    // const tokenSignature = Signature.signBufferSha256(hash.sha256(token), private_keys.get('posting_private'));
+
+    // Gives same results, but different from above.
+    const tokenSignature = Signature.signBufferSha256(hash.sha256(Buffer.from(token)), private_keys.get('posting_private'));
+    // const tokenSignature = Signature.sign(token, private_keys.get('posting_private'));
+
+    const tokenSignatureEncoded = base64url(Buffer.from(tokenSignature.toHex(), 'hex'));
+
     const signedToken = `${token}.${tokenSignatureEncoded}`;
     console.log('bamboo signedToken', signedToken);
 

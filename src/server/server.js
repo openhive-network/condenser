@@ -28,6 +28,7 @@ import prod_logger from './prod_logger';
 import hardwareStats from './hardwarestats';
 import StatsLoggerClient from './utils/StatsLoggerClient';
 import requestTime from './requesttimings';
+import useOauthServer from './oauth_server';
 
 if (cluster.isMaster) console.log('application server starting, please wait.');
 
@@ -103,6 +104,7 @@ app.use(async (ctx, next) => {
 });
 
 useGeneralApi(app);
+useOauthServer(app);
 
 koaLocale(app);
 
@@ -115,12 +117,6 @@ function convertEntriesToArrays(obj) {
 
 // some redirects and health status
 app.use(async (ctx, next) => {
-    if (ctx.session) {
-        console.log('bamboo ctx.session', ctx.session);
-    } else {
-        console.log('bamboo no ctx.session');
-    }
-
     if (ctx.method === 'GET' && ctx.url === '/.well-known/healthcheck.json') {
         ctx.status = 200;
         ctx.body = {
@@ -128,70 +124,6 @@ app.use(async (ctx, next) => {
             docker_tag: process.env.DOCKER_TAG ? process.env.DOCKER_TAG : false,
             source_commit: process.env.SOURCE_COMMIT ? process.env.SOURCE_COMMIT : false,
         };
-        return;
-    }
-
-    if (ctx.method === 'GET' && ['/oauth/authorize'].includes(ctx.URL.pathname)) {
-
-        // TODO: strictly check if incoming origin is "openhive_oauth_origin" from config
-        const params = new URLSearchParams(ctx.URL.search);
-
-        const date = new Date();
-        console.log(`${date.toISOString()} Got request to /oauth/authorize`);
-        console.log('request.body', ctx.request.body);
-        console.log('response.body', ctx.response.body);
-        console.log('ctx', ctx);
-
-        if (!params.has('state') && !params.has('redirect_uri') && !params.has('scope')) {
-            ctx.redirect('/');
-            return;
-        }
-
-        ctx.redirect('/login.html?' + params.toString());
-        return;
-    }
-
-    // openhive.chat token exchange
-    if (ctx.method === 'POST' && ctx.URL.pathname === '/oauth/token') {
-        const body = ctx.request.body;
-
-        ctx.body = {
-            state: body.state,
-            // Can be JWT.
-            access_token: Math.random().toString(36).slice(2),
-            expires_in: 60 * 60 * 12,
-            // id_token should be JWT. Should contain user data and expire time.
-            // id_token: 'angala-456',
-            scope: 'login',
-            token_type: 'Bearer',
-        };
-        ctx.status = 200;
-
-        const date = new Date();
-        console.log(`${date.toISOString()} Got request to /oauth/token`);
-        console.log('request.body', ctx.request.body);
-        console.log('response.body', ctx.response.body);
-        console.log('ctx', ctx);
-        return;
-    }
-
-    // Userinfo endpoint for Oauth flow
-    if (ctx.URL.pathname === '/userinfo') {
-        ctx.body = {
-            email: 'wbarcik+stirlitz@syncad.com',
-            email_verified: true,
-            username: 'stirlitz',
-            sid: "84c1b060-64ec-4ef3-bd50-1373fd6412573",
-            sub: "8b0787d4-f750-44ab-8b98-d53545713e13"
-        };
-        ctx.status = 200;
-
-        const date = new Date();
-        console.log(`${date.toISOString()} Got request to /userinfo`);
-        console.log('request.body', ctx.request.body);
-        console.log('response.body', ctx.response.body);
-        console.log('ctx', ctx);
-
         return;
     }
 
