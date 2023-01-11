@@ -149,9 +149,13 @@ class LoginForm extends Component {
 
     registerOauthRequest = () => {
         const params = new URLSearchParams(window.location.search);
-        if (params.has('redirect_uri') && params.has('state')
-                && params.get('scope').split(' ').includes('profile')) {
-            sessionStorage.setItem('oauth', decodeURIComponent( params.toString()));
+        if (params.has('client_id')
+                && params.has('redirect_uri')
+                && params.has('state')
+                && params.has('scope')
+                ) {
+            // TODO Consider storing this in state.
+            sessionStorage.setItem('oauth', decodeURIComponent(params.toString()));
         }
     }
 

@@ -1,3 +1,4 @@
+import jwt from 'koa-jwt';
 import koa_router from 'koa-router';
 import config from 'config';
 
@@ -28,13 +29,22 @@ export default function useOauthServer(app) {
         ctx.redirect('/login.html?' + params.toString());
     });
 
-    router.post('/oauth/token', async (ctx) => {
-        const body = ctx.request.body;
+    // Middleware below this line is only reached if JWT token is valid
+    // app.use(jwt({ secret: 'shared-secret' }));
 
+    router.post('/oauth/token', async (ctx) => {
+        // TODO Check code sent by client.
+        const access_token = jwt.sign({ role: 'admin' }, 'shared-secret', {
+            expiresIn: 300
+          });
+        const body = ctx.request.body;
         ctx.body = {
             state: body.state,
+
             // Can be JWT.
-            access_token: Math.random().toString(36).slice(2),
+            // access_token: Math.random().toString(36).slice(2),
+            access_token,
+
             expires_in: 60 * 60 * 12,
             // id_token should be JWT. Should contain user data and expire time.
             // id_token: 'angala-456',

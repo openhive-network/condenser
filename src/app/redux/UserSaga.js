@@ -49,10 +49,10 @@ function oauthRedirect(username, private_keys) {
         return;
     }
     const oauthItem = sessionStorage.getItem('oauth');
-    // if (!oauthItem) {
-    //     console.log('bamboo oauthRedirect no oauthItem');
-    //     return;
-    // }
+    if (!oauthItem) {
+        console.log('bamboo oauthRedirect no oauthItem');
+        return;
+    }
 
     const params = new URLSearchParams(oauthItem);
 
@@ -618,7 +618,7 @@ function* usernamePasswordLogin2(options) {
             console.log('Logging in as', username);
             const response = yield serverApiLogin(username, signatures);
 
-            oauthRedirect(username, private_keys);
+            // oauthRedirect(username, private_keys);
 
             yield response.data;
         }
