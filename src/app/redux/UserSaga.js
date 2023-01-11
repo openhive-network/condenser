@@ -44,26 +44,29 @@ export const userWatches = [
 // Check if there is an ongoing oauth process.
 // If yes, do redirection.
 function oauthRedirect(username, private_keys) {
-    if (!username || !private_keys) {
-        console.log('bamboo oauthRedirect no username or no private_keys', {username, private_keys});
-        return;
-    }
     const oauthItem = sessionStorage.getItem('oauth');
     if (!oauthItem) {
-        console.log('bamboo oauthRedirect no oauthItem');
+        console.log('oauthRedirect no oauthItem');
+        return;
+    }
+    sessionStorage.removeItem('oauth');
+
+    // User must be logged in.
+    if (!username) {
+        console.log('oauthRedirect no username');
+        return;
+    }
+
+    // We handle only users logged in via private keys.
+    if (!private_keys) {
+        console.log('oauthRedirect no private_keys');
         return;
     }
 
     const params = new URLSearchParams(oauthItem);
-
-    console.log('bamboo sessionStorage oauth', sessionStorage.getItem('oauth'));
-    console.log('bamboo url', params.toString());
-    sessionStorage.removeItem('oauth');
-
     const redirect_to = params.get('redirect_to');
     params.delete('redirect_to');
     window.location = redirect_to + '?' + params.toString();
-
 }
 
 function effectiveVests(account) {
@@ -119,7 +122,6 @@ function* usernamePasswordLogin(action) {
     // If the user hasn't previously hidden the announcement in this session,
     // or if the user's browser does not support session storage,
     // show the announcement.
-    console.log('bamboo running usernamePasswordLogin, action', action);
     if (
         typeof sessionStorage === 'undefined'
         || (typeof sessionStorage !== 'undefined' && sessionStorage.getItem('hideAnnouncement') !== 'true')
@@ -134,17 +136,6 @@ function* usernamePasswordLogin(action) {
     yield call(usernamePasswordLogin2, action.payload);
     const current = yield select((state) => state.user.get('current'));
     const username = current ? current.get('username') : null;
-
-    try {
-        const user = yield select((state) => state.user);
-        const authority = yield select((state) => state.user.get('authority'));
-        console.log('bamboo running usernamePasswordLogin, current', current ? Object.fromEntries(current) : null);
-        console.log('bamboo running usernamePasswordLogin, authority', authority ? Object.fromEntries(authority) : null);
-        console.log('bamboo running usernamePasswordLogin, username', username);
-        console.log('bamboo running usernamePasswordLogin, user', user ? Object.fromEntries(user) : null);
-    } catch (error) {
-        console.error('bamboo running usernamePasswordLogin', error);
-    }
 
     if (username) {
         yield put(userActions.generateSessionId());
@@ -185,7 +176,6 @@ function* usernamePasswordLogin2(options) {
     let feedURL = false;
     let autopost, memoWif, login_owner_pubkey, login_wif_owner_pubkey, login_with_keychain, login_with_hivesigner,
         login_with_hiveauth;
-    console.log('bamboo running usernamePasswordLogin2, options', options);
     if (!username && !password) {
         const data = localStorage.getItem('autopost2');
 
