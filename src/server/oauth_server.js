@@ -92,6 +92,7 @@ export default function useOauthServer(app) {
             // Do redirection with code grant.
             ctx.body = `Account is ${ctx.session.a}`;
         } else {
+            params.set('redirect_to', '/oauth/authorize');
             ctx.redirect('/login.html?' + params.toString());
         }
     });

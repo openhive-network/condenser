@@ -56,62 +56,15 @@ function oauthRedirect(username, private_keys) {
 
     const params = new URLSearchParams(oauthItem);
 
-    const msg = { authors: [username], timestamp: Date.now(), signed_message: {type: 'code', app: 'condenser'} };
-    const h = hash.sha256(JSON.stringify(msg));
-    //
-    // TODO We don't know, what type of private key we have.
-    //
-    const signature = Signature.sign(h, private_keys.get('posting_private'));
-    const code = Buffer.from(signature.toHex(), 'hex').toString('base64');
-
-    // const query = new URLSearchParams({
-    //     code: encodeURIComponent(code),
-    //     state: encodeURIComponent(params.get('state')),
-    //     username: encodeURIComponent(username),
-    // });
-
-    const header = {
-        alg: 'ES256',
-        typ: 'JWT'
-    };
-    const iat = Math.floor(Date.now() / 1000);
-    const payload = {
-        iss: 'hive.blog',
-        sub: username,
-        aud: 'openhive.chat',
-        iat,
-        nbf: iat,
-        exp: iat + 60 * 5,
-    };
-    const headerEncoded = base64url(Buffer.from(JSON.stringify(header, null, 0)));
-    const payloadEncoded = base64url(Buffer.from(JSON.stringify(payload, null, 0)));
-    const token = `${headerEncoded}.${payloadEncoded}`;
-
-    // const tokenSignature = Signature.signBufferSha256(hash.sha256(token), private_keys.get('posting_private'));
-
-    // Gives same results, but different from above.
-    const tokenSignature = Signature.signBufferSha256(hash.sha256(Buffer.from(token)), private_keys.get('posting_private'));
-    // const tokenSignature = Signature.sign(token, private_keys.get('posting_private'));
-
-    const tokenSignatureEncoded = base64url(Buffer.from(tokenSignature.toHex(), 'hex'));
-
-    const signedToken = `${token}.${tokenSignatureEncoded}`;
-    console.log('bamboo signedToken', signedToken);
-
-    const query = new URLSearchParams({
-        code: username + '.' + code,
-        state: params.get('state'),
-        username
-    });
-
     // https://openhive.chat/_oauth/condenser?code=IH04YePIwNHeiaF1UGQPdMaXp+oN541nAuP8YdqmXtKsIm9OrW1yTx0mUqdlF2kJzOqMW3tAv3o2KzBoZnQVt9s=&state=eyJsb2dpblN0eWxlIjoicmVkaXJlY3QiLCJjcmVkZW50aWFsVG9rZW4iOiJhb3otV2szd1BmbERwdWRxZFBXM1Q3QnBCRk1mQmJlR2MwaTRaVGlVdzNEIiwiaXNDb3Jkb3ZhIjpmYWxzZSwicmVkaXJlY3RVcmwiOiJodHRwczovL29wZW5oaXZlLmNoYXQvaG9tZSJ9&username=stirlitz
 
     console.log('bamboo sessionStorage oauth', sessionStorage.getItem('oauth'));
-    console.log('bamboo url', query.toString());
+    console.log('bamboo url', params.toString());
     sessionStorage.removeItem('oauth');
 
-    window.location = params.get('redirect_uri') + '?' + query.toString();
-    // window.location = params.get('redirect_uri') + `?${query.toString()}`;
+    const redirect_to = params.get('redirect_to');
+    params.delete('redirect_to');
+    window.location = redirect_to + '?' + params.toString();
 
 }
 
@@ -618,7 +571,7 @@ function* usernamePasswordLogin2(options) {
             console.log('Logging in as', username);
             const response = yield serverApiLogin(username, signatures);
 
-            // oauthRedirect(username, private_keys);
+            oauthRedirect(username, private_keys);
 
             yield response.data;
         }
