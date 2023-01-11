@@ -1,7 +1,41 @@
 import jwt from 'koa-jwt';
 import { sign, verify, decode } from 'jsonwebtoken';
 import koa_router from 'koa-router';
+import { assert } from 'koa/lib/context';
 import config from 'config';
+
+const validateOauthRequestParameterClientId = (params) => {
+    const oauthServerConfig = config.get('oauth_server');
+    assert(params.has('client_id'), 400,
+            'Parameter "client_id" is required');
+    assert((oauthServerConfig.clients).has(params.get('client_id')), 400,
+            'Parameter "client_id" does not match any registered clients');
+};
+
+const validateOauthRequestParameterRedirectUri = (params) => {
+    const oauthServerConfig = config.get('oauth_server');
+    assert(params.has('redirect_uri'), 400,
+            'Parameter "redirect_uri" is required');
+    assert((oauthServerConfig.clients[params.get('client_id')].redirect_uris).includes(params.get('redirect_uri')), 400,
+            'Parameter "redirect_uri" does not match any registered redirected_uris');
+};
+
+const validateOauthRequestParameterScope = (params) => {
+    // const oauthServerConfig = config.get('oauth_server');
+    assert(params.has('scope'), 400,
+            'Parameter "scope" is required');
+    assert(params.get('scope').trim().split(/ +/).includes('openid'), 400,
+            'Parameter "scope" must contain string "openid"');
+};
+
+const validateOauthRequestParameterResponseType = (params) => {
+    // const oauthServerConfig = config.get('oauth_server');
+    assert(params.has('response_type'), 400,
+            'Parameter "response_type" is required');
+    assert(params.get('response_type') === 'code', 400,
+            'Parameter "response_type" should be equal to string "code"');
+};
+
 
 export default function useOauthServer(app) {
     const publicRouter = new koa_router();
@@ -16,8 +50,8 @@ export default function useOauthServer(app) {
     const site_domain = config.get('site_domain');
     console.log('bamboo site_domain', site_domain);
 
-    // Custom 401 handling – expose jwt errors in response.
-    // Don't enable this on production.
+    // Custom 401 handling – expose jwt errors in response, but don't do
+    // this on production.
     if (process.env.NODE_ENV === 'development') {
         app.use(async (ctx, next) => {
             return next().catch((err) => {
@@ -39,19 +73,27 @@ export default function useOauthServer(app) {
 
     publicRouter.get('/oauth/authorize', async (ctx) => {
         const params = new URLSearchParams(ctx.URL.search);
+
         const date = new Date();
         console.log(`${date.toISOString()} Got request to /oauth/authorize`);
         console.log('request.body', ctx.request.body);
         console.log('response.body', ctx.response.body);
         console.log('ctx', ctx);
 
-        if (!params.has('state') && !params.has('redirect_uri') && !params.has('scope')) {
-            console.log('bamboo required parameters not found in search url');
-            ctx.redirect('/');
-            return;
-        }
+        // Validate request search parameters.
+        validateOauthRequestParameterClientId(params);
+        validateOauthRequestParameterRedirectUri(params);
+        validateOauthRequestParameterScope(params);
+        validateOauthRequestParameterResponseType(params);
 
-        ctx.redirect('/login.html?' + params.toString());
+        // TODO Check if we have user account. If yes, redirect with
+        // code grant. If not, redirect to login page.
+        if (ctx.session.a) {
+            // Do redirection with code grant.
+            ctx.body = `Account is ${ctx.session.a}`;
+        } else {
+            ctx.redirect('/login.html?' + params.toString());
+        }
     });
 
     publicRouter.post('/oauth/token', async (ctx) => {
