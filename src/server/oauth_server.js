@@ -1,4 +1,5 @@
 import jwt from 'koa-jwt';
+import { sign } from 'jsonwebtoken';
 import koa_router from 'koa-router';
 import config from 'config';
 
@@ -29,12 +30,13 @@ export default function useOauthServer(app) {
         ctx.redirect('/login.html?' + params.toString());
     });
 
-    // Middleware below this line is only reached if JWT token is valid
-    // app.use(jwt({ secret: 'shared-secret' }));
-
     router.post('/oauth/token', async (ctx) => {
-        // TODO Check code sent by client.
-        const access_token = jwt.sign({ role: 'admin' }, 'shared-secret', {
+
+        //
+        // TODO Check code parameter sent by client in uri.
+        //
+
+        const access_token = sign({ role: 'admin' }, 'shared-secret', {
             expiresIn: 300
           });
         const body = ctx.request.body;
@@ -59,6 +61,9 @@ export default function useOauthServer(app) {
         console.log('response.body', ctx.response.body);
         console.log('ctx', ctx);
     });
+
+    // Middleware below this line is only reached if JWT token is valid
+    app.use(jwt({ secret: 'shared-secret' }));
 
     router.get('/oauth/userinfo', async (ctx) => {
         ctx.body = {
