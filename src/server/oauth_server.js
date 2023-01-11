@@ -4,8 +4,9 @@ import koa_router from 'koa-router';
 import config from 'config';
 
 export default function useOauthServer(app) {
-    const router = koa_router();
-    app.use(router.routes());
+    const publicRouter = new koa_router();
+    const privateRouter = new koa_router();
+    privateRouter.use(jwt({ secret: 'shared-secret' }));
 
     const oauthServerConfig = config.get('oauth_server');
     console.log('bamboo app.oauthServerConfig', oauthServerConfig);
@@ -13,7 +14,7 @@ export default function useOauthServer(app) {
     const site_domain = config.get('site_domain');
     console.log('bamboo site_domain', site_domain);
 
-    router.get('/oauth/authorize', async (ctx) => {
+    publicRouter.get('/oauth/authorize', async (ctx) => {
         const params = new URLSearchParams(ctx.URL.search);
         const date = new Date();
         console.log(`${date.toISOString()} Got request to /oauth/authorize`);
@@ -30,7 +31,7 @@ export default function useOauthServer(app) {
         ctx.redirect('/login.html?' + params.toString());
     });
 
-    router.post('/oauth/token', async (ctx) => {
+    publicRouter.post('/oauth/token', async (ctx) => {
 
         //
         // TODO Check code parameter sent by client in uri.
@@ -62,10 +63,7 @@ export default function useOauthServer(app) {
         console.log('ctx', ctx);
     });
 
-    // Middleware below this line is only reached if JWT token is valid
-    app.use(jwt({ secret: 'shared-secret' }));
-
-    router.get('/oauth/userinfo', async (ctx) => {
+    privateRouter.get('/oauth/userinfo', async (ctx) => {
         ctx.body = {
             email: 'wbarcik+stirlitz@syncad.com',
             email_verified: true,
@@ -81,5 +79,8 @@ export default function useOauthServer(app) {
         console.log('response.body', ctx.response.body);
         console.log('ctx', ctx);
     });
+
+    app.use(publicRouter.routes()).use(publicRouter.allowedMethods());
+    app.use(privateRouter.routes()).use(privateRouter.allowedMethods());
 
 }
