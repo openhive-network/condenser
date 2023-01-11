@@ -155,7 +155,7 @@ class LoginForm extends Component {
                 && params.has('scope')
                 ) {
             // TODO Consider storing this in state.
-            sessionStorage.setItem('oauth', decodeURIComponent(params.toString()));
+            sessionStorage.setItem('oauth', params.toString());
         }
     }
 

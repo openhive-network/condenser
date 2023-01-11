@@ -42,7 +42,7 @@ export const userWatches = [
 ];
 
 // Check if there is an ongoing oauth process.
-// If yes, generate a token and redirect.
+// If yes, do redirection.
 function oauthRedirect(username, private_keys) {
     if (!username || !private_keys) {
         console.log('bamboo oauthRedirect no username or no private_keys', {username, private_keys});
@@ -55,8 +55,6 @@ function oauthRedirect(username, private_keys) {
     }
 
     const params = new URLSearchParams(oauthItem);
-
-    // https://openhive.chat/_oauth/condenser?code=IH04YePIwNHeiaF1UGQPdMaXp+oN541nAuP8YdqmXtKsIm9OrW1yTx0mUqdlF2kJzOqMW3tAv3o2KzBoZnQVt9s=&state=eyJsb2dpblN0eWxlIjoicmVkaXJlY3QiLCJjcmVkZW50aWFsVG9rZW4iOiJhb3otV2szd1BmbERwdWRxZFBXM1Q3QnBCRk1mQmJlR2MwaTRaVGlVdzNEIiwiaXNDb3Jkb3ZhIjpmYWxzZSwicmVkaXJlY3RVcmwiOiJodHRwczovL29wZW5oaXZlLmNoYXQvaG9tZSJ9&username=stirlitz
 
     console.log('bamboo sessionStorage oauth', sessionStorage.getItem('oauth'));
     console.log('bamboo url', params.toString());
