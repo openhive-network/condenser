@@ -39,6 +39,7 @@
     "autoprefixer": "^9.6.1",
     "axios": "^0.27.2",
     "base64url": "^3.0.1",
+    "basic-auth": "^2.0.1",
     "big.js": "^5.2.2",
     "bigi": "1.4.2",
     "blocked": "1.2.1",
