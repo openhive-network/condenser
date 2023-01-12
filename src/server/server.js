@@ -28,7 +28,7 @@ import prod_logger from './prod_logger';
 import hardwareStats from './hardwarestats';
 import StatsLoggerClient from './utils/StatsLoggerClient';
 import requestTime from './requesttimings';
-import useOauthServer from './oauth_server';
+import useOauthServer from './oauth-server';
 
 if (cluster.isMaster) console.log('application server starting, please wait.');
 
