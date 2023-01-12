@@ -177,6 +177,7 @@ export default function useOauthServer(app) {
 
         // Validate request body.
         const params = new URLSearchParams(ctx.request.body);
+        params.set('client_id', client.name);
         validateOauthRequestParameterClientId(params);
         validateOauthRequestParameterRedirectUri(params);
         validateOauthRequestParameterGrantType(params);
