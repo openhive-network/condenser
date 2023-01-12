@@ -86,12 +86,30 @@ export default function useOauthServer(app) {
         validateOauthRequestParameterScope(params);
         validateOauthRequestParameterResponseType(params);
 
-        // TODO Check if we have user account. If yes, redirect with
-        // code grant. If not, redirect to login page.
         if (ctx.session.a) {
-            // Do redirection with code grant.
-            ctx.body = `Account is ${ctx.session.a}`;
+            // When we have user in session,
+            // redirect to client's redirect_uri with code grant.
+            const expiresIn = 5 * 60;
+            const scope = 'openid profile';
+            const jwtOptions = {
+                issuer: 'hive.blog',
+                subject: 'stirlitz',
+                audience: 'openhive.chat',
+                expiresIn,
+            };
+            const payload = {
+                username: 'stirlitz',
+                scope,
+            };
+            const code = sign(payload, jwtSecret, jwtOptions);
+            const responseParams = new URLSearchParams();
+            responseParams.set('code', code);
+            responseParams.set('state', params.get('state'));
+            ctx.redirect(params.get('redirect_uri') + '?'
+                    + responseParams.toString());
         } else {
+            // Redirect to login page. After login user agent will be
+            // redirected to this endpoint again.
             params.set('redirect_to', '/oauth/authorize');
             ctx.redirect('/login.html?' + params.toString());
         }
@@ -100,6 +118,7 @@ export default function useOauthServer(app) {
     publicRouter.post('/oauth/token', async (ctx) => {
 
         //
+        // TODO Check basic auth.
         // TODO Check code parameter sent by client in uri.
         //
 
