@@ -1,9 +1,15 @@
 import jwt from 'koa-jwt';
 import { sign, verify, decode } from 'jsonwebtoken';
 import koa_router from 'koa-router';
+import auth from 'basic-auth';
 import { assert } from 'koa/lib/context';
 import config from 'config';
 
+/**
+ * Validates Oauth request parameter "client_id" in url search string.
+ *
+ * @param {*} params: URLSearchParams
+ */
 const validateOauthRequestParameterClientId = (params) => {
     const oauthServerConfig = config.get('oauth_server');
     assert(params.has('client_id'), 400,
@@ -12,6 +18,11 @@ const validateOauthRequestParameterClientId = (params) => {
             'Parameter "client_id" does not match any registered clients');
 };
 
+/**
+ * Validates Oauth request parameter "redirect_uri" in url search string.
+ *
+ * @param {*} params: URLSearchParams
+ */
 const validateOauthRequestParameterRedirectUri = (params) => {
     const oauthServerConfig = config.get('oauth_server');
     assert(params.has('redirect_uri'), 400,
@@ -20,20 +31,52 @@ const validateOauthRequestParameterRedirectUri = (params) => {
             'Parameter "redirect_uri" does not match any registered redirected_uris');
 };
 
+/**
+ * Validates Oauth request parameter "scope" in url search string.
+ *
+ * @param {*} params: URLSearchParams
+ */
 const validateOauthRequestParameterScope = (params) => {
-    // const oauthServerConfig = config.get('oauth_server');
     assert(params.has('scope'), 400,
             'Parameter "scope" is required');
     assert(params.get('scope').trim().split(/ +/).includes('openid'), 400,
             'Parameter "scope" must contain string "openid"');
 };
 
+/**
+ * Validates Oauth request parameter "response_type" in url search string.
+ *
+ * @param {*} params: URLSearchParams
+ */
 const validateOauthRequestParameterResponseType = (params) => {
-    // const oauthServerConfig = config.get('oauth_server');
     assert(params.has('response_type'), 400,
             'Parameter "response_type" is required');
     assert(params.get('response_type') === 'code', 400,
             'Parameter "response_type" should be equal to string "code"');
+};
+
+/**
+ * Validates Oauth request parameter "grant_type" in url search string.
+ *
+ * @param {*} params: URLSearchParams
+ */
+const validateOauthRequestParameterGrantType = (params) => {
+    assert(params.has('grant_type'), 400,
+            'Parameter "grant_type" is required');
+    assert(params.get('grant_type') === 'authorization_code', 400,
+            'Parameter "grant_type" should be equal to string "authorization_code"');
+};
+
+/**
+ * Validates Oauth request parameter "code" in url search string.
+ *
+ * @param {*} params: URLSearchParams
+ */
+const validateOauthRequestParameterCode = (params) => {
+    assert(params.has('code'), 400,
+            'Parameter "code" is required');
+    assert(params.get('code'), 400,
+            'Parameter "code" must not be empty');
 };
 
 
@@ -88,7 +131,7 @@ export default function useOauthServer(app) {
 
         if (ctx.session.a) {
             // When we have user in session,
-            // redirect to client's redirect_uri with code grant.
+            // redirect to client's redirect_uri with code.
             const expiresIn = 5 * 60;
             const scope = 'openid profile';
             const jwtOptions = {
@@ -109,7 +152,7 @@ export default function useOauthServer(app) {
                     + responseParams.toString());
         } else {
             // Redirect to login page. After login user agent will be
-            // redirected to this endpoint again.
+            // redirected to this endpoint again, but a user will exist.
             params.set('redirect_to', '/oauth/authorize');
             ctx.redirect('/login.html?' + params.toString());
         }
@@ -117,11 +160,44 @@ export default function useOauthServer(app) {
 
     publicRouter.post('/oauth/token', async (ctx) => {
 
-        //
-        // TODO Check basic auth.
-        // TODO Check code parameter sent by client in uri.
-        //
+        // Check basic auth.
+        const client = auth(ctx);
+        console.log('client', client);
+        assert((oauthServerConfig.clients).has(client.name), 401,
+            'Invalid user or password');
+        assert(oauthServerConfig.clients[client.name].secret === client.pass,
+            401, 'Invalid user or password');
 
+        // Example request.body sent by openhive.chat {
+        //     code: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InN0aXJsaXR6Iiwic2NvcGUiOiJvcGVuaWQgcHJvZmlsZSIsImlhdCI6MTY3MzUyNzgzNiwiZXhwIjoxNjczNTI4MTM2LCJhdWQiOiJvcGVuaGl2ZS5jaGF0IiwiaXNzIjoiaGl2ZS5ibG9nIiwic3ViIjoic3RpcmxpdHoifQ.xSa9tJFhpGcv8VRzCeMNcad_NgrBQHjJForpbtXEyBE',
+        //     redirect_uri: 'http://localhost:3000/_oauth/hiveblog',
+        //     grant_type: 'authorization_code',
+        //     state: 'eyJsb2dpblN0eWxlIjoicmVkaXJlY3QiLCJjcmVkZW50aWFsVG9rZW4iOiJwdm1DNG1HWjBPYV9KaDd1OW9hR1pTSkJXeTNRX1VRelN1elVDMDFKZXUyIiwiaXNDb3Jkb3ZhIjpmYWxzZSwicmVkaXJlY3RVcmwiOiJodHRwOi8vbG9jYWxob3N0OjMwMDAvaG9tZSJ9'
+        //   }
+
+        // Validate request body.
+        const params = new URLSearchParams(ctx.request.body);
+        validateOauthRequestParameterClientId(params);
+        validateOauthRequestParameterRedirectUri(params);
+        validateOauthRequestParameterGrantType(params);
+        validateOauthRequestParameterCode(params);
+
+        // Verify code parameter sent by client in uri.
+        let verifiedToken;
+        try {
+            verifiedToken = verify(ctx.request.body.code, jwtSecret,
+                    { complete: true });
+            // const verifiedToken = verify(ctx.request.body.code, Buffer.from(jwtSecret, 'base64'));
+        } catch (error) {
+            console.log('Invalid jwt token (code). Error: ', error.toString());
+        }
+        assert(verifiedToken, 400, 'Invalid parameter "code"');
+        console.log('verifiedToken', verifiedToken);
+
+        // TODO Validate JWT claims.
+
+
+        // Output access_token
         const expiresIn = 60 * 60;
         const scope = 'openid profile';
         const state = ctx.request.body.state;
