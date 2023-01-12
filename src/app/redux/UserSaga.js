@@ -5,7 +5,6 @@ import {
 } from 'redux-saga/effects';
 import { api, auth } from '@hiveio/hive-js';
 import { PrivateKey, Signature, hash } from '@hiveio/hive-js/lib/auth/ecc';
-import { assert } from 'koa/lib/context';
 
 import { accountAuthLookup } from 'app/redux/AuthSaga';
 import { getAccount } from 'app/redux/SagaShared';
@@ -57,13 +56,10 @@ function oauthRedirect(username, private_keys) {
     }
 
     // We handle only users logged in via private keys.
-    // if (!private_keys) {
-    //     console.log('oauthRedirect no private_keys');
-    //     return;
-    // }
-    assert(private_keys, 401, "We're in the middle of oauth redirect, "
-            + "but you're logged in via unsupported method. "
-            + "You should be logged using your private key as password");
+    if (!private_keys) {
+        console.log('oauthRedirect no private_keys');
+        return;
+    }
 
     const params = new URLSearchParams(oauthItem);
     const redirect_to = params.get('redirect_to');
