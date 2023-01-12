@@ -5,6 +5,7 @@ import {
 } from 'redux-saga/effects';
 import { api, auth } from '@hiveio/hive-js';
 import { PrivateKey, Signature, hash } from '@hiveio/hive-js/lib/auth/ecc';
+import { assert } from 'koa/lib/context';
 
 import { accountAuthLookup } from 'app/redux/AuthSaga';
 import { getAccount } from 'app/redux/SagaShared';
@@ -22,7 +23,6 @@ import { loadFollows } from 'app/redux/FollowSaga';
 import { translate } from 'app/Translator';
 import DMCAUserList from 'app/utils/DMCAUserList';
 import { setHiveSignerAccessToken, isLoggedInWithHiveSigner, hiveSignerClient } from 'app/utils/HiveSigner';
-import base64url from "base64url";
 
 // eslint-disable-next-line import/prefer-default-export
 export const userWatches = [
@@ -46,7 +46,6 @@ export const userWatches = [
 function oauthRedirect(username, private_keys) {
     const oauthItem = sessionStorage.getItem('oauth');
     if (!oauthItem) {
-        console.log('oauthRedirect no oauthItem');
         return;
     }
     sessionStorage.removeItem('oauth');
@@ -58,10 +57,13 @@ function oauthRedirect(username, private_keys) {
     }
 
     // We handle only users logged in via private keys.
-    if (!private_keys) {
-        console.log('oauthRedirect no private_keys');
-        return;
-    }
+    // if (!private_keys) {
+    //     console.log('oauthRedirect no private_keys');
+    //     return;
+    // }
+    assert(private_keys, 401, "We're in the middle of oauth redirect, "
+            + "but you're logged in via unsupported method. "
+            + "You should be logged using your private key as password");
 
     const params = new URLSearchParams(oauthItem);
     const redirect_to = params.get('redirect_to');
