@@ -258,18 +258,19 @@ function proxifyImages(doc, state) {
 
         if (!linksRe.local.test(url)) {
             const proxifiedImageUrl = proxifyImageUrl(url, true);
-            node.setAttribute('src', proxifiedImageUrl);
 
             if (state.lightbox && process.env.BROWSER) {
                 node.parentNode.replaceChild(
                     DOMParser.parseFromString(`<a href="${getDoubleSize(proxifyImageUrl(url, true))}">
                         <img
-                            src="${url}"
+                            src="${proxifiedImageUrl}"
                             alt="${alt}"
                         />
                     </a>`),
                     node
                 );
+            } else {
+                node.setAttribute('src', proxifiedImageUrl);
             }
         }
     });
