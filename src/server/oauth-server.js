@@ -5,81 +5,125 @@ import auth from 'basic-auth';
 import { assert } from 'koa/lib/context';
 import config from 'config';
 
+//
+// TODO In case of error oauth server should reponsd with redirection to
+// redirect_uri with explanation of error.
+//
+
 /**
  * Validates Oauth request parameter "client_id" in url search string.
  *
  * @param {*} params: URLSearchParams
  */
-const validateOauthRequestParameterClientId = (params) => {
+function validateOauthRequestParameterClientId(params) {
+    // TODO In this case we should swallow error and reject request.
     const oauthServerConfig = config.get('oauth_server');
     assert(params.has('client_id'), 400,
             'Parameter "client_id" is required');
     assert((oauthServerConfig.clients).has(params.get('client_id')), 400,
             'Parameter "client_id" does not match any registered clients');
-};
+}
 
 /**
  * Validates Oauth request parameter "redirect_uri" in url search string.
  *
  * @param {*} params: URLSearchParams
  */
-const validateOauthRequestParameterRedirectUri = (params) => {
+function validateOauthRequestParameterRedirectUri(params) {
+    // TODO In this case we should swallow error and reject request.
     const oauthServerConfig = config.get('oauth_server');
     assert(params.has('redirect_uri'), 400,
             'Parameter "redirect_uri" is required');
     assert((oauthServerConfig.clients[params.get('client_id')].redirect_uris).includes(params.get('redirect_uri')), 400,
             'Parameter "redirect_uri" does not match any registered redirected_uris');
-};
+}
 
 /**
  * Validates Oauth request parameter "scope" in url search string.
  *
  * @param {*} params: URLSearchParams
  */
-const validateOauthRequestParameterScope = (params) => {
-    assert(params.has('scope'), 400,
-            'Parameter "scope" is required');
-    assert(params.get('scope').trim().split(/ +/).includes('openid'), 400,
-            'Parameter "scope" must contain string "openid"');
-};
+function validateOauthRequestParameterScope(params) {
+    if (!params.has('scope')) {
+        return {
+            error_code: 'invalid_request',
+            error_description: 'Missing required parameter "scope"',
+        };
+    }
+    if (!params.get('scope').trim().split(/ +/).includes('openid')) {
+        return {
+            error_code: 'invalid_scope',
+            error_description: 'Missing required string "openid" in "scope"',
+        };
+    }
+    return null;
+}
 
 /**
  * Validates Oauth request parameter "response_type" in url search string.
  *
  * @param {*} params: URLSearchParams
  */
-const validateOauthRequestParameterResponseType = (params) => {
-    assert(params.has('response_type'), 400,
-            'Parameter "response_type" is required');
-    assert(params.get('response_type') === 'code', 400,
-            'Parameter "response_type" should be equal to string "code"');
-};
+function validateOauthRequestParameterResponseType(params) {
+    if (!params.has('response_type')) {
+        return {
+            error_code: 'invalid_request',
+            error_description: 'Missing required parameter "response_type"',
+        };
+    }
+    if (!(params.get('response_type') === 'code')) {
+        return {
+            error_code: 'unsupported_response_type',
+            error_description: 'Server does not support requested "response_type"',
+        };
+    }
+    return null;
+}
 
 /**
  * Validates Oauth request parameter "grant_type" in url search string.
  *
  * @param {*} params: URLSearchParams
  */
-const validateOauthRequestParameterGrantType = (params) => {
+function validateOauthRequestParameterGrantType(params) {
     assert(params.has('grant_type'), 400,
             'Parameter "grant_type" is required');
     assert(params.get('grant_type') === 'authorization_code', 400,
             'Parameter "grant_type" should be equal to string "authorization_code"');
-};
+}
 
 /**
  * Validates Oauth request parameter "code" in url search string.
  *
  * @param {*} params: URLSearchParams
  */
-const validateOauthRequestParameterCode = (params) => {
+function validateOauthRequestParameterCode(params) {
     assert(params.has('code'), 400,
             'Parameter "code" is required');
     assert(params.get('code'), 400,
             'Parameter "code" must not be empty');
-};
+}
+
+function doOuathErrorRedirect(params, error, ctx) {
+    const responseParams = new URLSearchParams(error);
+    if (params.get('state')) {
+        responseParams.set('state', params.get('state'));
+    }
+    ctx.redirect(params.get('redirect_uri') + '?' + responseParams.toString());
+}
 
 
+/**
+ * A simple oauth server created ad hoc to handle login for
+ * openhive.chat website. The server implements only [Authentication
+ * using the Authorization Code
+ * Flow](https://openid.net/specs/openid-connect-core-1_0.html#CodeFlowAuth).
+ * See also [Error
+ * Response](https://www.rfc-editor.org/rfc/rfc6749#section-4.1.2.1).
+ *
+ * @export
+ * @param {*} app: Koa
+ */
 export default function useOauthServer(app) {
     const publicRouter = new koa_router();
     const privateRouter = new koa_router();
@@ -121,8 +165,18 @@ export default function useOauthServer(app) {
         // Validate request search parameters.
         validateOauthRequestParameterClientId(params);
         validateOauthRequestParameterRedirectUri(params);
-        validateOauthRequestParameterScope(params);
-        validateOauthRequestParameterResponseType(params);
+
+        let validationError = validateOauthRequestParameterScope(params);
+        if (validationError) {
+            doOuathErrorRedirect(params, validationError, ctx);
+            return;
+        }
+
+        validationError = validateOauthRequestParameterResponseType(params);
+        if (validationError) {
+            doOuathErrorRedirect(params, validationError, ctx);
+            return;
+        }
 
         if (ctx.session.a) {
             // When we have user in session,
@@ -156,6 +210,9 @@ export default function useOauthServer(app) {
 
     publicRouter.post('/oauth/token', async (ctx) => {
 
+        // TODO In case of error we should respond with application/json
+        // media type with HTTP response code of 400
+
         // Check user and password in basic auth.
         const client = auth(ctx);
         assert((oauthServerConfig.clients).has(client.name), 401,
@@ -176,7 +233,6 @@ export default function useOauthServer(app) {
         try {
             verifiedToken = verify(ctx.request.body.code, jwtSecret,
                     { complete: true });
-            // const verifiedToken = verify(ctx.request.body.code, Buffer.from(jwtSecret, 'base64'));
         } catch (error) {
             console.log('Invalid jwt token (code). Error: ', error.toString());
         }
