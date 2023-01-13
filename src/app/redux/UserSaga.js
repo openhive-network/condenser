@@ -62,9 +62,11 @@ function oauthRedirect(username, private_keys) {
     }
 
     const params = new URLSearchParams(oauthItem);
-    const redirect_to = params.get('redirect_to');
-    params.delete('redirect_to');
-    window.location = redirect_to + '?' + params.toString();
+    if (params.has('redirect_to')) {
+        const redirect_to = params.get('redirect_to');
+        params.delete('redirect_to');
+        window.location = redirect_to + '?' + params.toString();
+    }
 }
 
 function effectiveVests(account) {
