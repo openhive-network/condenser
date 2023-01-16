@@ -3,6 +3,7 @@ import { sign, verify } from 'jsonwebtoken';
 import koa_router from 'koa-router';
 import auth from 'basic-auth';
 import { assert } from 'koa/lib/context';
+import { api } from '@hiveio/hive-js';
 import config from 'config';
 
 /**
@@ -251,7 +252,7 @@ export default function useOauthServer(app) {
         if (ctx.session.a) {
             // When we have user in session,
             // redirect to client's redirect_uri with "code".
-            const expiresIn = 48 * 60;
+            const expiresIn = 60 * 5;
             const scope = 'openid profile';
             const jwtOptions = {
                 issuer: ctx.request.host,
@@ -364,7 +365,8 @@ export default function useOauthServer(app) {
             return;
         }
 
-        // Create and output tokens
+        // Create and output access_token and id_token.
+
         const expiresIn = 60 * 60;
         const scope = verifiedCode.payload.scope;
         const subject = verifiedCode.payload.sub;
@@ -376,7 +378,7 @@ export default function useOauthServer(app) {
             issuer,
             subject,
             audience,
-            expiresIn,
+            expiresIn: 60 * 5,
         };
         const access_token_payload = {
             username: verifiedCode.payload.username,
@@ -418,8 +420,35 @@ export default function useOauthServer(app) {
     privateRouter.get('/oauth/userinfo', async (ctx) => {
 
         // ctx.state.user is a payload from jwt token
-        assert(ctx.state.user.iss === ctx.request.host, 401, 'Invalid jwt token issuer');
-        assert(Object.keys(oauthServerConfig.clients).includes(ctx.state.user.aud), 401, 'Invalid jwt token audience');
+
+        if (ctx.state.user.iss !== ctx.request.host) {
+            ctx.status = 401;
+            ctx.body = {
+                error: 'invalid_request',
+                error_description: "Invalid jwt token (bearer) issuer",
+            };
+            return;
+        }
+
+        if (!Object.keys(oauthServerConfig.clients).includes(ctx.state.user.aud)) {
+            ctx.status = 401;
+            ctx.body = {
+                error: 'invalid_request',
+                error_description: "Invalid jwt token (bearer) audience",
+            };
+            return;
+        }
+
+        //
+        // TODO Get user's profile data from posting_json_metadata, see
+        // https://hiveblocks.com/@gandalf. Then use that data to
+        // improve response here.
+        //
+        const [chainAccount] = await api.getAccountsAsync([ctx.state.user.sub]);
+        if (!chainAccount) {
+            console.error('missing blockchain account', ctx.state.user.sub);
+        }
+        console.log('chainAccount', chainAccount);
 
         ctx.body = {
             username: ctx.state.user.username,
