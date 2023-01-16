@@ -5,23 +5,26 @@ import auth from 'basic-auth';
 import { assert } from 'koa/lib/context';
 import config from 'config';
 
-//
-// TODO In case of error oauth server should reponsd with redirection to
-// redirect_uri with explanation of error.
-//
-
 /**
  * Validates Oauth request parameter "client_id" in url search string.
  *
  * @param {*} params: URLSearchParams
  */
 function validateOauthRequestParameterClientId(params) {
-    // TODO In this case we should swallow error and reject request.
     const oauthServerConfig = config.get('oauth_server');
-    assert(params.has('client_id'), 400,
-            'Parameter "client_id" is required');
-    assert((oauthServerConfig.clients).has(params.get('client_id')), 400,
-            'Parameter "client_id" does not match any registered clients');
+    if (!params.has('client_id')) {
+        return {
+            error: 'invalid_request',
+            error_description: "Missing required parameter 'client_id'",
+        };
+    }
+    if (!(oauthServerConfig.clients).has(params.get('client_id'))) {
+        return {
+            error: 'invalid_request',
+            error_description: "Missing required parameter 'client_id'",
+        };
+    }
+    return null;
 }
 
 /**
@@ -30,12 +33,21 @@ function validateOauthRequestParameterClientId(params) {
  * @param {*} params: URLSearchParams
  */
 function validateOauthRequestParameterRedirectUri(params) {
-    // TODO In this case we should swallow error and reject request.
     const oauthServerConfig = config.get('oauth_server');
-    assert(params.has('redirect_uri'), 400,
-            'Parameter "redirect_uri" is required');
-    assert((oauthServerConfig.clients[params.get('client_id')].redirect_uris).includes(params.get('redirect_uri')), 400,
-            'Parameter "redirect_uri" does not match any registered redirected_uris');
+    if (!params.has('redirect_uri')) {
+        return {
+            error: 'invalid_request',
+            error_description: "Missing required parameter 'redirect_uri'",
+        };
+    }
+    if (!(oauthServerConfig.clients[params.get('client_id')].redirect_uris)
+            .includes(params.get('redirect_uri'))) {
+        return {
+            error: 'invalid_request',
+            error_description: "Parameter 'redirect_uri' does not match any registered 'redirected_uris'",
+        };
+    }
+    return null;
 }
 
 /**
@@ -46,35 +58,50 @@ function validateOauthRequestParameterRedirectUri(params) {
 function validateOauthRequestParameterScope(params) {
     if (!params.has('scope')) {
         return {
-            error_code: 'invalid_request',
-            error_description: 'Missing required parameter "scope"',
+            error: 'invalid_request',
+            error_description: "Missing required parameter 'scope'",
         };
     }
-    if (!params.get('scope').trim().split(/ +/).includes('openid')) {
+
+    const requestedScope = params.get('scope').trim().split(/ +/);
+    if (!requestedScope.includes('openid')) {
         return {
-            error_code: 'invalid_scope',
-            error_description: 'Missing required string "openid" in "scope"',
+            error: 'invalid_scope',
+            error_description: "Missing required string 'openid' in 'scope'",
         };
     }
+
+    const allowedScope = (config.get('oauth_server'))
+            .clients[params.get('client_id')].scope;
+    for (const scope of requestedScope) {
+        if (!allowedScope.includes(scope)) {
+            return {
+                error: 'invalid_scope',
+                error_description: `Scope '${scope}' is not allowed`,
+            };
+        }
+    }
+
     return null;
 }
 
 /**
- * Validates Oauth request parameter "response_type" in url search string.
+ * Validates Oauth request parameter "response_type" in url search
+ * string.
  *
  * @param {*} params: URLSearchParams
  */
 function validateOauthRequestParameterResponseType(params) {
     if (!params.has('response_type')) {
         return {
-            error_code: 'invalid_request',
-            error_description: 'Missing required parameter "response_type"',
+            error: 'invalid_request',
+            error_description: "Missing required parameter 'response_type'",
         };
     }
     if (!(params.get('response_type') === 'code')) {
         return {
-            error_code: 'unsupported_response_type',
-            error_description: 'Server does not support requested "response_type"',
+            error: 'unsupported_response_type',
+            error_description: "Server does not support requested 'response_type'",
         };
     }
     return null;
@@ -86,10 +113,19 @@ function validateOauthRequestParameterResponseType(params) {
  * @param {*} params: URLSearchParams
  */
 function validateOauthRequestParameterGrantType(params) {
-    assert(params.has('grant_type'), 400,
-            'Parameter "grant_type" is required');
-    assert(params.get('grant_type') === 'authorization_code', 400,
-            'Parameter "grant_type" should be equal to string "authorization_code"');
+    if (!params.has('grant_type')) {
+        return {
+            error: 'invalid_request',
+            error_description: "Missing required parameter 'grant_type'",
+        };
+    }
+    if (!(params.get('grant_type') === 'authorization_code')) {
+        return {
+            error: 'invalid_request',
+            error_description: "Server does not support requested 'grant_type'",
+        };
+    }
+    return null;
 }
 
 /**
@@ -98,39 +134,61 @@ function validateOauthRequestParameterGrantType(params) {
  * @param {*} params: URLSearchParams
  */
 function validateOauthRequestParameterCode(params) {
-    assert(params.has('code'), 400,
-            'Parameter "code" is required');
-    assert(params.get('code'), 400,
-            'Parameter "code" must not be empty');
+    if (!params.has('code')) {
+        return {
+            error: 'invalid_request',
+            error_description: "Missing required parameter 'code'",
+        };
+    }
+    if (!params.get('code')) {
+        return {
+            error: 'invalid_request',
+            error_description: "Parameter 'code' must not be empty",
+        };
+    }
+    return null;
 }
 
-function doOuathErrorRedirect(params, error, ctx) {
+function ouathErrorRedirect(params, error, ctx) {
     const responseParams = new URLSearchParams(error);
     if (params.get('state')) {
         responseParams.set('state', params.get('state'));
     }
-    ctx.redirect(params.get('redirect_uri') + '?' + responseParams.toString());
+    ctx.redirect(params.get('redirect_uri') + '?'
+            + responseParams.toString());
 }
 
 
 /**
- * A simple oauth server created ad hoc to handle login for
- * openhive.chat website. The server implements only [Authentication
- * using the Authorization Code
+ * A simple oauth server created only to handle login for openhive.chat
+ * website. The server implements only [Authentication using the
+ * Authorization Code
  * Flow](https://openid.net/specs/openid-connect-core-1_0.html#CodeFlowAuth).
  * See also [Error
  * Response](https://www.rfc-editor.org/rfc/rfc6749#section-4.1.2.1).
+ *
+ * Warning: this server does not comply to all rules specified at
+ * https://openid.net/specs/openid-connect-core-1_0.
  *
  * @export
  * @param {*} app: Koa
  */
 export default function useOauthServer(app) {
+
+    //
+    // jwtSecret should be 256 bit length. You can generate it this way,
+    // for instance:
+    // ```
+    // const crypto = require('crypto');
+    // crypto.randomBytes(32).toString('base64');
+    // ```
+    //
+    const jwtSecret = config.get('server_session_secret');
+
+    const oauthServerConfig = config.get('oauth_server');
     const publicRouter = new koa_router();
     const privateRouter = new koa_router();
-    // TODO Is it safe to use server_session_secret here?
-    const jwtSecret = config.get('server_session_secret');
     privateRouter.use(jwt({ secret: jwtSecret }));
-    const oauthServerConfig = config.get('oauth_server');
 
     // Custom 401 handling – expose jwt errors in response, but don't do
     // this on production.
@@ -153,6 +211,7 @@ export default function useOauthServer(app) {
         });
     }
 
+    // Authorization endpoint.
     publicRouter.get('/oauth/authorize', async (ctx) => {
         const params = new URLSearchParams(ctx.URL.search);
 
@@ -162,26 +221,37 @@ export default function useOauthServer(app) {
         console.log('response.body', ctx.response.body);
         console.log('ctx', ctx);
 
-        // Validate request search parameters.
-        validateOauthRequestParameterClientId(params);
-        validateOauthRequestParameterRedirectUri(params);
-
-        let validationError = validateOauthRequestParameterScope(params);
+        // Validate request parameters.
+        let validationError = validateOauthRequestParameterClientId(params);
         if (validationError) {
-            doOuathErrorRedirect(params, validationError, ctx);
+            ctx.body = validationError;
+            return;
+        }
+
+        validationError = validateOauthRequestParameterRedirectUri(params);
+        if (validationError) {
+            ctx.body = validationError;
+            return;
+        }
+
+        validationError = validateOauthRequestParameterScope(params);
+        if (validationError) {
+            ouathErrorRedirect(params, validationError, ctx);
             return;
         }
 
         validationError = validateOauthRequestParameterResponseType(params);
         if (validationError) {
-            doOuathErrorRedirect(params, validationError, ctx);
+            ouathErrorRedirect(params, validationError, ctx);
             return;
         }
 
+        // Response.
+        ctx.session.a = 'stirlitz';
         if (ctx.session.a) {
             // When we have user in session,
-            // redirect to client's redirect_uri with code.
-            const expiresIn = 5 * 60;
+            // redirect to client's redirect_uri with "code".
+            const expiresIn = 48 * 60;
             const scope = 'openid profile';
             const jwtOptions = {
                 issuer: ctx.request.host,
@@ -192,6 +262,7 @@ export default function useOauthServer(app) {
             const payload = {
                 username: ctx.session.a,
                 scope,
+                redirect_uri: params.get('redirect_uri'),
             };
             const code = sign(payload, jwtSecret, jwtOptions);
             const responseParams = new URLSearchParams();
@@ -208,62 +279,125 @@ export default function useOauthServer(app) {
         }
     });
 
+    // Token endpoint.
     publicRouter.post('/oauth/token', async (ctx) => {
-
-        // TODO In case of error we should respond with application/json
-        // media type with HTTP response code of 400
 
         // Check user and password in basic auth.
         const client = auth(ctx);
-        assert((oauthServerConfig.clients).has(client.name), 401,
-            'Invalid user or password');
-        assert(oauthServerConfig.clients[client.name].secret === client.pass,
-            401, 'Invalid user or password');
+        assert((oauthServerConfig.clients).has(client.name), 401);
+        assert(oauthServerConfig.clients[client.name].secret === client.pass, 401);
 
         // Validate request body.
         const params = new URLSearchParams(ctx.request.body);
         params.set('client_id', client.name);
-        validateOauthRequestParameterClientId(params);
-        validateOauthRequestParameterRedirectUri(params);
-        validateOauthRequestParameterGrantType(params);
-        validateOauthRequestParameterCode(params);
+
+        let validationError = validateOauthRequestParameterClientId(params);
+        if (validationError) {
+            ctx.status = 400;
+            ctx.body = validationError;
+            return;
+        }
+
+        // Not needed, but doesn't hurt.
+        validationError = validateOauthRequestParameterRedirectUri(params);
+        if (validationError) {
+            ctx.status = 400;
+            ctx.body = validationError;
+            return;
+        }
+
+        validationError = validateOauthRequestParameterGrantType(params);
+        if (validationError) {
+            ctx.status = 400;
+            ctx.body = validationError;
+            return;
+        }
+
+        validationError = validateOauthRequestParameterCode(params);
+        if (validationError) {
+            ctx.status = 400;
+            ctx.body = validationError;
+            return;
+        }
 
         // Verify code parameter sent by client in uri.
-        let verifiedToken;
+        let verifiedCode;
         try {
-            verifiedToken = verify(ctx.request.body.code, jwtSecret,
+            verifiedCode = verify(ctx.request.body.code, jwtSecret,
                     { complete: true });
         } catch (error) {
-            console.log('Invalid jwt token (code). Error: ', error.toString());
+            const error_description = `Invalid jwt token (code). ${error.toString()}`;
+            console.log(error_description);
+            ctx.status = 400;
+            ctx.body = {
+                error: 'invalid_request',
+                error_description,
+            };
+            return;
         }
-        assert(verifiedToken, 400, 'Invalid parameter "code"');
 
         // Validate JWT claims.
-        assert(verifiedToken.payload.iss === ctx.request.host, 401, 'Invalid jwt token issuer');
-        assert(verifiedToken.payload.aud === params.get('client_id'), 401, 'Invalid jwt token audience');
+        if (verifiedCode.payload.iss !== ctx.request.host) {
+            ctx.status = 400;
+            ctx.body = {
+                error: 'invalid_request',
+                error_description: "Invalid jwt token (code) issuer",
+            };
+            return;
+        }
 
-        // Create and output access_token
+        if (verifiedCode.payload.aud !== params.get('client_id')) {
+            ctx.status = 400;
+            ctx.body = {
+                error: 'invalid_request',
+                error_description: "Invalid jwt token (code) audience",
+            };
+            return;
+        }
+
+        if (verifiedCode.payload.redirect_uri !== params.get('redirect_uri')) {
+            ctx.status = 400;
+            ctx.body = {
+                error: 'invalid_request',
+                error_description: "Invalid parameter redirect_uri",
+            };
+            return;
+        }
+
+        // Create and output tokens
         const expiresIn = 60 * 60;
-        const scope = verifiedToken.payload.scope;
-        const subject = verifiedToken.payload.sub;
-        const audience = verifiedToken.payload.aud;
+        const scope = verifiedCode.payload.scope;
+        const subject = verifiedCode.payload.sub;
+        const audience = verifiedCode.payload.aud;
         const state = ctx.request.body.state;
         const issuer = ctx.request.host;
 
-        const jwtOptions = {
+        const access_token_jwtOptions = {
             issuer,
             subject,
             audience,
             expiresIn,
         };
-        const payload = {
-            username: verifiedToken.payload.username,
-            scope: verifiedToken.payload.scope,
+        const access_token_payload = {
+            username: verifiedCode.payload.username,
+            scope: verifiedCode.payload.scope,
         };
-        const access_token = sign(payload, jwtSecret, jwtOptions);
+        const access_token = sign(access_token_payload, jwtSecret, access_token_jwtOptions);
+
+        const id_token_jwtOptions = {
+            issuer,
+            subject,
+            audience,
+            expiresIn: 60 * 60 * 12,
+        };
+        const id_token_payload = {
+            username: verifiedCode.payload.username,
+        };
+        const id_token = sign(id_token_payload, jwtSecret, id_token_jwtOptions);
 
         ctx.body = {
             state,
+            id_token,
             access_token,
             expires_in: expiresIn,
             scope,
@@ -274,12 +408,13 @@ export default function useOauthServer(app) {
         const date = new Date();
         console.log(`${date.toISOString()} Got request to /oauth/token`);
         console.log('ctx', ctx);
-        console.log('verifiedToken', verifiedToken);
+        console.log('verifiedCode', verifiedCode);
         console.log('request', ctx.request);
         console.log('request.body', ctx.request.body);
         console.log('response.body', ctx.response.body);
     });
 
+    // Userinfo endpoint.
     privateRouter.get('/oauth/userinfo', async (ctx) => {
 
         // ctx.state.user is a payload from jwt token
