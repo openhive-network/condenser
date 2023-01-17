@@ -1,15 +1,15 @@
 import jwt from 'koa-jwt';
 import { sign, verify } from 'jsonwebtoken';
-import koa_router from 'koa-router';
+import Router from 'koa-router';
 import auth from 'basic-auth';
 import { assert } from 'koa/lib/context';
 import { api } from '@hiveio/hive-js';
 import config from 'config';
 
 /**
- * Validates Oauth request parameter "client_id" in url search string.
+ * Validate Oauth request parameter `client_id`.
  *
- * @param {*} params: URLSearchParams
+ * @param {URLSearchParams} params
  */
 function validateOauthRequestParameterClientId(params) {
     const oauthServerConfig = config.get('oauth_server');
@@ -29,32 +29,36 @@ function validateOauthRequestParameterClientId(params) {
 }
 
 /**
- * Validates Oauth request parameter "redirect_uri" in url search string.
+ * Validate Oauth request parameter `redirect_uri`.
  *
- * @param {*} params: URLSearchParams
+ * @param {URLSearchParams} params
  */
 function validateOauthRequestParameterRedirectUri(params) {
     const oauthServerConfig = config.get('oauth_server');
     if (!params.has('redirect_uri')) {
         return {
             error: 'invalid_request',
-            error_description: "Missing required parameter 'redirect_uri'",
+            error_description: "Missing required parameter "
+                    + "'redirect_uri'",
         };
     }
-    if (!(oauthServerConfig.clients[params.get('client_id')].redirect_uris)
-            .includes(params.get('redirect_uri'))) {
+    if (!(oauthServerConfig
+                .clients[params.get('client_id')]
+                .redirect_uris)
+                .includes(params.get('redirect_uri'))) {
         return {
             error: 'invalid_request',
-            error_description: "Parameter 'redirect_uri' does not match any registered 'redirected_uris'",
+            error_description: "Parameter 'redirect_uri' "
+                    + "does not match any registered 'redirected_uris'",
         };
     }
     return null;
 }
 
 /**
- * Validates Oauth request parameter "scope" in url search string.
+ * Validate Oauth request parameter `scope`.
  *
- * @param {*} params: URLSearchParams
+ * @param {URLSearchParams} params
  */
 function validateOauthRequestParameterScope(params) {
     if (!params.has('scope')) {
@@ -87,10 +91,9 @@ function validateOauthRequestParameterScope(params) {
 }
 
 /**
- * Validates Oauth request parameter "response_type" in url search
- * string.
+ * Validate Oauth request parameter `response_type`.
  *
- * @param {*} params: URLSearchParams
+ * @param {URLSearchParams} params
  */
 function validateOauthRequestParameterResponseType(params) {
     if (!params.has('response_type')) {
@@ -109,9 +112,9 @@ function validateOauthRequestParameterResponseType(params) {
 }
 
 /**
- * Validates Oauth request parameter "grant_type" in url search string.
+ * Validate Oauth request parameter `grant_type`.
  *
- * @param {*} params: URLSearchParams
+ * @param {URLSearchParams} params
  */
 function validateOauthRequestParameterGrantType(params) {
     if (!params.has('grant_type')) {
@@ -130,9 +133,9 @@ function validateOauthRequestParameterGrantType(params) {
 }
 
 /**
- * Validates Oauth request parameter "code" in url search string.
+ * Validate Oauth request parameter `code`.
  *
- * @param {*} params: URLSearchParams
+ * @param {URLSearchParams} params
  */
 function validateOauthRequestParameterCode(params) {
     if (!params.has('code')) {
@@ -150,6 +153,14 @@ function validateOauthRequestParameterCode(params) {
     return null;
 }
 
+/**
+ * Redirect user agent to `redirect_uri`, in case of error in Oauth
+ * request.
+ *
+ * @param {URLSearchParams} params
+ * @param {Object} error
+ * @param {Koa.ctx} ctx
+ */
 function ouathErrorRedirect(params, error, ctx) {
     const responseParams = new URLSearchParams(error);
     if (params.get('state')) {
@@ -161,9 +172,9 @@ function ouathErrorRedirect(params, error, ctx) {
 
 
 /**
- * A simple oauth server created only to handle login for openhive.chat
- * website. The server implements only [Authentication using the
- * Authorization Code
+ * A simple oauth server module created only to handle login for
+ * openhive.chat website. The server implements only [Authentication
+ * using the Authorization Code
  * Flow](https://openid.net/specs/openid-connect-core-1_0.html#CodeFlowAuth).
  * See also [Error
  * Response](https://www.rfc-editor.org/rfc/rfc6749#section-4.1.2.1).
@@ -172,9 +183,9 @@ function ouathErrorRedirect(params, error, ctx) {
  * https://openid.net/specs/openid-connect-core-1_0.
  *
  * @export
- * @param {*} app: Koa
+ * @param {Koa} app
  */
-export default function useOauthServer(app) {
+export default function oauthServer(app) {
 
     //
     // jwtSecret should be 256 bit length. You can generate it this way,
@@ -187,8 +198,8 @@ export default function useOauthServer(app) {
     const jwtSecret = config.get('server_session_secret');
 
     const oauthServerConfig = config.get('oauth_server');
-    const publicRouter = new koa_router();
-    const privateRouter = new koa_router();
+    const publicRouter = new Router();
+    const privateRouter = new Router();
     privateRouter.use(jwt({ secret: jwtSecret }));
 
     // Custom 401 handling – expose jwt errors in response, but don't do
@@ -289,6 +300,7 @@ export default function useOauthServer(app) {
         assert(oauthServerConfig.clients[client.name].secret === client.pass, 401);
 
         // Validate request body.
+
         const params = new URLSearchParams(ctx.request.body);
         params.set('client_id', client.name);
 
@@ -299,7 +311,7 @@ export default function useOauthServer(app) {
             return;
         }
 
-        // Not needed, but doesn't hurt.
+        // Not required here, but doesn't hurt.
         validationError = validateOauthRequestParameterRedirectUri(params);
         if (validationError) {
             ctx.status = 400;
@@ -321,14 +333,13 @@ export default function useOauthServer(app) {
             return;
         }
 
-        // Verify code parameter sent by client in uri.
+        // Verify code parameter sent by client.
         let verifiedCode;
         try {
             verifiedCode = verify(ctx.request.body.code, jwtSecret,
                     { complete: true });
         } catch (error) {
             const error_description = `Invalid jwt token (code). ${error.toString()}`;
-            console.log(error_description);
             ctx.status = 400;
             ctx.body = {
                 error: 'invalid_request',
@@ -356,7 +367,8 @@ export default function useOauthServer(app) {
             return;
         }
 
-        if (verifiedCode.payload.redirect_uri !== params.get('redirect_uri')) {
+        if (verifiedCode.payload.redirect_uri
+                    !== params.get('redirect_uri')) {
             ctx.status = 400;
             ctx.body = {
                 error: 'invalid_request',
@@ -384,7 +396,8 @@ export default function useOauthServer(app) {
             username: verifiedCode.payload.username,
             scope: verifiedCode.payload.scope,
         };
-        const access_token = sign(access_token_payload, jwtSecret, access_token_jwtOptions);
+        const access_token = sign(access_token_payload, jwtSecret,
+                access_token_jwtOptions);
 
         const id_token_jwtOptions = {
             issuer,
@@ -395,7 +408,8 @@ export default function useOauthServer(app) {
         const id_token_payload = {
             username: verifiedCode.payload.username,
         };
-        const id_token = sign(id_token_payload, jwtSecret, id_token_jwtOptions);
+        const id_token = sign(id_token_payload, jwtSecret,
+                id_token_jwtOptions);
 
         ctx.body = {
             state,

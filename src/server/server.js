@@ -28,7 +28,7 @@ import prod_logger from './prod_logger';
 import hardwareStats from './hardwarestats';
 import StatsLoggerClient from './utils/StatsLoggerClient';
 import requestTime from './requesttimings';
-import useOauthServer from './oauth-server';
+import oauthServer from './oauth-server';
 
 if (cluster.isMaster) console.log('application server starting, please wait.');
 
@@ -104,7 +104,7 @@ app.use(async (ctx, next) => {
 });
 
 useGeneralApi(app);
-useOauthServer(app);
+oauthServer(app);
 
 koaLocale(app);
 
