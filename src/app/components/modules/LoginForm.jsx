@@ -73,9 +73,7 @@ class LoginForm extends Component {
         if (this.refs.username && !this.refs.username.value) this.refs.username.focus();
         // eslint-disable-next-line react/no-string-refs
         if (this.refs.username && this.refs.username.value) this.refs.pw.focus();
-
         this.registerOauthRequest();
-        console.log('bamboo end of componentDidMount');
     }
 
     componentDidUpdate() {
@@ -154,7 +152,6 @@ class LoginForm extends Component {
                 && params.has('state')
                 && params.has('scope')
                 ) {
-            // TODO Consider storing this in state.
             sessionStorage.setItem('oauth', params.toString());
         }
     }

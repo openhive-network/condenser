@@ -22,7 +22,8 @@ function validateOauthRequestParameterClientId(params) {
     if (!(oauthServerConfig.clients).has(params.get('client_id'))) {
         return {
             error: 'invalid_request',
-            error_description: "Missing required parameter 'client_id'",
+            error_description: "Parameter 'client_id' "
+                    + "does not match any registered clients",
         };
     }
     return null;
@@ -442,7 +443,7 @@ export default function oauthServer(app) {
 
         // Create and output access_token and id_token.
 
-        const expiresIn = 60 * 60;
+        const expiresIn = 60 * 5;
         const scope = verifiedCode.payload.scope;
         const subject = verifiedCode.payload.sub;
         const audience = verifiedCode.payload.aud;
@@ -453,7 +454,7 @@ export default function oauthServer(app) {
             issuer,
             subject,
             audience,
-            expiresIn: 60 * 5,
+            expiresIn,
         };
         const access_token_payload = {
             username: verifiedCode.payload.username,
@@ -466,7 +467,7 @@ export default function oauthServer(app) {
             issuer,
             subject,
             audience,
-            expiresIn: 60 * 60 * 12,
+            expiresIn: 60 * 60,
         };
         const hiveUserProfile = await getHiveUserProfile(verifiedCode.payload.username);
         const id_token_payload_simple = {
