@@ -170,6 +170,70 @@ function ouathErrorRedirect(params, error, ctx) {
             + responseParams.toString());
 }
 
+/**
+ * Get Hive user's profile data from posting_json_metadata. Then output
+ * properties as standard or custom id_token jwt claims.
+ *
+ * @param {String} hiveUsername
+ * @returns {Object}
+ */
+async function getHiveUserProfile(hiveUsername) {
+    const hiveUserProfile = {};
+    try {
+        const [chainAccount] = await api.getAccountsAsync([hiveUsername]);
+        if (!chainAccount) {
+            console.error(
+                'gethiveUserProfile error: missing blockchain account',
+                hiveUsername
+                );
+        }
+
+        if (Object.prototype.hasOwnProperty
+                .call(chainAccount, 'posting_json_metadata')) {
+            const postingJsonMetadata = JSON.parse(
+                    chainAccount.posting_json_metadata
+                    );
+            if (Object.prototype.hasOwnProperty
+                    .call(postingJsonMetadata, 'profile')) {
+
+                // The property `name` is dangerous. When you change
+                // it in Hive, you won't be able to login to Rocket
+                // Chat, when changed value differs from that
+                // existing in Rocket Chat. This looks like a bug in
+                // Rocket Chat.
+
+                // if (Object.prototype.hasOwnProperty
+                //         .call(postingJsonMetadata.profile, 'name')) {
+                //     hiveUserProfile.nickname = postingJsonMetadata.profile.name;
+                // }
+
+                // The property `profile_image` is read in Rocket
+                // Chat on each login, but changes don't cause
+                // changing existing avatar. However a new image is
+                // addded to the list of available avatars in Rocket
+                // Chat.
+                if (Object.prototype.hasOwnProperty
+                        .call(postingJsonMetadata.profile, 'profile_image')) {
+                    hiveUserProfile.picture = postingJsonMetadata
+                            .profile.profile_image;
+                }
+
+                // The property `website` does nothing in Rocket
+                // Chat – there's not such field there.
+                if (Object.prototype.hasOwnProperty
+                        .call(postingJsonMetadata.profile, 'website')) {
+                    hiveUserProfile.website = postingJsonMetadata
+                            .profile.website;
+                }
+            }
+        }
+    } catch (error) {
+        // FIXME Delete it!
+        console.error('gethiveUserProfile error', error);
+    }
+    return hiveUserProfile;
+}
+
 
 /**
  * A simple oauth server module created only to handle login for
@@ -405,9 +469,11 @@ export default function oauthServer(app) {
             audience,
             expiresIn: 60 * 60 * 12,
         };
-        const id_token_payload = {
+        const hiveUserProfile = await getHiveUserProfile(verifiedCode.payload.username);
+        const id_token_payload_simple = {
             username: verifiedCode.payload.username,
         };
+        const id_token_payload = {...id_token_payload_simple, ...hiveUserProfile};
         const id_token = sign(id_token_payload, jwtSecret,
                 id_token_jwtOptions);
 
@@ -421,6 +487,7 @@ export default function oauthServer(app) {
         };
         ctx.status = 200;
 
+        // FIXME Delete it!
         const date = new Date();
         console.log(`${date.toISOString()} Got request to /oauth/token`);
         console.log('ctx', ctx);
@@ -453,25 +520,21 @@ export default function oauthServer(app) {
             return;
         }
 
-        //
-        // TODO Get user's profile data from posting_json_metadata, see
-        // https://hiveblocks.com/@gandalf. Then use that data to
-        // improve response here.
-        //
-        const [chainAccount] = await api.getAccountsAsync([ctx.state.user.sub]);
-        if (!chainAccount) {
-            console.error('missing blockchain account', ctx.state.user.sub);
-        }
-        console.log('chainAccount', chainAccount);
-
-        ctx.body = {
+        const body = {
             username: ctx.state.user.username,
-            email: `${ctx.state.user.username}@openhive.chat`,
-            email_verified: true,
             sub: ctx.state.user.username,
         };
+
+        // Add fake email.
+        body.email = `${ctx.state.user.username}@openhive.chat`;
+        body.email_verified = true;
+
+        const hiveUserProfile = await getHiveUserProfile(ctx.state.user.sub);
+
+        ctx.body = {...body, ...hiveUserProfile};
         ctx.status = 200;
 
+        // FIXME Delete it!
         const date = new Date();
         console.log(`${date.toISOString()} Got request to /userinfo`);
         console.log('ctx', ctx);
