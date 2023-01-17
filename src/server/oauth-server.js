@@ -323,7 +323,6 @@ export default function oauthServer(app) {
         }
 
         // Response.
-        ctx.session.a = 'stirlitz';
         if (ctx.session.a) {
             // When we have user in session,
             // redirect to client's redirect_uri with "code".
