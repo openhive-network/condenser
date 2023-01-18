@@ -12,6 +12,7 @@ const requestBase = {
 };
 
 export async function serverApiLogin(account, signatures) {
+    console.log('bamboo running serverApiLogin', account, signatures);
     if (!process.env.BROWSER || window.$STM_ServerBusy) return undefined;
     const response = await axios.post(
         '/api/v1/login_account',
@@ -23,6 +24,7 @@ export async function serverApiLogin(account, signatures) {
 }
 
 export function serverApiLogout() {
+    console.log('bamboo running serverApiLogout');
     if (!process.env.BROWSER || window.$STM_ServerBusy) return;
     const request = { ...requestBase, body: JSON.stringify({ _csrf: $STM_csrf }) };
     // eslint-disable-next-line consistent-return

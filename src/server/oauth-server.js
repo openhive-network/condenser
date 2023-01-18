@@ -70,6 +70,7 @@ function validateOauthRequestParameterScope(params) {
     }
 
     const requestedScope = params.get('scope').trim().split(/ +/);
+
     if (!requestedScope.includes('openid')) {
         return {
             error: 'invalid_scope',
@@ -169,6 +170,12 @@ function ouathErrorRedirect(params, error, ctx) {
     }
     ctx.redirect(params.get('redirect_uri') + '?'
             + responseParams.toString());
+
+    const date = new Date();
+    console.log(`${date.toISOString()} doing ouathErrorRedirect`);
+    console.log('request.body', ctx.request.body);
+    console.log('response.body', ctx.response.body);
+    console.log('ctx', ctx);
 }
 
 /**
@@ -180,6 +187,11 @@ function ouathErrorRedirect(params, error, ctx) {
  */
 async function getHiveUserProfile(hiveUsername) {
     const hiveUserProfile = {};
+
+    // Add fake email.
+    hiveUserProfile.email = `${hiveUsername}@openhive.chat`;
+    hiveUserProfile.email_verified = true;
+
     try {
         const [chainAccount] = await api.getAccountsAsync([hiveUsername]);
         if (!chainAccount) {
@@ -187,6 +199,7 @@ async function getHiveUserProfile(hiveUsername) {
                 'gethiveUserProfile error: missing blockchain account',
                 hiveUsername
                 );
+            return hiveUserProfile;
         }
 
         if (Object.prototype.hasOwnProperty
@@ -228,6 +241,11 @@ async function getHiveUserProfile(hiveUsername) {
                 }
             }
         }
+
+        // TODO We can also try to read profile from
+        // chainAccount.json_metadata, when
+        // chainAccount.posting_json_metadata doesn't exist.
+
     } catch (error) {
         // FIXME Delete it!
         console.error('gethiveUserProfile error', error);
@@ -296,6 +314,7 @@ export default function oauthServer(app) {
         console.log(`${date.toISOString()} Got request to /oauth/authorize`);
         console.log('request.body', ctx.request.body);
         console.log('response.body', ctx.response.body);
+        console.log('ctx.session', ctx.session);
         console.log('ctx', ctx);
 
         // Validate request parameters.
@@ -323,6 +342,18 @@ export default function oauthServer(app) {
             return;
         }
 
+        // TODO It's workaround. We should redirect user to the page
+        // telling that user should logout from external system and
+        // login using private key,
+        if (ctx.session.external_user) {
+            validationError = {
+                error: 'temporarily_unavailable',
+                error_description: "User is logged in via external system now. Server cannot proceed with Oauth flow."
+            };
+            ouathErrorRedirect(params, validationError, ctx);
+            return;
+        }
+
         // Response.
         if (ctx.session.a) {
             // When we have user in session,
@@ -346,13 +377,15 @@ export default function oauthServer(app) {
             responseParams.set('state', params.get('state'));
             ctx.redirect(params.get('redirect_uri') + '?'
                     + responseParams.toString());
-        } else {
-            // Redirect to login page. After login user agent will be
-            // redirected to this endpoint again, but user should exist
-            // in session then.
-            params.set('redirect_to', '/oauth/authorize');
-            ctx.redirect('/login.html?' + params.toString());
+            return;
         }
+
+        // When we're here, we have no user in application, so we need
+        // to redirect to login page. After login user agent will be
+        // redirected to this endpoint again, but user should exist in
+        // session then.
+        params.set('redirect_to', '/oauth/authorize');
+        ctx.redirect('/login.html?' + params.toString());
     });
 
     // Token endpoint.
@@ -463,23 +496,23 @@ export default function oauthServer(app) {
         const access_token = sign(access_token_payload, jwtSecret,
                 access_token_jwtOptions);
 
-        const id_token_jwtOptions = {
-            issuer,
-            subject,
-            audience,
-            expiresIn: 60 * 60,
-        };
-        const hiveUserProfile = await getHiveUserProfile(verifiedCode.payload.username);
-        const id_token_payload_simple = {
-            username: verifiedCode.payload.username,
-        };
-        const id_token_payload = {...id_token_payload_simple, ...hiveUserProfile};
-        const id_token = sign(id_token_payload, jwtSecret,
-                id_token_jwtOptions);
+        // const id_token_jwtOptions = {
+        //     issuer,
+        //     subject,
+        //     audience,
+        //     expiresIn: 60 * 60,
+        // };
+        // const hiveUserProfile = await getHiveUserProfile(verifiedCode.payload.username);
+        // const id_token_payload_simple = {
+        //     username: verifiedCode.payload.username,
+        // };
+        // const id_token_payload = {...id_token_payload_simple, ...hiveUserProfile};
+        // const id_token = sign(id_token_payload, jwtSecret,
+        //         id_token_jwtOptions);
 
         ctx.body = {
             state,
-            id_token,
+            // id_token,
             access_token,
             expires_in: expiresIn,
             scope,
@@ -525,11 +558,9 @@ export default function oauthServer(app) {
             sub: ctx.state.user.username,
         };
 
-        // Add fake email.
-        body.email = `${ctx.state.user.username}@openhive.chat`;
-        body.email_verified = true;
-
         const hiveUserProfile = await getHiveUserProfile(ctx.state.user.sub);
+
+        console.log('hiveUserProfile', hiveUserProfile);
 
         ctx.body = {...body, ...hiveUserProfile};
         ctx.status = 200;

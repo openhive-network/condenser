@@ -147,6 +147,7 @@ function* usernamePasswordLogin(action) {
 const clean = (value) => (value == null || value === '' || /null|undefined/.test(value) ? undefined : value);
 
 function* usernamePasswordLogin2(options) {
+    console.log('bamboo running usernamePasswordLogin2, options are', options);
     let {
         username,
         password,
@@ -267,6 +268,8 @@ function* usernamePasswordLogin2(options) {
                 effective_vests: effectiveVests(account),
             })
         );
+        const response = yield serverApiLogin(username, null);
+        yield response.data;
         return;
     }
 
@@ -302,6 +305,8 @@ function* usernamePasswordLogin2(options) {
             );
         }
 
+        const response = yield serverApiLogin(username, null);
+        yield response.data;
         return;
     }
 
@@ -320,6 +325,8 @@ function* usernamePasswordLogin2(options) {
                 })
             );
         }
+        const response = yield serverApiLogin(username, null);
+        yield response.data;
         return;
     }
 
@@ -557,11 +564,17 @@ function* usernamePasswordLogin2(options) {
             }
 
             console.log('Logging in as', username);
-            const response = yield serverApiLogin(username, signatures);
+            let response;
+            if ((Object.keys(signatures)).length > 0) {
+                response = yield serverApiLogin(username, signatures);
+            } else {
+                response = yield serverApiLogin(username, null);
+            }
+
+            yield response.data;
 
             oauthRedirect(username, private_keys);
 
-            yield response.data;
         }
     } catch (error) {
         // Does not need to be fatal
@@ -663,6 +676,7 @@ function* saveLogin_localStorage() {
     );
     // autopost is a auto login for a low security key (like the posting key)
     localStorage.setItem('autopost2', data);
+    console.log('bamboo finished usernamePasswordLogin2');
 }
 
 function* logout(action) {

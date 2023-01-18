@@ -40,6 +40,9 @@ function logRequest(path, ctx, extra) {
         if (ctx.session.a) {
             d.account = ctx.session.a;
         }
+        if (ctx.session.external_user) {
+            d.external_user = ctx.session.external_user;
+        }
     }
     if (extra) {
         Object.keys(extra).forEach((k) => {
@@ -61,7 +64,7 @@ export default function useGeneralApi(app) {
         // if (rateLimitReq(this, this.req)) return;
         const params = ctx.request.body;
         const { account, signatures } = _parse(params);
-
+        console.log('bamboo login_account', {account, signatures});
         logRequest('login_account', ctx, { account });
         try {
             if (signatures) {
@@ -105,8 +108,11 @@ export default function useGeneralApi(app) {
                         if (auth.posting) ctx.session.a = account;
                     }
                 }
+            } else {
+                console.log('bamboo setting session.external_user to', account);
+                ctx.session.external_user = account;
             }
-
+            console.log('bamboo session', ctx.session);
             ctx.body = JSON.stringify({
                 status: 'ok',
             });
@@ -132,6 +138,7 @@ export default function useGeneralApi(app) {
         logRequest('logout_account', ctx);
         try {
             ctx.session.a = null;
+            ctx.session.external_user = null;
             ctx.body = JSON.stringify({ status: 'ok' });
         } catch (error) {
             console.error('Error in /logout_account api call', ctx.session.uid, error);

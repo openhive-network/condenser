@@ -74,6 +74,7 @@ class LoginForm extends Component {
         // eslint-disable-next-line react/no-string-refs
         if (this.refs.username && this.refs.username.value) this.refs.pw.focus();
         this.registerOauthRequest();
+        console.log('bamboo finished componentDidMount');
     }
 
     componentDidUpdate() {
