@@ -11,7 +11,13 @@ const requestBase = {
     headers: requestHeaders,
 };
 
-export async function serverApiLogin(account, signatures) {
+/**
+ *
+ * @param {string} account
+ * @param {Object} signatures
+ * @returns
+ */
+export async function serverApiLogin(account, signatures = {}) {
     console.log('bamboo running serverApiLogin', account, signatures);
     if (!process.env.BROWSER || window.$STM_ServerBusy) return undefined;
     const response = await axios.post(

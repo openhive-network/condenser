@@ -17,7 +17,7 @@ import secureRandom from 'secure-random';
 import koaLocale from 'koa-locale';
 import { routeRegex } from 'app/ResolveRoute';
 import userIllegalContent from 'app/utils/userIllegalContent';
-import session from './hive-crypto-session';
+import hiveCryptoSession from './hive-crypto-session';
 import { getSupportedLocales } from './utils/misc';
 import { specialPosts } from './utils/SpecialPosts';
 import usePostJson from './json/post_json';
@@ -79,7 +79,7 @@ app.use(requestTime(statsLoggerClient));
 
 app.keys = [config.get('session_key')];
 const crypto_key = config.get('server_session_secret');
-session(app, {
+hiveCryptoSession(app, {
     maxAge: 1000 * 3600 * 24 * 60,
     crypto_key,
     key: config.get('session_cookie_key'),

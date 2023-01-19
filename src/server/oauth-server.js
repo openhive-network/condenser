@@ -161,7 +161,7 @@ function validateOauthRequestParameterCode(params) {
  *
  * @param {URLSearchParams} params
  * @param {Object} error
- * @param {Koa.ctx} ctx
+ * @param {Object} ctx
  */
 function ouathErrorRedirect(params, error, ctx) {
     const responseParams = new URLSearchParams(error);
@@ -183,7 +183,7 @@ function ouathErrorRedirect(params, error, ctx) {
  * properties as standard or custom id_token jwt claims.
  *
  * @param {String} hiveUsername
- * @returns {Object}
+ * @returns {Promise}
  */
 async function getHiveUserProfile(hiveUsername) {
     const hiveUserProfile = {};
@@ -266,7 +266,7 @@ async function getHiveUserProfile(hiveUsername) {
  * https://openid.net/specs/openid-connect-core-1_0.
  *
  * @export
- * @param {Koa} app
+ * @param {Object} app Koa application
  */
 export default function oauthServer(app) {
 

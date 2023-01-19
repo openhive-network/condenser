@@ -19,7 +19,7 @@ import {
     serverApiRecordEvent,
 } from 'app/utils/ServerApiClient';
 import { loadFollows } from 'app/redux/FollowSaga';
-import { translate } from 'app/Translator';
+import translate from 'app/Translator';
 import DMCAUserList from 'app/utils/DMCAUserList';
 import { setHiveSignerAccessToken, isLoggedInWithHiveSigner, hiveSignerClient } from 'app/utils/HiveSigner';
 
@@ -96,9 +96,9 @@ function* shouldShowLoginWarning({ username, password }) {
 }
 
 /**
- @arg {object} action.username - Unless a WIF is provided, this is hashed
+ @arg {object} action action.username - Unless a WIF is provided, this is hashed
  with the password and key_type to create private keys.
- @arg {object} action.password - Password or WIF private key. A WIF becomes
+ @arg {object} action action.password - Password or WIF private key. A WIF becomes
  the posting key, a password can create all three key_types: active,
  owner, posting keys.
  */
@@ -111,9 +111,9 @@ function* checkKeyType(action) {
 }
 
 /**
- @arg {object} action.username - Unless a WIF is provided, this is hashed
+ @arg {object} action action.username - Unless a WIF is provided, this is hashed
  with the password and key_type to create private keys.
- @arg {object} action.password - Password or WIF private key. A WIF becomes
+ @arg {object} action action.password - Password or WIF private key. A WIF becomes
  the posting key, a password can create all three key_types: active,
  owner, posting keys.
  */
@@ -174,7 +174,7 @@ function* usernamePasswordLogin2(options) {
     console.log('Login type:', loginType, 'Just logged in?', justLoggedIn, 'username:', username);
 
     // login, using saved password
-    let feedURL = false;
+    let feedURL = '';
     let autopost, memoWif, login_owner_pubkey, login_wif_owner_pubkey, login_with_keychain, login_with_hivesigner,
         login_with_hiveauth;
     if (!username && !password) {
@@ -268,7 +268,7 @@ function* usernamePasswordLogin2(options) {
                 effective_vests: effectiveVests(account),
             })
         );
-        const response = yield serverApiLogin(username, null);
+        const response = yield serverApiLogin(username);
         yield response.data;
         return;
     }
@@ -305,7 +305,7 @@ function* usernamePasswordLogin2(options) {
             );
         }
 
-        const response = yield serverApiLogin(username, null);
+        const response = yield serverApiLogin(username);
         yield response.data;
         return;
     }
@@ -314,7 +314,7 @@ function* usernamePasswordLogin2(options) {
     if (login_with_hivesigner) {
         console.log('Logged in using HiveSigner');
         if (access_token) {
-            setHiveSignerAccessToken(username, access_token, expires_in);
+            setHiveSignerAccessToken(username, access_token);
             yield put(
                 userActions.setUser({
                     username,
@@ -325,7 +325,7 @@ function* usernamePasswordLogin2(options) {
                 })
             );
         }
-        const response = yield serverApiLogin(username, null);
+        const response = yield serverApiLogin(username);
         yield response.data;
         return;
     }
@@ -541,7 +541,7 @@ function* usernamePasswordLogin2(options) {
                     // redirect url
                     feedURL = '/@' + username + '/feed';
                     // set access setHiveSignerAccessToken
-                    setHiveSignerAccessToken(username, access_token, expires_in);
+                    setHiveSignerAccessToken(username, access_token);
                     // set user data
                     yield put(
                         userActions.setUser({
@@ -568,7 +568,7 @@ function* usernamePasswordLogin2(options) {
             if ((Object.keys(signatures)).length > 0) {
                 response = yield serverApiLogin(username, signatures);
             } else {
-                response = yield serverApiLogin(username, null);
+                response = yield serverApiLogin(username);
             }
 
             yield response.data;

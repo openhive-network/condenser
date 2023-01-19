@@ -27,7 +27,12 @@ export function isLoggedInWithHiveSigner() {
     const [, , , , , login_with_hive_signer] = extractLoginData(data);
     return !!login_with_hive_signer;
 }
-
+/**
+ * Set HiveSigner access Token in hiveSignerClient
+ *
+ * @param {string} username
+ * @param {string} access_token
+ */
 export const setHiveSignerAccessToken = (username, access_token) => {
     // set access token for Hive Signer
     console.log(`HiveSigner: set access token for @${username}`);
