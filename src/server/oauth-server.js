@@ -8,6 +8,23 @@ import config from 'config';
 
 /**
  * Returns standard error message (object) for function validating
+ * matching of required parameter.
+ *
+ * @export
+ * @param {string} [parameter='']
+ * @returns
+ */
+export function getOauthErrorMessageParameterUnmatched(parameter = '') {
+    const message = {
+        error: 'invalid_request',
+        error_description: `Parameter '${parameter}' `
+                + "does not match any registered values",
+    };
+    return message;
+}
+
+/**
+ * Returns standard error message (object) for function validating
  * existence of required parameter.
  *
  * @export
@@ -34,11 +51,7 @@ export function validateOauthRequestParameterClientId(params) {
         return getOauthErrorMessageParameterMissing(parameter);
     }
     if (!(oauthServerConfig.clients).has(params.get(parameter))) {
-        return {
-            error: 'invalid_request',
-            error_description: `Parameter '${parameter}' `
-                    + "does not match any registered values",
-        };
+        return getOauthErrorMessageParameterUnmatched(parameter);
     }
     return null;
 }
@@ -59,11 +72,7 @@ function validateOauthRequestParameterRedirectUri(params) {
                 .redirect_uris)
                 .includes(params.get(parameter))
                 ) {
-        return {
-            error: 'invalid_request',
-            error_description: `Parameter '${parameter}' `
-                    + "does not match any registered values",
-        };
+        return getOauthErrorMessageParameterUnmatched(parameter);
     }
     return null;
 }
