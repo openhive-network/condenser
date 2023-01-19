@@ -60,7 +60,7 @@
   },
   "oauth_server": {
     "clients": {
-      "openhive_chat" : {
+      "openhive_chat": {
         "id": "openhive_chat",
         "secret": "openhive_chat_secret",
         "redirect_uris": [

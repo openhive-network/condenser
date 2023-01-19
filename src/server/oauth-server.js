@@ -7,23 +7,37 @@ import { api } from '@hiveio/hive-js';
 import config from 'config';
 
 /**
+ * Returns standard error message (object) for function validating
+ * existence of required parameter.
+ *
+ * @export
+ * @param {string} [parameter='']
+ * @returns
+ */
+export function getOauthErrorMessageParameterMissing(parameter = '') {
+    const message = {
+        error: 'invalid_request',
+        error_description: `Missing required parameter '${parameter}'`,
+    };
+    return message;
+}
+
+/**
  * Validate Oauth request parameter `client_id`.
  *
  * @param {URLSearchParams} params
  */
-function validateOauthRequestParameterClientId(params) {
+export function validateOauthRequestParameterClientId(params) {
     const oauthServerConfig = config.get('oauth_server');
-    if (!params.has('client_id')) {
-        return {
-            error: 'invalid_request',
-            error_description: "Missing required parameter 'client_id'",
-        };
+    const parameter = 'client_id';
+    if (!params.has(parameter)) {
+        return getOauthErrorMessageParameterMissing(parameter);
     }
-    if (!(oauthServerConfig.clients).has(params.get('client_id'))) {
+    if (!(oauthServerConfig.clients).has(params.get(parameter))) {
         return {
             error: 'invalid_request',
-            error_description: "Parameter 'client_id' "
-                    + "does not match any registered clients",
+            error_description: `Parameter '${parameter}' `
+                    + "does not match any registered values",
         };
     }
     return null;
@@ -36,21 +50,19 @@ function validateOauthRequestParameterClientId(params) {
  */
 function validateOauthRequestParameterRedirectUri(params) {
     const oauthServerConfig = config.get('oauth_server');
-    if (!params.has('redirect_uri')) {
-        return {
-            error: 'invalid_request',
-            error_description: "Missing required parameter "
-                    + "'redirect_uri'",
-        };
+    const parameter = 'redirect_uri';
+    if (!params.has(parameter)) {
+        return getOauthErrorMessageParameterMissing(parameter);
     }
     if (!(oauthServerConfig
                 .clients[params.get('client_id')]
                 .redirect_uris)
-                .includes(params.get('redirect_uri'))) {
+                .includes(params.get(parameter))
+                ) {
         return {
             error: 'invalid_request',
-            error_description: "Parameter 'redirect_uri' "
-                    + "does not match any registered 'redirected_uris'",
+            error_description: `Parameter '${parameter}' `
+                    + "does not match any registered values",
         };
     }
     return null;
@@ -62,24 +74,22 @@ function validateOauthRequestParameterRedirectUri(params) {
  * @param {URLSearchParams} params
  */
 function validateOauthRequestParameterScope(params) {
-    if (!params.has('scope')) {
-        return {
-            error: 'invalid_request',
-            error_description: "Missing required parameter 'scope'",
-        };
+    const parameter = 'scope';
+    if (!params.has(parameter)) {
+        return getOauthErrorMessageParameterMissing(parameter);
     }
 
-    const requestedScope = params.get('scope').trim().split(/ +/);
+    const requestedScope = params.get(parameter).trim().split(/ +/);
 
     if (!requestedScope.includes('openid')) {
         return {
             error: 'invalid_scope',
-            error_description: "Missing required string 'openid' in 'scope'",
+            error_description: `Missing required string 'openid' in '${parameter}'`,
         };
     }
 
     const allowedScope = (config.get('oauth_server'))
-            .clients[params.get('client_id')].scope;
+            .clients[params.get('client_id')][parameter];
     for (const scope of requestedScope) {
         if (!allowedScope.includes(scope)) {
             return {
@@ -98,16 +108,14 @@ function validateOauthRequestParameterScope(params) {
  * @param {URLSearchParams} params
  */
 function validateOauthRequestParameterResponseType(params) {
-    if (!params.has('response_type')) {
-        return {
-            error: 'invalid_request',
-            error_description: "Missing required parameter 'response_type'",
-        };
+    const parameter = 'response_type';
+    if (!params.has(parameter)) {
+        return getOauthErrorMessageParameterMissing(parameter);
     }
-    if (!(params.get('response_type') === 'code')) {
+    if (!(params.get(parameter) === 'code')) {
         return {
             error: 'unsupported_response_type',
-            error_description: "Server does not support requested 'response_type'",
+            error_description: `Server does not support requested '${parameter}'`,
         };
     }
     return null;
@@ -119,16 +127,14 @@ function validateOauthRequestParameterResponseType(params) {
  * @param {URLSearchParams} params
  */
 function validateOauthRequestParameterGrantType(params) {
-    if (!params.has('grant_type')) {
-        return {
-            error: 'invalid_request',
-            error_description: "Missing required parameter 'grant_type'",
-        };
+    const parameter = 'grant_type';
+    if (!params.has(parameter)) {
+        return getOauthErrorMessageParameterMissing(parameter);
     }
-    if (!(params.get('grant_type') === 'authorization_code')) {
+    if (!(params.get(parameter) === 'authorization_code')) {
         return {
             error: 'invalid_request',
-            error_description: "Server does not support requested 'grant_type'",
+            error_description: `Server does not support requested '${parameter}'`,
         };
     }
     return null;
@@ -140,16 +146,14 @@ function validateOauthRequestParameterGrantType(params) {
  * @param {URLSearchParams} params
  */
 function validateOauthRequestParameterCode(params) {
-    if (!params.has('code')) {
-        return {
-            error: 'invalid_request',
-            error_description: "Missing required parameter 'code'",
-        };
+    const parameter = 'code';
+    if (!params.has(parameter)) {
+        return getOauthErrorMessageParameterMissing(parameter);
     }
-    if (!params.get('code')) {
+    if (!params.get(parameter)) {
         return {
             error: 'invalid_request',
-            error_description: "Parameter 'code' must not be empty",
+            error_description: `Parameter '${parameter}' must not be empty`,
         };
     }
     return null;
