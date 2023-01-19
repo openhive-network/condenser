@@ -3,15 +3,45 @@ stages:
     - build
     - deploy
 
+workflow:
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    - if: '$CI_COMMIT_BRANCH && $CI_OPEN_MERGE_REQUESTS'
+      when: never
+    - if: '$CI_COMMIT_BRANCH'
+
 variables:
     DOCKER_IMAGE: hiveio/condenser
     APP_REVIEW_SUBDOMAIN: .condenser.engrave.dev
     STAGING_DOMAIN: staging.condenser.engrave.dev
     CERTS: ~/.docker
 
+.default:
+  image: alpine:latest
+  interruptible: true
+  inherit:
+    default: false
+    variables: false
+  variables:
+    GIT_DEPTH: 10
+    GIT_STRATEGY: fetch
+    GIT_SUBMODULE_STRATEGY: recursive
+    npm_config_cache: '$CI_PROJECT_DIR/.npm'
+    YARN_CACHE_FOLDER: "$CI_PROJECT_DIR/.yarn"
+  cache: &global-cache
+    # Per-branch caching. CI_COMMIT_REF_SLUG is the same thing.
+    # key: "$CI_COMMIT_REF_NAME"
+    # Per project caching – use any key.
+    # Change this key, if you need to clear cache.
+    key: common-1
+    paths:
+      - .npm/
+      - .yarn/
+
 ################################# COMMON TEMPLATES #################################
 
 .docker-job: &docker-job
+    extends: .default
     image: docker:stable
     tags:
         - public-runner-docker
@@ -21,6 +51,7 @@ variables:
         - echo $HUB_TOKEN | docker login -u $HUB_USERNAME --password-stdin
 
 .docker-remote-host-review: &docker-remote-host-review
+    extends: .default
     before_script:
         - mkdir -p $CERTS
         - echo "$REVIEW_TLSCACERT" > $CERTS/ca.pem
@@ -31,6 +62,7 @@ variables:
         - rm -R $CERTS
 
 .docker-remote-host-staging: &docker-remote-host-staging
+    extends: .default
     before_script:
         - mkdir -p $CERTS
         - echo "$STAGING_TLSCACERT" > $CERTS/ca.pem
