@@ -65,7 +65,7 @@ export default function hiveCryptoSession(app, opts) {
             }
         }
     }
-};
+}
 
 /**
  @arg {Buffer} buf
