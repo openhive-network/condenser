@@ -39,7 +39,7 @@ module.exports = {
                 suiteName: "condenser",
                 outputDirectory: "./jest",
                 outputName: "junit.xml",
-                classNameTemplate: "{classname} -- {title}",
+                classNameTemplate: "{classname}",
                 titleTemplate: "{classname} -- {title}"
             }
         ]
