@@ -6,11 +6,12 @@ import {
 
 describe('validator function validateOauthRequestParameterClientId', () => {
 
-    it('Should reject when empty object', () => {
+    const parameterName = 'client_id';
+    it('Should reject when there are not any parameters', () => {
         const test_cases = [
             [
                 {},
-                getOauthErrorMessageParameterMissing('client_id')
+                getOauthErrorMessageParameterMissing(parameterName)
             ]
         ];
         test_cases.forEach((v) => {
@@ -18,13 +19,13 @@ describe('validator function validateOauthRequestParameterClientId', () => {
         });
     });
 
-    it('Should reject when missing parameter', () => {
+    it(`Should reject when parameter '${parameterName}' is missing`, () => {
         const test_cases = [
             [
                 {
                     foo: 'bar'
                 },
-                getOauthErrorMessageParameterMissing('client_id')
+                getOauthErrorMessageParameterMissing(parameterName)
             ]
         ];
         test_cases.forEach((v) => {
@@ -32,7 +33,7 @@ describe('validator function validateOauthRequestParameterClientId', () => {
         });
     });
 
-    it('Should reject when parameter does not match any registered clients', () => {
+    it(`Should reject when parameter '${parameterName}' does not match any registered value`, () => {
         const test_cases = [
             [
                 {
