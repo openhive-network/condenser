@@ -11,4 +11,4 @@ tmp/*
 lib
 *.bk
 docs
-.jest
+jest
