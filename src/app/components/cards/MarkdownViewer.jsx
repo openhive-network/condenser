@@ -137,7 +137,9 @@ class MarkdownViewer extends Component {
             }
 
             const embedMd = EmbeddedPlayerGenerateMd(matches[1], idx, large);
-            processedText = processedText.replace(matches[0], renderToString(embedMd.markdown));
+            if (embedMd) {
+                processedText = processedText.replace(matches[0], renderToString(embedMd.markdown));
+            }
 
             idx += 1;
         }
