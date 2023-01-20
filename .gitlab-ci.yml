@@ -63,6 +63,8 @@ run-unit-tests:
     coverage: /All files[^|]*\|[^|]*\s+([\d\.]+)/
     artifacts:
         expire_in: 7 days
+        paths:
+            - jest
         reports:
             junit: jest/junit.xml
 
