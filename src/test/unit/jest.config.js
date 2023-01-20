@@ -33,6 +33,15 @@ module.exports = {
     },
     reporters: [
         "default",
-        "jest-junit"
+        [
+            "jest-junit",
+            {
+                suiteName: "condenser",
+                outputDirectory: "./.jest",
+                outputName: "junit.xml",
+                classNameTemplate: "{classname} -- {title}",
+                titleTemplate: "{classname} -- {title}"
+            }
+        ]
     ]
 };

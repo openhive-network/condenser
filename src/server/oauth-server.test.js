@@ -7,7 +7,7 @@ import {
 describe('validator function validateOauthRequestParameterClientId', () => {
 
     const parameterName = 'client_id';
-    it('Should reject when there are not any parameters', () => {
+    it('should reject when there are not any parameters', () => {
         const test_cases = [
             [
                 {},
@@ -19,7 +19,7 @@ describe('validator function validateOauthRequestParameterClientId', () => {
         });
     });
 
-    it(`Should reject when parameter '${parameterName}' is missing`, () => {
+    it(`should reject when parameter '${parameterName}' is missing`, () => {
         const test_cases = [
             [
                 {
@@ -33,7 +33,7 @@ describe('validator function validateOauthRequestParameterClientId', () => {
         });
     });
 
-    it(`Should reject when parameter '${parameterName}' does not match any registered value`, () => {
+    it(`should reject when parameter '${parameterName}' does not match any registered value`, () => {
         const test_cases = [
             [
                 {
