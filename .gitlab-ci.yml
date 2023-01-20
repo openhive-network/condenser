@@ -61,6 +61,10 @@ run-unit-tests:
     script:
         - yarn run ci:test
     coverage: /All files[^|]*\|[^|]*\s+([\d\.]+)/
+    artifacts:
+        expire_in: 7 days
+        reports:
+            junit: jest/junit.xml
 
 run-eslint:
     stage: test
