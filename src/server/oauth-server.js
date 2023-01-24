@@ -12,7 +12,7 @@ import config from 'config';
  *
  * @export
  * @param {string} [parameter='']
- * @returns
+ * @returns {Object} Object like {error: <string>, error_description: <string>}
  */
 export function getOauthErrorMessageParameterUnmatched(parameter = '') {
     const message = {
@@ -29,7 +29,7 @@ export function getOauthErrorMessageParameterUnmatched(parameter = '') {
  *
  * @export
  * @param {string} [parameter='']
- * @returns
+ * @returns {Object} Object like {error: <string>, error_description: <string>}
  */
 export function getOauthErrorMessageParameterMissing(parameter = '') {
     const message = {
@@ -43,6 +43,7 @@ export function getOauthErrorMessageParameterMissing(parameter = '') {
  * Validate Oauth request parameter `client_id`.
  *
  * @param {URLSearchParams} params
+ * @returns {null|Object} Null when validation passes, otherwise object like {error: <string>, error_description: <string>}
  */
 export function validateOauthRequestParameterClientId(params) {
     const oauthServerConfig = config.get('oauth_server');
@@ -60,6 +61,7 @@ export function validateOauthRequestParameterClientId(params) {
  * Validate Oauth request parameter `redirect_uri`.
  *
  * @param {URLSearchParams} params
+ * @returns {null|Object} Null when validation passes, otherwise object like {error: <string>, error_description: <string>}
  */
 function validateOauthRequestParameterRedirectUri(params) {
     const oauthServerConfig = config.get('oauth_server');
@@ -81,6 +83,7 @@ function validateOauthRequestParameterRedirectUri(params) {
  * Validate Oauth request parameter `scope`.
  *
  * @param {URLSearchParams} params
+ * @returns {null|Object} Null when validation passes, otherwise object like {error: <string>, error_description: <string>}
  */
 function validateOauthRequestParameterScope(params) {
     const parameter = 'scope';
@@ -115,6 +118,7 @@ function validateOauthRequestParameterScope(params) {
  * Validate Oauth request parameter `response_type`.
  *
  * @param {URLSearchParams} params
+ * @returns {null|Object} Null when validation passes, otherwise object like {error: <string>, error_description: <string>}
  */
 function validateOauthRequestParameterResponseType(params) {
     const parameter = 'response_type';
@@ -134,6 +138,7 @@ function validateOauthRequestParameterResponseType(params) {
  * Validate Oauth request parameter `grant_type`.
  *
  * @param {URLSearchParams} params
+ * @returns {null|Object} Null when validation passes, otherwise object like {error: <string>, error_description: <string>}
  */
 function validateOauthRequestParameterGrantType(params) {
     const parameter = 'grant_type';
@@ -153,6 +158,7 @@ function validateOauthRequestParameterGrantType(params) {
  * Validate Oauth request parameter `code`.
  *
  * @param {URLSearchParams} params
+ * @returns {null|Object} Null when validation passes, otherwise object like {error: <string>, error_description: <string>}
  */
 function validateOauthRequestParameterCode(params) {
     const parameter = 'code';
@@ -169,12 +175,13 @@ function validateOauthRequestParameterCode(params) {
 }
 
 /**
- * Redirect user agent to `redirect_uri`, in case of error in Oauth
+ * Redirects user agent to `redirect_uri`, in case of error in Oauth
  * request.
  *
  * @param {URLSearchParams} params
  * @param {Object} error
  * @param {Object} ctx
+ * @returns {void}
  */
 function ouathErrorRedirect(params, error, ctx) {
     const responseParams = new URLSearchParams(error);
@@ -196,15 +203,22 @@ function ouathErrorRedirect(params, error, ctx) {
  * properties as standard or custom id_token jwt claims.
  *
  * @param {String} hiveUsername
- * @returns {Promise}
+ * @returns {Promise<Object>}
  */
 async function getHiveUserProfile(hiveUsername) {
     const hiveUserProfile = {};
 
-    // Add fake email.
-    hiveUserProfile.email = `${hiveUsername}@openhive.chat`;
-    hiveUserProfile.email_verified = true;
+    //
+    // Add fake email, to allow changing User Profile in Rocket Chat.
+    // Not needed, when
+    // [patch](https://github.com/RocketChat/Rocket.Chat/pull/22438/files)
+    // has been applied in Rocket Chat.
+    //
 
+    // hiveUserProfile.email = `${hiveUsername}@openhive.chat`;
+    // hiveUserProfile.email_verified = true;
+
+    // Add other properties to user profile.
     try {
         const [chainAccount] = await api.getAccountsAsync([hiveUsername]);
         if (!chainAccount) {
@@ -223,16 +237,10 @@ async function getHiveUserProfile(hiveUsername) {
             if (Object.prototype.hasOwnProperty
                     .call(postingJsonMetadata, 'profile')) {
 
-                // The property `name` is dangerous. When you change
-                // it in Hive, you won't be able to login to Rocket
-                // Chat, when changed value differs from that
-                // existing in Rocket Chat. This looks like a bug in
-                // Rocket Chat.
-
-                // if (Object.prototype.hasOwnProperty
-                //         .call(postingJsonMetadata.profile, 'name')) {
-                //     hiveUserProfile.nickname = postingJsonMetadata.profile.name;
-                // }
+                if (Object.prototype.hasOwnProperty
+                        .call(postingJsonMetadata.profile, 'name')) {
+                    hiveUserProfile.name = postingJsonMetadata.profile.name;
+                }
 
                 // The property `profile_image` is read in Rocket
                 // Chat on each login, but changes don't cause
@@ -509,23 +517,23 @@ export default function oauthServer(app) {
         const access_token = sign(access_token_payload, jwtSecret,
                 access_token_jwtOptions);
 
-        // const id_token_jwtOptions = {
-        //     issuer,
-        //     subject,
-        //     audience,
-        //     expiresIn: 60 * 60,
-        // };
-        // const hiveUserProfile = await getHiveUserProfile(verifiedCode.payload.username);
-        // const id_token_payload_simple = {
-        //     username: verifiedCode.payload.username,
-        // };
-        // const id_token_payload = {...id_token_payload_simple, ...hiveUserProfile};
-        // const id_token = sign(id_token_payload, jwtSecret,
-        //         id_token_jwtOptions);
+        const id_token_jwtOptions = {
+            issuer,
+            subject,
+            audience,
+            expiresIn: 60 * 60,
+        };
+        const hiveUserProfile = await getHiveUserProfile(verifiedCode.payload.username);
+        const id_token_payload_simple = {
+            username: verifiedCode.payload.username,
+        };
+        const id_token_payload = {...id_token_payload_simple, ...hiveUserProfile};
+        const id_token = sign(id_token_payload, jwtSecret,
+                id_token_jwtOptions);
 
         ctx.body = {
             state,
-            // id_token,
+            id_token,
             access_token,
             expires_in: expiresIn,
             scope,
