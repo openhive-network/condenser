@@ -40,8 +40,8 @@ function logRequest(path, ctx, extra) {
         if (ctx.session.a) {
             d.account = ctx.session.a;
         }
-        if (ctx.session.external_user) {
-            d.external_user = ctx.session.external_user;
+        if (ctx.session.externalUser) {
+            d.externalUser = ctx.session.externalUser;
         }
     }
     if (extra) {
@@ -61,13 +61,16 @@ export default function useGeneralApi(app) {
     app.use(router.routes());
 
     router.post('/login_account', async (ctx) => {
+
+        // TODO Validate request body!
+
         // if (rateLimitReq(this, this.req)) return;
         const params = ctx.request.body;
-        const { account, signatures } = _parse(params);
-        console.log('bamboo login_account', {account, signatures});
+        const { account, signatures, externalUserOptions } = _parse(params);
+        console.log('bamboo login_account', {account, signatures, externalUserOptions});
         logRequest('login_account', ctx, { account });
         try {
-            if (signatures) {
+            if (signatures && Object.keys(signatures).length > 0) {
                 if (!ctx.session.login_challenge) {
                     console.error('/login_account missing this.session.login_challenge');
                 } else {
@@ -108,9 +111,28 @@ export default function useGeneralApi(app) {
                         if (auth.posting) ctx.session.a = account;
                     }
                 }
+            } else if (externalUserOptions.system === 'hivesigner') {
+                try {
+                    const headers = {
+                        Accept: 'application/json',
+                        Authorization: externalUserOptions.hivesignerToken,
+                    };
+                    const response = await axios.get(
+                            'https://hivesigner.com/api/me',
+                            { headers }
+                        );
+                    console.log('bamboo response.data', response.data);
+                    if (response.data.user === account) {
+                        console.log(`bamboo verified account ${account} via hivesigner`);
+                        console.log(`bamboo setting session.externalUser to ${account}`);
+                        ctx.session.externalUser = { ...{user: account}, ...externalUserOptions};
+                    }
+                } catch (error) {
+                    console.error('bamboo got error, not settitg session.externalUser', error);
+                }
             } else {
-                console.log('bamboo setting session.external_user to', account);
-                ctx.session.external_user = account;
+                console.log('bamboo setting session.externalUser to', account);
+                ctx.session.externalUser = { ...{user: account}, ...externalUserOptions};
             }
             console.log('bamboo session', ctx.session);
             ctx.body = JSON.stringify({
@@ -138,7 +160,7 @@ export default function useGeneralApi(app) {
         logRequest('logout_account', ctx);
         try {
             ctx.session.a = null;
-            ctx.session.external_user = null;
+            ctx.session.externalUser = null;
             ctx.body = JSON.stringify({ status: 'ok' });
         } catch (error) {
             console.error('Error in /logout_account api call', ctx.session.uid, error);

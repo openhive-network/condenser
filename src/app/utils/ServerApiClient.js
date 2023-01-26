@@ -1,4 +1,9 @@
 /* global $STM_csrf */
+
+/**
+ * @typedef { import("./ServerApiClient").ExternalUserOptions } ExternalUserOptions
+ */
+
 const axios = require('axios').default;
 
 const requestHeaders = {
@@ -15,14 +20,25 @@ const requestBase = {
  *
  * @param {string} account
  * @param {Object} signatures
+ * @param {{} | ExternalUserOptions} externalUserOptions
  * @returns
  */
-export async function serverApiLogin(account, signatures = {}) {
-    console.log('bamboo running serverApiLogin', account, signatures);
+export async function serverApiLogin(account, signatures = {}, externalUserOptions = {}) {
+    const defaultExternalUserOptions = {
+        system: '', // '' | 'hivesigner'
+        hivesignerToken: '',
+    };
+    const requestExternalUserOptions = { ...defaultExternalUserOptions, ...externalUserOptions};
+    console.log('bamboo running serverApiLogin', { account, signatures, externalUserOptions });
     if (!process.env.BROWSER || window.$STM_ServerBusy) return undefined;
     const response = await axios.post(
         '/api/v1/login_account',
-        { account, signatures, _csrf: $STM_csrf },
+        {
+            account,
+            signatures,
+            externalUserOptions: requestExternalUserOptions,
+            _csrf: $STM_csrf
+        },
         { headers: requestHeaders },
     );
 

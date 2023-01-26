@@ -371,7 +371,7 @@ export default function oauthServer(app) {
         // TODO It's workaround. We should redirect user to the page
         // telling that user should logout from external system and
         // login using private key,
-        if (ctx.session.external_user) {
+        if (ctx.session.externalUser) {
             validationError = {
                 error: 'temporarily_unavailable',
                 error_description: "User is logged in via external system now. Server cannot proceed with Oauth flow."
