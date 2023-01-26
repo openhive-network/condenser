@@ -7,12 +7,17 @@ import { api } from '@hiveio/hive-js';
 import config from 'config';
 
 /**
+ * @typedef { import("./oauth-server").OauthErrorMessage } OauthErrorMessage
+ */
+
+
+/**
  * Returns standard error message (object) for function validating
  * matching of required parameter.
  *
  * @export
  * @param {string} [parameter='']
- * @returns {Object} Object like {error: <string>, error_description: <string>}
+ * @returns {OauthErrorMessage}
  */
 export function getOauthErrorMessageParameterUnmatched(parameter = '') {
     const message = {
@@ -29,7 +34,7 @@ export function getOauthErrorMessageParameterUnmatched(parameter = '') {
  *
  * @export
  * @param {string} [parameter='']
- * @returns {Object} Object like {error: <string>, error_description: <string>}
+ * @returns {OauthErrorMessage}
  */
 export function getOauthErrorMessageParameterMissing(parameter = '') {
     const message = {
@@ -43,7 +48,7 @@ export function getOauthErrorMessageParameterMissing(parameter = '') {
  * Validate Oauth request parameter `client_id`.
  *
  * @param {URLSearchParams} params
- * @returns {null|Object} Null when validation passes, otherwise object like {error: <string>, error_description: <string>}
+ * @returns {null | OauthErrorMessage} Null when validation passes, otherwise OauthErrorMessage
  */
 export function validateOauthRequestParameterClientId(params) {
     const oauthServerConfig = config.get('oauth_server');
@@ -61,7 +66,7 @@ export function validateOauthRequestParameterClientId(params) {
  * Validate Oauth request parameter `redirect_uri`.
  *
  * @param {URLSearchParams} params
- * @returns {null|Object} Null when validation passes, otherwise object like {error: <string>, error_description: <string>}
+ * @returns {null | OauthErrorMessage} Null when validation passes, otherwise OauthErrorMessage
  */
 function validateOauthRequestParameterRedirectUri(params) {
     const oauthServerConfig = config.get('oauth_server');
@@ -83,7 +88,7 @@ function validateOauthRequestParameterRedirectUri(params) {
  * Validate Oauth request parameter `scope`.
  *
  * @param {URLSearchParams} params
- * @returns {null|Object} Null when validation passes, otherwise object like {error: <string>, error_description: <string>}
+ * @returns {null | OauthErrorMessage} Null when validation passes, otherwise OauthErrorMessage
  */
 function validateOauthRequestParameterScope(params) {
     const parameter = 'scope';
@@ -118,7 +123,7 @@ function validateOauthRequestParameterScope(params) {
  * Validate Oauth request parameter `response_type`.
  *
  * @param {URLSearchParams} params
- * @returns {null|Object} Null when validation passes, otherwise object like {error: <string>, error_description: <string>}
+ * @returns {null | OauthErrorMessage} Null when validation passes, otherwise OauthErrorMessage
  */
 function validateOauthRequestParameterResponseType(params) {
     const parameter = 'response_type';
@@ -138,7 +143,7 @@ function validateOauthRequestParameterResponseType(params) {
  * Validate Oauth request parameter `grant_type`.
  *
  * @param {URLSearchParams} params
- * @returns {null|Object} Null when validation passes, otherwise object like {error: <string>, error_description: <string>}
+ * @returns {null | OauthErrorMessage} Null when validation passes, otherwise OauthErrorMessage
  */
 function validateOauthRequestParameterGrantType(params) {
     const parameter = 'grant_type';
@@ -158,7 +163,7 @@ function validateOauthRequestParameterGrantType(params) {
  * Validate Oauth request parameter `code`.
  *
  * @param {URLSearchParams} params
- * @returns {null|Object} Null when validation passes, otherwise object like {error: <string>, error_description: <string>}
+ * @returns {null | OauthErrorMessage} Null when validation passes, otherwise OauthErrorMessage
  */
 function validateOauthRequestParameterCode(params) {
     const parameter = 'code';
@@ -179,7 +184,7 @@ function validateOauthRequestParameterCode(params) {
  * request.
  *
  * @param {URLSearchParams} params
- * @param {Object} error
+ * @param {OauthErrorMessage} error
  * @param {Object} ctx
  * @returns {void}
  */
