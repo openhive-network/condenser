@@ -1,7 +1,10 @@
 /* global $STM_csrf */
 
 /**
- * @typedef { import("./ServerApiClient").ExternalUserOptions } ExternalUserOptions
+ * @typedef ExternalUserOptions
+ * @type {object}
+ * @property {'hiveauth' | 'hivesigner' | 'keychain'} system
+ * @property {string} hivesignerToken
  */
 
 const axios = require('axios').default;
