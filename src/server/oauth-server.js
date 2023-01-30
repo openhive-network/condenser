@@ -7,7 +7,10 @@ import { api } from '@hiveio/hive-js';
 import config from 'config';
 
 /**
- * @typedef { import("./oauth-server").OauthErrorMessage } OauthErrorMessage
+ * @typedef OauthErrorMessage
+ * @type {object}
+ * @property {string} error
+ * @property {string} error_description
  */
 
 
