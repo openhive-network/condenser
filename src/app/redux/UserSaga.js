@@ -144,6 +144,12 @@ function* usernamePasswordLogin(action) {
         yield put(userActions.generateSessionId());
         yield fork(loadFollows, 'getFollowingAsync', username, 'blog');
         yield fork(loadFollows, 'getFollowingAsync', username, 'ignore');
+        if (document.location.pathname === '/login.html') {
+            // Nasty workaround. We have a user, but we're still on
+            // login.html. Let's redirect user somewhere.
+            // TODO Make it better!
+            browserHistory.push('/trending/my');
+        }
     }
 }
 
