@@ -371,29 +371,29 @@ export default function oauthServer(app) {
         // TODO It's workaround. We should redirect user to the page
         // telling that user should logout from external system and
         // login using private key,
-        if (ctx.session.externalUser) {
+        if (ctx.session.externalUser && ctx.session.externalUser.system !== 'hivesigner') {
             validationError = {
                 error: 'temporarily_unavailable',
-                error_description: "User is logged in via external system now. Server cannot proceed with Oauth flow."
+                error_description: "User is logged in via external system now. Server cannot continue Oauth flow."
             };
             ouathErrorRedirect(params, validationError, ctx);
             return;
         }
 
         // Response.
-        if (ctx.session.a) {
+        if (ctx.session.a || (ctx.session.externalUser && ctx.session.externalUser.system === 'hivesigner')) {
             // When we have user in session,
             // redirect to client's redirect_uri with "code".
             const expiresIn = 60 * 5;
             const scope = 'openid profile';
             const jwtOptions = {
                 issuer: ctx.request.host,
-                subject: ctx.session.a,
+                subject: ctx.session.a || ctx.session.externalUser.user,
                 audience: params.get('client_id'),
                 expiresIn,
             };
             const payload = {
-                username: ctx.session.a,
+                username: ctx.session.a || ctx.session.externalUser.user,
                 scope,
                 redirect_uri: params.get('redirect_uri'),
             };
