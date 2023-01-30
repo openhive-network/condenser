@@ -42,31 +42,34 @@ export const userWatches = [
 
 // Check if there is an ongoing oauth process.
 // If yes, do redirection.
-function oauthRedirect(username, private_keys) {
+function oauthRedirect(username, private_keys, useHiveSigner = false) {
     const oauthItem = sessionStorage.getItem('oauth');
     if (!oauthItem) {
-        return;
+        return '';
     }
     sessionStorage.removeItem('oauth');
 
     // User must be logged in.
     if (!username) {
         console.log('oauthRedirect no username');
-        return;
+        return '';
     }
 
-    // We handle only users logged in via private keys.
-    if (!private_keys) {
-        console.log('oauthRedirect no private_keys');
-        return;
+    // We handle only users logged in via private keys or via HiveSigner.
+    if (!(private_keys || useHiveSigner)) {
+        console.log('oauthRedirect no private_keys and not useHiveSigner');
+        return '';
     }
 
     const params = new URLSearchParams(oauthItem);
     if (params.has('redirect_to')) {
         const redirect_to = params.get('redirect_to');
         params.delete('redirect_to');
-        window.location = redirect_to + '?' + params.toString();
+        // window.location.assign(redirect_to + '?' + params.toString());
+        return redirect_to + '?' + params.toString();
     }
+
+    return '';
 }
 
 function effectiveVests(account) {
@@ -582,8 +585,6 @@ function* usernamePasswordLogin2(options) {
 
             yield response.data;
 
-            oauthRedirect(username, private_keys);
-
         }
     } catch (error) {
         // Does not need to be fatal
@@ -593,6 +594,11 @@ function* usernamePasswordLogin2(options) {
     if (!autopost && saveLogin) yield put(userActions.saveLogin());
 
     // Redirect user to the appropriate page after login.
+    const oauthRedirectTo = oauthRedirect(username, private_keys, useHiveSigner);
+    if (oauthRedirectTo) {
+        window.location.assign(oauthRedirectTo);
+        return;
+    }
     const path = useHiveSigner ? lastPath : document.location.pathname;
     if (afterLoginRedirectToWelcome) {
         console.log('Redirecting to welcome page');
