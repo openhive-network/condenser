@@ -45,7 +45,13 @@ class LoginForm extends Component {
             console.error('CreateAccount - cryptoTestResult: ', cryptoTestResult);
             cryptographyFailure = true;
         }
-        this.state = { cryptographyFailure, isHiveSigner, isProcessingHiveAuth: false };
+        const oauthFlow = null;
+        this.state = {
+            cryptographyFailure,
+            isHiveSigner,
+            isProcessingHiveAuth: false,
+            oauthFlow,
+        };
         this.usernameOnChange = (e) => {
             const value = e.target.value.toLowerCase();
             this.state.username.props.onChange(value);
@@ -154,6 +160,13 @@ class LoginForm extends Component {
                 && params.has('scope')
                 ) {
             sessionStorage.setItem('oauth', params.toString());
+            this.setState(
+                {
+                    oauthFlow: {
+                        clientUri: params.get('redirect_uri')
+                    }
+                }
+            );
         }
     }
 
@@ -256,7 +269,7 @@ class LoginForm extends Component {
             msg,
         } = this.props;
         const {
-            username, password, useKeychain, useHiveAuth, saveLogin
+            username, password, useKeychain, useHiveAuth, saveLogin, oauthFlow
         } = this.state;
 
         const { valid, handleSubmit } = this.state.login;
@@ -319,6 +332,19 @@ class LoginForm extends Component {
                 );
             }
         }
+
+        if (oauthFlow && oauthFlow.clientUri) {
+            // TODO Find the way to pass variables for this message
+            // via $STM_Config or read them from URI.
+            message = (
+                <div className="callout primary">
+                    <p>
+                        Please login to authorize site {oauthFlow.clientUri}
+                    </p>
+                </div>
+            );
+        }
+
         const password_info = !useKeychain.value && !useHiveAuth.value && checkPasswordChecksum(password.value) === false
             ? tt('loginform_jsx.password_info')
             : null;
@@ -437,7 +463,7 @@ class LoginForm extends Component {
                                 ref="pw"
                                 {...useKeychain.props}
                                 onChange={this.useKeychainToggle}
-                                disabled={submitting}
+                                disabled={submitting || oauthFlow}
                             />
                             &nbsp;
                             <img src="/images/hivekeychain.png" alt="Hive Keychain" width="16" />
@@ -454,7 +480,7 @@ class LoginForm extends Component {
                             ref="pw"
                             {...useHiveAuth.props}
                             onChange={this.useHiveAuthToggle}
-                            disabled={!hasError && submitting}
+                            disabled={(!hasError && submitting) || oauthFlow}
                         />
                         &nbsp;
                         <img src="/images/hiveauth.png" alt="HiveAuth" width="16" />
