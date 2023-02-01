@@ -67,7 +67,6 @@ export default function useGeneralApi(app) {
         // if (rateLimitReq(this, this.req)) return;
         const params = ctx.request.body;
         const { account, signatures, externalUserOptions } = _parse(params);
-        console.log('bamboo login_account', {account, signatures, externalUserOptions});
         logRequest('login_account', ctx, { account });
         try {
             if (signatures && Object.keys(signatures).length > 0) {
@@ -121,20 +120,15 @@ export default function useGeneralApi(app) {
                             'https://hivesigner.com/api/me',
                             { headers }
                         );
-                    console.log('bamboo response.data', response.data);
                     if (response.data.user === account) {
-                        console.log(`bamboo verified account ${account} via hivesigner`);
-                        console.log(`bamboo setting session.externalUser to ${account}`);
                         ctx.session.externalUser = { ...{user: account}, ...externalUserOptions};
                     }
                 } catch (error) {
-                    console.error('bamboo got error, not settitg session.externalUser', error);
+                    console.error('Got error, not settitg session.externalUser', error);
                 }
             } else {
-                console.log('bamboo setting session.externalUser to', account);
                 ctx.session.externalUser = { ...{user: account}, ...externalUserOptions};
             }
-            console.log('bamboo session', ctx.session);
             ctx.body = JSON.stringify({
                 status: 'ok',
             });

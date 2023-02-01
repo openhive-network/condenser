@@ -32,7 +32,6 @@ export async function serverApiLogin(account, signatures = {}, externalUserOptio
         hivesignerToken: '',
     };
     const requestExternalUserOptions = { ...defaultExternalUserOptions, ...externalUserOptions};
-    console.log('bamboo running serverApiLogin', { account, signatures, externalUserOptions });
     if (!process.env.BROWSER || window.$STM_ServerBusy) return undefined;
     const response = await axios.post(
         '/api/v1/login_account',
@@ -49,7 +48,6 @@ export async function serverApiLogin(account, signatures = {}, externalUserOptio
 }
 
 export function serverApiLogout() {
-    console.log('bamboo running serverApiLogout');
     if (!process.env.BROWSER || window.$STM_ServerBusy) return;
     const request = { ...requestBase, body: JSON.stringify({ _csrf: $STM_csrf }) };
     // eslint-disable-next-line consistent-return

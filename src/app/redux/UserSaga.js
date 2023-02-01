@@ -51,13 +51,11 @@ function oauthRedirect(username, private_keys, useHiveSigner = false) {
 
     // User must be logged in.
     if (!username) {
-        console.log('oauthRedirect no username');
         return '';
     }
 
     // We handle only users logged in via private keys or via HiveSigner.
     if (!(private_keys || useHiveSigner)) {
-        console.log('oauthRedirect no private_keys and not useHiveSigner');
         return '';
     }
 
@@ -156,7 +154,6 @@ function* usernamePasswordLogin(action) {
 const clean = (value) => (value == null || value === '' || /null|undefined/.test(value) ? undefined : value);
 
 function* usernamePasswordLogin2(options) {
-    console.log('bamboo running usernamePasswordLogin2, options are', options);
     let {
         username,
         password,
@@ -697,7 +694,6 @@ function* saveLogin_localStorage() {
     );
     // autopost is a auto login for a low security key (like the posting key)
     localStorage.setItem('autopost2', data);
-    console.log('bamboo finished usernamePasswordLogin2');
 }
 
 function* logout(action) {

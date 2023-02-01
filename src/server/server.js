@@ -118,8 +118,6 @@ function convertEntriesToArrays(obj) {
 // some redirects and health status
 app.use(async (ctx, next) => {
 
-    console.log(`${(new Date()).toISOString()} bamboo SESSION`, ctx.session);
-
     if (ctx.method === 'GET' && ctx.url === '/.well-known/healthcheck.json') {
         ctx.status = 200;
         ctx.body = {
