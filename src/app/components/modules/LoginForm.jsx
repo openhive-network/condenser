@@ -91,6 +91,10 @@ class LoginForm extends Component {
         }
     }
 
+    componentWillUnmount() {
+        this.unRegisterOauthRequest();
+    }
+
     // shouldComponentUpdate = shouldComponentUpdate(this, 'LoginForm');
 
     initForm(props) {
@@ -152,7 +156,7 @@ class LoginForm extends Component {
     };
 
 
-    registerOauthRequest = () => {
+    registerOauthRequest() {
         const params = new URLSearchParams(window.location.search);
         if (params.has('client_id')
                 && params.has('redirect_uri')
@@ -168,6 +172,10 @@ class LoginForm extends Component {
                 }
             );
         }
+    }
+
+    unRegisterOauthRequest() {
+        sessionStorage.removeItem('oauth');
     }
 
     loginWithHiveSigner = () => {
