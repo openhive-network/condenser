@@ -10,6 +10,7 @@ const startKoa = require('./utils/start-koa');
 module.exports = {
     ...baseConfig,
     // devtool: 'eval-cheap-module-source-map',
+    devtool: 'inline-source-map',
     module: {
         ...baseConfig.module,
         rules: [
