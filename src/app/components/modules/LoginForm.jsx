@@ -163,13 +163,8 @@ class LoginForm extends Component {
                 && params.has('scope')
                 ) {
             sessionStorage.setItem('oauth', params.toString());
-            this.setState(
-                {
-                    oauthFlow: {
-                        clientUri: params.get('redirect_uri')
-                    }
-                }
-            );
+            const oauthFlow = {clientUri: params.get('redirect_uri')}
+            this.setState({oauthFlow});
         }
     }
 
