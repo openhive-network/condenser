@@ -384,16 +384,16 @@ export default function oauthServer(app) {
             validationError = {
                 error: 'temporarily_unavailable',
                 error_description:
-                    "User is logged in via external system now. " +
-                    "Server cannot continue Oauth flow."
+                    "User is logged in via external system now. "
+                    + "Server cannot continue Oauth flow."
             };
             ouathErrorRedirect(params, validationError, ctx);
             return;
         }
 
         // Response.
-        if (ctx.session.a ||
-                (
+        if (ctx.session.a
+                || (
                     ctx.session.externalUser
                     && ctx.session.externalUser.system === 'hivesigner'
                 )
