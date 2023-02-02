@@ -134,21 +134,20 @@ function* usernamePasswordLogin(action) {
 
     // Sets 'loading' while the login is taking place. The key generation can
     // take a while on slow computers.
-    yield call(usernamePasswordLogin2, action.payload);
+    const loginResult = yield call(usernamePasswordLogin2, action.payload);
     const current = yield select((state) => state.user.get('current'));
     const username = current ? current.get('username') : null;
 
     if (username) {
         yield put(userActions.generateSessionId());
-        yield fork(loadFollows, 'getFollowingAsync', username, 'blog');
-        yield fork(loadFollows, 'getFollowingAsync', username, 'ignore');
-        if (document.location.pathname === '/login.html') {
-            // Nasty workaround. We have a user, but we're still on
-            // login.html. Let's redirect user somewhere.
-            // TODO Make it better!
-            browserHistory.push('/trending/my');
+        if (!(loginResult && loginResult.redirect_to)) {
+            yield fork(loadFollows, 'getFollowingAsync', username, 'blog');
+            yield fork(loadFollows, 'getFollowingAsync', username, 'ignore');
         }
     }
+
+    console.log('bamboo loginResult', loginResult);
+    window.alert('bamboo inspection')
 }
 
 const clean = (value) => (value == null || value === '' || /null|undefined/.test(value) ? undefined : value);
@@ -596,20 +595,21 @@ function* usernamePasswordLogin2(options) {
 
     if (!autopost && saveLogin) yield put(userActions.saveLogin());
 
-    // Redirect user to the appropriate page after login.
+    // Redirect, when we are in oauth flow.
     const oauthRedirectTo = oauthRedirect(username, private_keys, useHiveSigner);
     if (oauthRedirectTo) {
-        window.location.assign(oauthRedirectTo);
-        return;
+        window.location.replace(oauthRedirectTo);
+        return {redirect_to: oauthRedirectTo};
     }
+
+    // Redirect to the appropriate page after login.
     const path = useHiveSigner ? lastPath : document.location.pathname;
     if (afterLoginRedirectToWelcome) {
-        console.log('Redirecting to welcome page');
         browserHistory.push('/welcome');
     } else if (feedURL && path === '/login.html') {
         browserHistory.push('/trending/my');
     } else if (feedURL && path === '/') {
-        //browserHistory.push(feedURL);
+        // browserHistory.push(feedURL);
         browserHistory.push('/trending/my');
     } else if (useHiveSigner && lastPath) {
         browserHistory.push(lastPath);
