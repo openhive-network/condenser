@@ -51,7 +51,8 @@ export function getOauthErrorMessageParameterMissing(parameter = '') {
  * Validate Oauth request parameter `client_id`.
  *
  * @param {URLSearchParams} params
- * @returns {null | OauthErrorMessage} Null when validation passes, otherwise OauthErrorMessage
+ * @returns {null | OauthErrorMessage} Null when validation passes,
+ * otherwise OauthErrorMessage
  */
 export function validateOauthRequestParameterClientId(params) {
     const oauthServerConfig = config.get('oauth_server');
@@ -69,7 +70,8 @@ export function validateOauthRequestParameterClientId(params) {
  * Validate Oauth request parameter `redirect_uri`.
  *
  * @param {URLSearchParams} params
- * @returns {null | OauthErrorMessage} Null when validation passes, otherwise OauthErrorMessage
+ * @returns {null | OauthErrorMessage} Null when validation passes,
+ * otherwise OauthErrorMessage
  */
 function validateOauthRequestParameterRedirectUri(params) {
     const oauthServerConfig = config.get('oauth_server');
@@ -91,7 +93,8 @@ function validateOauthRequestParameterRedirectUri(params) {
  * Validate Oauth request parameter `scope`.
  *
  * @param {URLSearchParams} params
- * @returns {null | OauthErrorMessage} Null when validation passes, otherwise OauthErrorMessage
+ * @returns {null | OauthErrorMessage} Null when validation passes,
+ * otherwise OauthErrorMessage
  */
 function validateOauthRequestParameterScope(params) {
     const parameter = 'scope';
@@ -126,7 +129,8 @@ function validateOauthRequestParameterScope(params) {
  * Validate Oauth request parameter `response_type`.
  *
  * @param {URLSearchParams} params
- * @returns {null | OauthErrorMessage} Null when validation passes, otherwise OauthErrorMessage
+ * @returns {null | OauthErrorMessage} Null when validation passes,
+ * otherwise OauthErrorMessage
  */
 function validateOauthRequestParameterResponseType(params) {
     const parameter = 'response_type';
@@ -146,7 +150,8 @@ function validateOauthRequestParameterResponseType(params) {
  * Validate Oauth request parameter `grant_type`.
  *
  * @param {URLSearchParams} params
- * @returns {null | OauthErrorMessage} Null when validation passes, otherwise OauthErrorMessage
+ * @returns {null | OauthErrorMessage} Null when validation passes,
+ * otherwise OauthErrorMessage
  */
 function validateOauthRequestParameterGrantType(params) {
     const parameter = 'grant_type';
@@ -166,7 +171,8 @@ function validateOauthRequestParameterGrantType(params) {
  * Validate Oauth request parameter `code`.
  *
  * @param {URLSearchParams} params
- * @returns {null | OauthErrorMessage} Null when validation passes, otherwise OauthErrorMessage
+ * @returns {null | OauthErrorMessage} Null when validation passes,
+ * otherwise OauthErrorMessage
  */
 function validateOauthRequestParameterCode(params) {
     const parameter = 'code';
@@ -276,7 +282,6 @@ async function getHiveUserProfile(hiveUsername) {
         // chainAccount.posting_json_metadata doesn't exist.
 
     } catch (error) {
-        // FIXME Delete it!
         console.error('gethiveUserProfile error', error);
     }
     return hiveUserProfile;
@@ -284,9 +289,9 @@ async function getHiveUserProfile(hiveUsername) {
 
 
 /**
- * A simple oauth server module created only to handle login for
- * openhive.chat website. The server implements only [Authentication
- * using the Authorization Code
+ * Oauth server module created to handle login for openhive.chat
+ * website. The server implements only [Authentication using the
+ * Authorization Code
  * Flow](https://openid.net/specs/openid-connect-core-1_0.html#CodeFlowAuth).
  * See also [Error
  * Response](https://www.rfc-editor.org/rfc/rfc6749#section-4.1.2.1).
@@ -374,17 +379,25 @@ export default function oauthServer(app) {
         // TODO It's workaround. We should redirect user to the page
         // telling that user should logout from external system and
         // login using private key,
-        if (ctx.session.externalUser && ctx.session.externalUser.system !== 'hivesigner') {
+        if (ctx.session.externalUser
+                && ctx.session.externalUser.system !== 'hivesigner') {
             validationError = {
                 error: 'temporarily_unavailable',
-                error_description: "User is logged in via external system now. Server cannot continue Oauth flow."
+                error_description:
+                    "User is logged in via external system now. " +
+                    "Server cannot continue Oauth flow."
             };
             ouathErrorRedirect(params, validationError, ctx);
             return;
         }
 
         // Response.
-        if (ctx.session.a || (ctx.session.externalUser && ctx.session.externalUser.system === 'hivesigner')) {
+        if (ctx.session.a ||
+                (
+                    ctx.session.externalUser
+                    && ctx.session.externalUser.system === 'hivesigner'
+                )
+                ) {
             // When we have user in session,
             // redirect to client's redirect_uri with "code".
             const expiresIn = 60 * 5;
