@@ -37,7 +37,10 @@ global.$STM_Config = {
     referral: config.get('referral'),
     rebranded_api: true,
     default_observer: config.get('default_observer'),
-    chain_id: config.get('chain_id')
+    chain_id: config.get('chain_id'),
+    oauth_server_clients_openhive_chat_uri:
+            config.get('oauth_server')?.clients?.openhive_chat?.uri
+            || 'https://openhive.chat',
 };
 
 const WebpackIsomorphicTools = require('webpack-isomorphic-tools');

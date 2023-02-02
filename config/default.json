@@ -62,17 +62,18 @@
     "clients": {
       "openhive_chat": {
         "id": "openhive_chat",
-        "name": "Openhive Chat",
+        "name": "Hive Chat",
+        "scope": [
+          "openid",
+          "profile"
+        ],
         "secret": "openhive_chat_secret",
         "redirect_uris": [
           "https://openhive.chat/_oauth/hiveblog",
           "http://localhost:3000/_oauth/hiveblog",
           "http://sepadevlnx.syncad.com:3000/_oauth/hiveblog"
         ],
-        "scope": [
-          "openid",
-          "profile"
-        ]
+        "uri": "https://openhive.chat"
       }
     }
   }

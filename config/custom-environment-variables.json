@@ -49,8 +49,9 @@
   },
   "oauth_server": {
     "clients": {
-      "openhive.chat" : {
-        "secret": "SDC_OAUTH_SERVER_CLIENTS_OPENHIVE_CHAT_SECRET"
+      "openhive_chat" : {
+        "secret": "SDC_OAUTH_SERVER_CLIENTS_OPENHIVE_CHAT_SECRET",
+        "uri": "SDC_OAUTH_SERVER_CLIENTS_OPENHIVE_CHAT_URI"
       }
     }
   }
