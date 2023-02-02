@@ -66,7 +66,7 @@ export default function useGeneralApi(app) {
 
         // if (rateLimitReq(this, this.req)) return;
         const params = ctx.request.body;
-        const { account, signatures, externalUserOptions } = _parse(params);
+        const { account, signatures, externalUser } = _parse(params);
         logRequest('login_account', ctx, { account });
         try {
             if (signatures && Object.keys(signatures).length > 0) {
@@ -110,24 +110,24 @@ export default function useGeneralApi(app) {
                         if (auth.posting) ctx.session.a = account;
                     }
                 }
-            } else if (externalUserOptions.system === 'hivesigner') {
+            } else if (externalUser.system === 'hivesigner') {
                 try {
                     const headers = {
                         Accept: 'application/json',
-                        Authorization: externalUserOptions.hivesignerToken,
+                        Authorization: externalUser.hivesignerToken,
                     };
                     const response = await axios.get(
                             'https://hivesigner.com/api/me',
                             { headers }
                         );
                     if (response.data.user === account) {
-                        ctx.session.externalUser = { ...{user: account}, ...externalUserOptions};
+                        ctx.session.externalUser = { ...{user: account}, ...externalUser};
                     }
                 } catch (error) {
                     console.error('Got error, not settitg session.externalUser', error);
                 }
             } else {
-                ctx.session.externalUser = { ...{user: account}, ...externalUserOptions};
+                ctx.session.externalUser = { ...{user: account}, ...externalUser};
             }
             ctx.body = JSON.stringify({
                 status: 'ok',

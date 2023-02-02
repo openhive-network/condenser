@@ -273,8 +273,8 @@ function* usernamePasswordLogin2(options) {
                 effective_vests: effectiveVests(account),
             })
         );
-        const userOptions = {system: 'keychain'};
-        const response = yield serverApiLogin(username, {}, userOptions);
+        const externalUser = {system: 'keychain'};
+        const response = yield serverApiLogin(username, {}, externalUser);
         yield response.data;
         return;
     }
@@ -303,8 +303,8 @@ function* usernamePasswordLogin2(options) {
                     effective_vests: effectiveVests(account),
                 })
             );
-            const userOptions = {system: 'hiveauth'};
-            const response = yield serverApiLogin(username, {}, userOptions);
+            const externalUser = {system: 'hiveauth'};
+            const response = yield serverApiLogin(username, {}, externalUser);
             yield response.data;
         } else {
             console.log('HiveAuth token has expired');
@@ -333,8 +333,8 @@ function* usernamePasswordLogin2(options) {
                 })
             );
         }
-        const userOptions = {system: 'hivesigner', hivesignerToken: access_token};
-        const response = yield serverApiLogin(username, {}, userOptions);
+        const externalUser = {system: 'hivesigner', hivesignerToken: access_token};
+        const response = yield serverApiLogin(username, {}, externalUser);
         yield response.data;
         return;
     }
@@ -493,7 +493,7 @@ function* usernamePasswordLogin2(options) {
             const challenge = { token: challengeString };
             const buf = JSON.stringify(challenge, null, 0);
             const bufSha = hash.sha256(buf);
-            const userOptions = {};
+            const externalUser = {};
 
             if (useKeychain) {
                 const response = yield new Promise((resolve) => {
@@ -515,7 +515,7 @@ function* usernamePasswordLogin2(options) {
                         effective_vests: effectiveVests(account),
                     })
                 );
-                userOptions.system = 'keychain';
+                externalUser.system = 'keychain';
             } else if (useHiveAuth) {
                 const authResponse = yield new Promise((resolve) => {
                     HiveAuthUtils.login(username, buf, (res) => {
@@ -547,7 +547,7 @@ function* usernamePasswordLogin2(options) {
                 }
 
                 feedURL = '/@' + username + '/feed';
-                userOptions.system = 'hiveauth';
+                externalUser.system = 'hiveauth';
             } else if (useHiveSigner) {
                 if (access_token) {
                     // redirect url
@@ -565,8 +565,8 @@ function* usernamePasswordLogin2(options) {
                         })
                     );
                 }
-                userOptions.system = 'hivesigner';
-                userOptions.hivesignerToken = access_token;
+                externalUser.system = 'hivesigner';
+                externalUser.hivesignerToken = access_token;
             } else {
                 const sign = (role, d) => {
                     if (!d) return;
@@ -582,7 +582,7 @@ function* usernamePasswordLogin2(options) {
             if ((Object.keys(signatures)).length > 0) {
                 response = yield serverApiLogin(username, signatures);
             } else {
-                response = yield serverApiLogin(username, {}, userOptions);
+                response = yield serverApiLogin(username, {}, externalUser);
             }
 
             yield response.data;

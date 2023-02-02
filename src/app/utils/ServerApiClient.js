@@ -1,7 +1,7 @@
 /* global $STM_csrf */
 
 /**
- * @typedef ExternalUserOptions
+ * @typedef ExternalUser
  * @type {object}
  * @property {'hiveauth' | 'hivesigner' | 'keychain'} system
  * @property {string} hivesignerToken
@@ -23,22 +23,22 @@ const requestBase = {
  *
  * @param {string} account
  * @param {Object} signatures
- * @param {{} | ExternalUserOptions} externalUserOptions
+ * @param {{} | ExternalUser} externalUser
  * @returns
  */
-export async function serverApiLogin(account, signatures = {}, externalUserOptions = {}) {
-    const defaultExternalUserOptions = {
+export async function serverApiLogin(account, signatures = {}, externalUser = {}) {
+    const defaultExternalUser = {
         system: '', // '' | 'hivesigner'
         hivesignerToken: '',
     };
-    const requestExternalUserOptions = { ...defaultExternalUserOptions, ...externalUserOptions};
+    const requestExternalUser = { ...defaultExternalUser, ...externalUser};
     if (!process.env.BROWSER || window.$STM_ServerBusy) return undefined;
     const response = await axios.post(
         '/api/v1/login_account',
         {
             account,
             signatures,
-            externalUserOptions: requestExternalUserOptions,
+            externalUser: requestExternalUser,
             _csrf: $STM_csrf
         },
         { headers: requestHeaders },
