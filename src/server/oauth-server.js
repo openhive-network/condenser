@@ -195,21 +195,28 @@ function validateOauthRequestParameterCode(params) {
  * @param {URLSearchParams} params
  * @param {OauthErrorMessage} error
  * @param {Object} ctx
- * @returns {void}
+ * @param {boolean} doRedirect
+ * @returns {string}
  */
-function ouathErrorRedirect(params, error, ctx) {
+function ouathErrorRedirect(params, error, ctx, doRedirect = true) {
     const responseParams = new URLSearchParams(error);
     if (params.get('state')) {
         responseParams.set('state', params.get('state'));
     }
-    ctx.redirect(params.get('redirect_uri') + '?'
-            + responseParams.toString());
+    const redirectTo = params.get('redirect_uri') + '?'
+            + responseParams.toString();
+    if (doRedirect) {
+        ctx.redirect(redirectTo);
+    }
 
     const date = new Date();
     console.log(`${date.toISOString()} doing ouathErrorRedirect`);
     console.log('request.body', ctx.request.body);
     console.log('response.body', ctx.response.body);
     console.log('ctx', ctx);
+
+    return redirectTo;
+
 }
 
 /**
@@ -376,22 +383,95 @@ export default function oauthServer(app) {
             return;
         }
 
-        // TODO It's workaround. We should redirect user to the page
-        // telling that user should logout from external system and
-        // login using private key,
+        // We redirect user to the page telling that user should logout
+        // from unsupported external system and retry doinglogin via
+        // supported method.
         if (ctx.session.externalUser
                 && ctx.session.externalUser.system !== 'hivesigner') {
             validationError = {
                 error: 'temporarily_unavailable',
                 error_description:
-                    "User is logged in via external system now. "
+                    "User is logged in via unsupported external system now. "
                     + "Server cannot continue Oauth flow."
             };
-            ouathErrorRedirect(params, validationError, ctx);
+        const redirectTo = ouathErrorRedirect(params, validationError, ctx, false);
+        ctx.body=`
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/ico" href="/favicon.ico" />
+    <title>Oauth Flow Error - hive.blog</title>
+
+    <style>
+
+        body {
+            max-width: 35em;
+            margin: 0 auto;
+            font-family: Tahoma, Verdana, Arial, sans-serif;
+            padding: 20px;
+        }
+        .center-x {
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .center-text {
+            text-align: center;
+        }
+
+        #countdown {
+            font-weight: bold;
+            color: red;
+        }
+    </style>
+
+    <script>
+
+        var timeleft = 10;
+        var downloadTimer = setInterval(function(){
+            if(timeleft <= 0){
+                clearInterval(downloadTimer);
+                document.getElementById("countdown").innerHTML = "0 seconds";
+                window.location.replace("${redirectTo}");
+            } else {
+                document.getElementById("countdown").innerHTML = timeleft + " seconds";
+            }
+            timeleft -= 1;
+        }, 1000);
+
+    </script>
+
+</head>
+
+<body>
+
+    <div class="center-x">
+        <h1>Oauth Flow Error</h1>
+        <p>
+            We cannot continue Oauth flow for application
+            ${oauthServerConfig.clients[params.get('client_id')].name}, because
+            you're logged in via unsupported method in Hive Blog.
+        </p>
+        <p>
+            Please do logout in application <a href="/" target="_blank">Hive Blog</a>
+            and try again.
+        </p>
+        <p>
+            We'll redirect you back to application
+            <a href="${redirectTo}">${oauthServerConfig.clients[params.get('client_id')].name}</a>
+            in <span id="countdown"></span>.
+        </p>
+    </div>
+
+</body>
+</html>
+`;
             return;
         }
 
-        // Response.
+        // Final response, when everything is OK.
         if (ctx.session.a
                 || (
                     ctx.session.externalUser
@@ -427,6 +507,8 @@ export default function oauthServer(app) {
         // redirected to this endpoint again, but user should exist in
         // session then.
         params.set('redirect_to', '/oauth/authorize');
+        params.set('client_name',
+                oauthServerConfig.clients[params.get('client_id')].name);
         ctx.redirect('/login.html?' + params.toString());
     });
 

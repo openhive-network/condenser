@@ -164,7 +164,7 @@ class LoginForm extends Component {
                 ) {
             try {
                 sessionStorage.setItem('oauth', params.toString());
-                const oauthFlow = {clientUri: params.get('redirect_uri')};
+                const oauthFlow = {clientName: params.get('client_name')};
                 this.setState({oauthFlow});
             } catch (error) {
                 // Do nothing – sessionStorage is unavailable, probably.
@@ -343,11 +343,11 @@ class LoginForm extends Component {
             }
         }
 
-        if (oauthFlow && oauthFlow.clientUri) {
+        if (oauthFlow && oauthFlow.clientName) {
             message = (
                 <div className="callout primary">
                     <p>
-                        {tt('loginform_jsx.oauth_info')} {oauthFlow.clientUri}
+                        {tt('loginform_jsx.oauth_info')} {oauthFlow.clientName}
                     </p>
                 </div>
             );

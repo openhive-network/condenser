@@ -62,6 +62,7 @@
     "clients": {
       "openhive_chat": {
         "id": "openhive_chat",
+        "name": "Openhive Chat",
         "secret": "openhive_chat_secret",
         "redirect_uris": [
           "https://openhive.chat/_oauth/hiveblog",

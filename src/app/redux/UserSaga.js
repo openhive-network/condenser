@@ -71,6 +71,9 @@ function oauthRedirect(username, private_keys, useHiveSigner = false) {
         if (params.has('redirect_to')) {
             const redirect_to = params.get('redirect_to');
             params.delete('redirect_to');
+            if (params.has('client_name')) {
+                params.delete('client_name');
+            }
             return redirect_to + '?' + params.toString();
         }
     } catch (error) {
