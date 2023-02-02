@@ -40,31 +40,41 @@ export const userWatches = [
     takeLatest(userActions.UPLOAD_IMAGE, uploadImage),
 ];
 
-// Check if there is an ongoing oauth process.
-// If yes, do redirection.
+/**
+ * Check if there is an ongoing oauth process. If yes, do redirection.
+ *
+ * @param {string} username
+ * @param {object} private_keys
+ * @param {boolean} [useHiveSigner=false]
+ * @returns
+ */
 function oauthRedirect(username, private_keys, useHiveSigner = false) {
-    const oauthItem = sessionStorage.getItem('oauth');
-    if (!oauthItem) {
-        return '';
-    }
-    sessionStorage.removeItem('oauth');
+    try {
+        const oauthItem = sessionStorage.getItem('oauth');
+        if (!oauthItem) {
+            return '';
+        }
+        sessionStorage.removeItem('oauth');
 
-    // User must be logged in.
-    if (!username) {
-        return '';
-    }
+        // User must be logged in.
+        if (!username) {
+            return '';
+        }
 
-    // We handle only users logged in via private keys or via HiveSigner.
-    if (!(private_keys || useHiveSigner)) {
-        return '';
-    }
+        // We handle only users logged in via private keys or via
+        // HiveSigner.
+        if (!(private_keys || useHiveSigner)) {
+            return '';
+        }
 
-    const params = new URLSearchParams(oauthItem);
-    if (params.has('redirect_to')) {
-        const redirect_to = params.get('redirect_to');
-        params.delete('redirect_to');
-        // window.location.assign(redirect_to + '?' + params.toString());
-        return redirect_to + '?' + params.toString();
+        const params = new URLSearchParams(oauthItem);
+        if (params.has('redirect_to')) {
+            const redirect_to = params.get('redirect_to');
+            params.delete('redirect_to');
+            return redirect_to + '?' + params.toString();
+        }
+    } catch (error) {
+        // Do nothing – sessionStorage is unavailable, probably.
     }
 
     return '';

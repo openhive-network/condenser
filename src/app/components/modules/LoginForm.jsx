@@ -162,14 +162,22 @@ class LoginForm extends Component {
                 && params.has('state')
                 && params.has('scope')
                 ) {
-            sessionStorage.setItem('oauth', params.toString());
-            const oauthFlow = {clientUri: params.get('redirect_uri')}
-            this.setState({oauthFlow});
+            try {
+                sessionStorage.setItem('oauth', params.toString());
+                const oauthFlow = {clientUri: params.get('redirect_uri')}
+                this.setState({oauthFlow});
+            } catch (error) {
+                // Do nothing – sessionStorage is unavailable, probably.
+            }
         }
     }
 
     unRegisterOauthRequest() {
-        sessionStorage.removeItem('oauth');
+        try {
+            sessionStorage.removeItem('oauth');
+        } catch (error) {
+            // Do nothing – sessionStorage is unavailable, probably.
+        }
     }
 
     loginWithHiveSigner = () => {
