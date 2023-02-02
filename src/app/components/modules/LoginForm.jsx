@@ -164,10 +164,10 @@ class LoginForm extends Component {
                 ) {
             try {
                 sessionStorage.setItem('oauth', params.toString());
-                const oauthFlow = {clientUri: params.get('redirect_uri')}
+                const oauthFlow = {clientUri: params.get('redirect_uri')};
                 this.setState({oauthFlow});
             } catch (error) {
-                // Do nothing – sessionStorage is unavailable, probably.
+                // Do nothing – sessionStorage is unavailable, probably.
             }
         }
     }
@@ -176,7 +176,7 @@ class LoginForm extends Component {
         try {
             sessionStorage.removeItem('oauth');
         } catch (error) {
-            // Do nothing – sessionStorage is unavailable, probably.
+            // Do nothing – sessionStorage is unavailable, probably.
         }
     }
 
