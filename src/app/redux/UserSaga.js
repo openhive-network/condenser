@@ -145,9 +145,6 @@ function* usernamePasswordLogin(action) {
             yield fork(loadFollows, 'getFollowingAsync', username, 'ignore');
         }
     }
-
-    console.log('bamboo loginResult', loginResult);
-    window.alert('bamboo inspection')
 }
 
 const clean = (value) => (value == null || value === '' || /null|undefined/.test(value) ? undefined : value);
