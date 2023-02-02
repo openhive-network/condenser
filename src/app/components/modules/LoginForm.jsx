@@ -344,12 +344,10 @@ class LoginForm extends Component {
         }
 
         if (oauthFlow && oauthFlow.clientUri) {
-            // TODO Find the way to pass variables for this message
-            // via $STM_Config or read them from URI.
             message = (
                 <div className="callout primary">
                     <p>
-                        Please login to authorize site {oauthFlow.clientUri}
+                        {tt('loginform_jsx.oauth_info')} {oauthFlow.clientUri}
                     </p>
                 </div>
             );
