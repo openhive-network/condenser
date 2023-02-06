@@ -1,11 +1,15 @@
 /*eslint no-underscore-dangle: "warn"*/
 import koa_router from 'koa-router';
+import Joi from 'joi';
 import config from 'config';
+import { assert } from 'koa/lib/context';
 import { getRemoteIp, rateLimitReq } from 'server/utils/misc';
 import coBody from 'co-body';
 import Mixpanel from 'mixpanel';
 import { PublicKey, Signature, hash } from '@hiveio/hive-js/lib/auth/ecc';
 import { api } from '@hiveio/hive-js';
+
+const RE_EXTERNAL_USER_SYSTEM = /^(hiveauth|hivesigner|keychain)$/;
 
 const axios = require('axios').default;
 
@@ -58,17 +62,33 @@ function logRequest(path, ctx, extra) {
 }
 
 export default function useGeneralApi(app) {
-    const router = koa_router({ prefix: '/api/v1' });
+    const router = new koa_router({ prefix: '/api/v1' });
     app.use(router.routes());
 
     router.post('/login_account', async (ctx) => {
 
-        // TODO Validate request body!
-
         // if (rateLimitReq(this, this.req)) return;
         const params = ctx.request.body;
-        const { account, signatures, externalUser } = _parse(params);
+
+        // Validate request body
+        const schema = Joi.object({
+            _csrf: Joi.string().required(),
+            account: Joi.string().required(),
+            signatures: Joi.object().keys({
+                posting: Joi.string().required()
+            }),
+            externalUser: Joi.object().keys({
+                system: Joi.string().required()
+                        .pattern(RE_EXTERNAL_USER_SYSTEM),
+                hivesignerToken: Joi.string()
+            })
+        });
+        const validationResult = schema.validate(_parse(params));
+        assert(!validationResult.error, 401, 'Invalid params');
+
+        const { account, signatures, externalUser } = validationResult.value;
         logRequest('login_account', ctx, { account });
+
         try {
             if (signatures && Object.keys(signatures).length > 0) {
                 if (!ctx.session.login_challenge) {
@@ -111,7 +131,7 @@ export default function useGeneralApi(app) {
                         if (auth.posting) ctx.session.a = account;
                     }
                 }
-            } else if (externalUser.system === 'hivesigner') {
+            } else if (externalUser && externalUser.system === 'hivesigner') {
                 try {
                     const headers = {
                         Accept: 'application/json',
