@@ -41,7 +41,8 @@ function logRequest(path, ctx, extra) {
             d.account = ctx.session.a;
         }
         if (ctx.session.externalUser) {
-            d.externalUser = ctx.session.externalUser;
+            d.externalUser_user = ctx.session.externalUser.user;
+            d.externalUser_system = ctx.session.externalUser.system;
         }
     }
     if (extra) {
@@ -124,7 +125,7 @@ export default function useGeneralApi(app) {
                         ctx.session.externalUser = { ...{user: account}, ...externalUser};
                     }
                 } catch (error) {
-                    console.error('Got error, not settitg session.externalUser', error);
+                    console.error(`Got error, not settitg session.externalUser for ${account}`, error);
                 }
             } else {
                 ctx.session.externalUser = { ...{user: account}, ...externalUser};

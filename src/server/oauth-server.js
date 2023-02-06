@@ -208,15 +208,7 @@ export function ouathErrorRedirect(params, error, ctx, doRedirect = true) {
     if (doRedirect) {
         ctx.redirect(redirectTo);
     }
-
-    const date = new Date();
-    console.log(`${date.toISOString()} doing ouathErrorRedirect`);
-    console.log('request.body', ctx.request.body);
-    console.log('response.body', ctx.response.body);
-    console.log('ctx', ctx);
-
     return redirectTo;
-
 }
 
 /**
@@ -229,17 +221,7 @@ export function ouathErrorRedirect(params, error, ctx, doRedirect = true) {
 export async function getHiveUserProfile(hiveUsername) {
     const hiveUserProfile = {};
 
-    //
-    // Add fake email, to allow changing User Profile in Rocket Chat.
-    // Not needed, when
-    // [patch](https://github.com/RocketChat/Rocket.Chat/pull/22438/files)
-    // has been applied in Rocket Chat.
-    //
-
-    // hiveUserProfile.email = `${hiveUsername}@openhive.chat`;
-    // hiveUserProfile.email_verified = true;
-
-    // Add other properties to user profile.
+    // Add properties to user profile.
     try {
         const [chainAccount] = await api.getAccountsAsync([hiveUsername]);
         if (!chainAccount) {
@@ -351,14 +333,8 @@ export default function oauthServer(app) {
     publicRouter.get('/oauth/authorize', async (ctx) => {
         const params = new URLSearchParams(ctx.URL.search);
 
-        const date = new Date();
-        console.log(`${date.toISOString()} Got request to /oauth/authorize`);
-        console.log('request.body', ctx.request.body);
-        console.log('response.body', ctx.response.body);
-        console.log('ctx.session', ctx.session);
-        console.log('ctx', ctx);
-
         // Validate request parameters.
+
         let validationError = validateOauthRequestParameterClientId(params);
         if (validationError) {
             ctx.body = validationError;
@@ -384,7 +360,7 @@ export default function oauthServer(app) {
         }
 
         // We redirect user to the page telling that user should logout
-        // from unsupported external system and retry doinglogin via
+        // from unsupported external system and retry login via
         // supported method.
         if (ctx.session.externalUser
                 && ctx.session.externalUser.system !== 'hivesigner') {
@@ -532,7 +508,6 @@ export default function oauthServer(app) {
             return;
         }
 
-        // Not required here, but doesn't hurt.
         validationError = validateOauthRequestParameterRedirectUri(params);
         if (validationError) {
             ctx.status = 400;
@@ -570,6 +545,7 @@ export default function oauthServer(app) {
         }
 
         // Validate JWT claims.
+
         if (verifiedCode.payload.iss !== ctx.request.host) {
             ctx.status = 400;
             ctx.body = {
@@ -673,11 +649,7 @@ export default function oauthServer(app) {
             username: ctx.state.user.username,
             sub: ctx.state.user.username,
         };
-
         const hiveUserProfile = await getHiveUserProfile(ctx.state.user.sub);
-
-        console.log('hiveUserProfile', hiveUserProfile);
-
         ctx.body = {...body, ...hiveUserProfile};
         ctx.status = 200;
 
