@@ -73,7 +73,7 @@ export function validateOauthRequestParameterClientId(params) {
  * @returns {null | OauthErrorMessage} Null when validation passes,
  * otherwise OauthErrorMessage
  */
-function validateOauthRequestParameterRedirectUri(params) {
+export function validateOauthRequestParameterRedirectUri(params) {
     const oauthServerConfig = config.get('oauth_server');
     const parameter = 'redirect_uri';
     if (!params.has(parameter)) {
@@ -96,7 +96,7 @@ function validateOauthRequestParameterRedirectUri(params) {
  * @returns {null | OauthErrorMessage} Null when validation passes,
  * otherwise OauthErrorMessage
  */
-function validateOauthRequestParameterScope(params) {
+export function validateOauthRequestParameterScope(params) {
     const parameter = 'scope';
     if (!params.has(parameter)) {
         return getOauthErrorMessageParameterMissing(parameter);
@@ -132,7 +132,7 @@ function validateOauthRequestParameterScope(params) {
  * @returns {null | OauthErrorMessage} Null when validation passes,
  * otherwise OauthErrorMessage
  */
-function validateOauthRequestParameterResponseType(params) {
+export function validateOauthRequestParameterResponseType(params) {
     const parameter = 'response_type';
     if (!params.has(parameter)) {
         return getOauthErrorMessageParameterMissing(parameter);
@@ -153,7 +153,7 @@ function validateOauthRequestParameterResponseType(params) {
  * @returns {null | OauthErrorMessage} Null when validation passes,
  * otherwise OauthErrorMessage
  */
-function validateOauthRequestParameterGrantType(params) {
+export function validateOauthRequestParameterGrantType(params) {
     const parameter = 'grant_type';
     if (!params.has(parameter)) {
         return getOauthErrorMessageParameterMissing(parameter);
@@ -174,7 +174,7 @@ function validateOauthRequestParameterGrantType(params) {
  * @returns {null | OauthErrorMessage} Null when validation passes,
  * otherwise OauthErrorMessage
  */
-function validateOauthRequestParameterCode(params) {
+export function validateOauthRequestParameterCode(params) {
     const parameter = 'code';
     if (!params.has(parameter)) {
         return getOauthErrorMessageParameterMissing(parameter);
@@ -198,7 +198,7 @@ function validateOauthRequestParameterCode(params) {
  * @param {boolean} doRedirect
  * @returns {string}
  */
-function ouathErrorRedirect(params, error, ctx, doRedirect = true) {
+export function ouathErrorRedirect(params, error, ctx, doRedirect = true) {
     const responseParams = new URLSearchParams(error);
     if (params.get('state')) {
         responseParams.set('state', params.get('state'));
@@ -226,7 +226,7 @@ function ouathErrorRedirect(params, error, ctx, doRedirect = true) {
  * @param {String} hiveUsername
  * @returns {Promise<Object>}
  */
-async function getHiveUserProfile(hiveUsername) {
+export async function getHiveUserProfile(hiveUsername) {
     const hiveUserProfile = {};
 
     //
@@ -644,14 +644,6 @@ export default function oauthServer(app) {
         };
         ctx.status = 200;
 
-        // FIXME Delete it!
-        const date = new Date();
-        console.log(`${date.toISOString()} Got request to /oauth/token`);
-        console.log('ctx', ctx);
-        console.log('verifiedCode', verifiedCode);
-        console.log('request', ctx.request);
-        console.log('request.body', ctx.request.body);
-        console.log('response.body', ctx.response.body);
     });
 
     // Userinfo endpoint.
@@ -689,13 +681,6 @@ export default function oauthServer(app) {
         ctx.body = {...body, ...hiveUserProfile};
         ctx.status = 200;
 
-        // FIXME Delete it!
-        const date = new Date();
-        console.log(`${date.toISOString()} Got request to /userinfo`);
-        console.log('ctx', ctx);
-        console.log('ctx.state.user', ctx.state.user);
-        console.log('request.body', ctx.request.body);
-        console.log('response.body', ctx.response.body);
     });
 
     app.use(publicRouter.routes()).use(publicRouter.allowedMethods());
