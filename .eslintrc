@@ -148,7 +148,8 @@ find node_modules/eslint-config-airbnb -name '*.js'|xargs sed -i "s/': 2/': 1/"
         ],
         "import/no-extraneous-dependencies": 0,
         "import/no-unresolved": 0,
-        "import/extensions": 0
+        "import/extensions": 0,
+        "no-multiple-empty-lines": ["error", { "max": 2, "maxBOF": 0, "maxEOF": 0 }]
     },
     "overrides": [
         {
