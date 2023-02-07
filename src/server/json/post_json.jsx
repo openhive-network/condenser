@@ -7,12 +7,12 @@ export default function usePostJson(app) {
     const router = koa_router();
     app.use(router.routes());
 
-    router.get(routeRegex.PostJson, function* () {
+    router.get(routeRegex.PostJson, async (ctx) => {
         // validate and build post details in JSON
-        const author = this.url.match(/(@[\w\d.-]+)/)[0].replace('@', '');
-        const permalink = this.url.match(/(@[\w\d.-]+)\/?([\w\d-]+)/)[2];
+        const author = ctx.url.match(/(@[\w\d.-]+)/)[0].replace('@', '');
+        const permalink = ctx.url.match(/(@[\w\d.-]+)\/?([\w\d-]+)/)[2];
         let status = '';
-        let post = yield api.getContentAsync(author, permalink);
+        let post = await api.getContentAsync(author, permalink);
 
         if (GDPRUserList.includes(post.author)) {
             post = 'Content unavailable';
@@ -30,6 +30,6 @@ export default function usePostJson(app) {
             status = '404';
         }
         // return response and status code
-        this.body = { post, status };
+        ctx.body = { post, status };
     });
 }

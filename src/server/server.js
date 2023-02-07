@@ -105,6 +105,9 @@ app.use(async (ctx, next) => {
 
 useGeneralApi(app);
 oauthServer(app);
+useRedirects(app);
+useUserJson(app);
+usePostJson(app);
 
 koaLocale(app);
 
@@ -280,10 +283,6 @@ if (env !== 'test') {
         }
     });
 }
-
-useRedirects(app);
-useUserJson(app);
-usePostJson(app);
 
 // Logging
 if (env === 'production') {

@@ -16,13 +16,13 @@ export default function useRedirects(app) {
 
     redirects.forEach((redirectConfig) => {
         // eslint-disable-next-line require-yield
-        router.get(redirectConfig[0], function* () {
-            const dest = Object.keys(this.params).reduce((value, key) => {
-                return value.replace('$' + key, this.params[key]);
+        router.get(redirectConfig[0], async (ctx) => {
+            const dest = Object.keys(ctx.params).reduce((value, key) => {
+                return value.replace('$' + key, ctx.params[key]);
             }, redirectConfig[1]);
-            console.log(`server redirect: [${redirectConfig[0]}] ${this.request.url} -> ${dest}`);
-            this.status = redirectConfig[2] || 301;
-            this.redirect(dest);
+            console.log(`server redirect: [${redirectConfig[0]}] ${ctx.request.url} -> ${dest}`);
+            ctx.status = redirectConfig[2] || 301;
+            ctx.redirect(dest);
         });
     });
 }

@@ -9,7 +9,7 @@ export const allowedTags = `
     div, iframe, del,
     a, p, b, i, q, br, ul, li, ol, img, h1, h2, h3, h4, h5, h6, hr,
     blockquote, pre, code, em, strong, center, table, thead, tbody, tr, th, td,
-    strike, sup, sub, span
+    strike, sup, sub, span, details, summary
 `
     .trim()
     .split(/,\s*/);
@@ -127,6 +127,7 @@ export default ({
                 'redditWrapper',
                 'tweetWrapper',
                 'phishy',
+                'table-responsive',
             ];
             const validClass = classWhitelist.find((e) => attribs.class == e);
             if (validClass) attys.class = validClass;

@@ -1,29 +1,16 @@
 import React, { Component } from 'react';
+import { renderToString } from 'react-dom/server';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-
-import Remarkable from 'remarkable';
+import { Remarkable } from 'remarkable';
 import sanitizeConfig, { noImageText } from 'app/utils/SanitizeConfig';
 import sanitize from 'sanitize-html';
 import HtmlReady, { highlightCodes } from 'shared/HtmlReady';
 import tt from 'counterpart';
 import { generateMd as EmbeddedPlayerGenerateMd } from 'app/components/elements/EmbeddedPlayers';
-
-const remarkable = new Remarkable({
-    html: true, // remarkable renders first then sanitize runs...
-    breaks: true,
-    linkify: false, // linkify is done locally
-    typographer: false, // https://github.com/jonschlinkert/remarkable/issues/142#issuecomment-221546793
-    quotes: '“”‘’',
-});
-
-const remarkableToSpec = new Remarkable({
-    html: true,
-    breaks: false, // real markdown uses \n\n for paragraph breaks
-    linkify: false,
-    typographer: false,
-    quotes: '“”‘’',
-});
+import RemarkableSpoiler from '@quochuync/remarkable-spoiler';
+import '@quochuync/remarkable-spoiler/styles.css';
+import RemarkableTable from "app/utils/RemarkableTable";
 
 class MarkdownViewer extends Component {
     static propTypes = {
@@ -85,10 +72,16 @@ class MarkdownViewer extends Component {
         // Strip out HTML comments. "JS-DOS" bug.
         text = text.replace(/<!--([\s\S]+?)(-->|$)/g, '(html comment removed: $1)');
 
-        let renderer = remarkableToSpec;
-        if (this.props.breaks === true) {
-            renderer = remarkable;
-        }
+        const renderer = new Remarkable({
+            html: true, // remarkable renders first then sanitize runs...
+            xhtmlOut: true,
+            breaks: this.props.breaks,
+            typographer: false, // https://github.com/jonschlinkert/remarkable/issues/142#issuecomment-221546793
+            quotes: '“”‘’',
+        });
+
+        renderer.use(RemarkableSpoiler);
+        renderer.use(RemarkableTable);
 
         let renderedText = html ? text : renderer.render(text);
 
@@ -130,37 +123,23 @@ class MarkdownViewer extends Component {
 
         const noImageActive = cleanText.indexOf(noImageText) !== -1;
 
+        const regex = /~~~ embed:(.*? ~~~)/gm;
+        let matches;
+        let processedText = cleanText;
         // In addition to inserting the youtube component, this allows
         // react to compare separately preventing excessive re-rendering.
         let idx = 0;
-        const sections = [];
 
-        function checksum(s) {
-            let chk = 0x12345678;
-            const len = s.length;
-            for (let i = 0; i < len; i += 1) {
-                chk += s.charCodeAt(i) * (i + 1);
+        while ((matches = regex.exec(processedText)) !== null) {
+            // This is necessary to avoid infinite loops with zero-width matches
+            if (matches.index === regex.lastIndex) {
+                regex.lastIndex += 1;
             }
 
-            // eslint-disable-next-line no-bitwise
-            return (chk & 0xffffffff).toString(16);
-        }
-
-        // HtmlReady inserts ~~~ embed:${id} type ~~~
-        for (let section of cleanText.split('~~~ embed:')) {
-            const embedMd = EmbeddedPlayerGenerateMd(section, idx, large);
+            const embedMd = EmbeddedPlayerGenerateMd(matches[1], idx, large);
             if (embedMd) {
-                const { section: newSection, markdown } = embedMd;
-                section = newSection;
-                sections.push(markdown);
-
-                if (section === '') {
-                    // eslint-disable-next-line no-continue
-                    continue;
-                }
+                processedText = processedText.replace(matches[0], renderToString(embedMd.markdown));
             }
-
-            sections.push(<div key={checksum(section)} dangerouslySetInnerHTML={{ __html: section }} />);
 
             idx += 1;
         }
@@ -172,7 +151,7 @@ class MarkdownViewer extends Component {
 
         return (
             <div className={'MarkdownViewer ' + cn}>
-                {sections}
+                <div dangerouslySetInnerHTML={{ __html: processedText }} />
                 {noImageActive && allowNoImage && (
                     <div
                         role="link"

@@ -17,7 +17,7 @@ import sanitizeConfig, { allowedTags } from 'app/utils/SanitizeConfig';
 import sanitize from 'sanitize-html';
 import HtmlReady from 'shared/HtmlReady';
 import { fromJS, Map, OrderedSet } from 'immutable';
-import Remarkable from 'remarkable';
+import { Remarkable } from 'remarkable';
 import Dropzone from 'react-dropzone';
 import tt from 'counterpart';
 import { loadUserTemplates, saveUserTemplates } from 'app/utils/UserTemplates';
@@ -28,7 +28,7 @@ import HumanizeDuration from "humanize-duration";
 import VisualEditor from './VisualEditor';
 import { calculateRcStats } from "../../utils/UserUtil";
 
-const remarkable = new Remarkable({ html: true, linkify: false, breaks: true });
+const remarkable = new Remarkable({ html: true, breaks: true });
 
 const RTE_DEFAULT = false;
 const MAX_TAGS = 8;
