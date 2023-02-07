@@ -68,14 +68,14 @@ export default function useGeneralApi(app) {
     router.post('/login_account', async (ctx) => {
 
         // if (rateLimitReq(this, this.req)) return;
-        const params = ctx.request.body;
 
-        // Validate request body
+        // Validate request body.
+        // TODO Validation rules below should be stricter.
         const schema = Joi.object({
-            _csrf: Joi.string().required(),
-            account: Joi.string().required(),
+            _csrf: Joi.string().required().min(1),
+            account: Joi.string().required().min(1),
             signatures: Joi.object().keys({
-                posting: Joi.string().required()
+                posting: Joi.string().required().min(1)
             }),
             externalUser: Joi.object().keys({
                 system: Joi.string().required()
@@ -83,7 +83,7 @@ export default function useGeneralApi(app) {
                 hivesignerToken: Joi.string()
             })
         });
-        const validationResult = schema.validate(_parse(params));
+        const validationResult = schema.validate(_parse(ctx.request.body));
         assert(!validationResult.error, 401, 'Invalid params');
 
         const { account, signatures, externalUser } = validationResult.value;
@@ -96,10 +96,13 @@ export default function useGeneralApi(app) {
                 } else {
                     const [chainAccount] = await api.getAccountsAsync([account]);
                     if (!chainAccount) {
-                        console.error('/login_account missing blockchain account', account);
+                        console.error('/login_account missing blockchain account',
+                                account);
                     } else {
                         const auth = { posting: false };
-                        const bufSha = hash.sha256(JSON.stringify({ token: ctx.session.login_challenge }, null, 0));
+                        const bufSha = hash.sha256(
+                            JSON.stringify({ token: ctx.session.login_challenge }, null, 0)
+                            );
                         const verify = (type, sigHex, pubkey, weight, weight_threshold) => {
                             if (!sigHex) return;
                             if (weight !== 1 || weight_threshold !== 1) {
@@ -127,7 +130,8 @@ export default function useGeneralApi(app) {
                                 weight_threshold,
                             },
                         } = chainAccount;
-                        verify('posting', signatures.posting, posting_pubkey, weight, weight_threshold);
+                        verify('posting', signatures.posting,
+                                posting_pubkey, weight, weight_threshold);
                         if (auth.posting) ctx.session.a = account;
                     }
                 }
@@ -145,7 +149,7 @@ export default function useGeneralApi(app) {
                         ctx.session.externalUser = { ...{user: account}, ...externalUser};
                     }
                 } catch (error) {
-                    console.error(`Got error, not settitg session.externalUser for ${account}`, error);
+                    console.error(`Got error, not setting session.externalUser for ${account}`, error);
                 }
             } else {
                 ctx.session.externalUser = { ...{user: account}, ...externalUser};
@@ -171,7 +175,9 @@ export default function useGeneralApi(app) {
     });
 
     router.post('/logout_account', async (ctx) => {
-        // if (rateLimitReq(this, this.req)) return; - logout maybe immediately followed with login_attempt event
+        // logout maybe immediately followed with login_attempt event
+        // if (rateLimitReq(this, this.req)) return;
+
         logRequest('logout_account', ctx);
         try {
             ctx.session.a = null;
@@ -195,9 +201,11 @@ export default function useGeneralApi(app) {
         if (params && params['csp-report']) {
             const csp_report = params['csp-report'];
             const value = `${csp_report['document-uri']} : ${csp_report['blocked-uri']}`;
-            console.log('-- /csp_violation -->', value, '--', ctx.request.headers['user-agent']);
+            console.log('-- /csp_violation -->', value, '--',
+                    ctx.request.headers['user-agent']);
         } else {
-            console.log('-- /csp_violation [no csp-report] -->', params, '--', ctx.request.headers['user-agent']);
+            console.log('-- /csp_violation [no csp-report] -->', params,
+                    '--', ctx.request.headers['user-agent']);
         }
         ctx.body = '';
     });
@@ -205,7 +213,8 @@ export default function useGeneralApi(app) {
     router.post('/setUserPreferences', async (ctx) => {
         const params = ctx.request.body;
         const { payload } = _parse(params);
-        console.log('-- /setUserPreferences -->', ctx.session.user, ctx.session.uid, payload);
+        console.log('-- /setUserPreferences -->', ctx.session.user,
+                ctx.session.uid, payload);
         if (!ctx.session.a) {
             ctx.body = 'missing logged in account';
             ctx.status = 500;
@@ -217,7 +226,8 @@ export default function useGeneralApi(app) {
             ctx.session.user_prefs = json;
             ctx.body = JSON.stringify({ status: 'ok' });
         } catch (error) {
-            console.error('Error in /setUserPreferences api call', ctx.session.uid, error);
+            console.error('Error in /setUserPreferences api call',
+                    ctx.session.uid, error);
             ctx.body = JSON.stringify({ error: error.message });
             ctx.status = 500;
         }
