@@ -72,18 +72,19 @@ export default function useGeneralApi(app) {
         // Validate request body.
         // TODO Validation rules below should be stricter.
         const schema = Joi.object({
-            _csrf: Joi.string().required().min(1),
-            account: Joi.string().required().min(1),
+            _csrf: Joi.string().required(),
+            account: Joi.string().required(),
             signatures: Joi.object().keys({
-                posting: Joi.string().required().min(1)
+                posting: Joi.string()
             }),
             externalUser: Joi.object().keys({
-                system: Joi.string().required()
+                system: Joi.string().required().allow('')
                         .pattern(RE_EXTERNAL_USER_SYSTEM),
-                hivesignerToken: Joi.string()
+                hivesignerToken: Joi.string().allow('')
             })
         });
         const validationResult = schema.validate(_parse(ctx.request.body));
+        console.log('validationResult.error', validationResult.error);
         assert(!validationResult.error, 401, 'Invalid params');
 
         const { account, signatures, externalUser } = validationResult.value;
