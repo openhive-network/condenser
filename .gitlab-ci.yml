@@ -106,15 +106,15 @@ deploy-review-app:
     script:
         - DOCKER_CERT_PATH=$CERTS docker -H $REVIEW_HOST --tlsverify pull $DOCKER_TAG
         - DOCKER_CERT_PATH=$CERTS docker -H $REVIEW_HOST --tlsverify service rm $SERVICE_NAME || true # try to remove previous service but do not fail if it not exist
-        - >
+        - >-
           DOCKER_CERT_PATH=$CERTS docker -H $REVIEW_HOST --tlsverify
           service create
-            --with-registry-auth
-            --network infrastructure
-            --name $SERVICE_NAME
-            --env="SDC_OAUTH_SERVER_ENABLE=yes"
-            --env="SDC_OAUTH_SERVER_CLIENTS=$(tr '\n' ' ' <  config/oauth-server-clients-ci-review.json)"
-            $DOCKER_TAG
+          --with-registry-auth
+          --network infrastructure
+          --name $SERVICE_NAME
+          --env="SDC_OAUTH_SERVER_ENABLE=yes"
+          --env="SDC_OAUTH_SERVER_CLIENTS=$(tr '\n' ' ' <  config/oauth-server-clients-ci-review.json)"
+          $DOCKER_TAG
         - echo "Review app deployed"
     environment:
         name: review/$CI_COMMIT_REF_NAME
