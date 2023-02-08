@@ -112,8 +112,8 @@ deploy-review-app:
           --with-registry-auth
           --network infrastructure
           --name $SERVICE_NAME
-          --env="SDC_OAUTH_SERVER_ENABLE=yes"
-          --env="SDC_OAUTH_SERVER_CLIENTS=$(tr '\n' ' ' <  config/oauth-server-clients-ci-review.json)"
+          --env SDC_OAUTH_SERVER_ENABLE="yes"
+          --env SDC_OAUTH_SERVER_CLIENTS=`tr '\n' ' ' <  config/oauth-server-clients-ci-review.json`
           $DOCKER_TAG
         - echo "Review app deployed"
     environment:
