@@ -8,8 +8,8 @@
     ],
     "secret": "openhive_chat_secret",
     "redirect_uris": [
-      "http://sepadevlnx:3000/_oauth/hiveblog"
+      "http://sepadevlnx.syncad.com:3000/_oauth/hiveblog"
     ],
-    "uri": "http://sepadevlnx:3000"
+    "uri": "http://sepadevlnx.syncad.com:3000"
   }
 }
