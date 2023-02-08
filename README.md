@@ -209,7 +209,7 @@ If you find a security issue please report details to trusted community members.
 
 We will evaluate the risk and make a patch available before filing the issue.
 
-## Oauth Server
+## Condenser's Oauth Server
 
 We implemented a simple Oauth 2.0 server for authorizing Hive users in
 our forked [Rocket
@@ -217,21 +217,63 @@ Chat](https://github.com/openhive-network/Rocket.Chat). This Oauth
 server is disabled by default. To enable it, set environment variable
 `SDC_OAUTH_SERVER_ENABLE` to `yes`, when starting Condenser. Server
 authorizes users logged in via passing username and password or logged
-in via hivesigner. Only these login methods are available in Oauth flow.
-When user is already logged in via other method, e.g. hiveauth or
-keychain, Condenser will display a page telling user that he needs to
-logout and try again.
+in via hivesigner. Only these login methods are available at login page,
+when we are in Oauth flow. When user is already logged in via other
+method, e.g. hiveauth or keychain, Condenser displays a page telling
+that user should logout and try again.
 
 ### Test login to Rocket Chat via Condenser's Oauth Server on local development host
 
 Run our forked [Rocket
 Chat](https://github.com/openhive-network/Rocket.Chat) instance on
-http://localhost:3000.
+http://localhost:3000. Setup a new Oauth client at page
+http://localhost:3000/admin/settings/OAuth. You can see how my client
+is configured below:
+```bash
+syncad@dev-66:~/src/condenser$ curl -H "X-Auth-Token: ${ROCKET_CHAT_LOCAL_TOKEN}" -H "X-User-Id: ${ROCKET_CHAT_LOCAL_USER_ID}" http://localhost:3000/api/v1/settings.oauth
+{
+  "services": [
+    {
+      "_id": "8JFqgmogbfbiFKtcA",
+      "service": "hiveblog",
+      "accessTokenParam": "access_token",
+      "authorizePath": "/oauth/authorize",
+      "avatarField": "picture",
+      "buttonColor": "#1d74f5",
+      "buttonLabelColor": "#FFFFFF",
+      "buttonLabelText": "Login with Hiveblog",
+      "channelsAdmin": "rocket.cat",
+      "channelsMap": "{\n\t\"rocket-admin\": \"admin\",\n\t\"tech-support\": \"support\"\n}",
+      "clientId": "openhive_chat",
+      "custom": true,
+      "emailField": "",
+      "groupsClaim": "groups",
+      "identityPath": "/oauth/userinfo",
+      "identityTokenSentVia": "default",
+      "keyField": "username",
+      "loginStyle": "redirect",
+      "mapChannels": false,
+      "mergeRoles": false,
+      "mergeUsers": true,
+      "nameField": "",
+      "rolesClaim": "roles",
+      "rolesToSync": "",
+      "scope": "openid profile",
+      "serverURL": "http://localhost:8080",
+      "showButton": true,
+      "tokenPath": "/oauth/token",
+      "tokenSentVia": "header",
+      "usernameField": "username"
+    }
+  ],
+  "success": true
+(syncad) syncad@dev-66:~/src/condenser$
+```
 
 Set environment variables for Oauth Server in another terminal:
 ```bash
 export SDC_OAUTH_SERVER_ENABLE="yes" ;
-export SDC_OAUTH_SERVER_CLIENTS=$(tr '\n' ' ' <  config/oauth-server-clients-development.json) ;
+export SDC_OAUTH_SERVER_CLIENTS="`cat config/oauth-server-clients-development.json`" ;
 ```
 Start Condenser in the same terminal:
 ```bash
