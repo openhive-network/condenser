@@ -226,9 +226,10 @@ that user should logout and try again.
 
 Run our forked [Rocket
 Chat](https://github.com/openhive-network/Rocket.Chat) instance on
-http://localhost:3000. Setup a new Oauth client at page
-http://localhost:3000/admin/settings/OAuth. You can see how my client
-is configured below:
+http://localhost:3000. Do this in branch from
+[PR1](https://github.com/openhive-network/Rocket.Chat/pull/1). Setup a
+new Oauth client using page http://localhost:3000/admin/settings/OAuth. You
+can see how my client is configured below:
 ```bash
 syncad@dev-66:~/src/condenser$ curl -H "X-Auth-Token: ${ROCKET_CHAT_LOCAL_TOKEN}" -H "X-User-Id: ${ROCKET_CHAT_LOCAL_USER_ID}" http://localhost:3000/api/v1/settings.oauth
 {
