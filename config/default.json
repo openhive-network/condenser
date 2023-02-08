@@ -60,6 +60,21 @@
   },
   "openhive_chat_uri": "https://openhive.chat/home",
   "oauth_server": {
-    "enable": "no"
+    "enable": "no",
+    "clients": {
+      "openhive_chat": {
+        "id": "openhive_chat",
+        "name": "Hive Chat",
+        "scope": [
+          "openid",
+          "profile"
+        ],
+        "secret": "openhive_chat_secret",
+        "redirect_uris": [
+          "https://openhive.chat/_oauth/hiveblog"
+        ],
+        "uri": "https://openhive.chat"
+      }
+    }
   }
 }
