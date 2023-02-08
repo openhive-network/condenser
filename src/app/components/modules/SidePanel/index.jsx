@@ -99,7 +99,7 @@ const SidePanel = ({
         external: [
             {
                 label: tt('navigation.chat'),
-                link: `${$STM_Config.oauth_server_clients_openhive_chat_uri}/home`,
+                link: `${$STM_Config.openhive_chat_uri}`,
             },
         ],
 

@@ -47,16 +47,12 @@
     "max_fee_creator": "REFERRAL_MAX_FEE_CREATOR",
     "max_fee_provider": "REFERRAL_MAX_FEE_PROVIDER"
   },
+  "openhive_chat_uri": "SDC_OPENHIVE_CHAT_URI",
   "oauth_server": {
+    "enable": "SDC_OAUTH_SERVER_ENABLE",
     "clients": {
-      "openhive_chat" : {
-        "secret": "SDC_OAUTH_SERVER_CLIENTS_OPENHIVE_CHAT_SECRET",
-        "uri": "SDC_OAUTH_SERVER_CLIENTS_OPENHIVE_CHAT_URI",
-        "redirect_uris": {
-          "__name": "SDC_OAUTH_SERVER_CLIENTS_OPENHIVE_CHAT_REDIRECT_URIS",
-          "__format": "json"
-        }
-      }
+      "__name": "SDC_OAUTH_SERVER_CLIENTS",
+      "__format": "json"
     }
   }
 }

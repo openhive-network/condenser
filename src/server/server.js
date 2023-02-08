@@ -104,7 +104,9 @@ app.use(async (ctx, next) => {
 });
 
 useGeneralApi(app);
-oauthServer(app);
+if (config.get('oauth_server') && (config.get('oauth_server')).enable === 'yes') {
+    oauthServer(app);
+}
 useRedirects(app);
 useUserJson(app);
 usePostJson(app);

@@ -607,8 +607,7 @@ export default function oauthServer(app) {
             username: verifiedCode.payload.username,
         };
         const id_token_payload = {...id_token_payload_simple, ...hiveUserProfile};
-        const id_token = sign(id_token_payload, jwtSecret,
-                id_token_jwtOptions);
+        const id_token = sign(id_token_payload, jwtSecret, id_token_jwtOptions);
 
         ctx.body = {
             state,

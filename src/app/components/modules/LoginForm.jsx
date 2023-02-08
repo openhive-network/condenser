@@ -156,6 +156,9 @@ class LoginForm extends Component {
 
 
     registerOauthRequest() {
+        if (!$STM_Config.oauth_server_enable) {
+            return;
+        }
         const params = new URLSearchParams(window.location.search);
         if (params.has('client_id')
                 && params.has('redirect_uri')

@@ -208,3 +208,39 @@ To report a non-critical issue, please file an issue on this GitHub project.
 If you find a security issue please report details to trusted community members.
 
 We will evaluate the risk and make a patch available before filing the issue.
+
+## Oauth Server
+
+We implemented a simple Oauth 2.0 server for authorizing Hive users in
+our forked [Rocket
+Chat](https://github.com/openhive-network/Rocket.Chat). This Oauth
+server is disabled by default. To enable it, set environment variable
+`SDC_OAUTH_SERVER_ENABLE` to `yes`, when starting Condenser. Server
+authorizes users logged in via passing username and password or logged
+in via hivesigner. Only these login methods are available in Oauth flow.
+When user is already logged in via other method, e.g. hiveauth or
+keychain, Condenser will display a page telling user that he needs to
+logout and try again.
+
+### Test login to Rocket Chat via Condenser's Oauth Server on local development host
+
+Run our forked [Rocket
+Chat](https://github.com/openhive-network/Rocket.Chat) instance on
+http://localhost:3000.
+
+Set environment variables for Oauth Server in another terminal:
+```bash
+export SDC_OAUTH_SERVER_ENABLE="yes" ;
+export SDC_OAUTH_SERVER_CLIENTS=$(tr '\n' ' ' <  config/oauth-server-clients-development.json) ;
+```
+Start Condenser in the same terminal:
+```bash
+yarn start
+```
+
+#### Login to Rocket Chat via Condenser's Oauth Server on production host
+
+Do something similar as in section above, but edit file
+`config/oauth-server-clients-development.json` according to your needs.
+It's very important to set hard to guess secret for Oauth client in
+Condenser. Set the same secret in Rocket Chat Oauth client's config.
