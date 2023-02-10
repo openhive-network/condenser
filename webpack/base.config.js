@@ -114,8 +114,18 @@ module.exports = {
                     },
                 ],
             },
-            {test: /\.js$|\.jsx$/, exclude: [/node_modules/, /\*\/app\/assets\/static\/\*\.js/], use: 'babel-loader'},
-            {test: /\.svg$/, use: 'svg-inline-loader'},
+            {
+                test: /\.js$|\.jsx$/,
+                exclude: [
+                    /node_modules/,
+                    /\*\/app\/assets\/static\/\*\.js/
+                ],
+                use: 'babel-loader'
+            },
+            {
+                test: /\.svg$/,
+                use: 'svg-inline-loader'
+            },
             {
                 test: require.resolve("blueimp-file-upload"),
                 use: "imports?define=>false"
