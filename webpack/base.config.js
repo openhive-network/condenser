@@ -95,8 +95,9 @@ module.exports = {
     },
     output: {
         path: path.resolve(__dirname, '../dist'),
-        filename: '[name].[hash].js',
-        chunkFilename: '[id].[hash].js',
+        filename: '[name].[contenthash].js',
+        sourceMapFilename: '[name].[contenthash].js.map',
+        chunkFilename: '[id].[contenthash].js',
         publicPath: '/assets/'
     },
     module: {

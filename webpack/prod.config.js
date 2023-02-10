@@ -4,7 +4,7 @@ const baseConfig = require('./base.config');
 
 module.exports = {
     ...baseConfig,
-    devtool: 'eval-source-map',
+    devtool: 'source-map',
     plugins: [
         new webpack.DefinePlugin({
             'process.env': {
@@ -14,12 +14,5 @@ module.exports = {
             }
         }),
         ...baseConfig.plugins,
-        // Fix window.onerror
-        // See https://github.com/webpack/webpack/issues/5681#issuecomment-345861733
-        new webpack.SourceMapDevToolPlugin({
-            module: true,
-            columns: false,
-            moduleFilenameTemplate: (info) => { return `${info.resourcePath}?${info.loaders}`; }
-        }),
     ],
 };
