@@ -286,6 +286,14 @@ function* usernamePasswordLogin2(options) {
         const externalUser = {system: 'keychain'};
         const response = yield serverApiLogin(username, {}, externalUser);
         yield response.data;
+
+        // Redirect, when we are in oauth flow.
+        const oauthRedirectTo = oauthRedirect(username);
+        if (oauthRedirectTo) {
+            window.location.replace(oauthRedirectTo);
+            return {redirect_to: oauthRedirectTo};
+        }
+
         return;
     }
 
@@ -316,6 +324,12 @@ function* usernamePasswordLogin2(options) {
             const externalUser = {system: 'hiveauth'};
             const response = yield serverApiLogin(username, {}, externalUser);
             yield response.data;
+            // Redirect, when we are in oauth flow.
+            const oauthRedirectTo = oauthRedirect(username);
+            if (oauthRedirectTo) {
+                window.location.replace(oauthRedirectTo);
+                return {redirect_to: oauthRedirectTo};
+            }
         } else {
             console.log('HiveAuth token has expired');
             HiveAuthUtils.logout();
@@ -346,6 +360,14 @@ function* usernamePasswordLogin2(options) {
         const externalUser = {system: 'hivesigner', hivesignerToken: access_token};
         const response = yield serverApiLogin(username, {}, externalUser);
         yield response.data;
+
+        // Redirect, when we are in oauth flow.
+        const oauthRedirectTo = oauthRedirect(username, {}, true);
+        if (oauthRedirectTo) {
+            window.location.replace(oauthRedirectTo);
+            return {redirect_to: oauthRedirectTo};
+        }
+
         return;
     }
 
