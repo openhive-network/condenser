@@ -76,22 +76,6 @@ module.exports = {
     mode: devMode ? 'development' : 'production',
     entry: {
         app: ['core-js/stable', './src/app/Main.js'],
-        vendor: [
-            'react',
-            'react-dom',
-            'react-router',
-            '@hiveio/hive-js',
-            'slate',
-            'slate-drop-or-paste-images',
-            'slate-insert-block-on-enter',
-            'slate-trailing-block',
-            'bytebuffer',
-            'immutable',
-            'autolinker',
-            'pako',
-            'remarkable',
-            'picturefill'
-        ]
     },
     output: {
         path: path.resolve(__dirname, '../dist'),
@@ -160,4 +144,15 @@ module.exports = {
         },
     },
     externals: {},
+    optimization: {
+        splitChunks: {
+            cacheGroups: {
+                commons: {
+                    test: /[\\/]node_modules[\\/]/,
+                    name: 'vendor',
+                    chunks: 'all',
+                },
+            },
+        },
+    },
 };
