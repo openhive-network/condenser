@@ -3,6 +3,13 @@ stages:
     - build
     - deploy
 
+workflow:
+    rules:
+      - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      - if: '$CI_COMMIT_BRANCH && $CI_OPEN_MERGE_REQUESTS'
+        when: never
+      - if: '$CI_COMMIT_BRANCH'
+
 variables:
     APP_REVIEW_SUBDOMAIN: .condenser.engrave.dev
     STAGING_DOMAIN: staging.condenser.engrave.dev
@@ -41,7 +48,7 @@ variables:
 
 run-unit-tests:
     stage: test
-    image: node:12.22.6
+    image: node:18.14.0
     tags:
         - public-runner-docker
     only:
@@ -52,10 +59,17 @@ run-unit-tests:
     script:
         - yarn run ci:test
     coverage: /All files[^|]*\|[^|]*\s+([\d\.]+)/
+    artifacts:
+        when: always
+        expire_in: 7 days
+        paths:
+            - jest
+        reports:
+            junit: jest/junit.xml
 
 run-eslint:
     stage: test
-    image: node:12.22.6
+    image: node:18.14.0
     tags:
         - public-runner-docker
     only:
@@ -92,7 +106,16 @@ deploy-review-app:
     script:
         - DOCKER_CERT_PATH=$CERTS docker -H $REVIEW_HOST --tlsverify pull $DOCKER_TAG
         - DOCKER_CERT_PATH=$CERTS docker -H $REVIEW_HOST --tlsverify service rm $SERVICE_NAME || true # try to remove previous service but do not fail if it not exist
-        - DOCKER_CERT_PATH=$CERTS docker -H $REVIEW_HOST --tlsverify service create --with-registry-auth --network infrastructure --name $SERVICE_NAME $DOCKER_TAG
+        - >-
+          DOCKER_CERT_PATH=$CERTS docker -H $REVIEW_HOST --tlsverify
+          service create
+          --with-registry-auth
+          --network infrastructure
+          --name $SERVICE_NAME
+          --env SDC_OPENHIVE_CHAT_URI="http://sepadevlnx.syncad.com:3000/home"
+          --env SDC_OAUTH_SERVER_ENABLE="yes"
+          --env SDC_OAUTH_SERVER_CLIENTS="`cat config/oauth-server-clients-ci-review.json`"
+          $DOCKER_TAG
         - echo "Review app deployed"
     environment:
         name: review/$CI_COMMIT_REF_NAME
@@ -147,7 +170,14 @@ deploy-staging:
         - develop
     script:
         - DOCKER_CERT_PATH=$CERTS docker -H $STAGING_HOST --tlsverify pull $DOCKER_TAG
-        - DOCKER_CERT_PATH=$CERTS docker -H $STAGING_HOST --tlsverify service update --with-registry-auth --image $DOCKER_TAG --update-failure-action rollback --update-order start-first $SERVICE_NAME
+        - >-
+          DOCKER_CERT_PATH=$CERTS docker -H $STAGING_HOST --tlsverify
+          service update
+          --with-registry-auth
+          --image $DOCKER_TAG
+          --update-failure-action rollback
+          --update-order start-first
+          $SERVICE_NAME
     environment:
         name: staging
         url: https://$STAGING_DOMAIN

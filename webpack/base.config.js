@@ -76,27 +76,12 @@ module.exports = {
     mode: devMode ? 'development' : 'production',
     entry: {
         app: ['core-js/stable', './src/app/Main.js'],
-        vendor: [
-            'react',
-            'react-dom',
-            'react-router',
-            '@hiveio/hive-js',
-            'slate',
-            'slate-drop-or-paste-images',
-            'slate-insert-block-on-enter',
-            'slate-trailing-block',
-            'bytebuffer',
-            'immutable',
-            'autolinker',
-            'pako',
-            'remarkable',
-            'picturefill'
-        ]
     },
     output: {
         path: path.resolve(__dirname, '../dist'),
-        filename: '[name].[hash].js',
-        chunkFilename: '[id].[hash].js',
+        filename: '[name].[contenthash].js',
+        sourceMapFilename: '[name].[contenthash].js.map',
+        chunkFilename: '[id].[contenthash].js',
         publicPath: '/assets/'
     },
     module: {
@@ -113,8 +98,18 @@ module.exports = {
                     },
                 ],
             },
-            {test: /\.js$|\.jsx$/, exclude: [/node_modules/, /\*\/app\/assets\/static\/\*\.js/], use: 'babel-loader'},
-            {test: /\.svg$/, use: 'svg-inline-loader'},
+            {
+                test: /\.js$|\.jsx$/,
+                exclude: [
+                    /node_modules/,
+                    /\*\/app\/assets\/static\/\*\.js/
+                ],
+                use: 'babel-loader'
+            },
+            {
+                test: /\.svg$/,
+                use: 'svg-inline-loader'
+            },
             {
                 test: require.resolve("blueimp-file-upload"),
                 use: "imports?define=>false"
@@ -160,4 +155,15 @@ module.exports = {
         },
     },
     externals: {},
+    optimization: {
+        splitChunks: {
+            cacheGroups: {
+                commons: {
+                    test: /[\\/]node_modules[\\/]/,
+                    name: 'vendor',
+                    chunks: 'all',
+                },
+            },
+        },
+    },
 };

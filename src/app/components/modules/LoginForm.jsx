@@ -45,7 +45,13 @@ class LoginForm extends Component {
             console.error('CreateAccount - cryptoTestResult: ', cryptoTestResult);
             cryptographyFailure = true;
         }
-        this.state = { cryptographyFailure, isHiveSigner, isProcessingHiveAuth: false };
+        const oauthFlow = null;
+        this.state = {
+            cryptographyFailure,
+            isHiveSigner,
+            isProcessingHiveAuth: false,
+            oauthFlow,
+        };
         this.usernameOnChange = (e) => {
             const value = e.target.value.toLowerCase();
             this.state.username.props.onChange(value);
@@ -73,6 +79,7 @@ class LoginForm extends Component {
         if (this.refs.username && !this.refs.username.value) this.refs.username.focus();
         // eslint-disable-next-line react/no-string-refs
         if (this.refs.username && this.refs.username.value) this.refs.pw.focus();
+        this.registerOauthRequest();
     }
 
     componentDidUpdate() {
@@ -81,6 +88,10 @@ class LoginForm extends Component {
             // eslint-disable-next-line react/no-did-update-set-state
             this.setState({ isProcessingHiveAuth: false });
         }
+    }
+
+    componentWillUnmount() {
+        this.unRegisterOauthRequest();
     }
 
     // shouldComponentUpdate = shouldComponentUpdate(this, 'LoginForm');
@@ -142,6 +153,35 @@ class LoginForm extends Component {
             }),
         });
     };
+
+
+    registerOauthRequest() {
+        if (!$STM_Config.oauth_server_enable) {
+            return;
+        }
+        const params = new URLSearchParams(window.location.search);
+        if (params.has('client_id')
+                && params.has('redirect_uri')
+                && params.has('state')
+                && params.has('scope')
+                ) {
+            try {
+                sessionStorage.setItem('oauth', params.toString());
+                const oauthFlow = {clientName: params.get('client_name')};
+                this.setState({oauthFlow});
+            } catch (error) {
+                // Do nothing – sessionStorage is unavailable, probably.
+            }
+        }
+    }
+
+    unRegisterOauthRequest() {
+        try {
+            sessionStorage.removeItem('oauth');
+        } catch (error) {
+            // Do nothing – sessionStorage is unavailable, probably.
+        }
+    }
 
     loginWithHiveSigner = () => {
         const path = window.location.pathname;
@@ -242,7 +282,7 @@ class LoginForm extends Component {
             msg,
         } = this.props;
         const {
-            username, password, useKeychain, useHiveAuth, saveLogin
+            username, password, useKeychain, useHiveAuth, saveLogin, oauthFlow
         } = this.state;
 
         const { valid, handleSubmit } = this.state.login;
@@ -305,6 +345,17 @@ class LoginForm extends Component {
                 );
             }
         }
+
+        if (oauthFlow && oauthFlow.clientName) {
+            message = (
+                <div className="callout primary">
+                    <p>
+                        {tt('loginform_jsx.oauth_info')} {oauthFlow.clientName}
+                    </p>
+                </div>
+            );
+        }
+
         const password_info = !useKeychain.value && !useHiveAuth.value && checkPasswordChecksum(password.value) === false
             ? tt('loginform_jsx.password_info')
             : null;
@@ -423,7 +474,7 @@ class LoginForm extends Component {
                                 ref="pw"
                                 {...useKeychain.props}
                                 onChange={this.useKeychainToggle}
-                                disabled={submitting}
+                                disabled={submitting || oauthFlow}
                             />
                             &nbsp;
                             <img src="/images/hivekeychain.png" alt="Hive Keychain" width="16" />
@@ -440,7 +491,7 @@ class LoginForm extends Component {
                             ref="pw"
                             {...useHiveAuth.props}
                             onChange={this.useHiveAuthToggle}
-                            disabled={!hasError && submitting}
+                            disabled={(!hasError && submitting) || oauthFlow}
                         />
                         &nbsp;
                         <img src="/images/hiveauth.png" alt="HiveAuth" width="16" />

@@ -1,0 +1,15 @@
+{
+  "openhive_chat": {
+    "id": "openhive_chat",
+    "name": "Hive Chat",
+    "scope": [
+      "openid",
+      "profile"
+    ],
+    "secret": "openhive_chat_secret",
+    "redirect_uris": [
+      "http://sepadevlnx.syncad.com:3000/_oauth/hiveblog"
+    ],
+    "uri": "http://sepadevlnx.syncad.com:3000"
+  }
+}

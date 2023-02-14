@@ -42,6 +42,7 @@ class Pagination extends PureComponent {
             for (let pi = 0; pi < 4; pi += 1) {
                 pageLinks.push(
                     <button
+                        key={pi.toString()}
                         type="button"
                         className="Post__reply_pagelink"
                         onClick={() => {
@@ -61,6 +62,7 @@ class Pagination extends PureComponent {
         for (let pi = fromPage; pi < toPage; pi += 1) {
             pageLinks.push(
                 <button
+                    key={pi.toString()}
                     type="button"
                     className={classNames('Post__reply_pagelink', (pi + 1) === currentReplyPage && 'current_page')}
                     onClick={() => {
@@ -80,6 +82,7 @@ class Pagination extends PureComponent {
             for (let pi = nbPages - 4; pi < nbPages; pi += 1) {
                 pageLinks.push(
                     <button
+                        key={pi.toString()}
                         type="button"
                         className="Post__reply_pagelink"
                         onClick={() => {

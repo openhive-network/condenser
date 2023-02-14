@@ -42,7 +42,7 @@ function getDiskUsage() {
     });
 }
 
-function hardwareStats() {
+export default function hardwareStats() {
     return startPromise()
         .then(getCpuUsage, handleError)
         .then(getMemoryUsage, handleError)
