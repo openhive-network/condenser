@@ -170,14 +170,14 @@ deploy-staging:
         - develop
     script:
         - DOCKER_CERT_PATH=$CERTS docker -H $STAGING_HOST --tlsverify pull $DOCKER_TAG
-        - >
+        - >-
           DOCKER_CERT_PATH=$CERTS docker -H $STAGING_HOST --tlsverify
           service update
-            --with-registry-auth
-            --image $DOCKER_TAG
-            --update-failure-action rollback
-            --update-order start-first
-            $SERVICE_NAME
+          --with-registry-auth
+          --image $DOCKER_TAG
+          --update-failure-action rollback
+          --update-order start-first
+          $SERVICE_NAME
     environment:
         name: staging
         url: https://$STAGING_DOMAIN
