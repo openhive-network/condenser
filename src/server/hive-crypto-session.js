@@ -1,7 +1,7 @@
 import sodium from 'libsodium-wrappers';
 import session from 'koa-session';
 
-module.exports = function (app, opts) {
+export default function hiveCryptoSession(app, opts) {
     opts = opts || {};
 
     if (opts.signed === undefined) {
@@ -65,7 +65,7 @@ module.exports = function (app, opts) {
             }
         }
     }
-};
+}
 
 /**
  @arg {Buffer} buf

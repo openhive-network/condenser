@@ -19,7 +19,7 @@ import {
     serverApiRecordEvent,
 } from 'app/utils/ServerApiClient';
 import { loadFollows } from 'app/redux/FollowSaga';
-import { translate } from 'app/Translator';
+import translate from 'app/Translator';
 import DMCAUserList from 'app/utils/DMCAUserList';
 import { setHiveSignerAccessToken, isLoggedInWithHiveSigner, hiveSignerClient } from 'app/utils/HiveSigner';
 
@@ -39,6 +39,42 @@ export const userWatches = [
     takeLatest(userActions.LOGIN_ERROR, loginError),
     takeLatest(userActions.UPLOAD_IMAGE, uploadImage),
 ];
+
+/**
+ * Check if there is an ongoing oauth process and user in application.
+ * If yes, return uri for redirection.
+ *
+ * @param {string} username
+ * @returns
+ */
+function oauthRedirect(username) {
+    try {
+        const oauthItem = sessionStorage.getItem('oauth');
+        if (!oauthItem) {
+            return '';
+        }
+        sessionStorage.removeItem('oauth');
+
+        // User must not be empty.
+        if (!username) {
+            return '';
+        }
+
+        const params = new URLSearchParams(oauthItem);
+        if (params.has('redirect_to')) {
+            const redirect_to = params.get('redirect_to');
+            params.delete('redirect_to');
+            if (params.has('client_name')) {
+                params.delete('client_name');
+            }
+            return redirect_to + '?' + params.toString();
+        }
+    } catch (error) {
+        // Do nothing – sessionStorage is unavailable, probably.
+    }
+
+    return '';
+}
 
 function effectiveVests(account) {
     const vests = parseFloat(account.get('vesting_shares'));
@@ -67,9 +103,9 @@ function* shouldShowLoginWarning({ username, password }) {
 }
 
 /**
- @arg {object} action.username - Unless a WIF is provided, this is hashed
+ @arg {object} action action.username - Unless a WIF is provided, this is hashed
  with the password and key_type to create private keys.
- @arg {object} action.password - Password or WIF private key. A WIF becomes
+ @arg {object} action action.password - Password or WIF private key. A WIF becomes
  the posting key, a password can create all three key_types: active,
  owner, posting keys.
  */
@@ -82,9 +118,9 @@ function* checkKeyType(action) {
 }
 
 /**
- @arg {object} action.username - Unless a WIF is provided, this is hashed
+ @arg {object} action action.username - Unless a WIF is provided, this is hashed
  with the password and key_type to create private keys.
- @arg {object} action.password - Password or WIF private key. A WIF becomes
+ @arg {object} action action.password - Password or WIF private key. A WIF becomes
  the posting key, a password can create all three key_types: active,
  owner, posting keys.
  */
@@ -104,14 +140,16 @@ function* usernamePasswordLogin(action) {
 
     // Sets 'loading' while the login is taking place. The key generation can
     // take a while on slow computers.
-    yield call(usernamePasswordLogin2, action.payload);
+    const loginResult = yield call(usernamePasswordLogin2, action.payload);
     const current = yield select((state) => state.user.get('current'));
     const username = current ? current.get('username') : null;
 
     if (username) {
         yield put(userActions.generateSessionId());
-        yield fork(loadFollows, 'getFollowingAsync', username, 'blog');
-        yield fork(loadFollows, 'getFollowingAsync', username, 'ignore');
+        if (!(loginResult && loginResult.redirect_to)) {
+            yield fork(loadFollows, 'getFollowingAsync', username, 'blog');
+            yield fork(loadFollows, 'getFollowingAsync', username, 'ignore');
+        }
     }
 }
 
@@ -144,7 +182,7 @@ function* usernamePasswordLogin2(options) {
     console.log('Login type:', loginType, 'Just logged in?', justLoggedIn, 'username:', username);
 
     // login, using saved password
-    let feedURL = false;
+    let feedURL = '';
     let autopost, memoWif, login_owner_pubkey, login_wif_owner_pubkey, login_with_keychain, login_with_hivesigner,
         login_with_hiveauth;
     if (!username && !password) {
@@ -238,6 +276,17 @@ function* usernamePasswordLogin2(options) {
                 effective_vests: effectiveVests(account),
             })
         );
+        const externalUser = {system: 'keychain'};
+        const response = yield serverApiLogin(username, {}, externalUser);
+        yield response.data;
+
+        // Redirect, when we are in oauth flow.
+        const oauthRedirectTo = oauthRedirect(username);
+        if (oauthRedirectTo) {
+            window.location.replace(oauthRedirectTo);
+            return {redirect_to: oauthRedirectTo};
+        }
+
         return;
     }
 
@@ -265,12 +314,22 @@ function* usernamePasswordLogin2(options) {
                     effective_vests: effectiveVests(account),
                 })
             );
+            const externalUser = {system: 'hiveauth'};
+            const response = yield serverApiLogin(username, {}, externalUser);
+            yield response.data;
+            // Redirect, when we are in oauth flow.
+            const oauthRedirectTo = oauthRedirect(username);
+            if (oauthRedirectTo) {
+                window.location.replace(oauthRedirectTo);
+                return {redirect_to: oauthRedirectTo};
+            }
         } else {
             console.log('HiveAuth token has expired');
             HiveAuthUtils.logout();
             yield put(
                 userActions.logout({ type: 'default' })
             );
+            yield serverApiLogout();
         }
 
         return;
@@ -280,7 +339,7 @@ function* usernamePasswordLogin2(options) {
     if (login_with_hivesigner) {
         console.log('Logged in using HiveSigner');
         if (access_token) {
-            setHiveSignerAccessToken(username, access_token, expires_in);
+            setHiveSignerAccessToken(username, access_token);
             yield put(
                 userActions.setUser({
                     username,
@@ -291,6 +350,17 @@ function* usernamePasswordLogin2(options) {
                 })
             );
         }
+        const externalUser = {system: 'hivesigner', hivesignerToken: access_token};
+        const response = yield serverApiLogin(username, {}, externalUser);
+        yield response.data;
+
+        // Redirect, when we are in oauth flow.
+        const oauthRedirectTo = oauthRedirect(username);
+        if (oauthRedirectTo) {
+            window.location.replace(oauthRedirectTo);
+            return {redirect_to: oauthRedirectTo};
+        }
+
         return;
     }
 
@@ -437,7 +507,6 @@ function* usernamePasswordLogin2(options) {
             );
         }
     }
-
     try {
         // const challengeString = yield serverApiLoginChallenge()
         const offchainData = yield select((state) => state.offchain);
@@ -449,6 +518,7 @@ function* usernamePasswordLogin2(options) {
             const challenge = { token: challengeString };
             const buf = JSON.stringify(challenge, null, 0);
             const bufSha = hash.sha256(buf);
+            const externalUser = {};
 
             if (useKeychain) {
                 const response = yield new Promise((resolve) => {
@@ -470,6 +540,7 @@ function* usernamePasswordLogin2(options) {
                         effective_vests: effectiveVests(account),
                     })
                 );
+                externalUser.system = 'keychain';
             } else if (useHiveAuth) {
                 const authResponse = yield new Promise((resolve) => {
                     HiveAuthUtils.login(username, buf, (res) => {
@@ -501,12 +572,13 @@ function* usernamePasswordLogin2(options) {
                 }
 
                 feedURL = '/@' + username + '/feed';
+                externalUser.system = 'hiveauth';
             } else if (useHiveSigner) {
                 if (access_token) {
                     // redirect url
                     feedURL = '/@' + username + '/feed';
                     // set access setHiveSignerAccessToken
-                    setHiveSignerAccessToken(username, access_token, expires_in);
+                    setHiveSignerAccessToken(username, access_token);
                     // set user data
                     yield put(
                         userActions.setUser({
@@ -518,6 +590,8 @@ function* usernamePasswordLogin2(options) {
                         })
                     );
                 }
+                externalUser.system = 'hivesigner';
+                externalUser.hivesignerToken = access_token;
             } else {
                 const sign = (role, d) => {
                     if (!d) return;
@@ -529,8 +603,15 @@ function* usernamePasswordLogin2(options) {
             }
 
             console.log('Logging in as', username);
-            const response = yield serverApiLogin(username, signatures);
+            let response;
+            if ((Object.keys(signatures)).length > 0) {
+                response = yield serverApiLogin(username, signatures);
+            } else {
+                response = yield serverApiLogin(username, {}, externalUser);
+            }
+
             yield response.data;
+
         }
     } catch (error) {
         // Does not need to be fatal
@@ -539,15 +620,21 @@ function* usernamePasswordLogin2(options) {
 
     if (!autopost && saveLogin) yield put(userActions.saveLogin());
 
-    // Redirect user to the appropriate page after login.
+    // Redirect, when we are in oauth flow.
+    const oauthRedirectTo = oauthRedirect(username);
+    if (oauthRedirectTo) {
+        window.location.replace(oauthRedirectTo);
+        return {redirect_to: oauthRedirectTo};
+    }
+
+    // Redirect to the appropriate page after login.
     const path = useHiveSigner ? lastPath : document.location.pathname;
     if (afterLoginRedirectToWelcome) {
-        console.log('Redirecting to welcome page');
         browserHistory.push('/welcome');
     } else if (feedURL && path === '/login.html') {
         browserHistory.push('/trending/my');
     } else if (feedURL && path === '/') {
-        //browserHistory.push(feedURL);
+        // browserHistory.push(feedURL);
         browserHistory.push('/trending/my');
     } else if (useHiveSigner && lastPath) {
         browserHistory.push(lastPath);

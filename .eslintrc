@@ -66,7 +66,7 @@ find node_modules/eslint-config-airbnb -name '*.js'|xargs sed -i "s/': 2/': 1/"
         "react/no-array-index-key": 1,
         "react/no-find-dom-node": 1,
         "react/jsx-props-no-spreading": 1,
-        "react/static-property-placement": 1,
+        "react/static-property-placement": ["warn", "static public field"],
         "react/forbid-prop-types": 1,
         "react/require-default-props": 1,
         "react/destructuring-assignment": 0,
@@ -148,7 +148,8 @@ find node_modules/eslint-config-airbnb -name '*.js'|xargs sed -i "s/': 2/': 1/"
         ],
         "import/no-extraneous-dependencies": 0,
         "import/no-unresolved": 0,
-        "import/extensions": 0
+        "import/extensions": 0,
+        "no-multiple-empty-lines": ["error", { "max": 2, "maxBOF": 0, "maxEOF": 0 }]
     },
     "overrides": [
         {

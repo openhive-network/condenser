@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "baseUrl": "./src",
+    "lib": ["dom", "dom.iterable", "esnext", "es6"],
+    "module": "commonjs",
+    "target": "es5",
+    "checkJs": true,
+    "allowJs": true,
+    "resolveJsonModule": true,
+    "jsx": "preserve"
+  }
+}

@@ -17,7 +17,7 @@ import secureRandom from 'secure-random';
 import koaLocale from 'koa-locale';
 import { routeRegex } from 'app/ResolveRoute';
 import userIllegalContent from 'app/utils/userIllegalContent';
-import session from './hive-crypto-session';
+import hiveCryptoSession from './hive-crypto-session';
 import { getSupportedLocales } from './utils/misc';
 import { specialPosts } from './utils/SpecialPosts';
 import usePostJson from './json/post_json';
@@ -28,6 +28,7 @@ import prod_logger from './prod_logger';
 import hardwareStats from './hardwarestats';
 import StatsLoggerClient from './utils/StatsLoggerClient';
 import requestTime from './requesttimings';
+import oauthServer from './oauth-server';
 
 if (cluster.isMaster) console.log('application server starting, please wait.');
 
@@ -78,7 +79,7 @@ app.use(requestTime(statsLoggerClient));
 
 app.keys = [config.get('session_key')];
 const crypto_key = config.get('server_session_secret');
-session(app, {
+hiveCryptoSession(app, {
     maxAge: 1000 * 3600 * 24 * 60,
     crypto_key,
     key: config.get('session_cookie_key'),
@@ -86,14 +87,26 @@ session(app, {
 
 app.use(koaBody());
 
-app.use(new csrf({
+// Setup CSRF protection, but allow some exceptions.
+const csrfProtect = new csrf({
     invalidTokenMessage: 'Invalid CSRF token',
     invalidTokenStatusCode: 403,
     excludedMethods: ['GET', 'HEAD', 'OPTIONS'],
     disableQuery: true,
-}));
+});
+const csrfIgnoreUrlList = ['/oauth/token'];
+app.use(async (ctx, next) => {
+    if (csrfIgnoreUrlList.includes(ctx.req.url)) {
+        await next();
+    } else {
+        await csrfProtect(ctx, next);
+    }
+});
 
 useGeneralApi(app);
+if (config.get('oauth_server') && (config.get('oauth_server')).enable === 'yes') {
+    oauthServer(app);
+}
 useRedirects(app);
 useUserJson(app);
 usePostJson(app);
@@ -109,6 +122,7 @@ function convertEntriesToArrays(obj) {
 
 // some redirects and health status
 app.use(async (ctx, next) => {
+
     if (ctx.method === 'GET' && ctx.url === '/.well-known/healthcheck.json') {
         ctx.status = 200;
         ctx.body = {

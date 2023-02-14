@@ -31,4 +31,17 @@ module.exports = {
         '^assets/(.*)$': '<rootDir>/src/app/assets/$1',
         '^shared/(.*)$': '<rootDir>/src/shared/$1',
     },
+    reporters: [
+        "default",
+        [
+            "jest-junit",
+            {
+                suiteName: "condenser",
+                outputDirectory: "./jest",
+                outputName: "junit.xml",
+                classNameTemplate: "{classname}",
+                titleTemplate: "{classname} -- {title}"
+            }
+        ]
+    ]
 };

@@ -1,6 +1,6 @@
 import RequestTimer from './utils/RequestTimer';
 
-function requestTime(statsLoggerClient) {
+export default function requestTime(statsLoggerClient) {
     return async (ctx, next) => {
         ctx.state.requestTimer = new RequestTimer(
             statsLoggerClient,
