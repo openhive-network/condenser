@@ -45,4 +45,4 @@ module.exports = function (stats) {
     const filepath = path.resolve(__dirname, '../../tmp/' + filename);
     fs.writeFileSync(filepath, JSON.stringify(content, null, 4));
     console.error('updated', filename);
-}
+};
