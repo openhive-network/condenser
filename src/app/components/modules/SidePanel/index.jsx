@@ -1,3 +1,4 @@
+/*global $STM_Config*/
 import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
@@ -98,7 +99,7 @@ const SidePanel = ({
         external: [
             {
                 label: tt('navigation.chat'),
-                link: 'https://openhive.chat/home',
+                link: `${$STM_Config.openhive_chat_uri}`,
             },
         ],
 

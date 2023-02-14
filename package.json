@@ -39,6 +39,7 @@
     "assert": "1.4.1",
     "autoprefixer": "^9.6.1",
     "axios": "^0.27.2",
+    "basic-auth": "^2.0.1",
     "big.js": "^5.2.2",
     "bigi": "1.4.2",
     "blocked": "1.2.1",
@@ -70,6 +71,8 @@
     "intl": "1.2.5",
     "iso": "5.2.0",
     "jest-environment-jsdom": "^28.1.0",
+    "joi": "^17.7.0",
+    "jsonwebtoken": "^9.0.0",
     "koa": "^2.13.4",
     "koa-better-http-proxy": "^0.2.10",
     "koa-body": "^5.0.0",
@@ -80,6 +83,7 @@
     "koa-favicon": "^2.1.0",
     "koa-helmet": "^6.1.0",
     "koa-isbot": "^0.1.1",
+    "koa-jwt": "^4.0.3",
     "koa-locale": "^1.3.0",
     "koa-logger": "^3.2.1",
     "koa-mount": "^4.0.0",
@@ -199,7 +203,7 @@
     "eslint": "6.8.0",
     "eslint-config-airbnb": "18.1.0",
     "eslint-plugin-babel": "5.3.0",
-    "eslint-plugin-import": "2.20.2",
+    "eslint-plugin-import": "2.22.1",
     "eslint-plugin-jest": "23.8.2",
     "eslint-plugin-jsx-a11y": "6.2.3",
     "eslint-plugin-react": "7.19.0",
@@ -208,12 +212,13 @@
     "husky": "0.14.3",
     "imports-loader": "1.2.0",
     "jest": "28.1.0",
+    "jest-junit": "^15.0.0",
     "jsdom": "9.12.0",
     "json-loader": "0.5.7",
     "koa-webpack-dev-middleware": "^2.0.2",
     "lint-staged": "10.5.3",
     "mock-local-storage": "1.0.5",
-    "node-watch": "0.5.5",
+    "node-watch": "^0.7.3",
     "picturefill": "3.0.2",
     "prettier": "2.2.1",
     "process": "^0.11.10",
@@ -246,7 +251,9 @@
     ]
   },
   "jest": {
-    "testURL": "http://localhost:8080",
+    "testEnvironmentOptions": {
+      "url": "http://localhost:8080"
+    },
     "rootDir": "src",
     "modulePaths": [
       "<rootDir>/"
@@ -264,5 +271,10 @@
     "minimist": "1.2.6",
     "request": "2.88.2",
     "node-fetch": "2.6.7"
+  },
+  "volta": {
+    "node": "18.14.0",
+    "npm": "9.3.1",
+    "yarn": "1.22.5"
   }
 }

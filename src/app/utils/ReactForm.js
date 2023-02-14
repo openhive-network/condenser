@@ -1,13 +1,20 @@
 /*eslint no-multi-assign: "warn"*/
+
 /**
-    @arg {string} name - form state will appear in this.state[name]
-    @arg {object} instance - `this` for the component
-    @arg {array} fields - ['username', 'save', ...]
-    @arg {object} initialValues required for checkboxes {save: false, ...}
-    @arg {function} validation - values => ({ username: ! values.username ? 'Required' : null, ... })
-*/
+ * @typedef ReactFormOptions
+ * @type {object}
+ * @property {string} name - form state will appear in this.state[name]
+ * @property {object} instance - `this` for the component
+ * @property {array} fields - ['username', 'save', ...]
+ * @property {object} initialValues required for checkboxes {save: false, ...}
+ * @property {function} validation - values => ({ username: ! values.username ? 'Required' : null, ... })
+ */
+
+/**
+ * @arg {ReactFormOptions} object
+ */
 export default function reactForm({
- name, instance, fields, initialValues, validation = () => {}
+    name, instance, fields, initialValues, validation = () => {}
 }) {
     if (typeof instance !== 'object') throw new TypeError('instance is a required object');
     if (!Array.isArray(fields)) throw new TypeError('fields is a required array');
