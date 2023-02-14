@@ -405,7 +405,7 @@ export default function oauthServer(app) {
 
     <script>
 
-        var timeleft = 10;
+        var timeleft = 15;
         var downloadTimer = setInterval(function(){
             if(timeleft <= 0){
                 clearInterval(downloadTimer);

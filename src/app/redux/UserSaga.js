@@ -41,14 +41,13 @@ export const userWatches = [
 ];
 
 /**
- * Check if there is an ongoing oauth process. If yes, do redirection.
+ * Check if there is an ongoing oauth process and user in application.
+ * If yes, return uri for redirection.
  *
  * @param {string} username
- * @param {object} private_keys
- * @param {boolean} [useHiveSigner=false]
  * @returns
  */
-function oauthRedirect(username, private_keys, useHiveSigner = false) {
+function oauthRedirect(username) {
     try {
         const oauthItem = sessionStorage.getItem('oauth');
         if (!oauthItem) {
@@ -56,14 +55,8 @@ function oauthRedirect(username, private_keys, useHiveSigner = false) {
         }
         sessionStorage.removeItem('oauth');
 
-        // User must be logged in.
+        // User must not be empty.
         if (!username) {
-            return '';
-        }
-
-        // We handle only users logged in via private keys or via
-        // HiveSigner.
-        if (!(private_keys || useHiveSigner)) {
             return '';
         }
 
@@ -362,7 +355,7 @@ function* usernamePasswordLogin2(options) {
         yield response.data;
 
         // Redirect, when we are in oauth flow.
-        const oauthRedirectTo = oauthRedirect(username, {}, true);
+        const oauthRedirectTo = oauthRedirect(username);
         if (oauthRedirectTo) {
             window.location.replace(oauthRedirectTo);
             return {redirect_to: oauthRedirectTo};
@@ -628,7 +621,7 @@ function* usernamePasswordLogin2(options) {
     if (!autopost && saveLogin) yield put(userActions.saveLogin());
 
     // Redirect, when we are in oauth flow.
-    const oauthRedirectTo = oauthRedirect(username, private_keys, useHiveSigner);
+    const oauthRedirectTo = oauthRedirect(username);
     if (oauthRedirectTo) {
         window.location.replace(oauthRedirectTo);
         return {redirect_to: oauthRedirectTo};
