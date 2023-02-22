@@ -126,6 +126,27 @@ class App extends React.Component {
 
         return (
             <SimpleReactLightbox>
+
+                <div
+                    style={{
+                        zIndex: 200,
+                        position: 'fixed',
+                        bottom: '20px',
+                        right: '20px',
+                    }}
+                >
+                    <iframe
+                        src="http://localhost:3000/channel/general/?layout=embedded"
+                        title="Rocket Chat"
+                        style={{
+                            width: '300px',
+                            height: '400px',
+                            resize: 'both',
+                            overflow: 'auto',
+                        }}
+                    />
+                </div>
+
                 <div
                     className={classNames('App', themeClass, {
                         'index-page': ip,
