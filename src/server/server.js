@@ -29,6 +29,7 @@ import hardwareStats from './hardwarestats';
 import StatsLoggerClient from './utils/StatsLoggerClient';
 import requestTime from './requesttimings';
 import oauthServer from './oauth-server';
+import useRocketChat from './rocket-chat';
 
 if (cluster.isMaster) console.log('application server starting, please wait.');
 
@@ -107,6 +108,7 @@ useGeneralApi(app);
 if (config.get('oauth_server') && (config.get('oauth_server')).enable === 'yes') {
     oauthServer(app);
 }
+useRocketChat(app);
 useRedirects(app);
 useUserJson(app);
 usePostJson(app);
