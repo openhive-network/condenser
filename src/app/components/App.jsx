@@ -139,10 +139,9 @@ class App extends React.Component {
                         src="http://localhost:3000/channel/general/?layout=embedded"
                         title="Rocket Chat"
                         style={{
-                            width: '300px',
+                            overflowY: 'auto',
+                            width: '320px',
                             height: '400px',
-                            resize: 'both',
-                            overflow: 'auto',
                         }}
                     />
                 </div>
