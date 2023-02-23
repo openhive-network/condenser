@@ -44,12 +44,33 @@ export async function serverApiLogin(account, signatures = {}, externalUser = {}
         { headers: requestHeaders },
     );
 
+    // Login to chat.
+    if (response.data && response.data.chatAuthToken) {
+        console.log('bamboo response.data', response.data);
+        document.querySelector("#chat-iframe").contentWindow.postMessage(
+            {
+                event: 'login-with-token',
+                loginToken: response.data.chatAuthToken
+            },
+            `${$STM_Config.openhive_chat_uri}`
+        );
+    }
+
     return response;
 }
 
 export function serverApiLogout() {
     if (!process.env.BROWSER || window.$STM_ServerBusy) return;
     const request = { ...requestBase, body: JSON.stringify({ _csrf: $STM_csrf }) };
+
+    // Logout from chat.
+    document.querySelector("#chat-iframe").contentWindow.postMessage(
+        {
+            externalCommand: 'logout',
+        },
+        `${$STM_Config.openhive_chat_uri}`
+    );
+
     // eslint-disable-next-line consistent-return
     return fetch('/api/v1/logout_account', request);
 }

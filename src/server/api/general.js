@@ -8,6 +8,7 @@ import coBody from 'co-body';
 import Mixpanel from 'mixpanel';
 import { PublicKey, Signature, hash } from '@hiveio/hive-js/lib/auth/ecc';
 import { api } from '@hiveio/hive-js';
+import { getChatAuthToken } from '../rocket-chat';
 
 const RE_EXTERNAL_USER_SYSTEM = /^(hiveauth|hivesigner|keychain)$/;
 
@@ -155,9 +156,22 @@ export default function useGeneralApi(app) {
             } else {
                 ctx.session.externalUser = { ...{user: account}, ...externalUser};
             }
-            ctx.body = JSON.stringify({
+
+            ctx.body = {
                 status: 'ok',
-            });
+            };
+
+            // Add auth token for chat to response.
+            let result = {};
+            if (ctx.session.a) {
+                result = await getChatAuthToken(ctx.session.a);
+            } else if (ctx.session.externalUser && ctx.session.externalUser.system === 'hivesigner') {
+                result = await getChatAuthToken(ctx.session.externalUser.user);
+            }
+            if (result.success) {
+                ctx.body.chatAuthToken = result.data.authToken;
+            }
+
             const remote_ip = getRemoteIp(ctx.request);
             if (mixpanel) {
                 mixpanel.people.set(ctx.session.uid, {

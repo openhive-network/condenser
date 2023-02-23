@@ -273,7 +273,7 @@ syncad@dev-66:~/src/condenser$ curl -H "X-Auth-Token: ${ROCKET_CHAT_LOCAL_TOKEN}
 
 Set environment variables for Oauth Server in another terminal:
 ```bash
-export SDC_OPENHIVE_CHAT_URI="http://localhost:3000/home" ;
+export SDC_OPENHIVE_CHAT_URI="http://localhost:3000" ;
 export SDC_OAUTH_SERVER_ENABLE="yes" ;
 export SDC_OAUTH_SERVER_CLIENTS="`cat config/oauth-server-clients-development.json`" ;
 ```

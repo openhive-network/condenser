@@ -137,7 +137,8 @@ class App extends React.Component {
                 >
                     <iframe
                         src="http://localhost:3000/channel/general/?layout=embedded"
-                        title="Rocket Chat"
+                        title="Chat"
+                        id="chat-iframe"
                         style={{
                             overflowY: 'auto',
                             width: '320px',
