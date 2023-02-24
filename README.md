@@ -288,3 +288,12 @@ Do something similar as in section above, but edit file
 `config/oauth-server-clients-development.json` according to your needs.
 It's very important to set hard to guess secret for Oauth client in
 Condenser. Set the same secret in Rocket Chat Oauth client's config.
+
+## Integration with Rocket Chat via iframe
+
+To enable integration with Rocket Chat via iframe:
+```bash
+export SDC_OPENHIVE_CHAT_IFRAME_INTEGRATION_ENABLE="yes" ;
+export SDC_OPENHIVE_CHAT_ADMIN_USER_ID="<your-admin-user-id>" ;
+export SDC_OPENHIVE_CHAT_ADMIN_USER_TOKEN="<your-admin-user-token>" ;
+```

@@ -1,4 +1,5 @@
 /* global $STM_csrf */
+/* global $STM_Config */
 
 /**
  * @typedef ExternalUser
@@ -45,15 +46,25 @@ export async function serverApiLogin(account, signatures = {}, externalUser = {}
     );
 
     // Login to chat.
-    if (response.data && response.data.chatAuthToken) {
-        console.log('bamboo response.data', response.data);
-        document.querySelector("#chat-iframe").contentWindow.postMessage(
-            {
-                event: 'login-with-token',
-                loginToken: response.data.chatAuthToken
-            },
-            `${$STM_Config.openhive_chat_uri}`
-        );
+    if ($STM_Config.openhive_chat_iframe_integration_enable) {
+        if (response.data && response.data.chatAuthToken) {
+            document.querySelector("#chat-iframe").contentWindow.postMessage(
+                {
+                    event: 'login-with-token',
+                    loginToken: response.data.chatAuthToken
+                },
+                `${$STM_Config.openhive_chat_uri}`,
+            );
+            // Should not be needed, but without this chat is not in
+            // `embedded` mode sometimes.
+            document.querySelector("iframe").contentWindow.postMessage(
+                {
+                    externalCommand: "go",
+                    path: "/channel/general/?layout=embedded"
+                },
+                `${$STM_Config.openhive_chat_uri}`,
+            );
+        }
     }
 
     return response;
@@ -64,12 +75,14 @@ export function serverApiLogout() {
     const request = { ...requestBase, body: JSON.stringify({ _csrf: $STM_csrf }) };
 
     // Logout from chat.
-    document.querySelector("#chat-iframe").contentWindow.postMessage(
-        {
-            externalCommand: 'logout',
-        },
-        `${$STM_Config.openhive_chat_uri}`
-    );
+    if ($STM_Config.openhive_chat_iframe_integration_enable) {
+        document.querySelector("#chat-iframe").contentWindow.postMessage(
+            {
+                externalCommand: 'logout',
+            },
+            `${$STM_Config.openhive_chat_uri}`
+        );
+    }
 
     // eslint-disable-next-line consistent-return
     return fetch('/api/v1/logout_account', request);

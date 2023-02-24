@@ -150,7 +150,7 @@ export default function useRocketChat(app) {
     <div class="center-x">
         <h1>Chat</h1>
         <p>
-            Please login to see chat
+            Please login to Hive Blog to see chat
         </p>
     </div>
 
@@ -159,37 +159,35 @@ export default function useRocketChat(app) {
 `;
     });
 
-    router.get('/api/v1/chat/sso', async (ctx) => {
-        console.log('Got request GET /api/v1/chat/sso');
-        ctx.body = {
-            status: 'ok',
-        };
-    });
-
     router.post('/api/v1/chat/sso', async (ctx) => {
-        console.log('Got request POST /api/v1/chat/sso');
-
-        ctx.set('Access-Control-Allow-Origin', 'http://localhost:3000');
+        ctx.set('Access-Control-Allow-Origin', `${config.get('openhive_chat_uri')}`);
         ctx.set('Access-Control-Allow-Credentials', 'true');
         ctx.set('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-        ctx.set('Access-Control-Allow-Methods', 'POST, GET, PUT, DELETE, OPTIONS');
+        ctx.set('Access-Control-Allow-Methods', 'POST, OPTIONS');
 
+        ctx.status = 401;
         ctx.body = {
-            status: 'ok',
-        };
-    });
-
-    router.get('/api/v1/chat/token', async (ctx) => {
-        let result = {
             success: false,
             error: 'User is not logged in or user is logged in with unsupported method'
         };
+
+        let user;
         if (ctx.session.a) {
-            result = await getChatAuthToken(ctx.session.a);
-        } else if (ctx.session.externalUser && ctx.session.externalUser.system === 'hivesigner') {
-            result = await getChatAuthToken(ctx.session.a);
+            user = ctx.session.a;
+        } else if (ctx.session.externalUser
+                && ctx.session.externalUser.system === 'hivesigner') {
+            user = ctx.session.externalUser.user;
         }
-        ctx.body = result;
+
+        if (user) {
+            const result = await getChatAuthToken(user);
+            if (result.success) {
+                ctx.status = 200;
+                ctx.body = {
+                    token: result.data.authToken
+                };
+            }
+        }
     });
 
     app.use(router.routes()).use(router.allowedMethods());

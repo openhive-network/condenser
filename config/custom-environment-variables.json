@@ -55,7 +55,7 @@
       "__format": "json"
     }
   },
-  "openhive_chat_iframe_integration_enable": "SDC_OPENHIVE_CHAT_ENABLE",
+  "openhive_chat_iframe_integration_enable": "SDC_OPENHIVE_CHAT_IFRAME_INTEGRATION_ENABLE",
   "openhive_chat_admin_user_id": "SDC_OPENHIVE_CHAT_ADMIN_USER_ID",
   "openhive_chat_admin_user_token": "SDC_OPENHIVE_CHAT_ADMIN_USER_TOKEN"
 }

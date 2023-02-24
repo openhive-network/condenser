@@ -14,6 +14,7 @@ import WelcomePanel from 'app/components/elements/WelcomePanel';
 import tt from 'counterpart';
 import { VIEW_MODE_WHISTLE } from 'shared/constants';
 import SimpleReactLightbox from 'simple-react-lightbox';
+import ChatWidget from 'app/components/modules/ChatWidget';
 
 class App extends React.Component {
     constructor(props) {
@@ -70,7 +71,7 @@ class App extends React.Component {
 
     render() {
         const {
-            params, children, new_visitor, nightmodeEnabled, viewMode, pathname, category, order,
+            params, children, new_visitor, nightmodeEnabled, viewMode, pathname, category, order
         } = this.props;
 
         const whistleView = viewMode === VIEW_MODE_WHISTLE;
@@ -126,27 +127,6 @@ class App extends React.Component {
 
         return (
             <SimpleReactLightbox>
-
-                <div
-                    style={{
-                        zIndex: 200,
-                        position: 'fixed',
-                        bottom: '20px',
-                        right: '20px',
-                    }}
-                >
-                    <iframe
-                        src="http://localhost:3000/channel/general/?layout=embedded"
-                        title="Chat"
-                        id="chat-iframe"
-                        style={{
-                            overflowY: 'auto',
-                            width: '320px',
-                            height: '400px',
-                        }}
-                    />
-                </div>
-
                 <div
                     className={classNames('App', themeClass, {
                         'index-page': ip,
@@ -166,6 +146,7 @@ class App extends React.Component {
                         {callout}
                         {children}
                     </div>
+                    <ChatWidget />
                     <Dialogs />
                     <Modals />
                     <div className="lightbox" id="lightbox-container">

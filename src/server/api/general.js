@@ -162,14 +162,16 @@ export default function useGeneralApi(app) {
             };
 
             // Add auth token for chat to response.
-            let result = {};
-            if (ctx.session.a) {
-                result = await getChatAuthToken(ctx.session.a);
-            } else if (ctx.session.externalUser && ctx.session.externalUser.system === 'hivesigner') {
-                result = await getChatAuthToken(ctx.session.externalUser.user);
-            }
-            if (result.success) {
-                ctx.body.chatAuthToken = result.data.authToken;
+            if (config.get('openhive_chat_iframe_integration_enable')) {
+                let result = {};
+                if (ctx.session.a) {
+                    result = await getChatAuthToken(ctx.session.a);
+                } else if (ctx.session.externalUser && ctx.session.externalUser.system === 'hivesigner') {
+                    result = await getChatAuthToken(ctx.session.externalUser.user);
+                }
+                if (result.success) {
+                    ctx.body.chatAuthToken = result.data.authToken;
+                }
             }
 
             const remote_ip = getRemoteIp(ctx.request);

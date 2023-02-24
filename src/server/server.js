@@ -108,7 +108,9 @@ useGeneralApi(app);
 if (config.get('oauth_server') && (config.get('oauth_server')).enable === 'yes') {
     oauthServer(app);
 }
-useRocketChat(app);
+if (config.get('openhive_chat_iframe_integration_enable')) {
+    useRocketChat(app);
+}
 useRedirects(app);
 useUserJson(app);
 usePostJson(app);
