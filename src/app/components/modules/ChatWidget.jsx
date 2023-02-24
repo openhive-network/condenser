@@ -15,7 +15,7 @@ class ChatWidget extends PureComponent {
                     }}
                 >
                     <iframe
-                        src="http://localhost:3000/channel/general/?layout=embedded"
+                        src={`${$STM_Config.openhive_chat_uri}/channel/general/?layout=embedded`}
                         title="Chat"
                         id="chat-iframe"
                         style={{

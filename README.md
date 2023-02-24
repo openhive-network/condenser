@@ -291,7 +291,12 @@ Condenser. Set the same secret in Rocket Chat Oauth client's config.
 
 ## Integration with Rocket Chat via iframe
 
-To enable integration with Rocket Chat via iframe:
+Start Rocket Chat after creating following environment variables:
+```bash
+export CREATE_TOKENS_FOR_USERS="true" ;
+```
+
+Start Condenser after creating following environment variables:
 ```bash
 export SDC_OPENHIVE_CHAT_IFRAME_INTEGRATION_ENABLE="yes" ;
 export SDC_OPENHIVE_CHAT_ADMIN_USER_ID="<your-admin-user-id>" ;

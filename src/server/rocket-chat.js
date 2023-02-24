@@ -14,7 +14,7 @@ export const rocketChatAdminUserAuthHeaders = {
 export async function getRCAuthToken(username = '') {
     // Get authToken for user. This will work only if Rocket
     // Chat was started with env variable
-    // `CREATE_TOKENS_FOR_USERS=true`
+    // `CREATE_TOKENS_FOR_USERS=true`.
 
     try {
         const requestConfig = {
@@ -115,7 +115,7 @@ export default function useRocketChat(app) {
     const router = new Router();
 
     router.get('/chat/parking', async (ctx) => {
-        ctx.body=`
+        ctx.body = `
 <!DOCTYPE html>
 <html>
 
@@ -192,10 +192,3 @@ export default function useRocketChat(app) {
 
     app.use(router.routes()).use(router.allowedMethods());
 }
-
-// async function test(username = '') {
-//     const result = await getChatAuthToken(username);
-//     console.log('result', result);
-// }
-
-// test('angala3');
