@@ -100,6 +100,7 @@ function RocketChatWidget({
                     color="primary"
                     aria-label="launch"
                     target="_blank"
+                    rel="noopener noreferrer"
                     href={iframeSrc}
                 >
                     <LaunchIcon />
