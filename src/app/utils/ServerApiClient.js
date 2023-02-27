@@ -60,7 +60,7 @@ export async function serverApiLogin(account, signatures = {}, externalUser = {}
             document.querySelector("iframe").contentWindow.postMessage(
                 {
                     externalCommand: "go",
-                    path: "/channel/general/?layout=embedded"
+                    path: "/channel/general"
                 },
                 `${$STM_Config.openhive_chat_uri}`,
             );

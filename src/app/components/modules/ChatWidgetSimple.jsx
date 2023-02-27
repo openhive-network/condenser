@@ -1,7 +1,7 @@
 /* global $STM_Config */
 import React, { PureComponent } from 'react';
 
-class ChatWidget extends PureComponent {
+class ChatWidgetSimple extends PureComponent {
 
     render() {
         if ($STM_Config.openhive_chat_iframe_integration_enable) {
@@ -31,4 +31,4 @@ class ChatWidget extends PureComponent {
     }
 }
 
-export default ChatWidget;
+export default ChatWidgetSimple;
