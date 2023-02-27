@@ -134,6 +134,7 @@
     "regenerator-runtime": "^0.13.9",
     "remarkable": "^2.0.1",
     "remove-markdown": "^0.3.0",
+    "rocket-chat-widget": "^1.0.7",
     "sanitize-html": "~2.5.0",
     "sass": "^1.29.0",
     "scroll-behavior": "^0.9.5",
