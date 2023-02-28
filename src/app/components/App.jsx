@@ -14,7 +14,6 @@ import WelcomePanel from 'app/components/elements/WelcomePanel';
 import tt from 'counterpart';
 import { VIEW_MODE_WHISTLE } from 'shared/constants';
 import SimpleReactLightbox from 'simple-react-lightbox';
-// import ChatWidgetSimple from 'app/components/modules/ChatWidgetSimple';
 import RocketChatWidget from 'app/components/modules/RocketChatWidget';
 
 class App extends React.Component {
@@ -147,8 +146,6 @@ class App extends React.Component {
                         {callout}
                         {children}
                     </div>
-
-                    {/* <ChatWidgetSimple /> */}
 
                     {$STM_Config.openhive_chat_iframe_integration_enable ? (
                         <RocketChatWidget
