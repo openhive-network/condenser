@@ -17,29 +17,6 @@ import LaunchIcon from '@mui/icons-material/Launch';
 
 import Draggable from 'react-draggable';
 
-RocketChatWidget.propTypes = {
-    iframeSrc: PropTypes.string.isRequired,
-    iframeTitle: PropTypes.string,
-    rootStyle: PropTypes.shape({}),
-    anchor: PropTypes.oneOf(['top', 'right', 'bottom', 'left']),
-    tooltip: PropTypes.string,
-    drawerWidth: PropTypes.number,
-    closeText: PropTypes.string,
-    draggable: PropTypes.bool,
-    icon: PropTypes.node
-};
-
-RocketChatWidget.defaultProps = {
-    iframeTitle: 'Rocket.chat',
-    anchor: 'right',
-    tooltip: 'Chat',
-    closeText: 'Close',
-    rootStyle: { right: 10, bottom: 10, position: 'fixed' },
-    drawerWidth: 500,
-    draggable: false,
-    icon: <ChatIcon />
-};
-
 function RocketChatWidget({
     iframeSrc,
     iframeTitle,
@@ -187,5 +164,28 @@ function RocketChatWidget({
         </div>
     );
 }
+
+RocketChatWidget.propTypes = {
+    iframeSrc: PropTypes.string.isRequired,
+    iframeTitle: PropTypes.string,
+    rootStyle: PropTypes.shape({}),
+    anchor: PropTypes.oneOf(['top', 'right', 'bottom', 'left']),
+    tooltip: PropTypes.string,
+    drawerWidth: PropTypes.number,
+    closeText: PropTypes.string,
+    draggable: PropTypes.bool,
+    icon: PropTypes.node
+};
+
+RocketChatWidget.defaultProps = {
+    iframeTitle: 'Rocket.chat',
+    anchor: 'right',
+    tooltip: 'Chat',
+    closeText: 'Close',
+    rootStyle: { right: 10, bottom: 10, position: 'fixed' },
+    drawerWidth: 500,
+    draggable: false,
+    icon: <ChatIcon />
+};
 
 export default RocketChatWidget;
