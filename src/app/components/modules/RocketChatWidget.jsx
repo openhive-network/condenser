@@ -1,3 +1,5 @@
+/*global $STM_Config*/
+
 //
 // From https://github.com/onesebun/rocket-chat-widget
 //
@@ -14,6 +16,29 @@ import Badge from '@mui/material/Badge';
 import LaunchIcon from '@mui/icons-material/Launch';
 
 import Draggable from 'react-draggable';
+
+RocketChatWidget.propTypes = {
+    iframeSrc: PropTypes.string.isRequired,
+    iframeTitle: PropTypes.string,
+    rootStyle: PropTypes.shape({}),
+    anchor: PropTypes.oneOf(['top', 'right', 'bottom', 'left']),
+    tooltip: PropTypes.string,
+    drawerWidth: PropTypes.number,
+    closeText: PropTypes.string,
+    draggable: PropTypes.bool,
+    icon: PropTypes.node
+};
+
+RocketChatWidget.defaultProps = {
+    iframeTitle: 'Rocket.chat',
+    anchor: 'right',
+    tooltip: 'Chat',
+    closeText: 'Close',
+    rootStyle: { right: 10, bottom: 10, position: 'fixed' },
+    drawerWidth: 500,
+    draggable: false,
+    icon: <ChatIcon />
+};
 
 function RocketChatWidget({
     iframeSrc,
@@ -36,23 +61,28 @@ function RocketChatWidget({
     const [count, setCount] = React.useState(0);
     const [isDragging, setIsDragging] = React.useState(false);
 
-    const onMessageReceivedFromIframe = event => {
-        // console.log("onMessageReceivedFromIframe", state, event);
+    const onMessageReceivedFromIframe = (event) => {
+        console.log("onMessageReceivedFromIframe event", event);
+        if (event.origin !== $STM_Config.openhive_chat_uri) {
+            return;
+        }
         if (!state[anchor] && event.data.eventName === 'new-message') {
-            setCount(prev => prev + 1)
+            setCount((prev) => prev + 1);
         }
     };
 
     React.useEffect(() => {
         if (state[anchor]) {
-            setCount(0)
+            setCount(0);
         }
-    }, [state])
+    }, [state]);
 
-    const addIframeListener = () =>
+    const addIframeListener = () => {
         window.addEventListener("message", onMessageReceivedFromIframe);
-    const removeIframeListener = () =>
+    };
+    const removeIframeListener = () => {
         window.removeEventListener("message", onMessageReceivedFromIframe);
+    };
 
     React.useEffect(() => {
         addIframeListener();
@@ -63,9 +93,9 @@ function RocketChatWidget({
 
     const toggleDrawer = (anchor, open) => (event) => {
         if (
-            event &&
-            event.type === 'keydown' &&
-            (event.key === 'Tab' || event.key === 'Shift')
+            event
+            && event.type === 'keydown'
+            && (event.key === 'Tab' || event.key === 'Shift')
         ) {
             return;
         }
@@ -73,7 +103,7 @@ function RocketChatWidget({
         setState({ ...state, [anchor]: open });
     };
 
-    const isAnchorTopOrBottom = anchor === 'top' || anchor === 'bottom'
+    const isAnchorTopOrBottom = anchor === 'top' || anchor === 'bottom';
 
     const list = (anchor) => (
         <Box
@@ -91,7 +121,12 @@ function RocketChatWidget({
             <iframe
                 id="chat-iframe"
                 src={iframeSrc}
-                style={{ width: '100%', height: '100%', border: 'none', display: 'block' }}
+                style={{
+                    width: '100%',
+                    height: '100%',
+                    border: 'none',
+                    display: 'block'
+                }}
                 title={iframeTitle}
             />
             <div style={{ display: 'flex' }}>
@@ -110,6 +145,7 @@ function RocketChatWidget({
     );
 
     return (
+        // eslint-disable-next-line react/jsx-props-no-spreading
         <div style={rootStyle} {...rest}>
             <React.Fragment key={anchor}>
                 <Draggable
@@ -151,28 +187,5 @@ function RocketChatWidget({
         </div>
     );
 }
-
-RocketChatWidget.propTypes = {
-    iframeSrc: PropTypes.string.isRequired,
-    iframeTitle: PropTypes.string,
-    rootStyle: PropTypes.object,
-    anchor: PropTypes.string,
-    tooltip: PropTypes.string,
-    drawerWidth: PropTypes.number,
-    closeText: PropTypes.string,
-    draggable: PropTypes.bool,
-    icon: PropTypes.node.isRequired
-}
-
-RocketChatWidget.defaultProps = {
-    iframeTitle: 'Rocket.chat',
-    anchor: 'right',
-    tooltip: 'Chat',
-    closeText: 'Close',
-    rootStyle: { right: 10, bottom: 10, position: 'fixed' },
-    drawerWidth: 500,
-    draggable: false,
-    icon: <ChatIcon />
-};
 
 export default RocketChatWidget;
