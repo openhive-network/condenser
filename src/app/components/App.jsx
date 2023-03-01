@@ -147,14 +147,15 @@ class App extends React.Component {
                         {children}
                     </div>
 
-                    {$STM_Config.openhive_chat_iframe_integration_enable ? (
-                        <RocketChatWidget
-                            iframeSrc={`${$STM_Config.openhive_chat_uri}/channel/general`}
-                            anchor="right"
-                            closeText="Close"
-                        />
-                      )
-                    : null}
+                    {
+                        $STM_Config.openhive_chat_iframe_integration_enable && (
+                            <RocketChatWidget
+                                iframeSrc={`${$STM_Config.openhive_chat_uri}/channel/general`}
+                                anchor="right"
+                                closeText="Close"
+                            />
+                        )
+                    }
 
                     <Dialogs />
                     <Modals />
