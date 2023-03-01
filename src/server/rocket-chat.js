@@ -147,7 +147,7 @@ export default function useRocketChat(app) {
 
 <body>
 
-    <div class="center-x">
+    <div class="center-x" style="color: white;">
         <h1>Chat</h1>
         <p>
             Please login to Hive Blog to see chat
