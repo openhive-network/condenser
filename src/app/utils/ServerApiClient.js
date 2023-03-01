@@ -20,6 +20,31 @@ const requestBase = {
     headers: requestHeaders,
 };
 
+export function chatLogin(data) {
+    // Login to chat.
+    if ($STM_Config.openhive_chat_iframe_integration_enable) {
+        if (data && data.chatAuthToken) {
+            document.querySelector("#chat-iframe").contentWindow.postMessage(
+                {
+                    event: 'login-with-token',
+                    loginToken: data.chatAuthToken,
+                },
+                `${$STM_Config.openhive_chat_uri}`,
+            );
+            // Should not be needed, but without this chat is not in
+            // `embedded` mode sometimes. Also sometimes user is not
+            // redirected to default channel.
+            document.querySelector("#chat-iframe").contentWindow.postMessage(
+                {
+                    externalCommand: "go",
+                    path: "/channel/general"
+                },
+                `${$STM_Config.openhive_chat_uri}`,
+            );
+        }
+    }
+}
+
 /**
  *
  * @param {string} account
@@ -45,35 +70,14 @@ export async function serverApiLogin(account, signatures = {}, externalUser = {}
         { headers: requestHeaders },
     );
 
-    // Login to chat.
-    if ($STM_Config.openhive_chat_iframe_integration_enable) {
-        if (response.data && response.data.chatAuthToken) {
-            document.querySelector("#chat-iframe").contentWindow.postMessage(
-                {
-                    event: 'login-with-token',
-                    loginToken: response.data.chatAuthToken
-                },
-                `${$STM_Config.openhive_chat_uri}`,
-            );
-            // // Should not be needed, but without this chat is not in
-            // // `embedded` mode sometimes.
-            // document.querySelector("iframe").contentWindow.postMessage(
-            //     {
-            //         externalCommand: "go",
-            //         path: "/channel/general"
-            //     },
-            //     `${$STM_Config.openhive_chat_uri}`,
-            // );
-        }
+    if (response.data) {
+        chatLogin(response.data);
     }
 
     return response;
 }
 
-export function serverApiLogout() {
-    if (!process.env.BROWSER || window.$STM_ServerBusy) return;
-    const request = { ...requestBase, body: JSON.stringify({ _csrf: $STM_csrf }) };
-
+export function chatLogout() {
     // Logout from chat.
     if ($STM_Config.openhive_chat_iframe_integration_enable) {
         document.querySelector("#chat-iframe").contentWindow.postMessage(
@@ -83,6 +87,12 @@ export function serverApiLogout() {
             `${$STM_Config.openhive_chat_uri}`
         );
     }
+}
+
+export function serverApiLogout() {
+    if (!process.env.BROWSER || window.$STM_ServerBusy) return;
+    const request = { ...requestBase, body: JSON.stringify({ _csrf: $STM_csrf }) };
+    chatLogout();
 
     // eslint-disable-next-line consistent-return
     return fetch('/api/v1/logout_account', request);
