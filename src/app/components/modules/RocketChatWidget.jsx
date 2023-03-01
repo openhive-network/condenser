@@ -27,6 +27,7 @@ function RocketChatWidget({
     drawerWidth,
     draggable,
     icon,
+    open,
     ...rest
 }) {
     const [state, setState] = React.useState({
@@ -43,6 +44,7 @@ function RocketChatWidget({
         if (event.origin !== $STM_Config.openhive_chat_uri) {
             return;
         }
+        // See https://developer.rocket.chat/rocket.chat/iframe-integration/iframe-events
         if (!state[anchor] && event.data.eventName === 'new-message') {
             setCount((prev) => prev + 1);
         }
@@ -174,7 +176,8 @@ RocketChatWidget.propTypes = {
     drawerWidth: PropTypes.number,
     closeText: PropTypes.string,
     draggable: PropTypes.bool,
-    icon: PropTypes.node
+    icon: PropTypes.node,
+    open: PropTypes.bool,
 };
 
 RocketChatWidget.defaultProps = {
@@ -185,7 +188,8 @@ RocketChatWidget.defaultProps = {
     rootStyle: { right: 10, bottom: 10, position: 'fixed' },
     drawerWidth: 500,
     draggable: false,
-    icon: <ChatIcon />
+    icon: <ChatIcon />,
+    open: false,
 };
 
 export default RocketChatWidget;
