@@ -55,15 +55,15 @@ export async function serverApiLogin(account, signatures = {}, externalUser = {}
                 },
                 `${$STM_Config.openhive_chat_uri}`,
             );
-            // Should not be needed, but without this chat is not in
-            // `embedded` mode sometimes.
-            document.querySelector("iframe").contentWindow.postMessage(
-                {
-                    externalCommand: "go",
-                    path: "/channel/general"
-                },
-                `${$STM_Config.openhive_chat_uri}`,
-            );
+            // // Should not be needed, but without this chat is not in
+            // // `embedded` mode sometimes.
+            // document.querySelector("iframe").contentWindow.postMessage(
+            //     {
+            //         externalCommand: "go",
+            //         path: "/channel/general"
+            //     },
+            //     `${$STM_Config.openhive_chat_uri}`,
+            // );
         }
     }
 
