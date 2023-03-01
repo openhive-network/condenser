@@ -70,7 +70,7 @@ function RocketChatWidget({
         };
     }, []);
 
-    const toggleDrawer = (anchor, open) => (event) => {
+    const toggleDrawer = (anchoredAt, isOpened) => (event) => {
         if (
             event
             && event.type === 'keydown'
@@ -79,12 +79,12 @@ function RocketChatWidget({
             return;
         }
 
-        setState({ ...state, [anchor]: open });
+        setState({ ...state, [anchoredAt]: isOpened });
     };
 
     const isAnchorTopOrBottom = anchor === 'top' || anchor === 'bottom';
 
-    const list = (anchor) => (
+    const list = (anchoredAt) => (
         <Box
             sx={{
                 width: isAnchorTopOrBottom ? 'auto' : '100vw',
@@ -94,8 +94,8 @@ function RocketChatWidget({
                 flexDirection: 'column'
             }}
             role="presentation"
-            onClick={toggleDrawer(anchor, false)}
-            onKeyDown={toggleDrawer(anchor, false)}
+            onClick={toggleDrawer(anchoredAt, false)}
+            onKeyDown={toggleDrawer(anchoredAt, false)}
         >
             <iframe
                 id="chat-iframe"
