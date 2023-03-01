@@ -291,13 +291,24 @@ Condenser. Set the same secret in Rocket Chat Oauth client's config.
 
 ## Integration with Rocket Chat via iframe
 
+Activate the Iframe Integration in Rocket Chat instance, see
+[docs](https://developer.rocket.chat/rocket.chat/iframe-integration/adding-a-rocket.chat-chat-room-to-your-web-app#part-i-activate-the-iframe-integration).
+
 Start Rocket Chat after creating following environment variables:
 ```bash
 export CREATE_TOKENS_FOR_USERS="true" ;
 ```
 
+Create Personal Access Token for an admin account in Rocket Chat
+(http://localhost:3000/account/tokens) for use in step below. Hit
+"Ignore Two Factor Authentication" upon creation.
+
+**TODO** We should give the lowest possible privileges to that token.
+Maybe create a new, custom role in Rocket Chat.
+
 Start Condenser after creating following environment variables:
 ```bash
+export SDC_OPENHIVE_CHAT_URI="<your-rocket-chat-uri>" ;
 export SDC_OPENHIVE_CHAT_IFRAME_INTEGRATION_ENABLE="yes" ;
 export SDC_OPENHIVE_CHAT_ADMIN_USER_ID="<your-admin-user-id>" ;
 export SDC_OPENHIVE_CHAT_ADMIN_USER_TOKEN="<your-admin-user-token>" ;
