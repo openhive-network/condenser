@@ -350,6 +350,7 @@ export default `
 /financials/@sfrj/vertical-common-size-analysis-of-financial-statements
 /technology/@samuel2009/dial-coinbase-customer-service-1
 /hydragun/@hydragun/gde-kupit-poddelnyi-pasport
+/life/@bujar/most-famous-and-extreme-guinness-world-records
 `
     .trim()
     .split('\n');
