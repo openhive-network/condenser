@@ -273,7 +273,7 @@ syncad@dev-66:~/src/condenser$ curl -H "X-Auth-Token: ${ROCKET_CHAT_LOCAL_TOKEN}
 
 Set environment variables for Oauth Server in another terminal:
 ```bash
-export SDC_OPENHIVE_CHAT_URI="http://localhost:3000/home" ;
+export SDC_OPENHIVE_CHAT_URI="http://localhost:3000" ;
 export SDC_OAUTH_SERVER_ENABLE="yes" ;
 export SDC_OAUTH_SERVER_CLIENTS="`cat config/oauth-server-clients-development.json`" ;
 ```
@@ -288,3 +288,35 @@ Do something similar as in section above, but edit file
 `config/oauth-server-clients-development.json` according to your needs.
 It's very important to set hard to guess secret for Oauth client in
 Condenser. Set the same secret in Rocket Chat Oauth client's config.
+
+## Integration with Rocket Chat via iframe
+
+Create following environment variable:
+```bash
+export CREATE_TOKENS_FOR_USERS="true" ;
+```
+Start Rocket Chat.
+
+Activate the Iframe Integration in Rocket Chat instance – follow [guide
+"Part I: Activate the Iframe
+Integration"](https://developer.rocket.chat/rocket.chat/iframe-integration/adding-a-rocket.chat-chat-room-to-your-web-app#part-i-activate-the-iframe-integration).
+On development machine set `http://localhost:8080/chat/parking` for
+"Iframe URL", and `http://localhost:8080/chat/sso` for "API URL". Go to
+Administration > Settings > General > Iframe Integration and check
+"Enable Send" and "Enable Receive".
+
+Create Personal Access Token for an admin account in Rocket Chat
+(http://localhost:3000/account/tokens) for use in step below. Hit
+"Ignore Two Factor Authentication" upon creation.
+
+**TODO** We should give the lowest possible privileges to that token.
+Maybe create a new, custom role in Rocket Chat.
+
+Create following environment variables:
+```bash
+export SDC_OPENHIVE_CHAT_URI="<your-rocket-chat-uri>" ;
+export SDC_OPENHIVE_CHAT_IFRAME_INTEGRATION_ENABLE="yes" ;
+export SDC_OPENHIVE_CHAT_ADMIN_USER_ID="<your-admin-user-id>" ;
+export SDC_OPENHIVE_CHAT_ADMIN_USER_TOKEN="<your-admin-user-token>" ;
+```
+Start Condenser.

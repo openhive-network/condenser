@@ -29,6 +29,7 @@ import hardwareStats from './hardwarestats';
 import StatsLoggerClient from './utils/StatsLoggerClient';
 import requestTime from './requesttimings';
 import oauthServer from './oauth-server';
+import useRocketChat from './rocket-chat';
 
 if (cluster.isMaster) console.log('application server starting, please wait.');
 
@@ -94,7 +95,7 @@ const csrfProtect = new csrf({
     excludedMethods: ['GET', 'HEAD', 'OPTIONS'],
     disableQuery: true,
 });
-const csrfIgnoreUrlList = ['/oauth/token'];
+const csrfIgnoreUrlList = ['/oauth/token', '/chat/sso'];
 app.use(async (ctx, next) => {
     if (csrfIgnoreUrlList.includes(ctx.req.url)) {
         await next();
@@ -106,6 +107,9 @@ app.use(async (ctx, next) => {
 useGeneralApi(app);
 if (config.get('oauth_server') && (config.get('oauth_server')).enable === 'yes') {
     oauthServer(app);
+}
+if (config.get('openhive_chat_iframe_integration_enable')) {
+    useRocketChat(app);
 }
 useRedirects(app);
 useUserJson(app);
