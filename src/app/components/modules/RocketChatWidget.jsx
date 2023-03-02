@@ -14,7 +14,6 @@ import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import Badge from '@mui/material/Badge';
 import LaunchIcon from '@mui/icons-material/Launch';
-
 import Draggable from 'react-draggable';
 
 function RocketChatWidget({
@@ -40,21 +39,42 @@ function RocketChatWidget({
     const [isDragging, setIsDragging] = React.useState(false);
 
     const onMessageReceivedFromIframe = (event) => {
-        console.log("onMessageReceivedFromIframe event", event);
+        console.log("onMessageReceivedFromIframe event", event.origin, event.data, event);
         if (event.origin !== $STM_Config.openhive_chat_uri) {
             return;
         }
         // See https://developer.rocket.chat/rocket.chat/iframe-integration/iframe-events
-        if (!state[anchor] && event.data.eventName === 'new-message') {
-            setCount((prev) => prev + 1);
+
+        // // Fires on all messages, including those sent by user. Looks useless.
+        // if (!state[anchor] && event.data.eventName === 'new-message') {
+        //     setCount((prev) => prev + 1);
+        // }
+
+        // // Fires only when user receives notification.
+        // if (!state[anchor] && event.data.eventName === 'notification') {
+        //     setCount((prev) => prev + 1);
+        // }
+
+        // // Fires when user subscription changes.
+        // if (event.data.eventName === 'unread-changed-by-subscription') {
+        //     setCount(event.data.data.unread);
+        // }
+
+        // Fires when iframe window's title changes
+        if (event.data.eventName === 'unread-changed') {
+            setCount(event.data.data || 0);
         }
+
     };
 
-    React.useEffect(() => {
-        if (state[anchor]) {
-            setCount(0);
-        }
-    }, [state]);
+    // //
+    // // We don't need this, because we replay the logic of Rocket
+    // // Chat's badge in our badge.
+    // //
+    // React.useEffect(() => { if
+    // (state[anchor]) { setCount(0);
+    //     }
+    // }, [state]);
 
     const addIframeListener = () => {
         window.addEventListener("message", onMessageReceivedFromIframe);
@@ -136,16 +156,17 @@ function RocketChatWidget({
                 >
                     <Tooltip title={tooltip} placement="top">
                         <IconButton
+                            size="large"
+                            color="primary"
                             disabled={isDragging}
                             onClick={toggleDrawer(anchor, true)}
-                            // size="small"
-                            sx={{ ml: 2 }}
+                            sx={{ ml: 2, fontSize: '72px' }}
                             aria-controls={open ? 'account-menu' : undefined}
                             aria-haspopup="true"
                             aria-expanded={open ? 'true' : undefined}
                         >
-                            <Badge color="secondary" badgeContent={count}>
-                                {icon || <ChatIcon />}
+                            <Badge color="error" badgeContent={count}>
+                                {icon || <ChatIcon fontSize="large" />}
                             </Badge>
                         </IconButton>
                     </Tooltip>
@@ -181,7 +202,7 @@ RocketChatWidget.propTypes = {
 };
 
 RocketChatWidget.defaultProps = {
-    iframeTitle: 'Rocket.chat',
+    iframeTitle: 'Rocket.Chat',
     anchor: 'right',
     tooltip: 'Chat',
     closeText: 'Close',
