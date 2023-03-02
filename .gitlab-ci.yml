@@ -115,6 +115,9 @@ deploy-review-app:
           --env SDC_OPENHIVE_CHAT_URI="http://sepadevlnx.syncad.com:3000"
           --env SDC_OAUTH_SERVER_ENABLE="yes"
           --env SDC_OAUTH_SERVER_CLIENTS="`cat config/oauth-server-clients-ci-review.json`"
+          --env SDC_OPENHIVE_CHAT_IFRAME_INTEGRATION_ENABLE="yes"
+          --env SDC_OPENHIVE_CHAT_ADMIN_USER_ID="$SDC_OPENHIVE_CHAT_ADMIN_USER_ID"
+          --env SDC_OPENHIVE_CHAT_ADMIN_USER_TOKEN="$SDC_OPENHIVE_CHAT_ADMIN_USER_TOKEN"
           $DOCKER_TAG
         - echo "Review app deployed"
     environment:
