@@ -70,7 +70,7 @@ export async function getRCAuthToken(username = '') {
  */
 export async function getChatAuthToken(username = '') {
 
-    console.log(`Running getChatAuthToken for user ${username}`)
+    console.log(`Running getChatAuthToken for user ${username}`);
 
     try {
         const requestConfig = {
