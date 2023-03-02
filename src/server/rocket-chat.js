@@ -3,6 +3,13 @@ import axios from 'axios';
 import config from 'config';
 import secureRandom from 'secure-random';
 
+/**
+ * @typedef ResultToken
+ * @type {object}
+ * @property {boolean} success
+ * @property {string} error
+ */
+
 export const rocketChatApiUri = `${config.get('openhive_chat_uri')}/api/v1`;
 
 export const rocketChatAdminUserAuthHeaders = {
@@ -10,18 +17,21 @@ export const rocketChatAdminUserAuthHeaders = {
     'X-Auth-Token': config.get('openhive_chat_admin_user_token'),
 };
 
-
+/**
+ * Get authToken for user (admin action). This will work only if Rocket
+ * Chat was started with env variable `CREATE_TOKENS_FOR_USERS=true`.
+ *
+ * @export
+ * @param {string} [username='']
+ * @returns {Promise<ResultToken>}
+ */
 export async function getRCAuthToken(username = '') {
-    // Get authToken for user. This will work only if Rocket
-    // Chat was started with env variable
-    // `CREATE_TOKENS_FOR_USERS=true`.
-
     try {
         const requestConfig = {
             headers: rocketChatAdminUserAuthHeaders,
         };
-        const url3 = `${rocketChatApiUri}/users.createToken`;
-        const responseData3 = (await axios.post(url3, {username}, requestConfig)).data;
+        const url = `${rocketChatApiUri}/users.createToken`;
+        const responseData = (await axios.post(url, {username}, requestConfig)).data;
         // Succesful response looks like this:
         //
         // {
@@ -31,15 +41,15 @@ export async function getRCAuthToken(username = '') {
         //     },
         //     "success": true
         // }
-        if (responseData3.success) {
+        if (responseData.success) {
             return {
                 success: true,
-                data: {...responseData3.data, ...{username}},
+                data: {...responseData.data, ...{username}},
             };
         }
         return {
             success: false,
-            error: responseData3.error || 'getRCAuthToken unspecified in responseData3'
+            error: responseData.error || 'getRCAuthToken unspecified in responseData3'
         };
     } catch (error) {
         console.error('getRCAuthToken error', error);
@@ -50,10 +60,17 @@ export async function getRCAuthToken(username = '') {
     }
 }
 
-
+/**
+ * Check if user exists in Rocket Chat, and create user if one doesn't
+ * exist. Then get Rocket Chat login token for this user and return it.
+ *
+ * @export
+ * @param {string} [username='']
+ * @returns {Promise<ResultToken>}
+ */
 export async function getChatAuthToken(username = '') {
 
-    // TODO Log request.
+    console.log(`Running getChatAuthToken for user ${username}`)
 
     try {
         const requestConfig = {
@@ -110,10 +127,19 @@ export async function getChatAuthToken(username = '') {
     }
 }
 
-
+/**
+ * Koa middleware for integration with Rocket Chat via iframe.
+ *
+ * @export
+ * @param {Object} app Koa application
+ */
 export default function useRocketChat(app) {
+
     const router = new Router();
 
+    //
+    // Set this endpoint as "Iframe URL" in Rocket Chat.
+    //
     router.get('/chat/parking', async (ctx) => {
         ctx.body = `
 <!DOCTYPE html>
@@ -159,6 +185,9 @@ export default function useRocketChat(app) {
 `;
     });
 
+    //
+    // Set this endpoint as "Iframe API URL" in Rocket Chat.
+    //
     router.post('/chat/sso', async (ctx) => {
         ctx.set('Access-Control-Allow-Origin', `${config.get('openhive_chat_uri')}`);
         ctx.set('Access-Control-Allow-Credentials', 'true');

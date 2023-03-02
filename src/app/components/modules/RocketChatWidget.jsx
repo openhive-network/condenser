@@ -39,7 +39,9 @@ function RocketChatWidget({
     const [isDragging, setIsDragging] = React.useState(false);
 
     const onMessageReceivedFromIframe = (event) => {
-        console.log("onMessageReceivedFromIframe event", event.origin, event.data, event);
+
+        // console.log("onMessageReceivedFromIframe event", event.origin, event.data, event);
+
         if (event.origin !== $STM_Config.openhive_chat_uri) {
             return;
         }

@@ -20,8 +20,12 @@ const requestBase = {
     headers: requestHeaders,
 };
 
+/**
+ * Login to Rocket Chat
+ *
+ * @export
+ */
 export function chatLogin(data) {
-    // Login to chat.
     if ($STM_Config.openhive_chat_iframe_integration_enable) {
         if (data && data.chatAuthToken) {
             document.querySelector("#chat-iframe").contentWindow.postMessage(
@@ -77,8 +81,12 @@ export async function serverApiLogin(account, signatures = {}, externalUser = {}
     return response;
 }
 
+/**
+ * Logout from Rocket Chat
+ *
+ * @export
+ */
 export function chatLogout() {
-    // Logout from chat.
     if ($STM_Config.openhive_chat_iframe_integration_enable) {
         document.querySelector("#chat-iframe").contentWindow.postMessage(
             {
