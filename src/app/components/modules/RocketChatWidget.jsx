@@ -35,7 +35,7 @@ function RocketChatWidget({
         bottom: false,
         right: false,
     });
-    const [count, setCount] = React.useState(0);
+    const [badgeContent, setBadgeContent] = React.useState(0);
     const [isDragging, setIsDragging] = React.useState(false);
 
     const onMessageReceivedFromIframe = (event) => {
@@ -45,36 +45,13 @@ function RocketChatWidget({
         }
         // See https://developer.rocket.chat/rocket.chat/iframe-integration/iframe-events
 
-        // // Fires on all messages, including those sent by user. Looks useless.
-        // if (!state[anchor] && event.data.eventName === 'new-message') {
-        //     setCount((prev) => prev + 1);
-        // }
-
-        // // Fires only when user receives notification.
-        // if (!state[anchor] && event.data.eventName === 'notification') {
-        //     setCount((prev) => prev + 1);
-        // }
-
-        // // Fires when user subscription changes.
-        // if (event.data.eventName === 'unread-changed-by-subscription') {
-        //     setCount(event.data.data.unread);
-        // }
-
-        // Fires when iframe window's title changes
+        // Fires when iframe window's title changes. This way we replay
+        // the logic of Rocket Chat's badge in our badge.
         if (event.data.eventName === 'unread-changed') {
-            setCount(event.data.data || 0);
+            setBadgeContent(event.data.data || 0);
         }
 
     };
-
-    // //
-    // // We don't need this, because we replay the logic of Rocket
-    // // Chat's badge in our badge.
-    // //
-    // React.useEffect(() => { if
-    // (state[anchor]) { setCount(0);
-    //     }
-    // }, [state]);
 
     const addIframeListener = () => {
         window.addEventListener("message", onMessageReceivedFromIframe);
@@ -165,7 +142,7 @@ function RocketChatWidget({
                             aria-haspopup="true"
                             aria-expanded={open ? 'true' : undefined}
                         >
-                            <Badge color="error" badgeContent={count}>
+                            <Badge color="error" badgeContent={badgeContent}>
                                 {icon || <ChatIcon fontSize="large" />}
                             </Badge>
                         </IconButton>
