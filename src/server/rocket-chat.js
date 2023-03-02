@@ -159,7 +159,7 @@ export default function useRocketChat(app) {
 `;
     });
 
-    router.post('/api/v1/chat/sso', async (ctx) => {
+    router.post('/chat/sso', async (ctx) => {
         ctx.set('Access-Control-Allow-Origin', `${config.get('openhive_chat_uri')}`);
         ctx.set('Access-Control-Allow-Credentials', 'true');
         ctx.set('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');

@@ -95,7 +95,7 @@ const csrfProtect = new csrf({
     excludedMethods: ['GET', 'HEAD', 'OPTIONS'],
     disableQuery: true,
 });
-const csrfIgnoreUrlList = ['/oauth/token', '/api/v1/chat/sso'];
+const csrfIgnoreUrlList = ['/oauth/token', '/chat/sso'];
 app.use(async (ctx, next) => {
     if (csrfIgnoreUrlList.includes(ctx.req.url)) {
         await next();
