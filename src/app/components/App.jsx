@@ -17,6 +17,16 @@ import SimpleReactLightbox from 'simple-react-lightbox';
 import RocketChatWidget from 'app/components/modules/RocketChatWidget';
 
 class App extends React.Component {
+
+    static propTypes = {
+        error: PropTypes.string,
+        children: AppPropTypes.Children,
+        pathname: PropTypes.string,
+        category: PropTypes.string,
+        order: PropTypes.string,
+        loginUser: PropTypes.func.isRequired,
+    };
+
     constructor(props) {
         super(props);
         // TODO: put both of these and associated toggles into Redux Store.
@@ -28,21 +38,6 @@ class App extends React.Component {
 
         if (process.env.BROWSER) localStorage.removeItem('autopost'); // July 14 '16 compromise, renamed to autopost2
         props.loginUser();
-    }
-
-    toggleBodyNightmode(nightmodeEnabled) {
-        if (nightmodeEnabled) {
-            document.body.classList.remove('theme-light');
-            document.body.classList.add('theme-dark');
-        } else {
-            document.body.classList.remove('theme-dark');
-            document.body.classList.add('theme-light');
-        }
-    }
-
-    componentDidUpdate() {
-        const { nightmodeEnabled } = this.props;
-        this.toggleBodyNightmode(nightmodeEnabled);
     }
 
     componentDidMount() {
@@ -63,6 +58,21 @@ class App extends React.Component {
             || nightmodeEnabled !== n.nightmodeEnabled
             || showAnnouncement !== n.showAnnouncement
         );
+    }
+
+    componentDidUpdate() {
+        const { nightmodeEnabled } = this.props;
+        this.toggleBodyNightmode(nightmodeEnabled);
+    }
+
+    toggleBodyNightmode(nightmodeEnabled) {
+        if (nightmodeEnabled) {
+            document.body.classList.remove('theme-light');
+            document.body.classList.add('theme-dark');
+        } else {
+            document.body.classList.remove('theme-dark');
+            document.body.classList.add('theme-light');
+        }
     }
 
     setShowBannerFalse = () => {
@@ -167,15 +177,6 @@ class App extends React.Component {
         );
     }
 }
-
-App.propTypes = {
-    error: PropTypes.string,
-    children: AppPropTypes.Children,
-    pathname: PropTypes.string,
-    category: PropTypes.string,
-    order: PropTypes.string,
-    loginUser: PropTypes.func.isRequired,
-};
 
 export default connect(
     (state, ownProps) => {
