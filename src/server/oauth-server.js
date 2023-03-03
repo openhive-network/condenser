@@ -371,7 +371,7 @@ export default function oauthServer(app) {
                     + "Server cannot continue Oauth flow."
             };
         const redirectTo = ouathErrorRedirect(params, validationError, ctx, false);
-        ctx.body=`
+        ctx.body = `
 <!DOCTYPE html>
 <html>
 

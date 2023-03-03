@@ -351,6 +351,7 @@ export default `
 /technology/@samuel2009/dial-coinbase-customer-service-1
 /hydragun/@hydragun/gde-kupit-poddelnyi-pasport
 /relationship/@steemitsocialme/7-relationship-advice-for-men-uta-demontis
+/life/@bujar/most-famous-and-extreme-guinness-world-records
 `
     .trim()
     .split('\n');

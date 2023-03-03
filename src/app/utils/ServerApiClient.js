@@ -1,4 +1,5 @@
 /* global $STM_csrf */
+/* global $STM_Config */
 
 /**
  * @typedef ExternalUser
@@ -18,6 +19,35 @@ const requestBase = {
     method: 'POST',
     headers: requestHeaders,
 };
+
+/**
+ * Login to Rocket Chat
+ *
+ * @export
+ */
+export function chatLogin(data) {
+    if ($STM_Config.openhive_chat_iframe_integration_enable) {
+        if (data && data.chatAuthToken) {
+            document.querySelector("#chat-iframe").contentWindow.postMessage(
+                {
+                    event: 'login-with-token',
+                    loginToken: data.chatAuthToken,
+                },
+                `${$STM_Config.openhive_chat_uri}`,
+            );
+            // Should not be needed, but without this chat is not in
+            // `embedded` mode sometimes. Also sometimes user is not
+            // redirected to default channel.
+            document.querySelector("#chat-iframe").contentWindow.postMessage(
+                {
+                    externalCommand: "go",
+                    path: "/channel/general"
+                },
+                `${$STM_Config.openhive_chat_uri}`,
+            );
+        }
+    }
+}
 
 /**
  *
@@ -44,12 +74,34 @@ export async function serverApiLogin(account, signatures = {}, externalUser = {}
         { headers: requestHeaders },
     );
 
+    if (response.data) {
+        chatLogin(response.data);
+    }
+
     return response;
+}
+
+/**
+ * Logout from Rocket Chat
+ *
+ * @export
+ */
+export function chatLogout() {
+    if ($STM_Config.openhive_chat_iframe_integration_enable) {
+        document.querySelector("#chat-iframe").contentWindow.postMessage(
+            {
+                externalCommand: 'logout',
+            },
+            `${$STM_Config.openhive_chat_uri}`
+        );
+    }
 }
 
 export function serverApiLogout() {
     if (!process.env.BROWSER || window.$STM_ServerBusy) return;
     const request = { ...requestBase, body: JSON.stringify({ _csrf: $STM_csrf }) };
+    chatLogout();
+
     // eslint-disable-next-line consistent-return
     return fetch('/api/v1/logout_account', request);
 }
