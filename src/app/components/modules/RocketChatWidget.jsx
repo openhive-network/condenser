@@ -15,6 +15,7 @@ import Tooltip from '@mui/material/Tooltip';
 import Badge from '@mui/material/Badge';
 import LaunchIcon from '@mui/icons-material/Launch';
 import Draggable from 'react-draggable';
+import tt from 'counterpart';
 
 function RocketChatWidget({
     iframeSrc,
@@ -108,7 +109,9 @@ function RocketChatWidget({
                 title={iframeTitle}
             />
             <div style={{ display: 'flex' }}>
-                <Button style={{ flex: 1 }}>{closeText}</Button>
+                <Button style={{ flex: 1 }}>
+                    {tt('rocket_chat_widget_jsx.close_text')}
+                </Button>
                 <IconButton
                     color="primary"
                     aria-label="launch"
@@ -133,7 +136,7 @@ function RocketChatWidget({
                     onDrag={() => setIsDragging(true)}
                     onStop={() => setIsDragging(false)}
                 >
-                    <Tooltip title={tooltip} placement="top">
+                    <Tooltip title={tt('rocket_chat_widget_jsx.tooltip')} placement="top">
                         <IconButton
                             size="large"
                             color="primary"
