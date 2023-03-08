@@ -67,6 +67,7 @@ function RocketChatWidget({
 
         // User is logged out.
         if (event.data.eventName === 'Custom_Script_On_Logout') {
+            toggleDrawer(anchor, false);
             setDisabled(true);
         }
 
