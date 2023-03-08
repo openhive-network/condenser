@@ -195,10 +195,6 @@ export default function useRocketChat(app) {
         ctx.set('Access-Control-Allow-Methods', 'POST, OPTIONS');
 
         ctx.status = 401;
-        ctx.body = {
-            success: false,
-            error: 'User is not logged in or user is logged in with unsupported method'
-        };
 
         let user;
         if (ctx.session.a) {
@@ -213,7 +209,7 @@ export default function useRocketChat(app) {
             if (result.success) {
                 ctx.status = 200;
                 ctx.body = {
-                    token: result.data.authToken
+                    loginToken: result.data.authToken
                 };
             }
         }
