@@ -42,7 +42,11 @@ function RocketChatWidget({
 
     const onMessageReceivedFromIframe = (event) => {
 
+        //
         // See https://developer.rocket.chat/rocket.chat/iframe-integration/iframe-events
+        // Warning: above documentation looks to be outdated. I noticed
+        // events not mentioned there.
+        //
 
         if (event.origin !== $STM_Config.openhive_chat_uri) {
             return;
