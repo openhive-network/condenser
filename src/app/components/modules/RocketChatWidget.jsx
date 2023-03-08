@@ -38,20 +38,32 @@ function RocketChatWidget({
     });
     const [badgeContent, setBadgeContent] = React.useState(0);
     const [isDragging, setIsDragging] = React.useState(false);
+    const [disabled, setDisabled] = React.useState(true);
 
     const onMessageReceivedFromIframe = (event) => {
 
-        // console.log("onMessageReceivedFromIframe event", event.origin, event.data, event);
+        // See https://developer.rocket.chat/rocket.chat/iframe-integration/iframe-events
 
         if (event.origin !== $STM_Config.openhive_chat_uri) {
             return;
         }
-        // See https://developer.rocket.chat/rocket.chat/iframe-integration/iframe-events
+
+        console.log("onMessageReceivedFromIframe event", event.origin, event.data, event);
 
         // Fires when iframe window's title changes. This way we replay
         // the logic of Rocket Chat's badge in our badge.
         if (event.data.eventName === 'unread-changed') {
             setBadgeContent(event.data.data || 0);
+        }
+
+        // User is logged in.
+        if (event.data.eventName === 'Custom_Script_Logged_In') {
+            setDisabled(false);
+        }
+
+        // User is logged out.
+        if (event.data.eventName === 'Custom_Script_On_Logout') {
+            setDisabled(true);
         }
 
     };
@@ -137,20 +149,22 @@ function RocketChatWidget({
                     onStop={() => setIsDragging(false)}
                 >
                     <Tooltip title={tt('rocket_chat_widget_jsx.tooltip')} placement="top">
-                        <IconButton
-                            size="large"
-                            color="primary"
-                            disabled={isDragging}
-                            onClick={toggleDrawer(anchor, true)}
-                            sx={{ ml: 2, fontSize: '72px' }}
-                            aria-controls={open ? 'account-menu' : undefined}
-                            aria-haspopup="true"
-                            aria-expanded={open ? 'true' : undefined}
-                        >
-                            <Badge color="error" badgeContent={badgeContent}>
-                                {icon || <ChatIcon fontSize="large" />}
-                            </Badge>
-                        </IconButton>
+                        <span>
+                            <IconButton
+                                size="large"
+                                color="primary"
+                                disabled={disabled || isDragging}
+                                onClick={toggleDrawer(anchor, true)}
+                                sx={{ ml: 2, fontSize: '72px' }}
+                                aria-controls={open ? 'account-menu' : undefined}
+                                aria-haspopup="true"
+                                aria-expanded={open ? 'true' : undefined}
+                            >
+                                <Badge color="error" badgeContent={badgeContent}>
+                                    {icon || <ChatIcon fontSize="large" />}
+                                </Badge>
+                            </IconButton>
+                        </span>
                     </Tooltip>
                 </Draggable>
 
