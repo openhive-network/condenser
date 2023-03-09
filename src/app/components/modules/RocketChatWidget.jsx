@@ -60,14 +60,14 @@ function RocketChatWidget({
             setBadgeContent(event.data.data || 0);
         }
 
-        // User is logged in.
+        // User has logged in.
         if (event.data.eventName === 'Custom_Script_Logged_In') {
             setDisabled(false);
         }
 
-        // User is logged out.
-        if (event.data.eventName === 'Custom_Script_On_Logout') {
-            toggleDrawer(anchor, false);
+        // User has logged out.
+        if (event.data.eventName === 'Custom_Script_Logged_Out') {
+            setState({ ...state, [anchor]: false });
             setDisabled(true);
         }
 
