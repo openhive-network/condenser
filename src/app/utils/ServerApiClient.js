@@ -33,7 +33,7 @@ export function chatLogin(data) {
                     event: 'login-with-token',
                     loginToken: data.chatAuthToken,
                 },
-                `${$STM_Config.openhive_chat_uri}`,
+                `${$STM_Config.openhive_chat_api_uri}`,
             );
             // Should not be needed, but without this chat is not in
             // `embedded` mode sometimes. Also sometimes user is not
@@ -43,7 +43,7 @@ export function chatLogin(data) {
                     externalCommand: "go",
                     path: "/channel/general"
                 },
-                `${$STM_Config.openhive_chat_uri}`,
+                `${$STM_Config.openhive_chat_api_uri}`,
             );
         }
     }
