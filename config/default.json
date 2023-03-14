@@ -58,6 +58,7 @@
     "max_fee_creator": 100,
     "max_fee_provider": 100
   },
+  "openhive_chat_api_uri": "https://openhive.chat",
   "openhive_chat_uri": "https://openhive.chat",
   "oauth_server": {
     "enable": "no",

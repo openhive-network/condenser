@@ -72,38 +72,53 @@ export async function getChatAuthToken(username = '') {
 
     console.log(`Running getChatAuthToken for user ${username}`);
 
-    try {
-        const requestConfig = {
-            headers: rocketChatAdminUserAuthHeaders,
-        };
+    const requestConfig = {
+        headers: rocketChatAdminUserAuthHeaders,
+    };
+    let responseData1;
 
+    try {
         const url1 = `${rocketChatApiUri}/users.info`;
-        const responseData1 = (await axios.get(url1,
+        responseData1 = (await axios.get(url1,
                 {...requestConfig, ...{params: {username}}})).data;
-        if (responseData1.success) {
-            // User exists.
-            if (responseData1.user.active) {
-                // User is active, so we'll output token.
-                return getRCAuthToken(username);
-            }
+    } catch (error) {
+        if (error.response && error.response.data
+                && error.response.data.error === 'User not found.') {
+            responseData1 = error.response.data;
+        } else {
+            console.error('Error 1 in getToken', error);
             return {
                 success: false,
-                error: 'User is inactive'
+                error: 'getChatAuthToken unknown'
             };
         }
+    }
 
-        if (responseData1.error === 'User not found.') {
-            // User doesn't exist. Let's create a user.
-            const url2 = `${rocketChatApiUri}/users.create`;
-            const data2 = {
-                name: '',
-                username,
-                email: '',
-                password: secureRandom.randomBuffer(16).toString('hex'),
-                active: true,
-                joinDefaultChannels: true, // TODO Is this a good idea?
-                sendWelcomeEmail: false
-            };
+    if (responseData1.success) {
+        // User exists.
+        if (responseData1.user.active) {
+            // User is active, so we'll output token.
+            return getRCAuthToken(username);
+        }
+        return {
+            success: false,
+            error: 'User is inactive'
+        };
+    }
+
+    if (responseData1.error === 'User not found.') {
+        // User doesn't exist, let's create user.
+        const url2 = `${rocketChatApiUri}/users.create`;
+        const data2 = {
+            name: '',
+            username,
+            email: '',
+            password: secureRandom.randomBuffer(16).toString('hex'),
+            active: true,
+            joinDefaultChannels: true, // TODO Is this a good idea?
+            sendWelcomeEmail: false
+        };
+        try {
             const responseData2 = (await axios.post(url2, data2, requestConfig)).data;
             if (responseData2.success) {
                 return getRCAuthToken(username);
@@ -112,19 +127,19 @@ export async function getChatAuthToken(username = '') {
                 success: false,
                 error: responseData2.error || 'getChatAuthToken unspecified in responseData2'
             };
+        } catch (error) {
+            console.error('Error 2 in getToken', error);
+            return {
+                success: false,
+                error: 'getChatAuthToken unknown'
+            };
         }
-        return {
-            success: false,
-            error: responseData1.error || 'getChatAuthToken unspecified in responseData1'
-        };
-
-    } catch (error) {
-        console.error('Error in getToken', error);
-        return {
-            success: false,
-            error: 'getChatAuthToken unknown'
-        };
     }
+
+    return {
+        success: false,
+        error: 'getChatAuthToken unknown'
+    };
 }
 
 /**
