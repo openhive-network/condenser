@@ -493,6 +493,7 @@ export default function oauthServer(app) {
 
         // Check user and password in basic auth.
         const client = auth(ctx);
+        assert(client && client.name && client.pass, 401);
         assert((oauthServerConfig.clients).has(client.name), 401);
         assert(oauthServerConfig.clients[client.name].secret === client.pass, 401);
 
