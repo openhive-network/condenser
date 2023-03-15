@@ -153,24 +153,26 @@ function RocketChatWidget({
                     onDrag={() => setIsDragging(true)}
                     onStop={() => setIsDragging(false)}
                 >
-                    <Tooltip title={tt('rocket_chat_widget_jsx.tooltip')} placement="top">
-                        <span>
-                            <IconButton
-                                size="large"
-                                color="primary"
-                                disabled={disabled || isDragging}
-                                onClick={toggleDrawer(anchor, true)}
-                                sx={{ ml: 2, fontSize: '72px' }}
-                                aria-controls={open ? 'account-menu' : undefined}
-                                aria-haspopup="true"
-                                aria-expanded={open ? 'true' : undefined}
-                            >
-                                <Badge color="error" badgeContent={badgeContent}>
-                                    {icon || <ChatIcon fontSize="large" />}
-                                </Badge>
-                            </IconButton>
-                        </span>
-                    </Tooltip>
+                    <div>
+                        <Tooltip title={tt('rocket_chat_widget_jsx.tooltip')} placement="top">
+                            <span>
+                                <IconButton
+                                    size="large"
+                                    color="primary"
+                                    disabled={disabled || isDragging}
+                                    onClick={toggleDrawer(anchor, true)}
+                                    sx={{ ml: 2, fontSize: 48 }}
+                                    aria-controls={open ? 'account-menu' : undefined}
+                                    aria-haspopup="true"
+                                    aria-expanded={open ? 'true' : undefined}
+                                >
+                                    <Badge color="error" badgeContent={badgeContent}>
+                                        {icon}
+                                    </Badge>
+                                </IconButton>
+                            </span>
+                        </Tooltip>
+                    </div>
                 </Draggable>
 
                 <SwipeableDrawer
@@ -209,8 +211,8 @@ RocketChatWidget.defaultProps = {
     closeText: 'Close',
     rootStyle: { right: 10, bottom: 10, position: 'fixed' },
     drawerWidth: 500,
-    draggable: false,
-    icon: <ChatIcon />,
+    draggable: true,
+    icon: <ChatIcon style={{ fontSize: 48 }} />,
     open: false,
 };
 
