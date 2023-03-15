@@ -52,7 +52,7 @@ function RocketChatWidget({
             return;
         }
 
-        console.log("onMessageReceivedFromIframe event", event.origin, event.data, event);
+        // console.log("onMessageReceivedFromIframe event", event.origin, event.data, event);
 
         // Fires when iframe window's title changes. This way we replay
         // the logic of Rocket Chat's badge in our badge.
@@ -143,8 +143,13 @@ function RocketChatWidget({
     );
 
     return (
-        // eslint-disable-next-line react/jsx-props-no-spreading
-        <div style={rootStyle} {...rest}>
+        <div
+            style={{
+                ...rootStyle,
+                ...{display: $STM_Config.openhive_chat_iframe_visible ? 'block' : 'none'},
+            }}
+            {...rest}
+        >
             <React.Fragment key={anchor}>
                 <Draggable
                     disabled={!draggable}
@@ -174,7 +179,6 @@ function RocketChatWidget({
                         </Tooltip>
                     </div>
                 </Draggable>
-
                 <SwipeableDrawer
                     anchor={anchor}
                     open={state[anchor]}
@@ -209,7 +213,11 @@ RocketChatWidget.defaultProps = {
     anchor: 'right',
     tooltip: 'Chat',
     closeText: 'Close',
-    rootStyle: { right: 10, bottom: 10, position: 'fixed' },
+    rootStyle: {
+        right: 10,
+        bottom: 10,
+        position: 'fixed',
+    },
     drawerWidth: 500,
     draggable: true,
     icon: <ChatIcon style={{ fontSize: 48 }} />,

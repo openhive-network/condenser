@@ -318,6 +318,7 @@ Create following environment variables:
 export SDC_OPENHIVE_CHAT_API_URI="<your-rocket-chat-api-uri>" ;
 export SDC_OPENHIVE_CHAT_URI="<your-rocket-chat-uri>" ;
 export SDC_OPENHIVE_CHAT_IFRAME_INTEGRATION_ENABLE="yes" ;
+export SDC_OPENHIVE_CHAT_IFRAME_VISIBLE="yes" ;
 export SDC_OPENHIVE_CHAT_ADMIN_USER_ID="<your-admin-user-id>" ;
 export SDC_OPENHIVE_CHAT_ADMIN_USER_TOKEN="<your-admin-user-token>" ;
 ```
