@@ -175,7 +175,7 @@ class LoginForm extends Component {
             // responds with error, e.g. because of non-existing
             // `login_challenge`.
             const trustedClientNames = [
-                'Hive Chat'
+                'OpenHive Chat'
             ];
             if (!trustedClientNames.includes(params.get('client_name'))) {
                 return;

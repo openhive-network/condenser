@@ -65,7 +65,7 @@
     "clients": {
       "openhive_chat": {
         "id": "openhive_chat",
-        "name": "Hive Chat",
+        "name": "OpenHive Chat",
         "scope": [
           "openid",
           "profile"
