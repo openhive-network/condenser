@@ -38,9 +38,11 @@ global.$STM_Config = {
     rebranded_api: true,
     default_observer: config.get('default_observer'),
     chain_id: config.get('chain_id'),
+    openhive_chat_api_uri: config.get('openhive_chat_api_uri'),
     openhive_chat_uri: config.get('openhive_chat_uri'),
     oauth_server_enable: config.get('oauth_server') && (config.get('oauth_server')).enable === 'yes',
     openhive_chat_iframe_integration_enable: config.get('openhive_chat_iframe_integration_enable') === 'yes',
+    openhive_chat_iframe_visible: config.get('openhive_chat_iframe_visible') === 'yes',
 };
 
 const WebpackIsomorphicTools = require('webpack-isomorphic-tools');

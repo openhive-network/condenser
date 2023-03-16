@@ -58,13 +58,14 @@
     "max_fee_creator": 100,
     "max_fee_provider": 100
   },
+  "openhive_chat_api_uri": "https://openhive.chat",
   "openhive_chat_uri": "https://openhive.chat",
   "oauth_server": {
     "enable": "no",
     "clients": {
       "openhive_chat": {
         "id": "openhive_chat",
-        "name": "Hive Chat",
+        "name": "OpenHive Chat",
         "scope": [
           "openid",
           "profile"
@@ -78,6 +79,7 @@
     }
   },
   "openhive_chat_iframe_integration_enable": "no",
+  "openhive_chat_iframe_visible": "yes",
   "openhive_chat_admin_user_id": "DaMHvraiQbNBxi7W5",
   "openhive_chat_admin_user_token": "VZhTOE20q3Xe9xTgA9QqjbQAYxYEhAfkUZpAm7xrQgd"
 }

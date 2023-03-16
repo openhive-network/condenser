@@ -278,7 +278,7 @@
         "learn_more": "Learn more",
         "welcome": "Welcome",
         "faq": "FAQ",
-        "chat": "Hive Chat",
+        "chat": "OpenHive Chat",
         "app_center": "Hive Dapps",
         "business_center": "Businesses Accepting Hive",
         "api_docs": "Developer Portal",
@@ -835,5 +835,9 @@
         "the_link_you_clicked_is_external": "The link you've clicked on will lead you to the following website:",
         "we_just_want_to_verify_to_continue": "We are just verifying with you that you want to continue.",
         "open_link": "Open link"
+    },
+    "rocket_chat_widget_jsx": {
+        "tooltip": "Chat",
+        "close_text": "Close"
     }
 }

@@ -15,6 +15,7 @@ import Tooltip from '@mui/material/Tooltip';
 import Badge from '@mui/material/Badge';
 import LaunchIcon from '@mui/icons-material/Launch';
 import Draggable from 'react-draggable';
+import tt from 'counterpart';
 
 function RocketChatWidget({
     iframeSrc,
@@ -37,20 +38,37 @@ function RocketChatWidget({
     });
     const [badgeContent, setBadgeContent] = React.useState(0);
     const [isDragging, setIsDragging] = React.useState(false);
+    const [disabled, setDisabled] = React.useState(true);
 
     const onMessageReceivedFromIframe = (event) => {
 
-        // console.log("onMessageReceivedFromIframe event", event.origin, event.data, event);
+        //
+        // See https://developer.rocket.chat/rocket.chat/iframe-integration/iframe-events
+        // Warning: above documentation looks to be outdated. I noticed
+        // events not mentioned there.
+        //
 
         if (event.origin !== $STM_Config.openhive_chat_uri) {
             return;
         }
-        // See https://developer.rocket.chat/rocket.chat/iframe-integration/iframe-events
+
+        // console.log("onMessageReceivedFromIframe event", event.origin, event.data, event);
 
         // Fires when iframe window's title changes. This way we replay
         // the logic of Rocket Chat's badge in our badge.
         if (event.data.eventName === 'unread-changed') {
             setBadgeContent(event.data.data || 0);
+        }
+
+        // User has logged in.
+        if (event.data.eventName === 'Custom_Script_Logged_In') {
+            setDisabled(false);
+        }
+
+        // User has logged out.
+        if (event.data.eventName === 'Custom_Script_Logged_Out') {
+            setState({ ...state, [anchor]: false });
+            setDisabled(true);
         }
 
     };
@@ -108,7 +126,9 @@ function RocketChatWidget({
                 title={iframeTitle}
             />
             <div style={{ display: 'flex' }}>
-                <Button style={{ flex: 1 }}>{closeText}</Button>
+                <Button style={{ flex: 1 }}>
+                    {tt('rocket_chat_widget_jsx.close_text')}
+                </Button>
                 <IconButton
                     color="primary"
                     aria-label="launch"
@@ -123,8 +143,13 @@ function RocketChatWidget({
     );
 
     return (
-        // eslint-disable-next-line react/jsx-props-no-spreading
-        <div style={rootStyle} {...rest}>
+        <div
+            style={{
+                ...rootStyle,
+                ...{display: $STM_Config.openhive_chat_iframe_visible ? 'block' : 'none'},
+            }}
+            {...rest}
+        >
             <React.Fragment key={anchor}>
                 <Draggable
                     disabled={!draggable}
@@ -133,24 +158,27 @@ function RocketChatWidget({
                     onDrag={() => setIsDragging(true)}
                     onStop={() => setIsDragging(false)}
                 >
-                    <Tooltip title={tooltip} placement="top">
-                        <IconButton
-                            size="large"
-                            color="primary"
-                            disabled={isDragging}
-                            onClick={toggleDrawer(anchor, true)}
-                            sx={{ ml: 2, fontSize: '72px' }}
-                            aria-controls={open ? 'account-menu' : undefined}
-                            aria-haspopup="true"
-                            aria-expanded={open ? 'true' : undefined}
-                        >
-                            <Badge color="error" badgeContent={badgeContent}>
-                                {icon || <ChatIcon fontSize="large" />}
-                            </Badge>
-                        </IconButton>
-                    </Tooltip>
+                    <div>
+                        <Tooltip title={tt('rocket_chat_widget_jsx.tooltip')} placement="top">
+                            <span>
+                                <IconButton
+                                    size="large"
+                                    color="primary"
+                                    disabled={disabled || isDragging}
+                                    onClick={toggleDrawer(anchor, true)}
+                                    sx={{ ml: 2, fontSize: 48 }}
+                                    aria-controls={open ? 'account-menu' : undefined}
+                                    aria-haspopup="true"
+                                    aria-expanded={open ? 'true' : undefined}
+                                >
+                                    <Badge color="error" badgeContent={badgeContent}>
+                                        {icon}
+                                    </Badge>
+                                </IconButton>
+                            </span>
+                        </Tooltip>
+                    </div>
                 </Draggable>
-
                 <SwipeableDrawer
                     anchor={anchor}
                     open={state[anchor]}
@@ -185,10 +213,14 @@ RocketChatWidget.defaultProps = {
     anchor: 'right',
     tooltip: 'Chat',
     closeText: 'Close',
-    rootStyle: { right: 10, bottom: 10, position: 'fixed' },
+    rootStyle: {
+        right: 10,
+        bottom: 10,
+        position: 'fixed',
+    },
     drawerWidth: 500,
     draggable: false,
-    icon: <ChatIcon />,
+    icon: <ChatIcon style={{ fontSize: 48 }} />,
     open: false,
 };
 

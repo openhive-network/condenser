@@ -273,6 +273,7 @@ syncad@dev-66:~/src/condenser$ curl -H "X-Auth-Token: ${ROCKET_CHAT_LOCAL_TOKEN}
 
 Set environment variables for Oauth Server in another terminal:
 ```bash
+export SDC_OPENHIVE_CHAT_API_URI="http://localhost:3000" ;
 export SDC_OPENHIVE_CHAT_URI="http://localhost:3000" ;
 export SDC_OAUTH_SERVER_ENABLE="yes" ;
 export SDC_OAUTH_SERVER_CLIENTS="`cat config/oauth-server-clients-development.json`" ;
@@ -314,8 +315,10 @@ Maybe create a new, custom role in Rocket Chat.
 
 Create following environment variables:
 ```bash
+export SDC_OPENHIVE_CHAT_API_URI="<your-rocket-chat-api-uri>" ;
 export SDC_OPENHIVE_CHAT_URI="<your-rocket-chat-uri>" ;
 export SDC_OPENHIVE_CHAT_IFRAME_INTEGRATION_ENABLE="yes" ;
+export SDC_OPENHIVE_CHAT_IFRAME_VISIBLE="yes" ;
 export SDC_OPENHIVE_CHAT_ADMIN_USER_ID="<your-admin-user-id>" ;
 export SDC_OPENHIVE_CHAT_ADMIN_USER_TOKEN="<your-admin-user-token>" ;
 ```
