@@ -2,6 +2,7 @@
 /* eslint react/prop-types: 0 */
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import axios from 'axios';
 import * as transactionActions from 'app/redux/TransactionReducer';
 import * as globalActions from 'app/redux/GlobalReducer';
 import * as userActions from 'app/redux/UserReducer';
@@ -79,6 +80,8 @@ class LoginForm extends Component {
         if (this.refs.username && !this.refs.username.value) this.refs.username.focus();
         // eslint-disable-next-line react/no-string-refs
         if (this.refs.username && this.refs.username.value) this.refs.pw.focus();
+
+        // TODO This is aynchronous!
         this.registerOauthRequest();
     }
 
@@ -155,38 +158,38 @@ class LoginForm extends Component {
     };
 
 
-    registerOauthRequest() {
-        if (!$STM_Config.oauth_server_enable) {
+    async registerOauthRequest() {
+        if (!$STM_Config.oauth_server_enable) return;
+        const params = new URLSearchParams(window.location.search);
+        if (!params.has('login_challenge')) return;
+        if (!/^[a-fA-F0-9]{1,}$/.test(params.get('login_challenge'))) return;
+
+        // TODO show error instead of login form, when backend
+        // responds with error, e.g. because of non-existing
+        // `login_challenge`.
+
+        const headers = {
+            Accept: 'application/json',
+        };
+        const requestParams = {
+            login_challenge: params.get('login_challenge')
+        };
+
+        let oauthClientInfo;
+        try {
+            oauthClientInfo = (await axios.get('/oauth/login', {headers, params: requestParams})).data;
+        } catch (error) {
             return;
         }
-        const params = new URLSearchParams(window.location.search);
-        if (params.has('client_id')
-                && params.has('redirect_uri')
-                && params.has('state')
-                && params.has('scope')
-                && params.has('client_name')
-                ) {
-            // TODO `trustedClientNames` is a quick fix only. We should
-            // consider creating a new endpoint on backend and have here
-            // only `login_challenge` in search parameters. Then we
-            // should ask backend about all oauth client's parameters
-            // and trust only them, when registering oauth request here.
-            // Also show error instead of login form, when backend
-            // responds with error, e.g. because of non-existing
-            // `login_challenge`.
-            const trustedClientNames = [
-                'OpenHive Chat'
-            ];
-            if (!trustedClientNames.includes(params.get('client_name'))) {
-                return;
-            }
-            try {
-                sessionStorage.setItem('oauth', params.toString());
-                const oauthFlow = {clientName: params.get('client_name')};
-                this.setState({oauthFlow});
-            } catch (error) {
-                // Do nothing – sessionStorage is unavailable, probably.
-            }
+
+        console.log('bamboo registerOauthRequest oauthClientInfo', oauthClientInfo);
+
+        try {
+            sessionStorage.setItem('oauth', (new URLSearchParams(requestParams)).toString());
+            const oauthFlow = {clientName: oauthClientInfo.client_name};
+            this.setState({oauthFlow});
+        } catch (error) {
+            // Do nothing – sessionStorage is unavailable, probably.
         }
     }
 
@@ -365,7 +368,8 @@ class LoginForm extends Component {
             message = (
                 <div className="callout primary">
                     <p>
-                        {tt('loginform_jsx.oauth_info')} {oauthFlow.clientName}
+                        {tt('loginform_jsx.oauth_info')}
+                        {oauthFlow.clientName}
                     </p>
                 </div>
             );

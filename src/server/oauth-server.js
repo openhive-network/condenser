@@ -5,6 +5,7 @@ import auth from 'basic-auth';
 import { assert } from 'koa/lib/context';
 import { api } from '@hiveio/hive-js';
 import config from 'config';
+import secureRandom from 'secure-random';
 
 /**
  * @typedef OauthErrorMessage
@@ -188,6 +189,45 @@ export function validateOauthRequestParameterCode(params) {
     return null;
 }
 
+export function validateLoginChallenge(params, oauthLoginAttempt) {
+    if (!params.has('login_challenge')) {
+        return {
+            error: 'invalid_request',
+            error_description: 'No login_challenge',
+        };
+    }
+
+    if (!/^[a-fA-F0-9]{1,}$/.test(params.get('login_challenge'))) {
+        return {
+            error: 'invalid_request',
+            error_description: 'login_challenge should be hex string',
+        };
+    }
+
+    if (!oauthLoginAttempt) {
+        return {
+            error: 'invalid_request',
+            error_description: 'No login attempt on server',
+        };
+    }
+
+    if (params.get('login_challenge') !== oauthLoginAttempt.login_challenge) {
+        return {
+            error: 'invalid_request',
+            error_description: 'No corresponding login attempt on server',
+        };
+    }
+
+    if (Date.now() > oauthLoginAttempt.expiresAt) {
+        return {
+            error: 'invalid_request',
+            error_description: 'login_challenge has expired',
+        };
+    }
+
+    return null;
+}
+
 /**
  * Redirects user agent to `redirect_uri`, in case of error in Oauth
  * request.
@@ -331,11 +371,27 @@ export default function oauthServer(app) {
 
     // Authorization endpoint.
     publicRouter.get('/oauth/authorize', async (ctx) => {
-        const params = new URLSearchParams(ctx.URL.search);
+        let params = new URLSearchParams(ctx.URL.search);
+        let validationError;
+
+        if (params.get('login_challenge')) {
+            const oauthLoginAttempt = ctx.session?.oauthLoginAttempt;
+            validationError = validateLoginChallenge(params, oauthLoginAttempt);
+            console.log('bamboo /oauth/authorize validationError', validationError);
+            if (validationError?.error_description === 'login_challenge has expired') {
+                // Destroy login attempt in session, it's expired.
+                ctx.session.oauthLoginAttempt = null;
+            }
+            if (validationError) {
+                ctx.body = validationError;
+                return;
+            }
+            params = new URLSearchParams(oauthLoginAttempt.params);
+        }
 
         // Validate request parameters.
 
-        let validationError = validateOauthRequestParameterClientId(params);
+        validationError = validateOauthRequestParameterClientId(params);
         if (validationError) {
             ctx.body = validationError;
             return;
@@ -482,9 +538,44 @@ export default function oauthServer(app) {
         // to redirect to login page. After login user agent will be
         // redirected to this endpoint again, but user should exist in
         // session then.
-        params.set('client_name',
-                oauthServerConfig.clients[params.get('client_id')].name);
-        ctx.redirect('/login.html?' + params.toString());
+
+        // Register login_challenge in session.
+        const login_challenge = secureRandom.randomBuffer(16).toString('hex');
+        const oauthLoginAttempt = {
+            login_challenge,
+            params: params.toString(),
+            expiresAt: Date.now() + 1000 * 60 * 5 // 5 minutes
+        };
+        ctx.session.oauthLoginAttempt = oauthLoginAttempt;
+
+        // Respond with login_challenge.
+        const responseParams = new URLSearchParams({login_challenge});
+        ctx.redirect('/login.html?' + responseParams.toString());
+    });
+
+    // Validate login_challenge and respond with oauth client config
+    // required on front-end.
+    publicRouter.get('/oauth/login', async (ctx) => {
+        console.log('bamboo /oauth/login request', ctx.request);
+        console.log('bamboo /oauth/login session', ctx.session);
+
+        const params = new URLSearchParams(ctx.URL.search);
+        const oauthLoginAttempt = ctx.session?.oauthLoginAttempt;
+        const validationResult = validateLoginChallenge(params, oauthLoginAttempt);
+        console.log('bamboo /oauth/login validationResult', validationResult);
+        if (validationResult?.error_description === 'login_challenge has expired') {
+            // Destroy login attempt in session, it's expired.
+            ctx.session.oauthLoginAttempt = null;
+        }
+        assert(validationResult === null, 400, validationResult ? validationResult.error_description : 'ok');
+
+        const oauthLoginAttemptParams = new URLSearchParams(oauthLoginAttempt.params);
+        console.log('bamboo /oauth/login oauthLoginAttemptParams', oauthLoginAttemptParams.toString());
+        console.log('bamboo /oauth/login oauthServerConfig.clients', oauthServerConfig.clients);
+
+        ctx.body = {
+            client_name: oauthServerConfig.clients[oauthLoginAttemptParams.get('client_id')].name,
+        };
     });
 
     // Token endpoint.
