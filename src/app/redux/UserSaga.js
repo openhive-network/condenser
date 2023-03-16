@@ -61,14 +61,11 @@ function oauthRedirect(username) {
         }
 
         const params = new URLSearchParams(oauthItem);
-        if (params.has('redirect_to')) {
-            const redirect_to = params.get('redirect_to');
-            params.delete('redirect_to');
-            if (params.has('client_name')) {
-                params.delete('client_name');
-            }
-            return redirect_to + '?' + params.toString();
+        if (params.has('client_name')) {
+            params.delete('client_name');
         }
+        // Redirect condenser backend authorization endpoint.
+        return '/oauth/authorize?' + params.toString();
     } catch (error) {
         // Do nothing – sessionStorage is unavailable, probably.
     }
