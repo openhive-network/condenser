@@ -137,7 +137,7 @@ class UserProfileHeader extends React.Component {
                             >
                                 <a href={`https://hivebuzz.me/@${accountname}`} target="_blank" rel="noopener noreferrer">
                                     <img
-                                        src={`https://hivebuzz.me/@${accountname}/level.png`}
+                                        src={`https://hivebuzz.me/api/level/${accountname}?dead`}
                                         alt="Hivebuzz level badge"
                                         className="UserProfile__badge_image_hivebuzzlevel"
                                         id="hivebuzz-level-badge"

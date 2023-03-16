@@ -269,7 +269,7 @@
         "learn_more": "Dowiedz się więcej",
         "welcome": "Witaj",
         "faq": "FAQ",
-        "chat": "Hive Chat",
+        "chat": "OpenHive Chat",
         "app_center": "Hive App Center",
         "business_center": "Businesses Accepting Hive",
         "api_docs": "Dokumentacja Hive API",
@@ -562,11 +562,13 @@
         "login_warning_title": "Logowanie za pomocą klucza innego niż do publikowania",
         "login_warning_body": "Próbujesz użyć klucza z większą ilością uprawnień niż wymagane do codziennego korzystania z hive.blog. Ponieważ klucze i hasła są tym bardziej narażone na niebezpieczeństwo, im częściej są używane, zdecydowanie zaleca się używanie tylko swojego klucza do publikowania, aby się zalogować.",
         "continue_anyway": "Kontynuuj mimo to",
-        "login_warning_link_text": "Otwórz mój Portfel Hive, żeby uzyskać dostęp i zobaczyć klucz do publikowania",
+        "login_warning_link_text": "Otwórz mój Portfel Hive, żeby uzyskać dostęp i zobaczyć klucz do publikowania",
         "join_our": "Dołącz do",
         "sign_transfer": "Podpisz, aby dokończyć przelew",
         "use_keychain": "Użyj rozszerzenia Hive Keychain",
-        "more_login_methods": "więcej metod logowania"
+        "use_hiveauth": "Użyj HiveAuth",
+        "more_login_methods": "więcej metod logowania",
+        "oauth_info": "Proszę się zalogować w celu autoryzacji aplikacji"
     },
     "chainvalidation_js": {
         "account_name_should_not_be_empty": "Nazwa konta nie powinna być pusta.",
@@ -687,5 +689,9 @@
         "resteems": "Reblogi",
         "upvotes": "Głosy",
         "mentions": "Wzmianki"
-    }
+    },
+    "rocket_chat_widget_jsx": {
+      "tooltip": "Czat",
+      "close_text": "Zamknij"
+  }
 }

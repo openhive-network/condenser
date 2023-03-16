@@ -164,7 +164,22 @@ class LoginForm extends Component {
                 && params.has('redirect_uri')
                 && params.has('state')
                 && params.has('scope')
+                && params.has('client_name')
                 ) {
+            // TODO `trustedClientNames` is a quick fix only. We should
+            // consider creating a new endpoint on backend and have here
+            // only `login_challenge` in search parameters. Then we
+            // should ask backend about all oauth client's parameters
+            // and trust only them, when registering oauth request here.
+            // Also show error instead of login form, when backend
+            // responds with error, e.g. because of non-existing
+            // `login_challenge`.
+            const trustedClientNames = [
+                'OpenHive Chat'
+            ];
+            if (!trustedClientNames.includes(params.get('client_name'))) {
+                return;
+            }
             try {
                 sessionStorage.setItem('oauth', params.toString());
                 const oauthFlow = {clientName: params.get('client_name')};
