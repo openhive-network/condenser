@@ -219,7 +219,7 @@ RocketChatWidget.defaultProps = {
         position: 'fixed',
     },
     drawerWidth: 500,
-    draggable: true,
+    draggable: false,
     icon: <ChatIcon style={{ fontSize: 48 }} />,
     open: false,
 };
