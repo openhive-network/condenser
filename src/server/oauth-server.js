@@ -482,7 +482,6 @@ export default function oauthServer(app) {
         // to redirect to login page. After login user agent will be
         // redirected to this endpoint again, but user should exist in
         // session then.
-        params.set('redirect_to', '/oauth/authorize');
         params.set('client_name',
                 oauthServerConfig.clients[params.get('client_id')].name);
         ctx.redirect('/login.html?' + params.toString());
@@ -493,6 +492,7 @@ export default function oauthServer(app) {
 
         // Check user and password in basic auth.
         const client = auth(ctx);
+        assert(client && client.name && client.pass, 401);
         assert((oauthServerConfig.clients).has(client.name), 401);
         assert(oauthServerConfig.clients[client.name].secret === client.pass, 401);
 

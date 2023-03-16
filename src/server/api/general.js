@@ -162,8 +162,8 @@ export default function useGeneralApi(app) {
             };
 
             // Add auth token for chat to response.
-            if (config.get('openhive_chat_iframe_integration_enable')) {
-                let result = {};
+            if (config.get('openhive_chat_iframe_integration_enable') === 'yes') {
+                    let result = {};
                 if (ctx.session.a) {
                     result = await getChatAuthToken(ctx.session.a);
                 } else if (ctx.session.externalUser && ctx.session.externalUser.system === 'hivesigner') {

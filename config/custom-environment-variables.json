@@ -47,6 +47,7 @@
     "max_fee_creator": "REFERRAL_MAX_FEE_CREATOR",
     "max_fee_provider": "REFERRAL_MAX_FEE_PROVIDER"
   },
+  "openhive_chat_api_uri": "SDC_OPENHIVE_CHAT_API_URI",
   "openhive_chat_uri": "SDC_OPENHIVE_CHAT_URI",
   "oauth_server": {
     "enable": "SDC_OAUTH_SERVER_ENABLE",
@@ -56,6 +57,7 @@
     }
   },
   "openhive_chat_iframe_integration_enable": "SDC_OPENHIVE_CHAT_IFRAME_INTEGRATION_ENABLE",
+  "openhive_chat_iframe_visible": "SDC_OPENHIVE_CHAT_IFRAME_VISIBLE",
   "openhive_chat_admin_user_id": "SDC_OPENHIVE_CHAT_ADMIN_USER_ID",
   "openhive_chat_admin_user_token": "SDC_OPENHIVE_CHAT_ADMIN_USER_TOKEN"
 }
