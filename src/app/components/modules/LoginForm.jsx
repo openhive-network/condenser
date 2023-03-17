@@ -173,14 +173,6 @@ class LoginForm extends Component {
             return;
         }
 
-        if (!/^[a-fA-F0-9]{1,}$/.test(params.get('login_challenge'))) {
-            this.setState({
-                oauthFlowLoading: false,
-                oauthFlowError: true,
-            });
-            return;
-        }
-
         const headers = {
             Accept: 'application/json',
         };
