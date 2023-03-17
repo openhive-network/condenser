@@ -62,7 +62,10 @@ function oauthRedirect(username) {
 
         // Redirect to backend authorization endpoint.
         const params = new URLSearchParams(oauthItem);
-        return `/oauth/authorize?${params.toString()}`;
+        const requestParams = {
+            login_challenge: params.get('login_challenge')
+        };
+        return `/oauth/authorize?${(new URLSearchParams(requestParams)).toString()}`;
     } catch (error) {
         // Do nothing – sessionStorage is unavailable, probably.
     }

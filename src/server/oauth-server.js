@@ -553,8 +553,8 @@ export default function oauthServer(app) {
         ctx.redirect('/login.html?' + responseParams.toString());
     });
 
-    // Validate login_challenge and respond with oauth client config
-    // required on front-end.
+    // Validate login_challenge and respond with important oauth client
+    // details.
     publicRouter.get('/oauth/login', async (ctx) => {
         console.log('bamboo /oauth/login request', ctx.request);
         console.log('bamboo /oauth/login session', ctx.session);
@@ -573,8 +573,13 @@ export default function oauthServer(app) {
         console.log('bamboo /oauth/login oauthLoginAttemptParams', oauthLoginAttemptParams.toString());
         console.log('bamboo /oauth/login oauthServerConfig.clients', oauthServerConfig.clients);
 
+        const clientId = oauthLoginAttemptParams.get('client_id');
         ctx.body = {
-            client_name: oauthServerConfig.clients[oauthLoginAttemptParams.get('client_id')].name,
+            clientName: oauthServerConfig.clients[clientId].name,
+            clientUri: oauthServerConfig.clients[clientId].clientUri,
+            logoUri: oauthServerConfig.clients[clientId].logoUri,
+            policyUri: oauthServerConfig.clients[clientId].policyUri,
+            termsOfServiceUri: oauthServerConfig.clients[clientId].termsOfServiceUri,
         };
     });
 

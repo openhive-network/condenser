@@ -614,7 +614,9 @@
         "use_keychain": "Use Hive Keychain extension",
         "use_hiveauth": "Use HiveAuth",
         "more_login_methods": "more login methods",
-        "oauth_info": "Please login to authorize application"
+        "oauth_info": "Please login to authorize application",
+        "oauth_loading_message": "Loading data in Oauth Flow",
+        "oauth_error_message": "Error in Oauth Flow"
     },
     "chainvalidation_js": {
         "account_name_should_not_be_empty": "Account name should not be empty.",
