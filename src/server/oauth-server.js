@@ -189,7 +189,17 @@ export function validateOauthRequestParameterCode(params) {
     return null;
 }
 
+/**
+ * Validate Oauth request parameter `login_challenge`.
+ *
+ * @export
+ * @param {URLSearchParams} params
+ * @param {*} oauthLoginAttempt
+ * @returns {null | OauthErrorMessage} Null when validation passes,
+ * otherwise OauthErrorMessage
+ */
 export function validateLoginChallenge(params, oauthLoginAttempt) {
+
     if (!params.has('login_challenge')) {
         return {
             error: 'invalid_request',
@@ -548,7 +558,7 @@ export default function oauthServer(app) {
         };
         ctx.session.oauthLoginAttempt = oauthLoginAttempt;
 
-        // Respond with login_challenge.
+        // Redirect with login_challenge.
         const responseParams = new URLSearchParams({login_challenge});
         ctx.redirect('/login.html?' + responseParams.toString());
     });
@@ -561,15 +571,26 @@ export default function oauthServer(app) {
 
         const params = new URLSearchParams(ctx.URL.search);
         const oauthLoginAttempt = ctx.session?.oauthLoginAttempt;
-        const validationResult = validateLoginChallenge(params, oauthLoginAttempt);
+        const validationResult = validateLoginChallenge(
+                params, oauthLoginAttempt
+                );
+
         console.log('bamboo /oauth/login validationResult', validationResult);
-        if (validationResult?.error_description === 'login_challenge has expired') {
+
+        if (validationResult?.error_description
+                === 'login_challenge has expired') {
             // Destroy login attempt in session, it's expired.
             ctx.session.oauthLoginAttempt = null;
         }
-        assert(validationResult === null, 400, validationResult ? validationResult.error_description : 'ok');
+        assert(validationResult === null, 400,
+                validationResult
+                    ? validationResult.error_description
+                    : 'ok');
 
-        const oauthLoginAttemptParams = new URLSearchParams(oauthLoginAttempt.params);
+        const oauthLoginAttemptParams = new URLSearchParams(
+                oauthLoginAttempt.params
+                );
+
         console.log('bamboo /oauth/login oauthLoginAttemptParams', oauthLoginAttemptParams.toString());
         console.log('bamboo /oauth/login oauthServerConfig.clients', oauthServerConfig.clients);
 
@@ -579,7 +600,8 @@ export default function oauthServer(app) {
             clientUri: oauthServerConfig.clients[clientId].clientUri,
             logoUri: oauthServerConfig.clients[clientId].logoUri,
             policyUri: oauthServerConfig.clients[clientId].policyUri,
-            termsOfServiceUri: oauthServerConfig.clients[clientId].termsOfServiceUri,
+            termsOfServiceUri: oauthServerConfig.clients[clientId]
+                                    .termsOfServiceUri,
         };
     });
 
@@ -698,12 +720,21 @@ export default function oauthServer(app) {
             audience,
             expiresIn: 60 * 60,
         };
-        const hiveUserProfile = await getHiveUserProfile(verifiedCode.payload.username);
+        const hiveUserProfile = await getHiveUserProfile(
+                verifiedCode.payload.username
+                );
         const id_token_payload_simple = {
             username: verifiedCode.payload.username,
         };
-        const id_token_payload = {...id_token_payload_simple, ...hiveUserProfile};
-        const id_token = sign(id_token_payload, jwtSecret, id_token_jwtOptions);
+        const id_token_payload = {
+                ...id_token_payload_simple,
+                ...hiveUserProfile
+            };
+        const id_token = sign(
+                            id_token_payload,
+                            jwtSecret,
+                            id_token_jwtOptions
+                            );
 
         ctx.body = {
             state,
