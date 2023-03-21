@@ -16,6 +16,7 @@ import Badge from '@mui/material/Badge';
 import LaunchIcon from '@mui/icons-material/Launch';
 import Draggable from 'react-draggable';
 import tt from 'counterpart';
+import { connect } from 'react-redux';
 
 function RocketChatWidget({
     iframeSrc,
@@ -28,6 +29,7 @@ function RocketChatWidget({
     draggable,
     icon,
     open,
+    currentUser,
     ...rest
 }) {
     const [state, setState] = React.useState({
@@ -150,47 +152,49 @@ function RocketChatWidget({
             }}
             {...rest}
         >
-            <React.Fragment key={anchor}>
-                <Draggable
-                    disabled={!draggable}
-                    axis="both"
-                    onStart={() => setIsDragging(false)}
-                    onDrag={() => setIsDragging(true)}
-                    onStop={() => setIsDragging(false)}
-                >
-                    <div>
-                        <Tooltip title={tt('rocket_chat_widget_jsx.tooltip')} placement="top">
-                            <span>
-                                <IconButton
-                                    size="large"
-                                    color="primary"
-                                    disabled={disabled || isDragging}
-                                    onClick={toggleDrawer(anchor, true)}
-                                    sx={{ ml: 2, fontSize: 48 }}
-                                    aria-controls={open ? 'account-menu' : undefined}
-                                    aria-haspopup="true"
-                                    aria-expanded={open ? 'true' : undefined}
-                                >
-                                    <Badge color="error" badgeContent={badgeContent}>
-                                        {icon}
-                                    </Badge>
-                                </IconButton>
-                            </span>
-                        </Tooltip>
-                    </div>
-                </Draggable>
-                <SwipeableDrawer
-                    anchor={anchor}
-                    open={state[anchor]}
-                    onClose={toggleDrawer(anchor, false)}
-                    onOpen={toggleDrawer(anchor, true)}
-                    ModalProps={{
-                        keepMounted: true,
-                    }}
-                >
-                    {list(anchor)}
-                </SwipeableDrawer>
-            </React.Fragment>
+            {currentUser && (
+                <React.Fragment key={anchor}>
+                    <Draggable
+                        disabled={!draggable}
+                        axis="both"
+                        onStart={() => setIsDragging(false)}
+                        onDrag={() => setIsDragging(true)}
+                        onStop={() => setIsDragging(false)}
+                    >
+                        <div>
+                            <Tooltip title={tt('rocket_chat_widget_jsx.tooltip')} placement="top">
+                                <span>
+                                    <IconButton
+                                        size="large"
+                                        color="primary"
+                                        disabled={disabled || isDragging}
+                                        onClick={toggleDrawer(anchor, true)}
+                                        sx={{ ml: 2, fontSize: 48 }}
+                                        aria-controls={open ? 'account-menu' : undefined}
+                                        aria-haspopup="true"
+                                        aria-expanded={open ? 'true' : undefined}
+                                    >
+                                        <Badge color="error" badgeContent={badgeContent}>
+                                            {icon}
+                                        </Badge>
+                                    </IconButton>
+                                </span>
+                            </Tooltip>
+                        </div>
+                    </Draggable>
+                    <SwipeableDrawer
+                        anchor={anchor}
+                        open={state[anchor]}
+                        onClose={toggleDrawer(anchor, false)}
+                        onOpen={toggleDrawer(anchor, true)}
+                        ModalProps={{
+                            keepMounted: true,
+                        }}
+                    >
+                        {list(anchor)}
+                    </SwipeableDrawer>
+                </React.Fragment>
+            )}
         </div>
     );
 }
@@ -224,4 +228,17 @@ RocketChatWidget.defaultProps = {
     open: false,
 };
 
-export default RocketChatWidget;
+// export default RocketChatWidget;
+
+const mapStateToProps = (state, ownProps) => {
+    const currentUser = state.user.getIn(['current', 'username']);
+    return {
+        currentUser,
+    };
+};
+
+const mapDispatchToProps = (dispatch) => {
+    return {};
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(RocketChatWidget);

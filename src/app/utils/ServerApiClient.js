@@ -32,6 +32,7 @@ export function chatLogin(data) {
                 {
                     event: 'login-with-token',
                     loginToken: data.chatAuthToken,
+                    loginType: data.loginType || 'login',
                 },
                 `${$STM_Config.openhive_chat_uri}`,
             );

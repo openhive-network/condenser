@@ -86,13 +86,15 @@ export async function getChatAuthToken(username = '') {
                 && error.response.data.error === 'User not found.') {
             responseData1 = error.response.data;
         } else {
-            console.error('Error 1 in getToken', error);
+            console.error('Error code 2 in getChatAuthToken', error);
             return {
                 success: false,
-                error: 'getChatAuthToken unknown'
+                error: 'Error code 2'
             };
         }
     }
+
+    console.log('bamboo getChatAuthToken responseData1', responseData1);
 
     if (responseData1.success) {
         // User exists.
@@ -107,38 +109,45 @@ export async function getChatAuthToken(username = '') {
     }
 
     if (responseData1.error === 'User not found.') {
-        // User doesn't exist, let's create user.
-        const url2 = `${rocketChatApiUri}/users.create`;
-        const data2 = {
-            name: '',
-            username,
-            email: '',
-            password: secureRandom.randomBuffer(16).toString('hex'),
-            active: true,
-            joinDefaultChannels: true, // TODO Is this a good idea?
-            sendWelcomeEmail: false
-        };
-        try {
-            const responseData2 = (await axios.post(url2, data2, requestConfig)).data;
-            if (responseData2.success) {
-                return getRCAuthToken(username);
-            }
-            return {
-                success: false,
-                error: responseData2.error || 'getChatAuthToken unspecified in responseData2'
+        if (config.get('openhive_chat_iframe_create_users') === 'yes') {
+            // User doesn't exist, let's create user.
+            const url2 = `${rocketChatApiUri}/users.create`;
+            const data2 = {
+                name: '',
+                username,
+                email: '',
+                password: secureRandom.randomBuffer(16).toString('hex'),
+                active: true,
+                joinDefaultChannels: true, // TODO Is this a good idea?
+                sendWelcomeEmail: false
             };
-        } catch (error) {
-            console.error('Error 2 in getToken', error);
+            try {
+                const responseData2 = (await axios.post(url2, data2, requestConfig)).data;
+                if (responseData2.success) {
+                    return getRCAuthToken(username);
+                }
+                return {
+                    success: false,
+                    error: 'Error code 4. ' + responseData2.error
+                };
+            } catch (error) {
+                console.error('Error code 3 in getChatAuthToken', error);
+                return {
+                    success: false,
+                    error: 'Error code 3'
+                };
+            }
+        } else {
             return {
                 success: false,
-                error: 'getChatAuthToken unknown'
+                error: 'User does not exist'
             };
         }
     }
 
     return {
         success: false,
-        error: 'getChatAuthToken unknown'
+        error: 'Error code 1'
     };
 }
 
