@@ -60,12 +60,12 @@ function oauthRedirect(username) {
             return '';
         }
 
+        // Redirect to backend authorization endpoint.
         const params = new URLSearchParams(oauthItem);
-        if (params.has('client_name')) {
-            params.delete('client_name');
-        }
-        // Redirect condenser backend authorization endpoint.
-        return '/oauth/authorize?' + params.toString();
+        const requestParams = {
+            login_challenge: params.get('login_challenge')
+        };
+        return `/oauth/authorize?${(new URLSearchParams(requestParams)).toString()}`;
     } catch (error) {
         // Do nothing – sessionStorage is unavailable, probably.
     }
