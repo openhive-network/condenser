@@ -2,6 +2,7 @@
 /* eslint react/prop-types: 0 */
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import axios from 'axios';
 import * as transactionActions from 'app/redux/TransactionReducer';
 import * as globalActions from 'app/redux/GlobalReducer';
 import * as userActions from 'app/redux/UserReducer';
@@ -51,6 +52,8 @@ class LoginForm extends Component {
             isHiveSigner,
             isProcessingHiveAuth: false,
             oauthFlow,
+            oauthFlowLoading: true,
+            oauthFlowError: false,
         };
         this.usernameOnChange = (e) => {
             const value = e.target.value.toLowerCase();
@@ -73,13 +76,15 @@ class LoginForm extends Component {
         this.initForm(props);
     }
 
-    componentDidMount() {
+    async componentDidMount() {
         this.loginWithHiveSigner();
         // eslint-disable-next-line react/no-string-refs
         if (this.refs.username && !this.refs.username.value) this.refs.username.focus();
         // eslint-disable-next-line react/no-string-refs
         if (this.refs.username && this.refs.username.value) this.refs.pw.focus();
-        this.registerOauthRequest();
+
+        // This is asynchronous!
+        await this.registerOauthRequest();
     }
 
     componentDidUpdate() {
@@ -155,38 +160,59 @@ class LoginForm extends Component {
     };
 
 
-    registerOauthRequest() {
-        if (!$STM_Config.oauth_server_enable) {
+    async registerOauthRequest() {
+        const params = new URLSearchParams(window.location.search);
+
+        if (!$STM_Config.oauth_server_enable
+                || !params.has('login_challenge')
+                ) {
+            this.setState({
+                oauthFlowLoading: false,
+                oauthFlowError: false,
+            });
             return;
         }
-        const params = new URLSearchParams(window.location.search);
-        if (params.has('client_id')
-                && params.has('redirect_uri')
-                && params.has('state')
-                && params.has('scope')
-                && params.has('client_name')
-                ) {
-            // TODO `trustedClientNames` is a quick fix only. We should
-            // consider creating a new endpoint on backend and have here
-            // only `login_challenge` in search parameters. Then we
-            // should ask backend about all oauth client's parameters
-            // and trust only them, when registering oauth request here.
-            // Also show error instead of login form, when backend
-            // responds with error, e.g. because of non-existing
-            // `login_challenge`.
-            const trustedClientNames = [
-                'OpenHive Chat'
-            ];
-            if (!trustedClientNames.includes(params.get('client_name'))) {
-                return;
-            }
-            try {
-                sessionStorage.setItem('oauth', params.toString());
-                const oauthFlow = {clientName: params.get('client_name')};
-                this.setState({oauthFlow});
-            } catch (error) {
-                // Do nothing – sessionStorage is unavailable, probably.
-            }
+
+        const headers = {
+            Accept: 'application/json',
+        };
+        const requestParams = {
+            login_challenge: params.get('login_challenge')
+        };
+
+        let oauthFlow;
+        try {
+            oauthFlow = (
+                await axios.get(
+                    '/oauth/login', {headers, params: requestParams}
+                    )
+                ).data;
+        } catch (error) {
+            this.setState({
+                oauthFlowLoading: false,
+                oauthFlowError: true,
+            });
+            return;
+        }
+
+        console.log('bamboo registerOauthRequest oauthFlow', oauthFlow);
+
+        try {
+            sessionStorage.setItem(
+                'oauth',
+                (new URLSearchParams(requestParams)).toString()
+                );
+            this.setState({
+                oauthFlow,
+                oauthFlowLoading: false,
+                oauthFlowError: false,
+            });
+        } catch (error) {
+            this.setState({
+                oauthFlowLoading: false,
+                oauthFlowError: true,
+            });
+            // Do nothing – sessionStorage is unavailable, probably.
         }
     }
 
@@ -297,7 +323,14 @@ class LoginForm extends Component {
             msg,
         } = this.props;
         const {
-            username, password, useKeychain, useHiveAuth, saveLogin, oauthFlow
+            username,
+            password,
+            useKeychain,
+            useHiveAuth,
+            saveLogin,
+            oauthFlow,
+            oauthFlowLoading,
+            oauthFlowError,
         } = this.state;
 
         const { valid, handleSubmit } = this.state.login;
@@ -361,12 +394,51 @@ class LoginForm extends Component {
             }
         }
 
-        if (oauthFlow && oauthFlow.clientName) {
+        if (oauthFlowLoading) {
             message = (
                 <div className="callout primary">
-                    <p>
-                        {tt('loginform_jsx.oauth_info')} {oauthFlow.clientName}
-                    </p>
+                    {tt('loginform_jsx.oauth_loading_message')}
+                </div>
+            );
+        }
+
+        if (oauthFlowError) {
+            message = (
+                <div className="callout alert">
+                    {tt('loginform_jsx.oauth_error_message')}
+                </div>
+            );
+        }
+
+        if (oauthFlow) {
+            message = (
+                <div className="callout primary">
+
+                    <div className="text-align-center">
+                        {`${tt('loginform_jsx.oauth_info')} `}
+                    </div>
+
+                    {oauthFlow.clientName ? (
+                        <div className="text-align-center">
+                            {oauthFlow.clientUri ? (
+                                <a href={oauthFlow.clientUri}>
+                                    {oauthFlow.clientName}
+                                </a>
+                            ) : (
+                                <>{oauthFlow.clientName}</>
+                            )}
+                        </div>
+                    ) : null}
+
+                    {oauthFlow.logoUri && (
+                        <div className="oauth-client-logo">
+                            <img
+                                src={oauthFlow.logoUri}
+                                alt="CLient Application Logo"
+                            />
+                        </div>
+                    )}
+
                 </div>
             );
         }
@@ -622,15 +694,23 @@ class LoginForm extends Component {
                 <div className="row">
                     <div className="column">
                         {message}
-                        {showLoginWarning ? loginWarningTitleText : titleText}
-                        {showLoginWarning ? loginWarningForm : form}
+                        {!oauthFlowLoading && !oauthFlowError && (
+                            <div>
+                                {showLoginWarning ? loginWarningTitleText : titleText}
+                                {showLoginWarning ? loginWarningForm : form}
+                            </div>
+                        )}
                     </div>
                 </div>
-                <div className="divider">
-                    <span>{tt('loginform_jsx.more_login_methods')}</span>
-                </div>
-                <br />
-                {moreLoginMethods}
+                {!oauthFlowLoading && !oauthFlowError && (
+                    <div>
+                        <div className="divider">
+                            <span>{tt('loginform_jsx.more_login_methods')}</span>
+                        </div>
+                        <br />
+                        {moreLoginMethods}
+                    </div>
+                )}
             </div>
         );
     }

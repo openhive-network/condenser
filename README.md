@@ -315,11 +315,15 @@ Maybe create a new, custom role in Rocket Chat.
 
 Create following environment variables:
 ```bash
-export SDC_OPENHIVE_CHAT_API_URI="<your-rocket-chat-api-uri>" ;
-export SDC_OPENHIVE_CHAT_URI="<your-rocket-chat-uri>" ;
+export SDC_OPENHIVE_CHAT_API_URI="http://localhost:3000" ;
+export SDC_OPENHIVE_CHAT_URI="http://localhost:3000" ;
 export SDC_OPENHIVE_CHAT_IFRAME_INTEGRATION_ENABLE="yes" ;
 export SDC_OPENHIVE_CHAT_IFRAME_VISIBLE="yes" ;
 export SDC_OPENHIVE_CHAT_ADMIN_USER_ID="<your-admin-user-id>" ;
 export SDC_OPENHIVE_CHAT_ADMIN_USER_TOKEN="<your-admin-user-token>" ;
 ```
+Variable `SDC_OPENHIVE_CHAT_IFRAME_INTEGRATION_ENABLE` enables or
+disables iframe integration. Variable `SDC_OPENHIVE_CHAT_IFRAME_VISIBLE`
+shows or hides chat button and iframe.
+
 Start Condenser.
