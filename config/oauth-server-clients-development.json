@@ -2,6 +2,10 @@
   "openhive_chat": {
     "id": "openhive_chat",
     "name": "OpenHive Chat",
+    "clientUri": "http://localhost:3000",
+    "logoUri": "http://localhost:3000/images/logo/favicon-32x32.png",
+    "policyUri": "http://localhost:3000/privacy-policy",
+    "termsOfServiceUri": "http://localhost:3000/terms-of-service",
     "scope": [
       "openid",
       "profile"
