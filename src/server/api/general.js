@@ -90,7 +90,7 @@ export default function useGeneralApi(app) {
 
         const { account, signatures, externalUser } = validationResult.value;
         logRequest('login_account', ctx, { account });
-
+        let loginType = 'login';
         try {
             if (signatures && Object.keys(signatures).length > 0) {
                 if (!ctx.session.login_challenge) {
@@ -134,6 +134,7 @@ export default function useGeneralApi(app) {
                         } = chainAccount;
                         verify('posting', signatures.posting,
                                 posting_pubkey, weight, weight_threshold);
+                        if (ctx.session.a === account) loginType = 'resume';
                         if (auth.posting) ctx.session.a = account;
                     }
                 }
@@ -147,6 +148,7 @@ export default function useGeneralApi(app) {
                             'https://hivesigner.com/api/me',
                             { headers }
                         );
+                    if (ctx.session.externalUser?.user === account) loginType = 'resume';
                     if (response.data.user === account) {
                         ctx.session.externalUser = { ...{user: account}, ...externalUser};
                     }
@@ -154,11 +156,13 @@ export default function useGeneralApi(app) {
                     console.error(`Got error, not setting session.externalUser for ${account}`, error);
                 }
             } else {
+                if (ctx.session.externalUser?.user === account) loginType = 'resume';
                 ctx.session.externalUser = { ...{user: account}, ...externalUser};
             }
 
             ctx.body = {
                 status: 'ok',
+                loginType,
             };
 
             // Add auth token for chat to response.
@@ -173,6 +177,8 @@ export default function useGeneralApi(app) {
                     ctx.body.chatAuthToken = result.data.authToken;
                 }
             }
+
+            console.log('bamboo login_account ctx.body', ctx.body);
 
             const remote_ip = getRemoteIp(ctx.request);
             if (mixpanel) {
