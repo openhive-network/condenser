@@ -29,7 +29,7 @@ function RocketChatWidget({
     draggable,
     icon,
     open,
-    currentUser,
+    username,
     ...rest
 }) {
     const [state, setState] = React.useState({
@@ -152,7 +152,7 @@ function RocketChatWidget({
             }}
             {...rest}
         >
-            {currentUser && (
+            {username && (
                 <React.Fragment key={anchor}>
                     <Draggable
                         disabled={!draggable}
@@ -228,12 +228,15 @@ RocketChatWidget.defaultProps = {
     open: false,
 };
 
-// export default RocketChatWidget;
-
 const mapStateToProps = (state, ownProps) => {
-    const currentUser = state.user.getIn(['current', 'username']);
+    const username = state.user.getIn(['current', 'username']);
+
+    // FIXME delete this!
+    // const current = state.user.get('current');
+    // const username = current ? current.get('username') : '';
+
     return {
-        currentUser,
+        username,
     };
 };
 
