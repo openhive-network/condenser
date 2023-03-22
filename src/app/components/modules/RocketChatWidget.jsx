@@ -103,6 +103,7 @@ function RocketChatWidget({
     const [isDragging, setIsDragging] = React.useState(false);
     const [disabled, setDisabled] = React.useState(true);
     const [loggedIn, setLoggedIn] = React.useState(false);
+    const [isIframeLoaded, setIsIframeLoaded] = React.useState(false);
     const iframeRef = React.useRef(null);
 
     const onMessageReceivedFromIframe = (event) => {
@@ -145,23 +146,18 @@ function RocketChatWidget({
         window.removeEventListener("message", onMessageReceivedFromIframe);
     };
 
-    React.useEffect(() => {
-        addIframeListener();
-        return () => {
-            removeIframeListener();
-        };
-    }, []);
+    // React.useEffect(() => {
+    //     addIframeListener();
+    //     return () => {
+    //         removeIframeListener();
+    //     };
+    // }, []);
 
     React.useEffect(() => {
         console.log('bamboo chatAuthToken', chatAuthToken);
         if (!init) {
             if (chatAuthToken && loginType) {
                 setLoggedIn(true);
-                // TODO I don't like this timeout, but we get error
-                // without this.
-                setTimeout( () => {
-                    chatLogin({chatAuthToken, loginType}, iframeRef);
-                }, 2000);
             } else if (!chatAuthToken && !loginType) {
                 chatLogout(iframeRef);
                 setLoggedIn(false);
@@ -171,6 +167,21 @@ function RocketChatWidget({
             setInit(false);
         }
     }, [chatAuthToken]);
+
+    React.useEffect(() => {
+        console.log('bamboo isIframeLoaded', isIframeLoaded);
+        if (isIframeLoaded) {
+            chatLogin({chatAuthToken, loginType}, iframeRef);
+        }
+    }, [isIframeLoaded]);
+
+    const onIframeLoad = () => {
+        addIframeListener();
+        setIsIframeLoaded(true);
+        return () => {
+            removeIframeListener();
+        };
+    };
 
     const toggleDrawer = (anchoredAt, isOpened) => (event) => {
         if (
@@ -210,6 +221,7 @@ function RocketChatWidget({
                 }}
                 title={iframeTitle}
                 ref={iframeRef}
+                onLoad={onIframeLoad}
             />
             <div style={{ display: 'flex' }}>
                 <Button style={{ flex: 1 }}>
