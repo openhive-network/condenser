@@ -64,22 +64,30 @@ export async function serverApiLogin(account, signatures = {}, externalUser = {}
     };
     const requestExternalUser = { ...defaultExternalUser, ...externalUser};
     if (!process.env.BROWSER || window.$STM_ServerBusy) return undefined;
-    const response = await axios.post(
-        '/api/v1/login_account',
-        {
-            account,
-            signatures,
-            externalUser: requestExternalUser,
-            _csrf: $STM_csrf
-        },
-        { headers: requestHeaders },
-    );
 
-    if (response.data) {
-        chatLogin(response.data);
+    let result;
+    try {
+        const response = await axios.post(
+            '/api/v1/login_account',
+            {
+                account,
+                signatures,
+                externalUser: requestExternalUser,
+                _csrf: $STM_csrf
+            },
+            { headers: requestHeaders },
+        );
+        result = response.data;
+        if (result) {
+            chatLogin(response.data);
+        }
+    } catch (error) {
+        console.error('Error in serverApiLogin', error);
+        return Promise.reject(error);
+        // throw error;
     }
 
-    return response;
+    return result;
 }
 
 /**
