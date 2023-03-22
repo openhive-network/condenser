@@ -18,6 +18,64 @@ import Draggable from 'react-draggable';
 import tt from 'counterpart';
 import { connect } from 'react-redux';
 
+/**
+ * Login to Rocket Chat via iframe.
+ *
+ * @export
+ */
+export function chatLogin(data, iframeRef) {
+    if ($STM_Config.openhive_chat_iframe_integration_enable) {
+        console.log('bamboo running chatLogin', data, iframeRef);
+        try {
+            if (data && data.chatAuthToken) {
+                // document.querySelector("#chat-iframe").contentWindow.postMessage(
+                iframeRef.current.contentWindow.postMessage(
+                    {
+                        event: 'login-with-token',
+                        loginToken: data.chatAuthToken,
+                        loginType: data.loginType || 'login',
+                    },
+                    `${$STM_Config.openhive_chat_uri}`,
+                );
+                // Should not be needed, but without this chat is not in
+                // `embedded` mode sometimes. Also sometimes user is not
+                // redirected to default channel.
+                // document.querySelector("#chat-iframe").contentWindow.postMessage(
+                iframeRef.current.contentWindow.postMessage(
+                    {
+                        externalCommand: "go",
+                        path: "/channel/general"
+                    },
+                    `${$STM_Config.openhive_chat_uri}`,
+                );
+            }
+        } catch (error) {
+            console.error('bamboo chatLogin error', error);
+        }
+    }
+}
+
+/**
+ * Logout from Rocket Chat via iframe.
+ *
+ * @export
+ */
+export function chatLogout(iframeRef) {
+    if ($STM_Config.openhive_chat_iframe_integration_enable) {
+        console.log('bamboo running chatLogout');
+        try {
+            iframeRef.current.contentWindow.postMessage(
+                {
+                    externalCommand: 'logout',
+                },
+                `${$STM_Config.openhive_chat_uri}`
+            );
+        } catch (error) {
+            console.error('bamboo chatLogout error', error);
+        }
+    }
+}
+
 function RocketChatWidget({
     iframeSrc,
     iframeTitle,
@@ -30,6 +88,8 @@ function RocketChatWidget({
     icon,
     open,
     username,
+    loginType,
+    chatAuthToken,
     ...rest
 }) {
     const [state, setState] = React.useState({
@@ -38,9 +98,12 @@ function RocketChatWidget({
         bottom: false,
         right: false,
     });
+    const [init, setInit] = React.useState(true);
     const [badgeContent, setBadgeContent] = React.useState(0);
     const [isDragging, setIsDragging] = React.useState(false);
     const [disabled, setDisabled] = React.useState(true);
+    const [loggedIn, setLoggedIn] = React.useState(false);
+    const iframeRef = React.useRef(null);
 
     const onMessageReceivedFromIframe = (event) => {
 
@@ -89,6 +152,26 @@ function RocketChatWidget({
         };
     }, []);
 
+    React.useEffect(() => {
+        console.log('bamboo chatAuthToken', chatAuthToken);
+        if (!init) {
+            if (chatAuthToken && loginType) {
+                setLoggedIn(true);
+                // TODO I don't like this timeout, but we get error
+                // without this.
+                setTimeout( () => {
+                    chatLogin({chatAuthToken, loginType}, iframeRef);
+                }, 2000);
+            } else if (!chatAuthToken && !loginType) {
+                chatLogout(iframeRef);
+                setLoggedIn(false);
+            }
+        }
+        if (init) {
+            setInit(false);
+        }
+    }, [chatAuthToken]);
+
     const toggleDrawer = (anchoredAt, isOpened) => (event) => {
         if (
             event
@@ -126,6 +209,7 @@ function RocketChatWidget({
                     display: 'block'
                 }}
                 title={iframeTitle}
+                ref={iframeRef}
             />
             <div style={{ display: 'flex' }}>
                 <Button style={{ flex: 1 }}>
@@ -145,57 +229,59 @@ function RocketChatWidget({
     );
 
     return (
-        <div
-            style={{
-                ...rootStyle,
-                ...{display: $STM_Config.openhive_chat_iframe_visible ? 'block' : 'none'},
-            }}
-            {...rest}
-        >
-            {username && (
-                <React.Fragment key={anchor}>
-                    <Draggable
-                        disabled={!draggable}
-                        axis="both"
-                        onStart={() => setIsDragging(false)}
-                        onDrag={() => setIsDragging(true)}
-                        onStop={() => setIsDragging(false)}
-                    >
-                        <div>
-                            <Tooltip title={tt('rocket_chat_widget_jsx.tooltip')} placement="top">
-                                <span>
-                                    <IconButton
-                                        size="large"
-                                        color="primary"
-                                        disabled={disabled || isDragging}
-                                        onClick={toggleDrawer(anchor, true)}
-                                        sx={{ ml: 2, fontSize: 48 }}
-                                        aria-controls={open ? 'account-menu' : undefined}
-                                        aria-haspopup="true"
-                                        aria-expanded={open ? 'true' : undefined}
-                                    >
-                                        <Badge color="error" badgeContent={badgeContent}>
-                                            {icon}
-                                        </Badge>
-                                    </IconButton>
-                                </span>
-                            </Tooltip>
-                        </div>
-                    </Draggable>
-                    <SwipeableDrawer
-                        anchor={anchor}
-                        open={state[anchor]}
-                        onClose={toggleDrawer(anchor, false)}
-                        onOpen={toggleDrawer(anchor, true)}
-                        ModalProps={{
-                            keepMounted: true,
-                        }}
-                    >
-                        {list(anchor)}
-                    </SwipeableDrawer>
-                </React.Fragment>
+        <>
+            {loggedIn && (
+                <div
+                    style={{
+                        ...rootStyle,
+                        ...{display: $STM_Config.openhive_chat_iframe_visible ? 'block' : 'none'},
+                    }}
+                    {...rest}
+                >
+                    <React.Fragment key={anchor}>
+                        <Draggable
+                            disabled={!draggable}
+                            axis="both"
+                            onStart={() => setIsDragging(false)}
+                            onDrag={() => setIsDragging(true)}
+                            onStop={() => setIsDragging(false)}
+                        >
+                            <div>
+                                <Tooltip title={tt('rocket_chat_widget_jsx.tooltip')} placement="top">
+                                    <span>
+                                        <IconButton
+                                            size="large"
+                                            color="primary"
+                                            disabled={disabled || isDragging}
+                                            onClick={toggleDrawer(anchor, true)}
+                                            sx={{ ml: 2, fontSize: 48 }}
+                                            aria-controls={open ? 'account-menu' : undefined}
+                                            aria-haspopup="true"
+                                            aria-expanded={open ? 'true' : undefined}
+                                        >
+                                            <Badge color="error" badgeContent={badgeContent}>
+                                                {icon}
+                                            </Badge>
+                                        </IconButton>
+                                    </span>
+                                </Tooltip>
+                            </div>
+                        </Draggable>
+                        <SwipeableDrawer
+                            anchor={anchor}
+                            open={state[anchor]}
+                            onClose={toggleDrawer(anchor, false)}
+                            onOpen={toggleDrawer(anchor, true)}
+                            ModalProps={{
+                                keepMounted: true,
+                            }}
+                        >
+                            {list(anchor)}
+                        </SwipeableDrawer>
+                    </React.Fragment>
+                </div>
             )}
-        </div>
+        </>
     );
 }
 
@@ -210,6 +296,9 @@ RocketChatWidget.propTypes = {
     draggable: PropTypes.bool,
     icon: PropTypes.node,
     open: PropTypes.bool,
+    username: PropTypes.string,
+    loginType: PropTypes.string,
+    chatAuthToken: PropTypes.string,
 };
 
 RocketChatWidget.defaultProps = {
@@ -226,21 +315,23 @@ RocketChatWidget.defaultProps = {
     draggable: false,
     icon: <ChatIcon style={{ fontSize: 48 }} />,
     open: false,
+    username: '',
+    loginType: '',
+    chatAuthToken: '',
 };
 
-const mapStateToProps = (state, ownProps) => {
+const mapStateToProps = (state) => {
     const username = state.user.getIn(['current', 'username']);
-
-    // FIXME delete this!
-    // const current = state.user.get('current');
-    // const username = current ? current.get('username') : '';
-
+    const loginType = state.user.getIn(['current', 'loginType']);
+    const chatAuthToken = state.user.getIn(['current', 'chatAuthToken']);
     return {
         username,
+        loginType,
+        chatAuthToken,
     };
 };
 
-const mapDispatchToProps = (dispatch) => {
+const mapDispatchToProps = () => {
     return {};
 };
 

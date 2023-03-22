@@ -609,11 +609,18 @@ function* usernamePasswordLogin2(options) {
             }
 
             console.log('Logging in as', username);
+            let loginData;
             if ((Object.keys(signatures)).length > 0) {
-                yield serverApiLogin(username, signatures);
+                loginData = yield serverApiLogin(username, signatures);
             } else {
-                yield serverApiLogin(username, {}, externalUser);
+                loginData = yield serverApiLogin(username, {}, externalUser);
             }
+            yield put(
+                userActions.setUser({
+                    loginType: loginData.loginType,
+                    chatAuthToken: loginData.chatAuthToken,
+                })
+            );
 
         }
     } catch (error) {
