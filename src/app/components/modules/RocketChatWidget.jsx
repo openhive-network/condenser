@@ -76,47 +76,6 @@ export function chatLogout(iframeRef) {
     }
 }
 
-export const IframeRenderer = ({
-    iframeRef,
-    src,
-    title,
-    style,
-}) => {
-    console.log('bamboo IframeRenderer iframeRef', iframeRef);
-    return (
-        <iframe
-            ref={iframeRef}
-            src={src}
-            title={title}
-            style={style}
-         />
-    );
-};
-
-export const useIsIframeLoaded = (
-    iframeRef
-) => {
-    const [isIframeLoaded, setIsIframeLoaded] = React.useState(false);
-    const iframeCurrent = iframeRef.current;
-    React.useEffect(() => {
-        if (iframeCurrent) {
-            iframeCurrent.addEventListener(
-                'load',
-                () => setIsIframeLoaded(true)
-                );
-        }
-        return () => {
-            if (iframeCurrent) {
-                iframeCurrent.removeEventListener(
-                    'load',
-                    () => setIsIframeLoaded(true)
-                    );
-            }
-        };
-    }, [iframeCurrent]);
-    return isIframeLoaded;
-};
-
 function RocketChatWidget({
     iframeSrc,
     iframeTitle,
@@ -145,7 +104,6 @@ function RocketChatWidget({
     const [disabled, setDisabled] = React.useState(true);
     const [loggedIn, setLoggedIn] = React.useState(false);
     const iframeRef = React.useRef(null);
-    const isIframeLoaded = useIsIframeLoaded(iframeRef);
 
     const onMessageReceivedFromIframe = (event) => {
 
@@ -192,35 +150,27 @@ function RocketChatWidget({
         return () => {
             removeIframeListener();
         };
-    });
-
-    // React.useEffect(() => {
-    //     console.log('bamboo chatAuthToken', chatAuthToken);
-    //     if (!init) {
-    //         if (chatAuthToken && loginType) {
-    //             setLoggedIn(true);
-    //             console.log('bamboo isIframeLoaded', isIframeLoaded);
-    //             // TODO I don't like this timeout, but we get error
-    //             // without this.
-    //             // setTimeout( () => {
-    //                 chatLogin({chatAuthToken, loginType}, iframeRef);
-    //             // }, 2000);
-    //         } else if (!chatAuthToken && !loginType) {
-    //             chatLogout(iframeRef);
-    //             setLoggedIn(false);
-    //         }
-    //     }
-    //     if (init) {
-    //         setInit(false);
-    //     }
-    // }, [chatAuthToken]);
+    }, []);
 
     React.useEffect(() => {
-        console.log('bamboo isIframeLoaded', isIframeLoaded);
-        if (isIframeLoaded) {
-            chatLogin({chatAuthToken, loginType}, iframeRef);
+        console.log('bamboo chatAuthToken', chatAuthToken);
+        if (!init) {
+            if (chatAuthToken && loginType) {
+                setLoggedIn(true);
+                // TODO I don't like this timeout, but we get error
+                // without this.
+                setTimeout( () => {
+                    chatLogin({chatAuthToken, loginType}, iframeRef);
+                }, 2000);
+            } else if (!chatAuthToken && !loginType) {
+                chatLogout(iframeRef);
+                setLoggedIn(false);
+            }
         }
-    }, [isIframeLoaded]);
+        if (init) {
+            setInit(false);
+        }
+    }, [chatAuthToken]);
 
     const toggleDrawer = (anchoredAt, isOpened) => (event) => {
         if (
@@ -249,18 +199,7 @@ function RocketChatWidget({
             onClick={toggleDrawer(anchoredAt, false)}
             onKeyDown={toggleDrawer(anchoredAt, false)}
         >
-            <IframeRenderer
-                iframeRef={iframeRef}
-                src={iframeSrc}
-                title={iframeTitle}
-                style={{
-                    width: '100%',
-                    height: '100%',
-                    border: 'none',
-                    display: 'block'
-                }}
-            />
-            {/* <iframe
+            <iframe
                 id="chat-iframe"
                 src={iframeSrc}
                 style={{
@@ -271,7 +210,7 @@ function RocketChatWidget({
                 }}
                 title={iframeTitle}
                 ref={iframeRef}
-            /> */}
+            />
             <div style={{ display: 'flex' }}>
                 <Button style={{ flex: 1 }}>
                     {tt('rocket_chat_widget_jsx.close_text')}
@@ -291,7 +230,7 @@ function RocketChatWidget({
 
     return (
         <>
-            {username && chatAuthToken && (
+            {loggedIn && (
                 <div
                     style={{
                         ...rootStyle,
