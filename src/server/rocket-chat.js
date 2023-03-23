@@ -110,8 +110,6 @@ export async function getChatAuthToken(username = '') {
         }
     }
 
-    console.log('bamboo getChatAuthToken responseData1', responseData1);
-
     if (responseData1.success) {
         // User exists.
         if (responseData1.user.active) {

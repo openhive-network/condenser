@@ -178,9 +178,6 @@ export default function useGeneralApi(app) {
                 }
             }
 
-            console.log('bamboo login_account ctx.body', ctx.body);
-            console.log('bamboo login_account ctx.session', ctx.session);
-
             const remote_ip = getRemoteIp(ctx.request);
             if (mixpanel) {
                 mixpanel.people.set(ctx.session.uid, {

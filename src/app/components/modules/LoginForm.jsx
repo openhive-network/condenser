@@ -195,8 +195,6 @@ class LoginForm extends Component {
             return;
         }
 
-        console.log('bamboo registerOauthRequest oauthFlow', oauthFlow);
-
         try {
             sessionStorage.setItem(
                 'oauth',

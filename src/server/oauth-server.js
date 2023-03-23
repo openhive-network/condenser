@@ -387,7 +387,6 @@ export default function oauthServer(app) {
         if (params.get('login_challenge')) {
             const oauthLoginAttempt = ctx.session?.oauthLoginAttempt;
             validationError = validateLoginChallenge(params, oauthLoginAttempt);
-            console.log('bamboo /oauth/authorize validationError', validationError);
             if (validationError?.error_description === 'login_challenge has expired') {
                 // Destroy login attempt in session, it's expired.
                 ctx.session.oauthLoginAttempt = null;
@@ -566,16 +565,11 @@ export default function oauthServer(app) {
     // Validate login_challenge and respond with important oauth client
     // details.
     publicRouter.get('/oauth/login', async (ctx) => {
-        console.log('bamboo /oauth/login request', ctx.request);
-        console.log('bamboo /oauth/login session', ctx.session);
-
         const params = new URLSearchParams(ctx.URL.search);
         const oauthLoginAttempt = ctx.session?.oauthLoginAttempt;
         const validationResult = validateLoginChallenge(
                 params, oauthLoginAttempt
                 );
-
-        console.log('bamboo /oauth/login validationResult', validationResult);
 
         if (validationResult?.error_description
                 === 'login_challenge has expired') {
@@ -590,9 +584,6 @@ export default function oauthServer(app) {
         const oauthLoginAttemptParams = new URLSearchParams(
                 oauthLoginAttempt.params
                 );
-
-        console.log('bamboo /oauth/login oauthLoginAttemptParams', oauthLoginAttemptParams.toString());
-        console.log('bamboo /oauth/login oauthServerConfig.clients', oauthServerConfig.clients);
 
         const clientId = oauthLoginAttemptParams.get('client_id');
         ctx.body = {

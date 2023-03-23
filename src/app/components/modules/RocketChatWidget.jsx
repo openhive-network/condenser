@@ -25,10 +25,9 @@ import { connect } from 'react-redux';
  */
 export function chatLogin(data, iframeRef) {
     if ($STM_Config.openhive_chat_iframe_integration_enable) {
-        console.log('bamboo running chatLogin', data, iframeRef);
+        // console.log('running chatLogin', data, iframeRef);
         try {
             if (data && data.chatAuthToken) {
-                // document.querySelector("#chat-iframe").contentWindow.postMessage(
                 iframeRef.current.contentWindow.postMessage(
                     {
                         event: 'login-with-token',
@@ -37,20 +36,9 @@ export function chatLogin(data, iframeRef) {
                     },
                     `${$STM_Config.openhive_chat_uri}`,
                 );
-                // Should not be needed, but without this chat is not in
-                // `embedded` mode sometimes. Also sometimes user is not
-                // redirected to default channel.
-                // document.querySelector("#chat-iframe").contentWindow.postMessage(
-                iframeRef.current.contentWindow.postMessage(
-                    {
-                        externalCommand: "go",
-                        path: "/channel/general"
-                    },
-                    `${$STM_Config.openhive_chat_uri}`,
-                );
             }
         } catch (error) {
-            console.error('bamboo chatLogin error', error);
+            // console.error('chatLogin error', error);
         }
     }
 }
@@ -62,7 +50,7 @@ export function chatLogin(data, iframeRef) {
  */
 export function chatLogout(iframeRef) {
     if ($STM_Config.openhive_chat_iframe_integration_enable) {
-        console.log('bamboo running chatLogout');
+        // console.log('running chatLogout');
         try {
             iframeRef.current.contentWindow.postMessage(
                 {
@@ -71,7 +59,7 @@ export function chatLogout(iframeRef) {
                 `${$STM_Config.openhive_chat_uri}`
             );
         } catch (error) {
-            console.error('bamboo chatLogout error', error);
+            // console.error('chatLogout error', error);
         }
     }
 }
@@ -128,6 +116,16 @@ function RocketChatWidget({
 
         // User has logged in.
         if (event.data.eventName === 'Custom_Script_Logged_In') {
+            // // Should not be needed, but without this chat is not in
+            // // `embedded` mode sometimes. Also sometimes user is not
+            // // redirected to default channel.
+            // iframeRef.current.contentWindow.postMessage(
+            //     {
+            //         externalCommand: "go",
+            //         path: "/channel/general"
+            //     },
+            //     `${$STM_Config.openhive_chat_uri}`,
+            // );
             setDisabled(false);
         }
 
@@ -146,21 +144,16 @@ function RocketChatWidget({
         window.removeEventListener("message", onMessageReceivedFromIframe);
     };
 
-    // React.useEffect(() => {
-    //     addIframeListener();
-    //     return () => {
-    //         removeIframeListener();
-    //     };
-    // }, []);
-
     React.useEffect(() => {
-        console.log('bamboo chatAuthToken', chatAuthToken);
+        // console.log('chatAuthToken effect', { chatAuthToken, loginType, isIframeLoaded });
         if (!init) {
             if (chatAuthToken && loginType) {
                 setLoggedIn(true);
+                if (isIframeLoaded) {
+                    chatLogin({chatAuthToken, loginType}, iframeRef);
+                }
             } else if (!chatAuthToken && !loginType) {
                 chatLogout(iframeRef);
-                setLoggedIn(false);
             }
         }
         if (init) {
@@ -169,7 +162,6 @@ function RocketChatWidget({
     }, [chatAuthToken]);
 
     React.useEffect(() => {
-        console.log('bamboo isIframeLoaded', isIframeLoaded);
         if (isIframeLoaded) {
             chatLogin({chatAuthToken, loginType}, iframeRef);
         }
