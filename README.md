@@ -325,6 +325,7 @@ export SDC_OPENHIVE_CHAT_ADMIN_USER_TOKEN="<your-admin-user-token>" ;
 ```
 Variable `SDC_OPENHIVE_CHAT_IFRAME_INTEGRATION_ENABLE` enables or
 disables iframe integration. Variable `SDC_OPENHIVE_CHAT_IFRAME_VISIBLE`
-shows or hides chat button and iframe.
+shows or hides chat button and iframe (hidden iframe still operates in
+background).
 
 Start Condenser.
