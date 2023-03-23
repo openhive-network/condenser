@@ -194,44 +194,45 @@ export function validateOauthRequestParameterCode(params) {
  *
  * @export
  * @param {URLSearchParams} params
- * @param {*} oauthLoginAttempt
+ * @param {*} oauthAttempt
+ * @param {string} challengeType 'login' | 'consent'
  * @returns {null | OauthErrorMessage} Null when validation passes,
  * otherwise OauthErrorMessage
  */
-export function validateLoginChallenge(params, oauthLoginAttempt) {
+export function validateChallenge(params, oauthAttempt, challengeType) {
 
-    if (!params.has('login_challenge')) {
+    if (!params.has(`${challengeType}_challenge`)) {
         return {
             error: 'invalid_request',
-            error_description: 'No login_challenge',
+            error_description: `No ${challengeType}_challenge in params`,
         };
     }
 
-    if (!/^[a-fA-F0-9]{1,}$/.test(params.get('login_challenge'))) {
+    if (!/^[a-fA-F0-9]{1,}$/.test(params.get(`${challengeType}_challenge`))) {
         return {
             error: 'invalid_request',
-            error_description: 'login_challenge should be hex string',
+            error_description: `${challengeType}_challenge should be hex string`,
         };
     }
 
-    if (!oauthLoginAttempt) {
+    if (!oauthAttempt) {
         return {
             error: 'invalid_request',
-            error_description: 'No login attempt on server',
+            error_description: `No ${challengeType} attempt on server`,
         };
     }
 
-    if (params.get('login_challenge') !== oauthLoginAttempt.login_challenge) {
+    if (params.get(`${challengeType}_challenge`) !== oauthAttempt[`${challengeType}_challenge`]) {
         return {
             error: 'invalid_request',
-            error_description: 'No corresponding login attempt on server',
+            error_description: `No corresponding ${challengeType} attempt on server`,
         };
     }
 
-    if (Date.now() > oauthLoginAttempt.expiresAt) {
+    if (Date.now() > oauthAttempt.expiresAt) {
         return {
             error: 'invalid_request',
-            error_description: 'login_challenge has expired',
+            error_description: `${challengeType}_challenge has expired`,
         };
     }
 
@@ -386,7 +387,7 @@ export default function oauthServer(app) {
 
         if (params.get('login_challenge')) {
             const oauthLoginAttempt = ctx.session?.oauthLoginAttempt;
-            validationError = validateLoginChallenge(params, oauthLoginAttempt);
+            validationError = validateChallenge(params, oauthLoginAttempt, 'login');
             if (validationError?.error_description === 'login_challenge has expired') {
                 // Destroy login attempt in session, it's expired.
                 ctx.session.oauthLoginAttempt = null;
@@ -396,6 +397,21 @@ export default function oauthServer(app) {
                 return;
             }
             params = new URLSearchParams(oauthLoginAttempt.params);
+        }
+
+        if (params.get('consent_challenge')) {
+            const oauthConsentAttempt = ctx.session?.oauthConsentAttempt;
+            validationError = validateChallenge(params, oauthConsentAttempt, 'consent');
+            if (validationError?.error_description === 'consent_challenge has expired') {
+                // Destroy login attempt in session, it's expired.
+                ctx.session.oauthConsentAttempt = null;
+            }
+            if (validationError) {
+                ctx.body = validationError;
+                return;
+            }
+            params = new URLSearchParams(oauthConsentAttempt.params);
+            ctx.session.consent = 'yes';
         }
 
         // Validate request parameters.
@@ -491,12 +507,12 @@ export default function oauthServer(app) {
     <div class="center-x">
         <h1>Oauth Flow Error</h1>
         <p>
-            We cannot continue Oauth flow for application
+            We cannot continue Oauth Flow for application
             ${oauthServerConfig.clients[params.get('client_id')].name}, because
             you're logged in via unsupported method in Hive Blog.
         </p>
         <p>
-            Please do logout in application <a href="/" target="_blank">Hive Blog</a>
+            Please do logout in application <a href="/" target="_blank" rel="noreferrer noopener">Hive Blog</a>
             and try again.
         </p>
         <p>
@@ -519,6 +535,103 @@ export default function oauthServer(app) {
                     && ctx.session.externalUser.system === 'hivesigner'
                 )
                 ) {
+
+            // TODO Check user's consent now.
+
+            if (!(ctx.session.consent && ctx.session.consent === 'yes')) {
+                validationError = {
+                    error: 'temporarily_unavailable',
+                    error_description:
+                        "User does not consent. "
+                        + "Server cannot continue Oauth flow."
+                };
+                const redirectTo = ouathErrorRedirect(params, validationError, ctx, false);
+
+                // Register login_challenge in session.
+                const consent_challenge = secureRandom.randomBuffer(16).toString('hex');
+                const oauthConsentAttempt = {
+                    consent_challenge,
+                    params: params.toString(),
+                    expiresAt: Date.now() + 1000 * 60 * 5 // 5 minutes
+                };
+                ctx.session.oauthConsentAttempt = oauthConsentAttempt;
+                const responseParams = new URLSearchParams({consent_challenge});
+                ctx.body = `
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/ico" href="/favicon.ico" />
+    <title>Oauth Flow Consent - hive.blog</title>
+
+    <style>
+
+        body {
+            max-width: 35em;
+            margin: 0 auto;
+            font-family: Tahoma, Verdana, Arial, sans-serif;
+            padding: 20px;
+        }
+        .center-x {
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .center-text {
+            text-align: center;
+        }
+
+        #countdown {
+            font-weight: bold;
+            color: red;
+        }
+    </style>
+
+    <script>
+
+        var timeleft = 15;
+        var downloadTimer = setInterval(function(){
+            if(timeleft <= 0){
+                clearInterval(downloadTimer);
+                document.getElementById("countdown").innerHTML = "0 seconds";
+                window.location.replace("${redirectTo}");
+            } else {
+                document.getElementById("countdown").innerHTML = timeleft + " seconds";
+            }
+            timeleft -= 1;
+        }, 1000);
+
+    </script>
+
+</head>
+
+<body>
+
+    <div class="center-x">
+        <h1>Oauth Flow Consent</h1>
+        <p>
+            We need your consent in Oauth Flow for application
+            ${oauthServerConfig.clients[params.get('client_id')].name}
+        </p>
+        <p>
+            Please follow this link, when you consent:
+            <a href="/oauth/authorize?${responseParams.toString()}">Yes, I consent</a>.
+        </p>
+        <p>
+            We'll redirect you back to application
+            <a href="${redirectTo}">${oauthServerConfig.clients[params.get('client_id')].name}</a>
+            in <span id="countdown"></span>.
+        </p>
+    </div>
+
+</body>
+</html>
+`;
+                return;
+            }
+
+
             // When we have user in session,
             // redirect to client's redirect_uri with "code".
             const expiresIn = 60 * 5;
