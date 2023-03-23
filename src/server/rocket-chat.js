@@ -43,6 +43,7 @@ export async function getRCAuthToken(username = '') {
     try {
         const requestConfig = {
             headers: rocketChatAdminUserAuthHeaders,
+            timeout: 1000 * 30
         };
         const url = `${rocketChatApiUri}/users.createToken`;
         const responseData = (await axios.post(url, {username}, requestConfig)).data;
@@ -88,6 +89,7 @@ export async function getChatAuthToken(username = '') {
 
     const requestConfig = {
         headers: rocketChatAdminUserAuthHeaders,
+        timeout: 1000 * 30,
     };
     let responseData1;
 

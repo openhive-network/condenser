@@ -146,7 +146,7 @@ export default function useGeneralApi(app) {
                     };
                     const response = await axios.get(
                             'https://hivesigner.com/api/me',
-                            { headers }
+                            { headers, timeout: 1000 * 30, }
                         );
                     if (ctx.session.externalUser?.user === account) loginType = 'resume';
                     if (response.data.user === account) {

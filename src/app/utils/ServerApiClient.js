@@ -45,7 +45,7 @@ export async function serverApiLogin(account, signatures = {}, externalUser = {}
                 externalUser: requestExternalUser,
                 _csrf: $STM_csrf
             },
-            { headers: requestHeaders },
+            { headers: requestHeaders, timeout: 1000 * 30 },
         );
         result = response.data;
     } catch (error) {
