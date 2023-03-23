@@ -1,5 +1,4 @@
 /* global $STM_csrf */
-/* global $STM_Config */
 
 /**
  * @typedef ExternalUser

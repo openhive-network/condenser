@@ -512,7 +512,8 @@ export default function oauthServer(app) {
             you're logged in via unsupported method in Hive Blog.
         </p>
         <p>
-            Please do logout in application <a href="/" target="_blank" rel="noreferrer noopener">Hive Blog</a>
+            Please do logout in application
+            <a href="/" target="_blank" rel="noreferrer noopener">Hive Blog</a>
             and try again.
         </p>
         <p>
@@ -590,7 +591,7 @@ export default function oauthServer(app) {
 
     <script>
 
-        var timeleft = 15;
+        var timeleft = 30;
         var downloadTimer = setInterval(function(){
             if(timeleft <= 0){
                 clearInterval(downloadTimer);
@@ -616,12 +617,13 @@ export default function oauthServer(app) {
         </p>
         <p>
             Please follow this link, when you consent:
-            <a href="/oauth/authorize?${responseParams.toString()}">Yes, I consent</a>.
+            <a href="/oauth/authorize?${responseParams.toString()}">yes, I consent</a>.
         </p>
         <p>
-            We'll redirect you back to application
+            When you don't consent, we'll redirect you back to application
             <a href="${redirectTo}">${oauthServerConfig.clients[params.get('client_id')].name}</a>
             in <span id="countdown"></span>.
+            You can click this link to speed up the flow.
         </p>
     </div>
 
@@ -680,8 +682,8 @@ export default function oauthServer(app) {
     publicRouter.get('/oauth/login', async (ctx) => {
         const params = new URLSearchParams(ctx.URL.search);
         const oauthLoginAttempt = ctx.session?.oauthLoginAttempt;
-        const validationResult = validateLoginChallenge(
-                params, oauthLoginAttempt
+        const validationResult = validateChallenge(
+                params, oauthLoginAttempt, 'login'
                 );
 
         if (validationResult?.error_description

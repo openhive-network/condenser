@@ -25,7 +25,6 @@ import { connect } from 'react-redux';
  */
 export function chatLogin(data, iframeRef) {
     if ($STM_Config.openhive_chat_iframe_integration_enable) {
-        // console.log('running chatLogin', data, iframeRef);
         try {
             if (data && data.chatAuthToken) {
                 iframeRef.current.contentWindow.postMessage(
@@ -50,7 +49,6 @@ export function chatLogin(data, iframeRef) {
  */
 export function chatLogout(iframeRef) {
     if ($STM_Config.openhive_chat_iframe_integration_enable) {
-        // console.log('running chatLogout');
         try {
             iframeRef.current.contentWindow.postMessage(
                 {
@@ -145,7 +143,6 @@ function RocketChatWidget({
     };
 
     React.useEffect(() => {
-        // console.log('chatAuthToken effect', { chatAuthToken, loginType, isIframeLoaded });
         if (!init) {
             if (chatAuthToken && loginType) {
                 setLoggedIn(true);
@@ -240,6 +237,7 @@ function RocketChatWidget({
                         ...rootStyle,
                         ...{display: $STM_Config.openhive_chat_iframe_visible ? 'block' : 'none'},
                     }}
+                    // eslint-disable-next-line react/jsx-props-no-spreading
                     {...rest}
                 >
                     <React.Fragment key={anchor}>

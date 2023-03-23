@@ -146,7 +146,10 @@ export default function useGeneralApi(app) {
                     };
                     const response = await axios.get(
                             'https://hivesigner.com/api/me',
-                            { headers, timeout: 1000 * 30, }
+                            {
+                                headers,
+                                timeout: 1000 * 30,
+                            }
                         );
                     if (ctx.session.externalUser?.user === account) loginType = 'resume';
                     if (response.data.user === account) {
@@ -203,6 +206,7 @@ export default function useGeneralApi(app) {
         try {
             ctx.session.a = null;
             ctx.session.externalUser = null;
+            ctx.session.consent = null;
             ctx.body = JSON.stringify({ status: 'ok' });
         } catch (error) {
             console.error('Error in /logout_account api call', ctx.session.uid, error);
