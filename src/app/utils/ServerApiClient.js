@@ -48,9 +48,8 @@ export async function serverApiLogin(account, signatures = {}, externalUser = {}
         );
         result = response.data;
     } catch (error) {
-        console.error('Error in serverApiLogin', error);
+        // console.error('Error in serverApiLogin', error);
         return Promise.reject(error);
-        // throw error;
     }
 
     return result;
