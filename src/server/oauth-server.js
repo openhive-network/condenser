@@ -403,15 +403,19 @@ export default function oauthServer(app) {
             const oauthConsentAttempt = ctx.session?.oauthConsentAttempt;
             validationError = validateChallenge(params, oauthConsentAttempt, 'consent');
             if (validationError?.error_description === 'consent_challenge has expired') {
-                // Destroy login attempt in session, it's expired.
+                // Destroy consent attempt in session, it's expired.
                 ctx.session.oauthConsentAttempt = null;
             }
             if (validationError) {
                 ctx.body = validationError;
                 return;
             }
+
             params = new URLSearchParams(oauthConsentAttempt.params);
-            ctx.session.consent = 'yes';
+            if (!ctx.session.oauthConsents) {
+                ctx.session.oauthConsents = {};
+            }
+            ctx.session.oauthConsents[params.get('client_id')] = true;
         }
 
         // Validate request parameters.
@@ -518,8 +522,11 @@ export default function oauthServer(app) {
         </p>
         <p>
             We'll redirect you back to application
-            <a href="${redirectTo}">${oauthServerConfig.clients[params.get('client_id')].name}</a>
+            ${oauthServerConfig.clients[params.get('client_id')].name}
             in <span id="countdown"></span>.
+            You can click this button
+            <input type=button onclick="location.replace('${redirectTo}')" value="Go back">
+            to speed up this redirect.
         </p>
     </div>
 
@@ -537,18 +544,23 @@ export default function oauthServer(app) {
                 )
                 ) {
 
-            // TODO Check user's consent now.
-
-            if (!(ctx.session.consent && ctx.session.consent === 'yes')) {
+            // Check user's consent. We don't save in session anything
+            // other than user's positive consent. When he still tries
+            // to login via Condenser, it means he wants to make another
+            // consent decision, regardless of any negative decisions
+            // made before.
+            if (!(
+                    ctx.session.oauthConsents
+                    && ctx.session.oauthConsents[params.get('client_id')]
+                    )) {
                 validationError = {
                     error: 'temporarily_unavailable',
                     error_description:
-                        "User does not consent. "
-                        + "Server cannot continue Oauth flow."
+                        "User did not consent"
                 };
-                const redirectTo = ouathErrorRedirect(params, validationError, ctx, false);
+                const redirectToConsentNo = ouathErrorRedirect(params, validationError, ctx, false);
 
-                // Register login_challenge in session.
+                // Register consent_challenge in session.
                 const consent_challenge = secureRandom.randomBuffer(16).toString('hex');
                 const oauthConsentAttempt = {
                     consent_challenge,
@@ -556,7 +568,11 @@ export default function oauthServer(app) {
                     expiresAt: Date.now() + 1000 * 60 * 5 // 5 minutes
                 };
                 ctx.session.oauthConsentAttempt = oauthConsentAttempt;
-                const responseParams = new URLSearchParams({consent_challenge});
+                const responseParams = new URLSearchParams({
+                    consent_challenge,
+                });
+                const redirectToConsentYes = `/oauth/authorize?${responseParams.toString()}`;
+
                 ctx.body = `
 <!DOCTYPE html>
 <html>
@@ -596,7 +612,7 @@ export default function oauthServer(app) {
             if(timeleft <= 0){
                 clearInterval(downloadTimer);
                 document.getElementById("countdown").innerHTML = "0 seconds";
-                window.location.replace("${redirectTo}");
+                window.location.replace("${redirectToConsentNo}");
             } else {
                 document.getElementById("countdown").innerHTML = timeleft + " seconds";
             }
@@ -613,17 +629,30 @@ export default function oauthServer(app) {
         <h1>Oauth Flow Consent</h1>
         <p>
             We need your consent in Oauth Flow for application
+            ${oauthServerConfig.clients[params.get('client_id')].name},
+            This application wants to:
+            <ol>
+                <li>
+                    Create an account for you.
+                </li>
+                <li>
+                    Know your Hive public user profile details.
+                </li>
+            </ol>
+        </p>
+        <p>
+            Please click this button, when you consent:
+            <input type=button onclick="location.replace('${redirectToConsentYes}')"
+                    value="Yes, I consent">
+        </p>
+        <p>
+            When you don't click any button above, we'll redirect you back to application
             ${oauthServerConfig.clients[params.get('client_id')].name}
-        </p>
-        <p>
-            Please follow this link, when you consent:
-            <a href="/oauth/authorize?${responseParams.toString()}">yes, I consent</a>.
-        </p>
-        <p>
-            When you don't consent, we'll redirect you back to application
-            <a href="${redirectTo}">${oauthServerConfig.clients[params.get('client_id')].name}</a>
             in <span id="countdown"></span>.
-            You can click this link to speed up the flow.
+            You can click this button
+            <input type=button onclick="location.replace('${redirectToConsentNo}')"
+                    value="Go back">
+            to speed up this redirect.
         </p>
     </div>
 
@@ -677,8 +706,7 @@ export default function oauthServer(app) {
         ctx.redirect('/login.html?' + responseParams.toString());
     });
 
-    // Validate login_challenge and respond with important oauth client
-    // details.
+    // Validate login_challenge and respond with oauth client details.
     publicRouter.get('/oauth/login', async (ctx) => {
         const params = new URLSearchParams(ctx.URL.search);
         const oauthLoginAttempt = ctx.session?.oauthLoginAttempt;

@@ -206,7 +206,7 @@ export default function useGeneralApi(app) {
         try {
             ctx.session.a = null;
             ctx.session.externalUser = null;
-            ctx.session.consent = null;
+            ctx.session.oauthConsents = null;
             ctx.body = JSON.stringify({ status: 'ok' });
         } catch (error) {
             console.error('Error in /logout_account api call', ctx.session.uid, error);
