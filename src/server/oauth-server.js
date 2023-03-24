@@ -635,7 +635,7 @@ export default function oauthServer(app) {
         <h1>Oauth Flow Consent</h1>
         <p>
             We need your consent in Oauth Flow for application
-            ${oauthServerConfig.clients[params.get('client_id')].name},
+            ${oauthServerConfig.clients[params.get('client_id')].name}.
             This application wants to:
             <ol>
                 <li>
