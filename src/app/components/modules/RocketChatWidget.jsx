@@ -1,7 +1,7 @@
 /*global $STM_Config*/
 
 //
-// From https://github.com/onesebun/rocket-chat-widget
+// Initially based on https://github.com/onesebun/rocket-chat-widget
 //
 
 import * as React from 'react';
@@ -22,6 +22,8 @@ import { connect } from 'react-redux';
  * Login to Rocket Chat via iframe.
  *
  * @export
+ * @param {*} data Object with property `chatAuthToken`.
+ * @param {*} iframeRef Reference to iframe html element with Rocket Chat
  */
 export function chatLogin(data, iframeRef) {
     if ($STM_Config.openhive_chat_iframe_integration_enable) {
@@ -46,6 +48,7 @@ export function chatLogin(data, iframeRef) {
  * Logout from Rocket Chat via iframe.
  *
  * @export
+ * @param {*} iframeRef Reference to iframe html element with Rocket Chat
  */
 export function chatLogout(iframeRef) {
     if ($STM_Config.openhive_chat_iframe_integration_enable) {
@@ -62,6 +65,27 @@ export function chatLogout(iframeRef) {
     }
 }
 
+/**
+ * React component showing iframe with Rocket Chat.
+ *
+ * @param {*} {
+ *     iframeSrc,
+ *     iframeTitle,
+ *     anchor,
+ *     tooltip,
+ *     closeText,
+ *     rootStyle,
+ *     drawerWidth,
+ *     draggable,
+ *     icon,
+ *     open,
+ *     username,
+ *     loginType,
+ *     chatAuthToken,
+ *     ...rest
+ * }
+ * @returns
+ */
 function RocketChatWidget({
     iframeSrc,
     iframeTitle,
@@ -107,7 +131,7 @@ function RocketChatWidget({
         // console.log("onMessageReceivedFromIframe event", event.origin, event.data, event);
 
         // Fires when iframe window's title changes. This way we replay
-        // the logic of Rocket Chat's badge in our badge.
+        // the behavior of native Rocket Chat's badge in our badge.
         if (event.data.eventName === 'unread-changed') {
             setBadgeContent(event.data.data || 0);
         }
@@ -143,6 +167,8 @@ function RocketChatWidget({
     };
 
     React.useEffect(() => {
+        // `init` is true when component operates on initial, default
+        // values.
         if (!init) {
             if (chatAuthToken && loginType) {
                 setLoggedIn(true);
@@ -180,7 +206,6 @@ function RocketChatWidget({
         ) {
             return;
         }
-
         setState({ ...state, [anchoredAt]: isOpened });
     };
 
@@ -235,7 +260,11 @@ function RocketChatWidget({
                 <div
                     style={{
                         ...rootStyle,
-                        ...{display: $STM_Config.openhive_chat_iframe_visible ? 'block' : 'none'},
+                        ...{
+                            display: $STM_Config.openhive_chat_iframe_visible
+                            ? 'block'
+                            : 'none'
+                        },
                     }}
                     // eslint-disable-next-line react/jsx-props-no-spreading
                     {...rest}
@@ -249,7 +278,10 @@ function RocketChatWidget({
                             onStop={() => setIsDragging(false)}
                         >
                             <div>
-                                <Tooltip title={tt('rocket_chat_widget_jsx.tooltip')} placement="top">
+                                <Tooltip
+                                    title={tt('rocket_chat_widget_jsx.tooltip')}
+                                    placement="top"
+                                >
                                     <span>
                                         <IconButton
                                             size="large"
@@ -257,11 +289,22 @@ function RocketChatWidget({
                                             disabled={disabled || isDragging}
                                             onClick={toggleDrawer(anchor, true)}
                                             sx={{ ml: 2, fontSize: 48 }}
-                                            aria-controls={open ? 'account-menu' : undefined}
+                                            aria-controls={
+                                                open
+                                                ? 'account-menu'
+                                                : undefined
+                                            }
                                             aria-haspopup="true"
-                                            aria-expanded={open ? 'true' : undefined}
+                                            aria-expanded={
+                                                open
+                                                ? 'true'
+                                                : undefined
+                                            }
                                         >
-                                            <Badge color="error" badgeContent={badgeContent}>
+                                            <Badge
+                                                color="error"
+                                                badgeContent={badgeContent}
+                                            >
                                                 {icon}
                                             </Badge>
                                         </IconButton>
