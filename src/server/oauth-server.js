@@ -647,14 +647,14 @@ export default function oauthServer(app) {
             </ol>
         </p>
         <p>
-            Please click this button, when you consent:
+            Please click this button, if you consent:
             <input type=button onclick="location.replace('${redirectToConsentYes}')"
                     value="Yes, I consent">
         </p>
         <p>
-            When you don't click any button above, we'll redirect you back to application
+            When you don't click the button above, we'll redirect you back to application
             ${oauthServerConfig.clients[params.get('client_id')].name}
-            in <span id="countdown"></span>.
+            in <span id="countdown"></span>. Your login to application will fail.
             You can click this button
             <input type=button onclick="location.replace('${redirectToConsentNo}')"
                     value="Go back">
