@@ -509,6 +509,9 @@ export default function oauthServer(app) {
 <body>
 
     <div class="center-x">
+        <img alt="logo" width="150" height="40" src="/images/hive-blog-logo.svg">
+    </div>
+    <div class="center-x">
         <h1>Oauth Flow Error</h1>
         <p>
             We cannot continue Oauth Flow for application
@@ -625,6 +628,9 @@ export default function oauthServer(app) {
 
 <body>
 
+    <div class="center-x">
+        <img alt="logo" width="150" height="40" src="/images/hive-blog-logo.svg">
+    </div>
     <div class="center-x">
         <h1>Oauth Flow Consent</h1>
         <p>
