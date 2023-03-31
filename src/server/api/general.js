@@ -90,7 +90,7 @@ export default function useGeneralApi(app) {
 
         const { account, signatures, externalUser } = validationResult.value;
         logRequest('login_account', ctx, { account });
-
+        let loginType = 'login';
         try {
             if (signatures && Object.keys(signatures).length > 0) {
                 if (!ctx.session.login_challenge) {
@@ -134,6 +134,7 @@ export default function useGeneralApi(app) {
                         } = chainAccount;
                         verify('posting', signatures.posting,
                                 posting_pubkey, weight, weight_threshold);
+                        if (ctx.session.a === account) loginType = 'resume';
                         if (auth.posting) ctx.session.a = account;
                     }
                 }
@@ -145,8 +146,12 @@ export default function useGeneralApi(app) {
                     };
                     const response = await axios.get(
                             'https://hivesigner.com/api/me',
-                            { headers }
+                            {
+                                headers,
+                                timeout: 1000 * 30,
+                            }
                         );
+                    if (ctx.session.externalUser?.user === account) loginType = 'resume';
                     if (response.data.user === account) {
                         ctx.session.externalUser = { ...{user: account}, ...externalUser};
                     }
@@ -154,11 +159,13 @@ export default function useGeneralApi(app) {
                     console.error(`Got error, not setting session.externalUser for ${account}`, error);
                 }
             } else {
+                if (ctx.session.externalUser?.user === account) loginType = 'resume';
                 ctx.session.externalUser = { ...{user: account}, ...externalUser};
             }
 
             ctx.body = {
                 status: 'ok',
+                loginType,
             };
 
             // Add auth token for chat to response.
@@ -199,6 +206,7 @@ export default function useGeneralApi(app) {
         try {
             ctx.session.a = null;
             ctx.session.externalUser = null;
+            ctx.session.oauthConsents = null;
             ctx.body = JSON.stringify({ status: 'ok' });
         } catch (error) {
             console.error('Error in /logout_account api call', ctx.session.uid, error);

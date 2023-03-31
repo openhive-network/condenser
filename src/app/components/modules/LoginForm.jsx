@@ -195,8 +195,6 @@ class LoginForm extends Component {
             return;
         }
 
-        console.log('bamboo registerOauthRequest oauthFlow', oauthFlow);
-
         try {
             sessionStorage.setItem(
                 'oauth',
@@ -434,7 +432,7 @@ class LoginForm extends Component {
                         <div className="oauth-client-logo">
                             <img
                                 src={oauthFlow.logoUri}
-                                alt="CLient Application Logo"
+                                alt="Client Application Logo"
                             />
                         </div>
                     )}
