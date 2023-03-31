@@ -1,5 +1,4 @@
 /* global $STM_csrf */
-/* global $STM_Config */
 
 /**
  * @typedef ExternalUser
@@ -21,35 +20,6 @@ const requestBase = {
 };
 
 /**
- * Login to Rocket Chat
- *
- * @export
- */
-export function chatLogin(data) {
-    if ($STM_Config.openhive_chat_iframe_integration_enable) {
-        if (data && data.chatAuthToken) {
-            document.querySelector("#chat-iframe").contentWindow.postMessage(
-                {
-                    event: 'login-with-token',
-                    loginToken: data.chatAuthToken,
-                },
-                `${$STM_Config.openhive_chat_uri}`,
-            );
-            // Should not be needed, but without this chat is not in
-            // `embedded` mode sometimes. Also sometimes user is not
-            // redirected to default channel.
-            document.querySelector("#chat-iframe").contentWindow.postMessage(
-                {
-                    externalCommand: "go",
-                    path: "/channel/general"
-                },
-                `${$STM_Config.openhive_chat_uri}`,
-            );
-        }
-    }
-}
-
-/**
  *
  * @param {string} account
  * @param {Object} signatures
@@ -63,44 +33,31 @@ export async function serverApiLogin(account, signatures = {}, externalUser = {}
     };
     const requestExternalUser = { ...defaultExternalUser, ...externalUser};
     if (!process.env.BROWSER || window.$STM_ServerBusy) return undefined;
-    const response = await axios.post(
-        '/api/v1/login_account',
-        {
-            account,
-            signatures,
-            externalUser: requestExternalUser,
-            _csrf: $STM_csrf
-        },
-        { headers: requestHeaders },
-    );
 
-    if (response.data) {
-        chatLogin(response.data);
-    }
-
-    return response;
-}
-
-/**
- * Logout from Rocket Chat
- *
- * @export
- */
-export function chatLogout() {
-    if ($STM_Config.openhive_chat_iframe_integration_enable) {
-        document.querySelector("#chat-iframe").contentWindow.postMessage(
+    let result;
+    try {
+        const response = await axios.post(
+            '/api/v1/login_account',
             {
-                externalCommand: 'logout',
+                account,
+                signatures,
+                externalUser: requestExternalUser,
+                _csrf: $STM_csrf
             },
-            `${$STM_Config.openhive_chat_uri}`
+            { headers: requestHeaders, timeout: 1000 * 30 },
         );
+        result = response.data;
+    } catch (error) {
+        // console.error('Error in serverApiLogin', error);
+        return Promise.reject(error);
     }
+
+    return result;
 }
 
 export function serverApiLogout() {
     if (!process.env.BROWSER || window.$STM_ServerBusy) return;
     const request = { ...requestBase, body: JSON.stringify({ _csrf: $STM_csrf }) };
-    chatLogout();
 
     // eslint-disable-next-line consistent-return
     return fetch('/api/v1/logout_account', request);

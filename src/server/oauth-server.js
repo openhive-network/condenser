@@ -194,44 +194,45 @@ export function validateOauthRequestParameterCode(params) {
  *
  * @export
  * @param {URLSearchParams} params
- * @param {*} oauthLoginAttempt
+ * @param {*} oauthAttempt
+ * @param {string} challengeType 'login' | 'consent'
  * @returns {null | OauthErrorMessage} Null when validation passes,
  * otherwise OauthErrorMessage
  */
-export function validateLoginChallenge(params, oauthLoginAttempt) {
+export function validateChallenge(params, oauthAttempt, challengeType) {
 
-    if (!params.has('login_challenge')) {
+    if (!params.has(`${challengeType}_challenge`)) {
         return {
             error: 'invalid_request',
-            error_description: 'No login_challenge',
+            error_description: `No ${challengeType}_challenge in params`,
         };
     }
 
-    if (!/^[a-fA-F0-9]{1,}$/.test(params.get('login_challenge'))) {
+    if (!/^[a-fA-F0-9]{1,}$/.test(params.get(`${challengeType}_challenge`))) {
         return {
             error: 'invalid_request',
-            error_description: 'login_challenge should be hex string',
+            error_description: `${challengeType}_challenge should be hex string`,
         };
     }
 
-    if (!oauthLoginAttempt) {
+    if (!oauthAttempt) {
         return {
             error: 'invalid_request',
-            error_description: 'No login attempt on server',
+            error_description: `No ${challengeType} attempt on server`,
         };
     }
 
-    if (params.get('login_challenge') !== oauthLoginAttempt.login_challenge) {
+    if (params.get(`${challengeType}_challenge`) !== oauthAttempt[`${challengeType}_challenge`]) {
         return {
             error: 'invalid_request',
-            error_description: 'No corresponding login attempt on server',
+            error_description: `No corresponding ${challengeType} attempt on server`,
         };
     }
 
-    if (Date.now() > oauthLoginAttempt.expiresAt) {
+    if (Date.now() > oauthAttempt.expiresAt) {
         return {
             error: 'invalid_request',
-            error_description: 'login_challenge has expired',
+            error_description: `${challengeType}_challenge has expired`,
         };
     }
 
@@ -386,8 +387,7 @@ export default function oauthServer(app) {
 
         if (params.get('login_challenge')) {
             const oauthLoginAttempt = ctx.session?.oauthLoginAttempt;
-            validationError = validateLoginChallenge(params, oauthLoginAttempt);
-            console.log('bamboo /oauth/authorize validationError', validationError);
+            validationError = validateChallenge(params, oauthLoginAttempt, 'login');
             if (validationError?.error_description === 'login_challenge has expired') {
                 // Destroy login attempt in session, it's expired.
                 ctx.session.oauthLoginAttempt = null;
@@ -397,6 +397,25 @@ export default function oauthServer(app) {
                 return;
             }
             params = new URLSearchParams(oauthLoginAttempt.params);
+        }
+
+        if (params.get('consent_challenge')) {
+            const oauthConsentAttempt = ctx.session?.oauthConsentAttempt;
+            validationError = validateChallenge(params, oauthConsentAttempt, 'consent');
+            if (validationError?.error_description === 'consent_challenge has expired') {
+                // Destroy consent attempt in session, it's expired.
+                ctx.session.oauthConsentAttempt = null;
+            }
+            if (validationError) {
+                ctx.body = validationError;
+                return;
+            }
+
+            params = new URLSearchParams(oauthConsentAttempt.params);
+            if (!ctx.session.oauthConsents) {
+                ctx.session.oauthConsents = {};
+            }
+            ctx.session.oauthConsents[params.get('client_id')] = true;
         }
 
         // Validate request parameters.
@@ -490,20 +509,27 @@ export default function oauthServer(app) {
 <body>
 
     <div class="center-x">
+        <img alt="logo" width="150" height="40" src="/images/hive-blog-logo.svg">
+    </div>
+    <div class="center-x">
         <h1>Oauth Flow Error</h1>
         <p>
-            We cannot continue Oauth flow for application
+            We cannot continue Oauth Flow for application
             ${oauthServerConfig.clients[params.get('client_id')].name}, because
             you're logged in via unsupported method in Hive Blog.
         </p>
         <p>
-            Please do logout in application <a href="/" target="_blank">Hive Blog</a>
+            Please do logout in application
+            <a href="/" target="_blank" rel="noreferrer noopener">Hive Blog</a>
             and try again.
         </p>
         <p>
             We'll redirect you back to application
-            <a href="${redirectTo}">${oauthServerConfig.clients[params.get('client_id')].name}</a>
+            ${oauthServerConfig.clients[params.get('client_id')].name}
             in <span id="countdown"></span>.
+            You can click this button
+            <input type=button onclick="location.replace('${redirectTo}')" value="Go back">
+            to speed up this redirect.
         </p>
     </div>
 
@@ -520,6 +546,129 @@ export default function oauthServer(app) {
                     && ctx.session.externalUser.system === 'hivesigner'
                 )
                 ) {
+
+            // Check user's consent. We don't save in session anything
+            // other than user's positive consent. When he still tries
+            // to login via Condenser, it means he wants to make another
+            // consent decision, regardless of any negative decisions
+            // made before.
+            if (!(
+                    ctx.session.oauthConsents
+                    && ctx.session.oauthConsents[params.get('client_id')]
+                    )) {
+                validationError = {
+                    error: 'temporarily_unavailable',
+                    error_description:
+                        "User did not consent"
+                };
+                const redirectToConsentNo = ouathErrorRedirect(params, validationError, ctx, false);
+
+                // Register consent_challenge in session.
+                const consent_challenge = secureRandom.randomBuffer(16).toString('hex');
+                const oauthConsentAttempt = {
+                    consent_challenge,
+                    params: params.toString(),
+                    expiresAt: Date.now() + 1000 * 60 * 5 // 5 minutes
+                };
+                ctx.session.oauthConsentAttempt = oauthConsentAttempt;
+                const responseParams = new URLSearchParams({
+                    consent_challenge,
+                });
+                const redirectToConsentYes = `/oauth/authorize?${responseParams.toString()}`;
+
+                ctx.body = `
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/ico" href="/favicon.ico" />
+    <title>Oauth Flow Consent - hive.blog</title>
+
+    <style>
+
+        body {
+            max-width: 35em;
+            margin: 0 auto;
+            font-family: Tahoma, Verdana, Arial, sans-serif;
+            padding: 20px;
+        }
+        .center-x {
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .center-text {
+            text-align: center;
+        }
+
+        #countdown {
+            font-weight: bold;
+            color: red;
+        }
+    </style>
+
+    <script>
+
+        var timeleft = 30;
+        var downloadTimer = setInterval(function(){
+            if(timeleft <= 0){
+                clearInterval(downloadTimer);
+                document.getElementById("countdown").innerHTML = "0 seconds";
+                window.location.replace("${redirectToConsentNo}");
+            } else {
+                document.getElementById("countdown").innerHTML = timeleft + " seconds";
+            }
+            timeleft -= 1;
+        }, 1000);
+
+    </script>
+
+</head>
+
+<body>
+
+    <div class="center-x">
+        <img alt="logo" width="150" height="40" src="/images/hive-blog-logo.svg">
+    </div>
+    <div class="center-x">
+        <h1>Oauth Flow Consent</h1>
+        <p>
+            We need your consent in Oauth Flow for application
+            ${oauthServerConfig.clients[params.get('client_id')].name}.
+            This application wants to:
+            <ol>
+                <li>
+                    Create an account for you.
+                </li>
+                <li>
+                    Know your Hive public user profile details.
+                </li>
+            </ol>
+        </p>
+        <p>
+            Please click this button, if you consent:
+            <input type=button onclick="location.replace('${redirectToConsentYes}')"
+                    value="Yes, I consent">
+        </p>
+        <p>
+            When you don't click the button above, we'll redirect you back to application
+            ${oauthServerConfig.clients[params.get('client_id')].name}
+            in <span id="countdown"></span>. Your login to application will fail.
+            You can click this button
+            <input type=button onclick="location.replace('${redirectToConsentNo}')"
+                    value="Go back">
+            to speed up this redirect.
+        </p>
+    </div>
+
+</body>
+</html>
+`;
+                return;
+            }
+
+
             // When we have user in session,
             // redirect to client's redirect_uri with "code".
             const expiresIn = 60 * 5;
@@ -563,19 +712,13 @@ export default function oauthServer(app) {
         ctx.redirect('/login.html?' + responseParams.toString());
     });
 
-    // Validate login_challenge and respond with important oauth client
-    // details.
+    // Validate login_challenge and respond with oauth client details.
     publicRouter.get('/oauth/login', async (ctx) => {
-        console.log('bamboo /oauth/login request', ctx.request);
-        console.log('bamboo /oauth/login session', ctx.session);
-
         const params = new URLSearchParams(ctx.URL.search);
         const oauthLoginAttempt = ctx.session?.oauthLoginAttempt;
-        const validationResult = validateLoginChallenge(
-                params, oauthLoginAttempt
+        const validationResult = validateChallenge(
+                params, oauthLoginAttempt, 'login'
                 );
-
-        console.log('bamboo /oauth/login validationResult', validationResult);
 
         if (validationResult?.error_description
                 === 'login_challenge has expired') {
@@ -590,9 +733,6 @@ export default function oauthServer(app) {
         const oauthLoginAttemptParams = new URLSearchParams(
                 oauthLoginAttempt.params
                 );
-
-        console.log('bamboo /oauth/login oauthLoginAttemptParams', oauthLoginAttemptParams.toString());
-        console.log('bamboo /oauth/login oauthServerConfig.clients', oauthServerConfig.clients);
 
         const clientId = oauthLoginAttemptParams.get('client_id');
         ctx.body = {

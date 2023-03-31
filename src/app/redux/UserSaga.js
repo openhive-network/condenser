@@ -274,8 +274,11 @@ function* usernamePasswordLogin2(options) {
             })
         );
         const externalUser = {system: 'keychain'};
-        const response = yield serverApiLogin(username, {}, externalUser);
-        yield response.data;
+        try {
+            yield serverApiLogin(username, {}, externalUser);
+        } catch (error) {
+            // Swallow error. Is this a good idea?
+        }
 
         // Redirect, when we are in oauth flow.
         const oauthRedirectTo = oauthRedirect(username);
@@ -312,8 +315,11 @@ function* usernamePasswordLogin2(options) {
                 })
             );
             const externalUser = {system: 'hiveauth'};
-            const response = yield serverApiLogin(username, {}, externalUser);
-            yield response.data;
+            try {
+                yield serverApiLogin(username, {}, externalUser);
+            } catch (error) {
+                // Swallow error. Is this a good idea?
+            }
             // Redirect, when we are in oauth flow.
             const oauthRedirectTo = oauthRedirect(username);
             if (oauthRedirectTo) {
@@ -348,8 +354,11 @@ function* usernamePasswordLogin2(options) {
             );
         }
         const externalUser = {system: 'hivesigner', hivesignerToken: access_token};
-        const response = yield serverApiLogin(username, {}, externalUser);
-        yield response.data;
+        try {
+            yield serverApiLogin(username, {}, externalUser);
+        } catch (error) {
+            // Swallow error. Is this a good idea?
+        }
 
         // Redirect, when we are in oauth flow.
         const oauthRedirectTo = oauthRedirect(username);
@@ -600,19 +609,22 @@ function* usernamePasswordLogin2(options) {
             }
 
             console.log('Logging in as', username);
-            let response;
+            let loginData;
             if ((Object.keys(signatures)).length > 0) {
-                response = yield serverApiLogin(username, signatures);
+                loginData = yield serverApiLogin(username, signatures);
             } else {
-                response = yield serverApiLogin(username, {}, externalUser);
+                loginData = yield serverApiLogin(username, {}, externalUser);
             }
-
-            yield response.data;
+            yield put(
+                userActions.setUser({
+                    loginType: loginData.loginType,
+                    chatAuthToken: loginData.chatAuthToken,
+                })
+            );
 
         }
     } catch (error) {
-        // Does not need to be fatal
-        console.error('Server Login Error', error);
+        // Swallow error. Does not need to be fatal.
     }
 
     if (!autopost && saveLogin) yield put(userActions.saveLogin());
