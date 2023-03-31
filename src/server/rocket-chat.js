@@ -26,9 +26,24 @@ export const rocketChatAdminUserAuthHeaders = {
  * @returns {Promise<ResultToken>}
  */
 export async function getRCAuthToken(username = '') {
+
+    //
+    // TODO We request a new login token on each call to this function,
+    // so this happens on each page reload as well. It's likely
+    // unnecessary and causes storing a lot of tokens for users in
+    // database on Rocket Chat's side. We should save token in session
+    // on the first call and output token existing in session on
+    // subsequent calls. But how to know when token in session has
+    // expired? Possible solutions:
+    //
+    // 1. We should request a new token, when login via iframe fails.
+    // 2. Output expiry time from Rocket Chat.
+    //
+
     try {
         const requestConfig = {
             headers: rocketChatAdminUserAuthHeaders,
+            timeout: 1000 * 30
         };
         const url = `${rocketChatApiUri}/users.createToken`;
         const responseData = (await axios.post(url, {username}, requestConfig)).data;
@@ -74,6 +89,7 @@ export async function getChatAuthToken(username = '') {
 
     const requestConfig = {
         headers: rocketChatAdminUserAuthHeaders,
+        timeout: 1000 * 30,
     };
     let responseData1;
 
@@ -86,10 +102,10 @@ export async function getChatAuthToken(username = '') {
                 && error.response.data.error === 'User not found.') {
             responseData1 = error.response.data;
         } else {
-            console.error('Error 1 in getToken', error);
+            console.error('Error code 2 in getChatAuthToken', error);
             return {
                 success: false,
-                error: 'getChatAuthToken unknown'
+                error: 'Error code 2'
             };
         }
     }
@@ -107,38 +123,45 @@ export async function getChatAuthToken(username = '') {
     }
 
     if (responseData1.error === 'User not found.') {
-        // User doesn't exist, let's create user.
-        const url2 = `${rocketChatApiUri}/users.create`;
-        const data2 = {
-            name: '',
-            username,
-            email: '',
-            password: secureRandom.randomBuffer(16).toString('hex'),
-            active: true,
-            joinDefaultChannels: true, // TODO Is this a good idea?
-            sendWelcomeEmail: false
-        };
-        try {
-            const responseData2 = (await axios.post(url2, data2, requestConfig)).data;
-            if (responseData2.success) {
-                return getRCAuthToken(username);
-            }
-            return {
-                success: false,
-                error: responseData2.error || 'getChatAuthToken unspecified in responseData2'
+        if (config.get('openhive_chat_iframe_create_users') === 'yes') {
+            // User doesn't exist, let's create user.
+            const url2 = `${rocketChatApiUri}/users.create`;
+            const data2 = {
+                name: '',
+                username,
+                email: '',
+                password: secureRandom.randomBuffer(16).toString('hex'),
+                active: true,
+                joinDefaultChannels: true, // TODO Is this a good idea?
+                sendWelcomeEmail: false
             };
-        } catch (error) {
-            console.error('Error 2 in getToken', error);
+            try {
+                const responseData2 = (await axios.post(url2, data2, requestConfig)).data;
+                if (responseData2.success) {
+                    return getRCAuthToken(username);
+                }
+                return {
+                    success: false,
+                    error: 'Error code 4. ' + responseData2.error
+                };
+            } catch (error) {
+                console.error('Error code 3 in getChatAuthToken', error);
+                return {
+                    success: false,
+                    error: 'Error code 3'
+                };
+            }
+        } else {
             return {
                 success: false,
-                error: 'getChatAuthToken unknown'
+                error: 'User does not exist'
             };
         }
     }
 
     return {
         success: false,
-        error: 'getChatAuthToken unknown'
+        error: 'Error code 1'
     };
 }
 

@@ -1,7 +1,7 @@
 /*global $STM_Config*/
 
 //
-// From https://github.com/onesebun/rocket-chat-widget
+// Initially based on https://github.com/onesebun/rocket-chat-widget
 //
 
 import * as React from 'react';
@@ -16,7 +16,76 @@ import Badge from '@mui/material/Badge';
 import LaunchIcon from '@mui/icons-material/Launch';
 import Draggable from 'react-draggable';
 import tt from 'counterpart';
+import { connect } from 'react-redux';
 
+/**
+ * Login to Rocket Chat via iframe.
+ *
+ * @export
+ * @param {*} data Object with property `chatAuthToken`.
+ * @param {*} iframeRef Reference to iframe html element with Rocket Chat
+ */
+export function chatLogin(data, iframeRef) {
+    if ($STM_Config.openhive_chat_iframe_integration_enable) {
+        try {
+            if (data && data.chatAuthToken) {
+                iframeRef.current.contentWindow.postMessage(
+                    {
+                        event: 'login-with-token',
+                        loginToken: data.chatAuthToken,
+                        loginType: data.loginType || 'login',
+                    },
+                    `${$STM_Config.openhive_chat_uri}`,
+                );
+            }
+        } catch (error) {
+            // console.error('chatLogin error', error);
+        }
+    }
+}
+
+/**
+ * Logout from Rocket Chat via iframe.
+ *
+ * @export
+ * @param {*} iframeRef Reference to iframe html element with Rocket Chat
+ */
+export function chatLogout(iframeRef) {
+    if ($STM_Config.openhive_chat_iframe_integration_enable) {
+        try {
+            iframeRef.current.contentWindow.postMessage(
+                {
+                    externalCommand: 'logout',
+                },
+                `${$STM_Config.openhive_chat_uri}`
+            );
+        } catch (error) {
+            // console.error('chatLogout error', error);
+        }
+    }
+}
+
+/**
+ * React component showing iframe with Rocket Chat.
+ *
+ * @param {*} {
+ *     iframeSrc,
+ *     iframeTitle,
+ *     anchor,
+ *     tooltip,
+ *     closeText,
+ *     rootStyle,
+ *     drawerWidth,
+ *     draggable,
+ *     icon,
+ *     open,
+ *     username,
+ *     loginType,
+ *     chatAuthToken,
+ *     ...rest
+ * }
+ * @returns
+ */
 function RocketChatWidget({
     iframeSrc,
     iframeTitle,
@@ -28,6 +97,9 @@ function RocketChatWidget({
     draggable,
     icon,
     open,
+    username,
+    loginType,
+    chatAuthToken,
     ...rest
 }) {
     const [state, setState] = React.useState({
@@ -36,9 +108,13 @@ function RocketChatWidget({
         bottom: false,
         right: false,
     });
+    const [init, setInit] = React.useState(true);
     const [badgeContent, setBadgeContent] = React.useState(0);
     const [isDragging, setIsDragging] = React.useState(false);
     const [disabled, setDisabled] = React.useState(true);
+    const [loggedIn, setLoggedIn] = React.useState(false);
+    const [isIframeLoaded, setIsIframeLoaded] = React.useState(false);
+    const iframeRef = React.useRef(null);
 
     const onMessageReceivedFromIframe = (event) => {
 
@@ -55,13 +131,23 @@ function RocketChatWidget({
         // console.log("onMessageReceivedFromIframe event", event.origin, event.data, event);
 
         // Fires when iframe window's title changes. This way we replay
-        // the logic of Rocket Chat's badge in our badge.
+        // the behavior of native Rocket Chat's badge in our badge.
         if (event.data.eventName === 'unread-changed') {
             setBadgeContent(event.data.data || 0);
         }
 
         // User has logged in.
         if (event.data.eventName === 'Custom_Script_Logged_In') {
+            // // Should not be needed, but without this chat is not in
+            // // `embedded` mode sometimes. Also sometimes user is not
+            // // redirected to default channel.
+            // iframeRef.current.contentWindow.postMessage(
+            //     {
+            //         externalCommand: "go",
+            //         path: "/channel/general"
+            //     },
+            //     `${$STM_Config.openhive_chat_uri}`,
+            // );
             setDisabled(false);
         }
 
@@ -81,11 +167,36 @@ function RocketChatWidget({
     };
 
     React.useEffect(() => {
+        // `init` is true when component operates on initial, default
+        // values.
+        if (!init) {
+            if (chatAuthToken && loginType) {
+                setLoggedIn(true);
+                if (isIframeLoaded) {
+                    chatLogin({chatAuthToken, loginType}, iframeRef);
+                }
+            } else if (!chatAuthToken && !loginType) {
+                chatLogout(iframeRef);
+            }
+        }
+        if (init) {
+            setInit(false);
+        }
+    }, [chatAuthToken]);
+
+    React.useEffect(() => {
+        if (isIframeLoaded) {
+            chatLogin({chatAuthToken, loginType}, iframeRef);
+        }
+    }, [isIframeLoaded]);
+
+    const onIframeLoad = () => {
         addIframeListener();
+        setIsIframeLoaded(true);
         return () => {
             removeIframeListener();
         };
-    }, []);
+    };
 
     const toggleDrawer = (anchoredAt, isOpened) => (event) => {
         if (
@@ -95,7 +206,6 @@ function RocketChatWidget({
         ) {
             return;
         }
-
         setState({ ...state, [anchoredAt]: isOpened });
     };
 
@@ -124,6 +234,8 @@ function RocketChatWidget({
                     display: 'block'
                 }}
                 title={iframeTitle}
+                ref={iframeRef}
+                onLoad={onIframeLoad}
             />
             <div style={{ display: 'flex' }}>
                 <Button style={{ flex: 1 }}>
@@ -143,55 +255,78 @@ function RocketChatWidget({
     );
 
     return (
-        <div
-            style={{
-                ...rootStyle,
-                ...{display: $STM_Config.openhive_chat_iframe_visible ? 'block' : 'none'},
-            }}
-            {...rest}
-        >
-            <React.Fragment key={anchor}>
-                <Draggable
-                    disabled={!draggable}
-                    axis="both"
-                    onStart={() => setIsDragging(false)}
-                    onDrag={() => setIsDragging(true)}
-                    onStop={() => setIsDragging(false)}
-                >
-                    <div>
-                        <Tooltip title={tt('rocket_chat_widget_jsx.tooltip')} placement="top">
-                            <span>
-                                <IconButton
-                                    size="large"
-                                    color="primary"
-                                    disabled={disabled || isDragging}
-                                    onClick={toggleDrawer(anchor, true)}
-                                    sx={{ ml: 2, fontSize: 48 }}
-                                    aria-controls={open ? 'account-menu' : undefined}
-                                    aria-haspopup="true"
-                                    aria-expanded={open ? 'true' : undefined}
-                                >
-                                    <Badge color="error" badgeContent={badgeContent}>
-                                        {icon}
-                                    </Badge>
-                                </IconButton>
-                            </span>
-                        </Tooltip>
-                    </div>
-                </Draggable>
-                <SwipeableDrawer
-                    anchor={anchor}
-                    open={state[anchor]}
-                    onClose={toggleDrawer(anchor, false)}
-                    onOpen={toggleDrawer(anchor, true)}
-                    ModalProps={{
-                        keepMounted: true,
+        <>
+            {loggedIn && (
+                <div
+                    style={{
+                        ...rootStyle,
+                        ...{
+                            display: $STM_Config.openhive_chat_iframe_visible
+                            ? 'block'
+                            : 'none'
+                        },
                     }}
+                    // eslint-disable-next-line react/jsx-props-no-spreading
+                    {...rest}
                 >
-                    {list(anchor)}
-                </SwipeableDrawer>
-            </React.Fragment>
-        </div>
+                    <React.Fragment key={anchor}>
+                        <Draggable
+                            disabled={!draggable}
+                            axis="both"
+                            onStart={() => setIsDragging(false)}
+                            onDrag={() => setIsDragging(true)}
+                            onStop={() => setIsDragging(false)}
+                        >
+                            <div>
+                                <Tooltip
+                                    title={tt('rocket_chat_widget_jsx.tooltip')}
+                                    placement="top"
+                                >
+                                    <span>
+                                        <IconButton
+                                            size="large"
+                                            color="primary"
+                                            disabled={disabled || isDragging}
+                                            onClick={toggleDrawer(anchor, true)}
+                                            sx={{ ml: 2, fontSize: 48 }}
+                                            aria-controls={
+                                                open
+                                                ? 'account-menu'
+                                                : undefined
+                                            }
+                                            aria-haspopup="true"
+                                            aria-expanded={
+                                                open
+                                                ? 'true'
+                                                : undefined
+                                            }
+                                        >
+                                            <Badge
+                                                color="error"
+                                                badgeContent={badgeContent}
+                                            >
+                                                {icon}
+                                            </Badge>
+                                        </IconButton>
+                                    </span>
+                                </Tooltip>
+                            </div>
+                        </Draggable>
+                        <SwipeableDrawer
+                            anchor={anchor}
+                            open={state[anchor]}
+                            onClose={toggleDrawer(anchor, false)}
+                            onOpen={toggleDrawer(anchor, true)}
+                            ModalProps={{
+                                keepMounted: true,
+                            }}
+                        >
+                            {list(anchor)}
+                        </SwipeableDrawer>
+                    </React.Fragment>
+                </div>
+            )}
+        </>
     );
 }
 
@@ -206,6 +341,9 @@ RocketChatWidget.propTypes = {
     draggable: PropTypes.bool,
     icon: PropTypes.node,
     open: PropTypes.bool,
+    username: PropTypes.string,
+    loginType: PropTypes.string,
+    chatAuthToken: PropTypes.string,
 };
 
 RocketChatWidget.defaultProps = {
@@ -222,6 +360,24 @@ RocketChatWidget.defaultProps = {
     draggable: false,
     icon: <ChatIcon style={{ fontSize: 48 }} />,
     open: false,
+    username: '',
+    loginType: '',
+    chatAuthToken: '',
 };
 
-export default RocketChatWidget;
+const mapStateToProps = (state) => {
+    const username = state.user.getIn(['current', 'username']);
+    const loginType = state.user.getIn(['current', 'loginType']);
+    const chatAuthToken = state.user.getIn(['current', 'chatAuthToken']);
+    return {
+        username,
+        loginType,
+        chatAuthToken,
+    };
+};
+
+const mapDispatchToProps = () => {
+    return {};
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(RocketChatWidget);

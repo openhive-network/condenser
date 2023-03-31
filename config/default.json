@@ -83,6 +83,7 @@
   },
   "openhive_chat_iframe_integration_enable": "no",
   "openhive_chat_iframe_visible": "yes",
+  "openhive_chat_iframe_create_users": "no",
   "openhive_chat_admin_user_id": "DaMHvraiQbNBxi7W5",
   "openhive_chat_admin_user_token": "VZhTOE20q3Xe9xTgA9QqjbQAYxYEhAfkUZpAm7xrQgd"
 }
