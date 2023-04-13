@@ -1,5 +1,3 @@
-import { LoggerTools } from './LoggerTools';
-
 /**
  * @typedef LoggerLogLevels
  * @type {object}
@@ -12,11 +10,6 @@ import { LoggerTools } from './LoggerTools';
  * @property {number} trace
  * @property {number} all
  */
-
-const environment = {
-    debug: true,
-    env: process.env.NODE_ENV,
-};
 
 export const loggerStyles = {
     slimConstructor: 'padding: 1px; padding-right: 4px; font-family: "Helvetica";'
@@ -51,23 +44,16 @@ export const loggerStyles = {
 
 
 /**
- * Service responsible for logging. Logs are directed to console.
+ * Logs to console or nowhere.
  *
  * @export
  * @class Logger
  */
 export class Logger {
-    /**
-     * Name of this class.
-     *
-     * @type {string}
-     * @memberof Logger
-     */
-    instanceName;
 
     /**
-     * Information where to output log messages. Can be one of
-     * ['console'] at this moment.
+     * Information where to output log messages. Can be only `console`
+     * at this moment.
      *
      * @type {string}
      * @memberof Logger
@@ -104,13 +90,8 @@ export class Logger {
      */
     levels;
 
-    /**
-     * At start of constructor we check debug and set proper level of
-     * logging.
-     */
     constructor(config = {}) {
         const defaultProps = {
-            instanceName: 'Logger',
             levels: {
                 off: 0,
                 fatal: 100,
@@ -126,7 +107,6 @@ export class Logger {
         };
         const myProps = {...{}, ...defaultProps, ...config};
         this.setupProps(myProps);
-        this.init();
     }
 
     setupProps(props) {
@@ -140,62 +120,8 @@ export class Logger {
         }
     }
 
-    init() {
-
-        // // Direct logging to console on devel and test machines.
-        // const check = this.isTest && (
-        //     false
-        //     || this.isLocalDomain
-        //     || this.isTestDomain
-        // );
-
-        // if (check) {
-        //     this.level = this.levels.all;
-        //     this.output = 'console';
-        // } else {
-        //     // Direct to nowhere (suppress any logging to console).
-        //     this.level = this.levels.info;
-        //     this.output = 'nowhere';
-        // }
-
-        this.debug('%c Constructor',
-            this.style.slimConstructor, this.instanceName);
-
-    }
-
     get style() {
         return loggerStyles;
-    }
-
-    /**
-     * Check for localhost by hostname
-     * @return {boolean}
-     */
-    get isLocalDomain() {
-        return LoggerTools.isLocalDomain();
-    }
-
-    get isTest() {
-        return environment.env !== 'test';
-    }
-
-    /**
-     * Checks if app works on testing domain.
-     * @return {boolean}
-     */
-    get isTestDomain() {
-        return LoggerTools.isTestDomain();
-    }
-
-    /**
-     * Wrapper for (this.environment.env === 'development')
-     * @returns {boolean}
-     */
-    get isDevEnv() {
-        if (environment && environment.env) {
-            return environment.env === 'development';
-        }
-        return false;
     }
 
     /**
