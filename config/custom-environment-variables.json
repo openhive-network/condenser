@@ -60,5 +60,7 @@
   "openhive_chat_iframe_visible": "SDC_OPENHIVE_CHAT_IFRAME_VISIBLE",
   "openhive_chat_iframe_create_users": "SDC_OPENHIVE_CHAT_IFRAME_CREATE_USERS",
   "openhive_chat_admin_user_id": "SDC_OPENHIVE_CHAT_ADMIN_USER_ID",
-  "openhive_chat_admin_user_token": "SDC_OPENHIVE_CHAT_ADMIN_USER_TOKEN"
+  "openhive_chat_admin_user_token": "SDC_OPENHIVE_CHAT_ADMIN_USER_TOKEN",
+  "logger_output": "SDC_LOGGER_OUTPUT",
+  "logger_log_level": "SDC_LOGGER_LOG_LEVEL"
 }

@@ -43,6 +43,8 @@ global.$STM_Config = {
     oauth_server_enable: config.get('oauth_server') && (config.get('oauth_server')).enable === 'yes',
     openhive_chat_iframe_integration_enable: config.get('openhive_chat_iframe_integration_enable') === 'yes',
     openhive_chat_iframe_visible: config.get('openhive_chat_iframe_visible') === 'yes',
+    logger_output: config.get('logger_output'),
+    logger_log_level: config.get('logger_log_level'),
 };
 
 const WebpackIsomorphicTools = require('webpack-isomorphic-tools');

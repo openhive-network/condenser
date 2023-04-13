@@ -15,6 +15,7 @@ import tt from 'counterpart';
 import { VIEW_MODE_WHISTLE } from 'shared/constants';
 import SimpleReactLightbox from 'simple-react-lightbox';
 import RocketChatWidget from 'app/components/modules/RocketChatWidget';
+import { logger } from '../utils/Logger';
 
 class App extends React.Component {
 
@@ -29,6 +30,14 @@ class App extends React.Component {
 
     constructor(props) {
         super(props);
+
+        if (process.env.BROWSER) {
+            console.log('VERSION', process.env.VERSION);
+        }
+
+        // Set logger output.
+        logger.output = $STM_Config.logger_output;
+
         // TODO: put both of these and associated toggles into Redux Store.
         this.state = {
             showCallout: true,

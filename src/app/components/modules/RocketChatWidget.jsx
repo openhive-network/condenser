@@ -17,6 +17,7 @@ import LaunchIcon from '@mui/icons-material/Launch';
 import Draggable from 'react-draggable';
 import tt from 'counterpart';
 import { connect } from 'react-redux';
+import { logger } from '../../utils/Logger';
 
 /**
  * Login to Rocket Chat via iframe.
@@ -26,6 +27,7 @@ import { connect } from 'react-redux';
  * @param {*} iframeRef Reference to iframe html element with Rocket Chat
  */
 export function chatLogin(data, iframeRef) {
+    logger.info('In chatLogin', data, iframeRef);
     if ($STM_Config.openhive_chat_iframe_integration_enable) {
         try {
             if (data && data.chatAuthToken) {
@@ -39,7 +41,7 @@ export function chatLogin(data, iframeRef) {
                 );
             }
         } catch (error) {
-            // console.error('chatLogin error', error);
+            logger.error('chatLogin error', error);
         }
     }
 }
@@ -60,7 +62,7 @@ export function chatLogout(iframeRef) {
                 `${$STM_Config.openhive_chat_uri}`
             );
         } catch (error) {
-            // console.error('chatLogout error', error);
+            logger.error('chatLogout error', error);
         }
     }
 }
@@ -102,6 +104,7 @@ function RocketChatWidget({
     chatAuthToken,
     ...rest
 }) {
+
     const [state, setState] = React.useState({
         top: false,
         left: false,
@@ -128,7 +131,7 @@ function RocketChatWidget({
             return;
         }
 
-        // console.log("onMessageReceivedFromIframe event", event.origin, event.data, event);
+        logger.info("onMessageReceivedFromIframe event", event.origin, event.data, event);
 
         // Fires when iframe window's title changes. This way we replay
         // the behavior of native Rocket Chat's badge in our badge.
@@ -148,6 +151,7 @@ function RocketChatWidget({
             //     },
             //     `${$STM_Config.openhive_chat_uri}`,
             // );
+
             setDisabled(false);
         }
 
@@ -191,6 +195,7 @@ function RocketChatWidget({
     }, [isIframeLoaded]);
 
     const onIframeLoad = () => {
+        logger.info('iframe has been loaded');
         addIframeListener();
         setIsIframeLoaded(true);
         return () => {

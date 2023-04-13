@@ -1,4 +1,3 @@
-// import { environment } from 'environments/environment';
 import { LoggerTools } from './LoggerTools';
 
 /**
@@ -59,7 +58,7 @@ export const loggerStyles = {
  */
 export class Logger {
     /**
-     *
+     * Name of this class.
      *
      * @type {string}
      * @memberof Logger
@@ -73,14 +72,30 @@ export class Logger {
      * @type {string}
      * @memberof Logger
      */
-    output;
+    _output;
+
+    get output() {
+        return this._output;
+    }
+
+    set output(value) {
+        this._output = value;
+    }
 
     /**
      * Level of logs. Explained in levels.
      * @type {number}
      * @memberof Logger
      */
-    level;
+    _level;
+
+    get level() {
+        return this._level;
+    }
+
+    set level(logLevel) {
+        this._level = this.levels[logLevel];
+    }
 
     /**
      * Values of possible log levels.
@@ -94,7 +109,6 @@ export class Logger {
      * logging.
      */
     constructor(config = {}) {
-
         const defaultProps = {
             instanceName: 'Logger',
             levels: {
@@ -107,37 +121,42 @@ export class Logger {
                 trace: 600,
                 all: 100000000,
             },
+            logLevel: 'all',
+            output: 'noop',
         };
-        // const myProps = Object.assign({}, defaultProps, config);
         const myProps = {...{}, ...defaultProps, ...config};
         this.setupProps(myProps);
-
         this.init();
     }
 
     setupProps(props) {
         for (const key of Object.keys(props)) {
-            this[key] = props[key];
+            if (key !== 'logLevel') {
+                this[key] = props[key];
+            }
+        }
+        if (props.logLevel) {
+            this.level = props.logLevel;
         }
     }
 
     init() {
 
-        // Direct logging to console on devel and test machines.
-        const check = this.isTest && (
-            false
-            || environment.debug
-            || this.isLocalDomain
-            || this.isTestDomain
-        );
+        // // Direct logging to console on devel and test machines.
+        // const check = this.isTest && (
+        //     false
+        //     || this.isLocalDomain
+        //     || this.isTestDomain
+        // );
 
-        if (check) {
-            this.level = this.levels.all;
-            this.output = 'console';
-        } else {
-            this.level = this.levels.info;
-            this.output = 'nowhere';
-        }
+        // if (check) {
+        //     this.level = this.levels.all;
+        //     this.output = 'console';
+        // } else {
+        //     // Direct to nowhere (suppress any logging to console).
+        //     this.level = this.levels.info;
+        //     this.output = 'nowhere';
+        // }
 
         this.debug('%c Constructor',
             this.style.slimConstructor, this.instanceName);
@@ -184,107 +203,89 @@ export class Logger {
      */
     noop = () => { };
 
-    /**
-     * Getter to bind logs with console or with our function.
-     * Work with logger.log level 500
-     */
-    get log() {
-        if (this.level > 0 && this.level >= this.levels.debug) {
-            // return console.log.bind(console, '%c INFO', this.style.slimInfo);
-            return console.log.bind(console);
-        }
-        return this.noop;
-    }
-
-    /**
-     * Getter to bind logs with console or with our function.
-     * Work with trace.log level 600
-     */
-    get trace() {
-        if (this.level > 0 && this.level >= this.levels.trace) {
-            return console.trace.bind(console);
-        }
-        return this.noop;
-    }
-
-    /**
-     * Getter to bind logs with console or with our function.
-     * Work with debug.log level 500
-     */
-    get debug() {
-        if (this.level > 0 && this.level >= this.levels.debug) {
-            // return console.debug.bind(console, '%c DEBUG', this.style.slimDebug);
-            return console.debug.bind(console);
-        }
-        return this.noop;
-    }
-
-    /**
-     * Getter to bind logs with console or with our function.
-     * Work with debug.log level 500
-     */
     get time() {
         if (this.level > 0 && this.level >= this.levels.debug) {
-            return console.time.bind(console);
+            if (this.output === 'console') {
+                return console.time.bind(console);
+            }
         }
         return this.noop;
     }
 
-    /**
-     * Getter to bind logs with console or with our function.
-     * Work with debug.log level 500
-     */
     get timeEnd() {
         if (this.level > 0 && this.level >= this.levels.debug) {
-            return console.timeEnd.bind(console);
+            if (this.output === 'console') {
+                return console.timeEnd.bind(console);
+            }
         }
         return this.noop;
     }
 
-    /**
-     * Getter to bind logs with console or with our function.
-     * Work with info.log level 400
-     */
+    get trace() {
+        if (this.level > 0 && this.level >= this.levels.trace) {
+            if (this.output === 'console') {
+                return console.trace.bind(console);
+            }
+        }
+        return this.noop;
+    }
+
+    get debug() {
+        if (this.level > 0 && this.level >= this.levels.debug) {
+            if (this.output === 'console') {
+                // return console.debug.bind(console, '%c DEBUG', this.style.slimDebug);
+                return console.debug.bind(console);
+            }
+        }
+        return this.noop;
+    }
+
     get info() {
         if (this.level > 0 && this.level >= this.levels.info) {
-            // return console.info.bind(console, '%c INFO', this.style.slimInfo);
-            return console.info.bind(console);
+            if (this.output === 'console') {
+                // return console.info.bind(console, '%c INFO', this.style.slimInfo);
+                return console.info.bind(console);
+            }
         }
         return this.noop;
     }
 
-    /**
-     * Getter to bind logs with console or with our function.
-     * Work with warn.log level 300
-     */
+    get log() {
+        if (this.level > 0 && this.level >= this.levels.debug) {
+            if (this.output === 'console') {
+                // return console.log.bind(console, '%c INFO', this.style.slimInfo);
+                return console.log.bind(console);
+            }
+        }
+        return this.noop;
+    }
+
     get warn() {
         if (this.level > 0 && this.level >= this.levels.warn) {
-            // return console.warn.bind(console, '%c WARN', this.style.slimWarn);
-            return console.warn.bind(console);
+            if (this.output === 'console') {
+                // return console.warn.bind(console, '%c WARN', this.style.slimWarn);
+                return console.warn.bind(console);
+            }
         }
         return this.noop;
     }
 
-    /**
-     * Getter to bind logs with console or with our function.
-     * Work with error.log level 200
-     */
     get error() {
         if (this.level > 0 && this.level >= this.levels.error) {
-            // return console.error.bind(console, '%c ERROR', this.style.slimError);
-            return console.error.bind(console);
+            if (this.output === 'console') {
+                // return console.error.bind(console, '%c ERROR', this.style.slimError);
+                return console.error.bind(console);
+            }
         }
         return this.noop;
     }
 
-    /**
-     * Getter to bind logs with console or with our function.
-     * Work with fatal.log level 100
-     */
     get fatal() {
         if (this.level > 0 && this.level >= this.levels.fatal) {
-            // return console.error.bind(console, '%c FATAL', this.style.slimFatal);
-            return console.error.bind(console);
+            if (this.output === 'console') {
+                // return console.error.bind(console, '%c FATAL', this.style.slimFatal);
+                return console.error.bind(console);
+            }
         }
         return this.noop;
     }
