@@ -11,6 +11,7 @@
  * @property {number} all
  */
 
+// For fancy log messages.
 export const loggerStyles = {
     slimConstructor: 'padding: 1px; padding-right: 4px; font-family: "Helvetica";'
         + 'color: white;'
@@ -44,7 +45,14 @@ export const loggerStyles = {
 
 
 /**
- * Logs to console or nowhere.
+ * Logs to console or nowhere. Use this way:
+ * ```
+ * import { logger } from './Logger';
+ * logger.info('my info');
+ * ```
+ * Then you should see message in console on development, but not on
+ * production. This behavior depends on environment variables or other
+ * checks done in other place, probably in App.jsx.
  *
  * @export
  * @class Logger
