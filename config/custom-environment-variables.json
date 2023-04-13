@@ -62,5 +62,6 @@
   "openhive_chat_admin_user_id": "SDC_OPENHIVE_CHAT_ADMIN_USER_ID",
   "openhive_chat_admin_user_token": "SDC_OPENHIVE_CHAT_ADMIN_USER_TOKEN",
   "logger_output": "SDC_LOGGER_OUTPUT",
-  "logger_log_level": "SDC_LOGGER_LOG_LEVEL"
+  "logger_log_level": "SDC_LOGGER_LOG_LEVEL",
+  "logger_admins": "SDC_LOGGER_ADMINS"
 }

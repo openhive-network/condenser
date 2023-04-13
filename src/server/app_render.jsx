@@ -17,6 +17,20 @@ async function appRender(ctx, locales = false, resolvedAssets = false) {
     ctx.state.requestTimer.startTimer('appRender_ms');
     // This is the part of SSR where we make session-specific changes:
     try {
+
+        // When user is logged in and listed in
+        // `$STM_Config.logger_admins`, allow him to see all Logger
+        // messages.
+        if (ctx.session.a && $STM_Config.logger_admins) {
+            const loggerAdmins = ($STM_Config.logger_admins)
+                    .replace(/^[\s,;]+|[\s,;]+$/gm, '')
+                    .split(/[\s,;]+/) || [];
+            if (loggerAdmins.includes(ctx.session.a)) {
+                $STM_Config.logger_output = 'console';
+                $STM_Config.logger_log_level = 'all';
+            }
+        }
+
         let userPreferences = {};
         if (ctx.session.user_prefs) {
             try {

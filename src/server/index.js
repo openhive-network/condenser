@@ -45,6 +45,7 @@ global.$STM_Config = {
     openhive_chat_iframe_visible: config.get('openhive_chat_iframe_visible') === 'yes',
     logger_output: config.get('logger_output'),
     logger_log_level: config.get('logger_log_level'),
+    logger_admins: config.get('logger_admins'),
 };
 
 const WebpackIsomorphicTools = require('webpack-isomorphic-tools');
