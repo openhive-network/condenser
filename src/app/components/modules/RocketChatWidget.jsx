@@ -17,6 +17,7 @@ import LaunchIcon from '@mui/icons-material/Launch';
 import Draggable from 'react-draggable';
 import tt from 'counterpart';
 import { connect } from 'react-redux';
+import { logger } from '../../utils/Logger';
 
 /**
  * Login to Rocket Chat via iframe.
@@ -28,6 +29,7 @@ import { connect } from 'react-redux';
 export function chatLogin(data, iframeRef) {
     if ($STM_Config.openhive_chat_iframe_integration_enable) {
         try {
+            logger.log('chatLogin posting message');
             if (data && data.chatAuthToken) {
                 iframeRef.current.contentWindow.postMessage(
                     {
@@ -39,7 +41,7 @@ export function chatLogin(data, iframeRef) {
                 );
             }
         } catch (error) {
-            // console.error('chatLogin error', error);
+            logger.error('chatLogin error', error);
         }
     }
 }
@@ -53,6 +55,7 @@ export function chatLogin(data, iframeRef) {
 export function chatLogout(iframeRef) {
     if ($STM_Config.openhive_chat_iframe_integration_enable) {
         try {
+            logger.log('chatLogout posting message');
             iframeRef.current.contentWindow.postMessage(
                 {
                     externalCommand: 'logout',
@@ -60,7 +63,7 @@ export function chatLogout(iframeRef) {
                 `${$STM_Config.openhive_chat_uri}`
             );
         } catch (error) {
-            // console.error('chatLogout error', error);
+            logger.error('chatLogout error', error);
         }
     }
 }
@@ -102,6 +105,7 @@ function RocketChatWidget({
     chatAuthToken,
     ...rest
 }) {
+
     const [state, setState] = React.useState({
         top: false,
         left: false,
@@ -128,7 +132,8 @@ function RocketChatWidget({
             return;
         }
 
-        // console.log("onMessageReceivedFromIframe event", event.origin, event.data, event);
+        logger.log("chat onMessageReceivedFromIframe event", event.origin,
+                event.data, event);
 
         // Fires when iframe window's title changes. This way we replay
         // the behavior of native Rocket Chat's badge in our badge.
@@ -191,6 +196,7 @@ function RocketChatWidget({
     }, [isIframeLoaded]);
 
     const onIframeLoad = () => {
+        logger.log('Chat iframe has been loaded');
         addIframeListener();
         setIsIframeLoaded(true);
         return () => {
