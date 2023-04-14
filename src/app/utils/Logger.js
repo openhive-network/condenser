@@ -12,47 +12,61 @@
  */
 
 // For fancy log messages.
+const commonStyle = [
+    'padding: 1px; padding-right: 4px; font-family: "Helvetica";',
+    'border-left: 3px solid #0a2722;',
+];
 export const loggerStyles = {
-    slimConstructor: 'padding: 1px; padding-right: 4px; font-family: "Helvetica";'
-        + 'color: white;'
-        + 'background-color: #276156;'
-        + 'border-left: 3px solid #0a2722;',
-    slimDestructor: 'padding: 1px; padding-right: 4px; font-family: Helvetica;'
-        + 'color: black;'
-        + 'background-color: rgb(255, 180, 0);'
-        + 'border-left: 3px solid rgb(255, 130, 0)',
-    slimFatal: 'padding: 1px; padding-right: 4px; font-family: Helvetica;'
-        + 'color: white;'
-        + 'background-color: rgb(0, 0, 0);'
-        + 'border-left: 3px solid rgb(35,60,80)',
-    slimError: 'padding: 1px; padding-right: 4px; font-family: Helvetica;'
-        + 'color: white;'
-        + 'background-color: rgb(255, 80, 80);'
-        + 'border-left: 3px solid rgb(35,60,80)',
-    slimWarn: 'padding: 1px; padding-right: 4px; font-family: Helvetica;'
-        + 'color: black;'
-        + 'background-color: rgb(255, 255, 153);'
-        + 'border-left: 3px solid rgb(35,60,80)',
-    slimInfo: 'padding: 1px; padding-right: 4px; font-family: Helvetica;'
-        + 'color: white;'
-        + 'background-color: rgb(55,105,150);'
-        + 'border-left: 3px solid rgb(35,60,80)',
-    slimDebug: 'padding: 1px; padding-right: 4px; font-family: Helvetica;'
-        + 'color: black;'
-        + 'background-color: rgb(153, 255, 204);'
-        + 'border-left: 3px solid rgb(35,60,80)',
+    slimConstructor: [
+            'color: white;',
+            'background-color: #276156;',
+            ...commonStyle,
+        ].join(' '),
+    slimDestructor: [
+            'color: black;',
+            'background-color: rgb(255, 180, 0);',
+            ...commonStyle,
+        ].join(' '),
+    slimFatal: [
+            'color: white;',
+            'background-color: rgb(0, 0, 0);',
+            ...commonStyle,
+        ].join(' '),
+    slimError: [
+            'color: white;',
+            'background-color: rgb(255, 80, 80);',
+            ...commonStyle,
+        ].join(' '),
+    slimWarn: [
+            'color: black;',
+            'background-color: rgb(255, 255, 153);',
+            ...commonStyle,
+        ].join(' '),
+    slimInfo: [
+            'color: white;',
+            'background-color: rgb(55,105,150);',
+            ...commonStyle,
+        ].join(' '),
+    slimDebug: [
+            'color: black;',
+            'background-color: rgb(153, 255, 204);',
+            ...commonStyle,
+        ].join(' '),
 };
 
 
 /**
- * Logs to console or nowhere. Use this way:
+ * Service for logging to console or nowhere, used as a replacement for
+ * standard console messaging. Use it this way:
  * ```
  * import { logger } from './Logger';
  * logger.info('my info');
+ * logger.error('my error');
  * ```
- * Then you should see message in console on development, but not on
- * production. This behavior depends on environment variables or other
- * checks done in other place, probably in App.jsx.
+ * Then you should see message in console in development environment,
+ * but not in production environment. This behavior depends on
+ * environment variables or other logic impemented in other places,
+ * mostly in `App.jsx`.
  *
  * @export
  * @class Logger
@@ -128,18 +142,15 @@ export class Logger {
         }
     }
 
+    noop = () => { };
+
     get style() {
         return loggerStyles;
     }
 
-    /**
-     * Empty function to help binding.
-     */
-    noop = () => { };
-
     get time() {
-        if (this.level > 0 && this.level >= this.levels.debug) {
-            if (this.output === 'console') {
+        if (this.output === 'console') {
+            if (this.level > 0 && this.level >= this.levels.debug) {
                 return console.time.bind(console);
             }
         }
@@ -147,8 +158,8 @@ export class Logger {
     }
 
     get timeEnd() {
-        if (this.level > 0 && this.level >= this.levels.debug) {
-            if (this.output === 'console') {
+        if (this.output === 'console') {
+            if (this.level > 0 && this.level >= this.levels.debug) {
                 return console.timeEnd.bind(console);
             }
         }
@@ -156,8 +167,8 @@ export class Logger {
     }
 
     get trace() {
-        if (this.level > 0 && this.level >= this.levels.trace) {
-            if (this.output === 'console') {
+        if (this.output === 'console') {
+            if (this.level > 0 && this.level >= this.levels.trace) {
                 return console.trace.bind(console);
             }
         }
@@ -165,8 +176,8 @@ export class Logger {
     }
 
     get debug() {
-        if (this.level > 0 && this.level >= this.levels.debug) {
-            if (this.output === 'console') {
+        if (this.output === 'console') {
+            if (this.level > 0 && this.level >= this.levels.debug) {
                 // return console.debug.bind(console, '%c DEBUG', this.style.slimDebug);
                 return console.debug.bind(console);
             }
@@ -175,8 +186,8 @@ export class Logger {
     }
 
     get info() {
-        if (this.level > 0 && this.level >= this.levels.info) {
-            if (this.output === 'console') {
+        if (this.output === 'console') {
+            if (this.level > 0 && this.level >= this.levels.info) {
                 // return console.info.bind(console, '%c INFO', this.style.slimInfo);
                 return console.info.bind(console);
             }
@@ -185,8 +196,8 @@ export class Logger {
     }
 
     get log() {
-        if (this.level > 0 && this.level >= this.levels.debug) {
-            if (this.output === 'console') {
+        if (this.output === 'console') {
+            if (this.level > 0 && this.level >= this.levels.debug) {
                 // return console.log.bind(console, '%c INFO', this.style.slimInfo);
                 return console.log.bind(console);
             }
@@ -195,8 +206,8 @@ export class Logger {
     }
 
     get warn() {
-        if (this.level > 0 && this.level >= this.levels.warn) {
-            if (this.output === 'console') {
+        if (this.output === 'console') {
+            if (this.level > 0 && this.level >= this.levels.warn) {
                 // return console.warn.bind(console, '%c WARN', this.style.slimWarn);
                 return console.warn.bind(console);
             }
@@ -205,8 +216,8 @@ export class Logger {
     }
 
     get error() {
-        if (this.level > 0 && this.level >= this.levels.error) {
-            if (this.output === 'console') {
+        if (this.output === 'console') {
+            if (this.level > 0 && this.level >= this.levels.error) {
                 // return console.error.bind(console, '%c ERROR', this.style.slimError);
                 return console.error.bind(console);
             }
@@ -215,8 +226,8 @@ export class Logger {
     }
 
     get fatal() {
-        if (this.level > 0 && this.level >= this.levels.fatal) {
-            if (this.output === 'console') {
+        if (this.output === 'console') {
+            if (this.level > 0 && this.level >= this.levels.fatal) {
                 // return console.error.bind(console, '%c FATAL', this.style.slimFatal);
                 return console.error.bind(console);
             }

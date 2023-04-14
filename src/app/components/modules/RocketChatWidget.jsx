@@ -27,7 +27,6 @@ import { logger } from '../../utils/Logger';
  * @param {*} iframeRef Reference to iframe html element with Rocket Chat
  */
 export function chatLogin(data, iframeRef) {
-    logger.info('In chatLogin', data, iframeRef);
     if ($STM_Config.openhive_chat_iframe_integration_enable) {
         try {
             if (data && data.chatAuthToken) {
@@ -131,7 +130,8 @@ function RocketChatWidget({
             return;
         }
 
-        logger.info("onMessageReceivedFromIframe event", event.origin, event.data, event);
+        logger.log("onMessageReceivedFromIframe event", event.origin,
+                event.data, event);
 
         // Fires when iframe window's title changes. This way we replay
         // the behavior of native Rocket Chat's badge in our badge.
@@ -151,7 +151,6 @@ function RocketChatWidget({
             //     },
             //     `${$STM_Config.openhive_chat_uri}`,
             // );
-
             setDisabled(false);
         }
 
@@ -195,7 +194,7 @@ function RocketChatWidget({
     }, [isIframeLoaded]);
 
     const onIframeLoad = () => {
-        logger.info('iframe has been loaded');
+        logger.log('Iframe has been loaded');
         addIframeListener();
         setIsIframeLoaded(true);
         return () => {

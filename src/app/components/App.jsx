@@ -15,7 +15,7 @@ import tt from 'counterpart';
 import { VIEW_MODE_WHISTLE } from 'shared/constants';
 import SimpleReactLightbox from 'simple-react-lightbox';
 import RocketChatWidget from 'app/components/modules/RocketChatWidget';
-import { logger } from '../utils/Logger';
+import { logger } from 'app/utils/Logger';
 
 class App extends React.Component {
 
@@ -34,6 +34,9 @@ class App extends React.Component {
         if (process.env.BROWSER) {
             console.log('VERSION', process.env.VERSION);
         }
+
+        // Show current app configuration.
+        logger.info('$STM_Config', $STM_Config);
 
         // Set logger output.
         logger.output = $STM_Config.logger_output;

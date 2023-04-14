@@ -18,10 +18,13 @@ async function appRender(ctx, locales = false, resolvedAssets = false) {
     // This is the part of SSR where we make session-specific changes:
     try {
 
+        //
         // When user is logged in and listed in
         // `$STM_Config.logger_admins`, allow him to see all Logger
-        // messages.
-        if (ctx.session.a && $STM_Config.logger_admins) {
+        // messages, regardless of anything else, so also on production.
+        //
+        const user = ctx.session.a || ctx.session.externalUser;
+        if (user && $STM_Config.logger_admins) {
             const loggerAdmins = ($STM_Config.logger_admins)
                     .replace(/^[\s,;]+|[\s,;]+$/gm, '')
                     .split(/[\s,;]+/) || [];
