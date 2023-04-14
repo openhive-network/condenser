@@ -27,22 +27,29 @@ import { logger } from '../../utils/Logger';
  * @param {*} iframeRef Reference to iframe html element with Rocket Chat
  */
 export function chatLogin(data, iframeRef) {
+    logger.log('chatLogin start');
     if ($STM_Config.openhive_chat_iframe_integration_enable) {
+        logger.log('chatLogin openhive_chat_iframe_integration_enable is true');
         try {
-            logger.log('chatLogin posting message');
             if (data && data.chatAuthToken) {
+                const message = {
+                    event: 'login-with-token',
+                    loginToken: data.chatAuthToken,
+                    loginType: data.loginType || 'login',
+                };
+                logger.log('chatLogin posting message', message, data);
                 iframeRef.current.contentWindow.postMessage(
-                    {
-                        event: 'login-with-token',
-                        loginToken: data.chatAuthToken,
-                        loginType: data.loginType || 'login',
-                    },
+                    {...message},
                     `${$STM_Config.openhive_chat_uri}`,
                 );
+            } else {
+                logger.warn('chatLogin not posting message, data is wrong', data);
             }
         } catch (error) {
-            logger.error('chatLogin error', error);
+            logger.error('chatLogin not posting message', data);
         }
+    } else {
+        logger.log('chatLogin openhive_chat_iframe_integration_enable is false');
     }
 }
 
