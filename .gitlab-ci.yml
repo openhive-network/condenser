@@ -98,6 +98,7 @@ deploy-review-app:
     <<: *docker-job
     <<: *docker-remote-host-review
     stage: deploy
+    allow_failure: true
     variables:
         DOCKER_TAG: $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA
         SERVICE_NAME: review_$CI_ENVIRONMENT_SLUG
@@ -169,6 +170,7 @@ deploy-staging:
     <<: *docker-job
     <<: *docker-remote-host-staging
     stage: deploy
+    allow_failure: true
     variables:
         DOCKER_TAG: $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA
         SERVICE_NAME: staging_condenser
