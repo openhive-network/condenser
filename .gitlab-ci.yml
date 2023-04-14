@@ -119,6 +119,8 @@ deploy-review-app:
           --env SDC_OPENHIVE_CHAT_IFRAME_INTEGRATION_ENABLE="yes"
           --env SDC_OPENHIVE_CHAT_ADMIN_USER_ID="$SDC_OPENHIVE_CHAT_ADMIN_USER_ID"
           --env SDC_OPENHIVE_CHAT_ADMIN_USER_TOKEN="$SDC_OPENHIVE_CHAT_ADMIN_USER_TOKEN"
+          --env SDC_LOGGER_LOG_LEVEL="all"
+          --env SDC_LOGGER_OUTPUT="console"
           $DOCKER_TAG
         - echo "Review app deployed"
     environment:
