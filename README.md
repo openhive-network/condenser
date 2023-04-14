@@ -364,6 +364,7 @@ trace
 all
 ```
 
-When user is logged in and he is listed in `SDC_LOGGER_ADMINS`, the
-aplication allows him to see all Logger messages on all log levels,
-regardless of anything else, so also on production.
+When user is logged in and he is listed in `SDC_LOGGER_ADMINS` (should
+be string with Hive usernames delimited with space), the aplication
+allows him to see all Logger messages on all log levels, regardless of
+anything else, so also on production.
