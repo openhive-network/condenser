@@ -29,6 +29,7 @@ import { logger } from '../../utils/Logger';
 export function chatLogin(data, iframeRef) {
     if ($STM_Config.openhive_chat_iframe_integration_enable) {
         try {
+            logger.log('chatLogin posting message');
             if (data && data.chatAuthToken) {
                 iframeRef.current.contentWindow.postMessage(
                     {
@@ -54,6 +55,7 @@ export function chatLogin(data, iframeRef) {
 export function chatLogout(iframeRef) {
     if ($STM_Config.openhive_chat_iframe_integration_enable) {
         try {
+            logger.log('chatLogout posting message');
             iframeRef.current.contentWindow.postMessage(
                 {
                     externalCommand: 'logout',
@@ -130,7 +132,7 @@ function RocketChatWidget({
             return;
         }
 
-        logger.log("onMessageReceivedFromIframe event", event.origin,
+        logger.log("chat onMessageReceivedFromIframe event", event.origin,
                 event.data, event);
 
         // Fires when iframe window's title changes. This way we replay
@@ -194,7 +196,7 @@ function RocketChatWidget({
     }, [isIframeLoaded]);
 
     const onIframeLoad = () => {
-        logger.log('Iframe has been loaded');
+        logger.log('Chat iframe has been loaded');
         addIframeListener();
         setIsIframeLoaded(true);
         return () => {
