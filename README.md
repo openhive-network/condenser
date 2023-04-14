@@ -329,3 +329,41 @@ shows or hides chat button and iframe (hidden iframe still operates in
 background).
 
 Start Condenser.
+
+
+## Logger
+
+We implemented `Logger` in `src/app/utils/Logger.js` file, for logging
+to console or nowhere (suppress logging), used as a replacement for
+standard console messaging. Use it this way:
+```javascript
+import { logger } from './Logger';
+logger.info('my info');
+logger.error('my error');
+```
+Then you should see message in console in development environment,
+but not in production environment. This behavior depends on
+following environment variables (showing default values):
+```bash
+SDC_LOGGER_OUTPUT="noop"
+SDC_LOGGER_LOG_LEVEL="all"
+SDC_LOGGER_ADMINS=""
+```
+
+Setting `SDC_LOGGER_OUTPUT="console"` enables logging to console.
+
+You can set `SDC_LOGGER_LOG_LEVEL` to following log levels"
+```
+off
+fatal
+error
+warn
+info
+debug
+trace
+all
+```
+
+When user is logged in and he is listed in `SDC_LOGGER_ADMINS`, the
+aplication allows him to see all Logger messages on all log levels,
+regardless of anything else, so also on production.
