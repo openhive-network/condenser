@@ -85,7 +85,6 @@ export default function useGeneralApi(app) {
             })
         });
         const validationResult = schema.validate(_parse(ctx.request.body));
-        console.log('validationResult.error', validationResult.error);
         assert(!validationResult.error, 401, 'Invalid params');
 
         const { account, signatures, externalUser } = validationResult.value;
