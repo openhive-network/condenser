@@ -35,11 +35,12 @@ class App extends React.Component {
             console.log('VERSION', process.env.VERSION);
         }
 
+        // Setup logger.
+        logger.output = $STM_Config.logger_output;
+        logger.level = $STM_Config.logger_log_level;
+
         // Show current app configuration.
         logger.info('$STM_Config', $STM_Config);
-
-        // Set logger output.
-        logger.output = $STM_Config.logger_output;
 
         // TODO: put both of these and associated toggles into Redux Store.
         this.state = {

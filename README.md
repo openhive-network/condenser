@@ -345,9 +345,9 @@ Then you should see message in console in development environment,
 but not in production environment. This behavior depends on
 following environment variables (showing default values):
 ```bash
-SDC_LOGGER_OUTPUT="noop"
-SDC_LOGGER_LOG_LEVEL="all"
-SDC_LOGGER_ADMINS=""
+export SDC_LOGGER_OUTPUT="noop"
+export SDC_LOGGER_LOG_LEVEL="all"
+export SDC_LOGGER_ADMINS=""
 ```
 
 Setting `SDC_LOGGER_OUTPUT="console"` enables logging to console.
