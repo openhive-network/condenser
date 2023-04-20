@@ -198,8 +198,7 @@ function RocketChatWidget({
                     chatLogout(iframeRef);
                 }
             }
-        }
-        if (init) {
+        } else {
             addIframeListener();
             setInit(false);
         }
