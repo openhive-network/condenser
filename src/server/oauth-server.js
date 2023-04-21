@@ -469,10 +469,12 @@ export default function oauthServer(app) {
     <style>
 
         body {
-            max-width: 35em;
             margin: 0 auto;
             font-family: Tahoma, Verdana, Arial, sans-serif;
             padding: 20px;
+        }
+        .content {
+            max-width: 35em;
         }
         .center-x {
             margin-left: auto;
@@ -481,7 +483,6 @@ export default function oauthServer(app) {
         .center-text {
             text-align: center;
         }
-
         #countdown {
             font-weight: bold;
             color: red;
@@ -508,29 +509,31 @@ export default function oauthServer(app) {
 
 <body>
 
-    <div class="center-x">
-        <img alt="logo" width="150" height="40" src="/images/hive-blog-logo.svg">
-    </div>
-    <div class="center-x">
-        <h1>Oauth Flow Error</h1>
-        <p>
-            We cannot continue Oauth Flow for application
-            ${oauthServerConfig.clients[params.get('client_id')].name}, because
-            you're logged in via unsupported method in Hive Blog.
-        </p>
-        <p>
-            Please do logout in application
-            <a href="/" target="_blank" rel="noreferrer noopener">Hive Blog</a>
-            and try again.
-        </p>
-        <p>
-            We'll redirect you back to application
-            ${oauthServerConfig.clients[params.get('client_id')].name}
-            in <span id="countdown"></span>.
-            You can click this button
-            <input type=button onclick="location.replace('${redirectTo}')" value="Go back">
-            to speed up this redirect.
-        </p>
+    <div class="content">
+        <div class="center-x">
+            <img alt="logo" width="150" height="40" src="/images/hive-blog-logo.svg">
+        </div>
+        <div class="center-x">
+            <h1>Oauth Flow Error</h1>
+            <p>
+                We cannot continue Oauth Flow for application
+                ${oauthServerConfig.clients[params.get('client_id')].name}, because
+                you're logged in via unsupported method in Hive Blog.
+            </p>
+            <p>
+                Please do logout in application
+                <a href="/" target="_blank" rel="noreferrer noopener">Hive Blog</a>
+                and try again.
+            </p>
+            <p>
+                We'll redirect you back to application
+                ${oauthServerConfig.clients[params.get('client_id')].name}
+                in <span id="countdown"></span>.
+                You can click this button
+                <input type=button onclick="location.replace('${redirectTo}')" value="Go back">
+                to speed up this redirect.
+            </p>
+        </div>
     </div>
 
 </body>
@@ -589,10 +592,12 @@ export default function oauthServer(app) {
     <style>
 
         body {
-            max-width: 35em;
             margin: 0 auto;
             font-family: Tahoma, Verdana, Arial, sans-serif;
             padding: 20px;
+        }
+        .content {
+            max-width: 35em;
         }
         .center-x {
             margin-left: auto;
@@ -628,38 +633,40 @@ export default function oauthServer(app) {
 
 <body>
 
-    <div class="center-x">
-        <img alt="logo" width="150" height="40" src="/images/hive-blog-logo.svg">
-    </div>
-    <div class="center-x">
-        <h1>Oauth Flow Consent</h1>
-        <p>
-            We need your consent in Oauth Flow for application
-            ${oauthServerConfig.clients[params.get('client_id')].name}.
-            This application wants to:
-            <ol>
-                <li>
-                    Create an account for you.
-                </li>
-                <li>
-                    Know your Hive public user profile details.
-                </li>
-            </ol>
-        </p>
-        <p>
-            Please click this button, if you consent:
-            <input type=button onclick="location.replace('${redirectToConsentYes}')"
-                    value="Yes, I consent">
-        </p>
-        <p>
-            When you don't click the button above, we'll redirect you back to application
-            ${oauthServerConfig.clients[params.get('client_id')].name}
-            in <span id="countdown"></span>. Your login to application will fail.
-            You can click this button
-            <input type=button onclick="location.replace('${redirectToConsentNo}')"
-                    value="Go back">
-            to speed up this redirect.
-        </p>
+    <div class="content">
+        <div class="center-x">
+            <img alt="logo" width="150" height="40" src="/images/hive-blog-logo.svg">
+        </div>
+        <div class="center-x">
+            <h1>Oauth Flow Consent</h1>
+            <p>
+                We need your consent in Oauth Flow for application
+                ${oauthServerConfig.clients[params.get('client_id')].name}.
+                This application wants to:
+                <ol>
+                    <li>
+                        Create an account for you.
+                    </li>
+                    <li>
+                        Know your Hive public user profile details.
+                    </li>
+                </ol>
+            </p>
+            <p>
+                Please click this button, if you consent:
+                <input type=button onclick="location.replace('${redirectToConsentYes}')"
+                        value="Yes, I consent">
+            </p>
+            <p>
+                When you don't click the button above, we'll redirect you back to application
+                ${oauthServerConfig.clients[params.get('client_id')].name}
+                in <span id="countdown"></span>. Your login to application will fail.
+                You can click this button
+                <input type=button onclick="location.replace('${redirectToConsentNo}')"
+                        value="Go back">
+                to speed up this redirect.
+            </p>
+        </div>
     </div>
 
 </body>

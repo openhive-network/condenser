@@ -192,7 +192,7 @@ export default function useRocketChat(app) {
     <style>
 
         body {
-            max-width: 35em;
+            background-color: white;
             margin: 0 auto;
             font-family: Tahoma, Verdana, Arial, sans-serif;
             padding: 20px;
@@ -211,7 +211,7 @@ export default function useRocketChat(app) {
 
 <body>
 
-    <div class="center-x" style="color: white;">
+    <div class="center-x" style="max-width: 35em;">
         <h1>Chat</h1>
         <p>
             Please login to Hive Blog to see chat
@@ -222,6 +222,79 @@ export default function useRocketChat(app) {
 </html>
 `;
     });
+
+
+    //
+    // Set this endpoint as "Iframe URL" in Rocket Chat.
+    //
+    router.get('/chat/login', async (ctx) => {
+        ctx.body = `
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/ico" href="/favicon.ico" />
+    <title>Chat Login - hive.blog</title>
+
+    <style>
+
+        body {
+            background-color: white;
+            margin: 0 auto;
+            font-family: Tahoma, Verdana, Arial, sans-serif;
+            padding: 20px;
+        }
+        .content {
+            max-width: 35em;
+        }
+        .center-x {
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .center-text {
+            text-align: center;
+        }
+
+    </style>
+
+    <script>
+
+        const callCustomOauthLogin = (service) => {
+            window.parent.postMessage(
+                {
+                    externalCommand: 'call-custom-oauth-login',
+                    service: service
+                },
+                "${config.get('openhive_chat_uri')}"
+                );
+        }
+
+    </script>
+
+</head>
+
+<body>
+
+    <div class="content center-x">
+        <div class="center-x">
+            <img alt="logo" width="150" height="40" src="/images/hive-blog-logo.svg">
+        </div>
+        <h1>Chat Login</h1>
+        <p>
+            <input type=button onclick="callCustomOauthLogin('hiveblog')" value="Login with Hive.Blog">
+        </p>
+        <p>
+            <input type=button onclick="callCustomOauthLogin('hivesigner')" value="Login with Hivesigner">
+        </p>
+    </div>
+
+</body>
+</html>
+`;
+    });
+
 
     //
     // Set this endpoint as "Iframe API URL" in Rocket Chat.
