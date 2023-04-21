@@ -301,12 +301,10 @@ export default function useRocketChat(app) {
     //
     router.post('/chat/sso', async (ctx) => {
 
-        // ctx.set('Access-Control-Allow-Origin', `${config.get('openhive_chat_api_uri')}`);
-        // ctx.set('Access-Control-Allow-Origin', '*');
-
-        // ctx.set('Access-Control-Allow-Credentials', 'true');
-        // ctx.set('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-        // ctx.set('Access-Control-Allow-Methods', 'POST, OPTIONS');
+        ctx.set('Access-Control-Allow-Origin', `${config.get('openhive_chat_uri')}`);
+        ctx.set('Access-Control-Allow-Credentials', 'true');
+        ctx.set('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+        ctx.set('Access-Control-Allow-Methods', 'POST, OPTIONS');
 
         ctx.status = 401;
 
