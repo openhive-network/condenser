@@ -261,6 +261,25 @@ export default function useRocketChat(app) {
 
     <script>
 
+        const onMessageReceivedFromIframe = (event) => {
+
+            //
+            // See https://developer.rocket.chat/rocket.chat/iframe-integration/iframe-events
+            //
+
+            if (event.origin !== "${config.get('openhive_chat_uri')}") {
+                return;
+            }
+
+            console.log("chat onMessageReceivedFromIframe event", event.origin,
+                    event.data, event);
+        };
+
+        const addIframeListener = () => {
+            window.addEventListener("message", onMessageReceivedFromIframe);
+        };
+        addIframeListener();
+
         const callCustomOauthLogin = (service) => {
             window.parent.postMessage(
                 {
