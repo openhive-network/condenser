@@ -284,7 +284,8 @@ export default function useRocketChat(app) {
             window.parent.postMessage(
                 {
                     externalCommand: 'call-custom-oauth-login',
-                    service: service
+                    service: service,
+                    redirectUrl: "${config.get('openhive_chat_uri')}",
                 },
                 "${config.get('openhive_chat_uri')}"
                 );
