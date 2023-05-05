@@ -491,8 +491,8 @@ export default function oauthServer(app) {
 
     <script>
 
-        var timeleft = 15;
-        var downloadTimer = setInterval(function(){
+        let timeleft = 15;
+        const downloadTimer = setInterval(function(){
             if(timeleft <= 0){
                 clearInterval(downloadTimer);
                 document.getElementById("countdown").innerHTML = "0 seconds";
@@ -615,8 +615,8 @@ export default function oauthServer(app) {
 
     <script>
 
-        var timeleft = 30;
-        var downloadTimer = setInterval(function(){
+        let timeleft = 30;
+        const downloadTimer = setInterval(function(){
             if(timeleft <= 0){
                 clearInterval(downloadTimer);
                 document.getElementById("countdown").innerHTML = "0 seconds";
