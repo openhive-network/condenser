@@ -18,6 +18,7 @@ import Draggable from 'react-draggable';
 import tt from 'counterpart';
 import { connect } from 'react-redux';
 import { logger } from '../../utils/Logger';
+import { inIframe } from '../../utils/Helpers';
 
 /**
  * Login to Rocket Chat via iframe.
@@ -269,7 +270,7 @@ function RocketChatWidget({
 
     return (
         <>
-            {loggedIn && (
+            {!inIframe() && loggedIn && (
                 <div
                     style={{
                         ...rootStyle,

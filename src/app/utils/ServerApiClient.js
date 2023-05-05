@@ -1,4 +1,8 @@
 /* global $STM_csrf */
+/* global $STM_Config */
+
+import { logger } from './Logger';
+import { inIframe } from './Helpers';
 
 /**
  * @typedef ExternalUser
@@ -47,8 +51,18 @@ export async function serverApiLogin(account, signatures = {}, externalUser = {}
             { headers: requestHeaders, timeout: 1000 * 30 },
         );
         result = response.data;
+        if (result.chatAuthToken && inIframe()) {
+            logger.log('Posting message to parent window', 'login-with-token', result.chatAuthToken);
+            window.parent.postMessage(
+                {
+                    event: 'login-with-token',
+                    loginToken: `${result.chatAuthToken}`
+                },
+                $STM_Config.openhive_chat_uri
+            );
+        }
     } catch (error) {
-        // console.error('Error in serverApiLogin', error);
+        logger.error('Error in serverApiLogin', error);
         return Promise.reject(error);
     }
 
@@ -58,6 +72,16 @@ export async function serverApiLogin(account, signatures = {}, externalUser = {}
 export function serverApiLogout() {
     if (!process.env.BROWSER || window.$STM_ServerBusy) return;
     const request = { ...requestBase, body: JSON.stringify({ _csrf: $STM_csrf }) };
+
+    if (inIframe()) {
+        logger.log('Posting message to parent window', 'logout');
+        window.parent.postMessage(
+            {
+                externalCommand: 'logout',
+            },
+            `${$STM_Config.openhive_chat_uri}`
+        );
+    }
 
     // eslint-disable-next-line consistent-return
     return fetch('/api/v1/logout_account', request);
