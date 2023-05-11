@@ -73,7 +73,7 @@ export default function useGeneralApi(app) {
         // Validate request body.
         // TODO Validation rules below should be stricter.
         const schema = Joi.object({
-            _csrf: Joi.string().required(),
+            // _csrf: Joi.string().required(),
             account: Joi.string().required(),
             signatures: Joi.object().keys({
                 posting: Joi.string()

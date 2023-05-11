@@ -94,21 +94,17 @@ const csrfProtect = new csrf({
     invalidTokenStatusCode: 403,
     excludedMethods: ['GET', 'HEAD', 'OPTIONS'],
     disableQuery: true,
-    ignoredPathGlobs: [
-        '/api/v1/**',
-        '/oauth/token',
-        '/chat/sso',
-    ],
 });
-// const csrfIgnoreUrlList = ['/oauth/token', '/chat/sso'];
+const csrfIgnoreUrlList = ['/oauth/token', '/chat/sso'];
 app.use(async (ctx, next) => {
-    // if (csrfIgnoreUrlList.includes(ctx.req.url)) {
-    //     await next();
-    // } else {
-    //     await csrfProtect(ctx, next);
-    // }
-
-    await csrfProtect(ctx, next);
+    console.log('bamboo ctx.req.url', ctx.req.url);
+    if (csrfIgnoreUrlList.includes(ctx.req.url)) {
+        await next();
+    } else if (/\/api\/v1\/.+$/.test(ctx.req.url)) {
+        await next();
+    } else {
+        await csrfProtect(ctx, next);
+    }
 });
 
 useGeneralApi(app);
