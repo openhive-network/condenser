@@ -94,14 +94,21 @@ const csrfProtect = new csrf({
     invalidTokenStatusCode: 403,
     excludedMethods: ['GET', 'HEAD', 'OPTIONS'],
     disableQuery: true,
+    ignoredPathGlobs: [
+        '/api/v1/**',
+        '/oauth/token',
+        '/chat/sso',
+    ],
 });
-const csrfIgnoreUrlList = ['/oauth/token', '/chat/sso'];
+// const csrfIgnoreUrlList = ['/oauth/token', '/chat/sso'];
 app.use(async (ctx, next) => {
-    if (csrfIgnoreUrlList.includes(ctx.req.url)) {
-        await next();
-    } else {
-        await csrfProtect(ctx, next);
-    }
+    // if (csrfIgnoreUrlList.includes(ctx.req.url)) {
+    //     await next();
+    // } else {
+    //     await csrfProtect(ctx, next);
+    // }
+
+    await csrfProtect(ctx, next);
 });
 
 useGeneralApi(app);
