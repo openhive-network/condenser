@@ -29,6 +29,7 @@
   "site_domain": "SDC_SITE_DOMAIN",
   "upload_image": "SDC_UPLOAD_IMAGE_URL",
   "session_cookie_key": "SDC_SESSION_COOKIE_KEY",
+  "session_cookie_domain": "SDC_SESSION_COOKIE_DOMAIN",
   "steemd_connection_client": "SDC_CLIENT_STEEMD_URL",
   "steemd_connection_server": "SDC_SERVER_STEEMD_URL",
   "steemd_use_appbase": "SDC_USE_APPBASE",
