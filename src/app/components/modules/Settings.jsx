@@ -20,7 +20,6 @@ class Settings extends React.Component {
     constructor(props) {
         super(props);
         const cookies = new Cookies();
-        cookies.set('domain', this.state.cookies.get('session_cookie_domain'));
         this.state = {
             errorMessage: '',
             successMessage: '',

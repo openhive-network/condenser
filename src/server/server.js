@@ -80,11 +80,15 @@ app.use(requestTime(statsLoggerClient));
 
 app.keys = [config.get('session_key')];
 const crypto_key = config.get('server_session_secret');
-hiveCryptoSession(app, {
+const hiveCryptoSessionOptions = {
     maxAge: 1000 * 3600 * 24 * 60,
     crypto_key,
     key: config.get('session_cookie_key'),
-});
+};
+if (config.get('session_cookie_domain')) {
+    hiveCryptoSessionOptions.domain = config.get('session_cookie_domain');
+}
+hiveCryptoSession(app, hiveCryptoSessionOptions);
 
 app.use(koaBody());
 
