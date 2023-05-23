@@ -48,7 +48,10 @@ export async function serverApiLogin(account, signatures = {}, externalUser = {}
                 externalUser: requestExternalUser,
                 // _csrf: $STM_csrf
             },
-            { headers: requestHeaders, timeout: 1000 * 30 },
+            {
+                headers: requestHeaders,
+                timeout: 1000 * 30,
+            },
         );
         result = response.data;
         if (result.chatAuthToken && inIframe()) {
