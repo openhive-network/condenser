@@ -36,6 +36,7 @@ if (cluster.isMaster) console.log('application server starting, please wait.');
 // import uploadImage from 'server/upload-image' //medium-editor
 
 const app = new Koa();
+app.proxy = true; // allows to trust the headers that the load-balancer adds to each request
 app.name = 'Hive app';
 const env = process.env.NODE_ENV || 'development';
 // cache of a thousand days
@@ -84,6 +85,8 @@ const hiveCryptoSessionOptions = {
     maxAge: 1000 * 3600 * 24 * 60,
     crypto_key,
     key: config.get('session_cookie_key'),
+    // TODO Is this unsecure?
+    sameSite: 'none',
 };
 if (config.get('session_cookie_domain')) {
     hiveCryptoSessionOptions.domain = config.get('session_cookie_domain');
