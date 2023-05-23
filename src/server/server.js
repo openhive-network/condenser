@@ -93,8 +93,10 @@ const hiveCryptoSessionOptions = {
     //
 
     sameSite: 'none',
+
 };
 if (config.get('session_cookie_domain')) {
+    // Note that __HOST prefixed cookies shouldn't set domain.
     hiveCryptoSessionOptions.domain = config.get('session_cookie_domain');
 }
 hiveCryptoSession(app, hiveCryptoSessionOptions);
