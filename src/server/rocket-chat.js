@@ -347,5 +347,15 @@ export default function useRocketChat(app) {
         }
     });
 
+    //
+    // Set this endpoint as "Iframe API URL" in Rocket Chat.
+    //
+    router.options('/chat/sso', async (ctx) => {
+        ctx.set('Access-Control-Allow-Origin', `${config.get('openhive_chat_uri')}`);
+        ctx.set('Access-Control-Allow-Credentials', 'true');
+        ctx.set('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+        ctx.set('Access-Control-Allow-Methods', 'POST, OPTIONS');
+    });
+
     app.use(router.routes()).use(router.allowedMethods());
 }
