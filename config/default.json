@@ -29,7 +29,7 @@
     "site_key": false
   },
   "server_session_secret": "exiKdyF+IwRIXJDmtGIl4vWUz4i3eVSISpfZoeYc0s4=",
-  "session_cookie_key": "__HOST-hive-dev",
+  "session_cookie_key": "hive-dev",
   "session_key": "haRYmEDmAndOgRempfLetIVI",
   "site_domain": "hive.blog",
   "upload_image": "https://images.hive.blog",

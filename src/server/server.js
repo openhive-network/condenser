@@ -85,20 +85,6 @@ const hiveCryptoSessionOptions = {
     maxAge: 1000 * 3600 * 24 * 60,
     crypto_key,
     key: config.get('session_cookie_key'),
-
-    //
-    // TODO `sameSite: 'none'` is unsecure. Consider using __HOST
-    // prefix, see
-    // 1. https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie#cookie_prefixes
-    // 2. https://owasp.org/www-project-web-security-testing-guide/latest/4-Web_Application_Security_Testing/06-Session_Management_Testing/02-Testing_for_Cookies_Attributes
-    //
-    // However I'm not sure whether __HOST prefix gives any protection,
-    // when `sameSite` is still `none`. Maybe it is safe enough, when we
-    // also set correct `Access-Control-Allow-Origin` header.
-    //
-
-    sameSite: 'none',
-
 };
 hiveCryptoSession(app, hiveCryptoSessionOptions);
 
