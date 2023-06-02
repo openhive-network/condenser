@@ -1,7 +1,9 @@
 /**
- * Render html page using server template.
+ * Render html page using server template. Warning: don't pass any
+ * unsafe content to this function, because there's not any escaping
+ * here.
  *
- * @param {string} [title='Oauth Flow']
+ * @param {string} [title='Blog']
  * @param {string} [content='']
  * @param {string} [script='']
  * @param {string} [style='']
