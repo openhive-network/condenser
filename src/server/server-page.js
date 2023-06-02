@@ -1,3 +1,5 @@
+import config from 'config';
+
 /**
  * Render html page using server template. Warning: don't pass any
  * unsafe content to this function, because there's not any escaping
@@ -24,7 +26,7 @@ export default function renderServerPage(
             <meta charset="utf-8" />
             <meta name="viewport" content="width=device-width, initial-scale=1.0" />
             <link rel="icon" type="image/ico" href="/favicon.ico" />
-            <title>${title} - hive.blog</title>
+            <title>${title} - ${config.get('site_domain')}</title>
 
             <style>
                 body {
