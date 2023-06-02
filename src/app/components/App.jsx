@@ -15,7 +15,8 @@ import tt from 'counterpart';
 import { VIEW_MODE_WHISTLE } from 'shared/constants';
 import SimpleReactLightbox from 'simple-react-lightbox';
 import RocketChatWidget from 'app/components/modules/RocketChatWidget';
-import { logger } from 'app/utils/Logger';
+import { logger, isBrowser } from 'app/utils/Logger';
+
 
 class App extends React.Component {
 
@@ -40,7 +41,9 @@ class App extends React.Component {
         logger.level = $STM_Config.logger_log_level;
 
         // Show current app configuration.
-        logger.info('$STM_Config', $STM_Config);
+        if (isBrowser()) {
+            logger.info('$STM_Config', $STM_Config);
+        }
 
         // TODO: put both of these and associated toggles into Redux Store.
         this.state = {

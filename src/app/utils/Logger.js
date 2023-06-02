@@ -11,6 +11,12 @@
  * @property {number} all
  */
 
+/**
+ * Utility function for testing whether we are in browser.
+ *
+ */
+export const isBrowser = () => typeof window !== 'undefined' && window;
+
 // For fancy log messages.
 const commonStyle = [
     'padding: 1px; padding-right: 4px; font-family: "Helvetica";',

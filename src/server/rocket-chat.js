@@ -2,12 +2,22 @@ import Router from 'koa-router';
 import axios from 'axios';
 import config from 'config';
 import secureRandom from 'secure-random';
+import renderServerPage from './server-page';
+
+const ssoHeaders = [
+    ['Access-Control-Allow-Origin', `${config.get('openhive_chat_uri')}`],
+    ['Access-Control-Allow-Credentials', 'true'],
+    ['Access-Control-Allow-Headers',
+            'Origin, X-Requested-With, Content-Type, Accept'],
+    ['Access-Control-Allow-Methods', 'POST, OPTIONS'],
+];
 
 /**
  * @typedef ResultToken
  * @type {object}
  * @property {boolean} success
  * @property {string} error
+ * @property {object} [data]
  */
 
 export const rocketChatApiUri = `${config.get('openhive_chat_api_uri')}/api/v1`;
@@ -46,7 +56,9 @@ export async function getRCAuthToken(username = '') {
             timeout: 1000 * 30
         };
         const url = `${rocketChatApiUri}/users.createToken`;
-        const responseData = (await axios.post(url, {username}, requestConfig)).data;
+        const responseData = (
+                await axios.post(url, {username}, requestConfig)
+                ).data;
         // Succesful response looks like this:
         //
         // {
@@ -59,12 +71,14 @@ export async function getRCAuthToken(username = '') {
         if (responseData.success) {
             return {
                 success: true,
+                error: '',
                 data: {...responseData.data, ...{username}},
             };
         }
         return {
             success: false,
-            error: responseData.error || 'getRCAuthToken unspecified in responseData3'
+            error: responseData.error
+                    || 'getRCAuthToken unspecified in responseData3'
         };
     } catch (error) {
         console.error('getRCAuthToken error', error);
@@ -136,7 +150,9 @@ export async function getChatAuthToken(username = '') {
                 sendWelcomeEmail: false
             };
             try {
-                const responseData2 = (await axios.post(url2, data2, requestConfig)).data;
+                const responseData2 = (
+                    await axios.post(url2, data2, requestConfig)
+                    ).data;
                 if (responseData2.success) {
                     return getRCAuthToken(username);
                 }
@@ -176,61 +192,75 @@ export default function useRocketChat(app) {
     const router = new Router();
 
     //
-    // Set this endpoint as "Iframe URL" in Rocket Chat.
+    // You can set this endpoint as "Iframe URL" in Rocket Chat.
     //
     router.get('/chat/parking', async (ctx) => {
-        ctx.body = `
-<!DOCTYPE html>
-<html>
-
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" type="image/ico" href="/favicon.ico" />
-    <title>Chat - hive.blog</title>
-
-    <style>
-
-        body {
-            max-width: 35em;
-            margin: 0 auto;
-            font-family: Tahoma, Verdana, Arial, sans-serif;
-            padding: 20px;
-        }
-        .center-x {
-            margin-left: auto;
-            margin-right: auto;
-        }
-        .center-text {
-            text-align: center;
-        }
-
-    </style>
-
-</head>
-
-<body>
-
-    <div class="center-x" style="color: white;">
-        <h1>Chat</h1>
-        <p>
-            Please login to Hive Blog to see chat
-        </p>
-    </div>
-
-</body>
-</html>
-`;
+        const content = `
+            <p>
+                Please login to Hive Blog to see chat
+            </p>
+        `;
+        ctx.body = renderServerPage('Chat', content);
     });
+
+
+    //
+    // You can set this endpoint as "Iframe URL" in Rocket Chat.
+    //
+    router.get('/chat/login', async (ctx) => {
+        //
+        // See https://developer.rocket.chat/rocket.chat/iframe-integration/iframe-events
+        //
+        const script = `
+            const onMessageReceivedFromIframe = (event) => {
+                if (event.origin !== "${config.get('openhive_chat_uri')}") {
+                    return;
+                }
+            };
+
+            const addIframeListener = () => {
+                window.addEventListener(
+                    "message",
+                    onMessageReceivedFromIframe
+                    );
+            };
+            addIframeListener();
+
+            const callCustomOauthLogin = (service) => {
+                window.parent.postMessage(
+                    {
+                        externalCommand: 'call-custom-oauth-login',
+                        service: service,
+                        redirectUrl: "${config.get('openhive_chat_uri')}",
+                    },
+                    "${config.get('openhive_chat_uri')}"
+                    );
+            }
+        `;
+
+        const content = `
+            <p>
+                <input type=button onclick="callCustomOauthLogin('hiveblog')"
+                    value="Login with Hive.Blog">
+            </p>
+            <p>
+                <input type=button onclick="callCustomOauthLogin('hivesigner')"
+                    value="Login with Hivesigner">
+            </p>
+        `;
+
+        ctx.body = renderServerPage('Chat Login', content, script);
+    });
+
 
     //
     // Set this endpoint as "Iframe API URL" in Rocket Chat.
     //
     router.post('/chat/sso', async (ctx) => {
-        ctx.set('Access-Control-Allow-Origin', `${config.get('openhive_chat_api_uri')}`);
-        ctx.set('Access-Control-Allow-Credentials', 'true');
-        ctx.set('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-        ctx.set('Access-Control-Allow-Methods', 'POST, OPTIONS');
+
+        ssoHeaders.forEach((header) => {
+            ctx.set(header[0], header[1]);
+        });
 
         ctx.status = 401;
 
@@ -251,6 +281,15 @@ export default function useRocketChat(app) {
                 };
             }
         }
+    });
+
+    //
+    // Set this endpoint as "Iframe API URL" in Rocket Chat.
+    //
+    router.options('/chat/sso', async (ctx) => {
+        ssoHeaders.forEach((header) => {
+            ctx.set(header[0], header[1]);
+        });
     });
 
     app.use(router.routes()).use(router.allowedMethods());
