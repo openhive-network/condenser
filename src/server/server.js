@@ -99,7 +99,6 @@ const csrfProtect = new csrf({
 });
 const csrfIgnoreUrlList = ['/oauth/token', '/chat/sso'];
 app.use(async (ctx, next) => {
-    console.log('bamboo ctx.req.url', ctx.req.url);
     if (csrfIgnoreUrlList.includes(ctx.req.url)) {
         await next();
     } else if (/\/api\/v1\/.+$/.test(ctx.req.url)) {
