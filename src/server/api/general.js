@@ -73,7 +73,7 @@ export default function useGeneralApi(app) {
         // Validate request body.
         // TODO Validation rules below should be stricter.
         const schema = Joi.object({
-            _csrf: Joi.string().required(),
+            // _csrf: Joi.string().required(),
             account: Joi.string().required(),
             signatures: Joi.object().keys({
                 posting: Joi.string()
@@ -169,7 +169,7 @@ export default function useGeneralApi(app) {
 
             // Add auth token for chat to response.
             if (config.get('openhive_chat_iframe_integration_enable') === 'yes') {
-                    let result = {};
+                let result = {};
                 if (ctx.session.a) {
                     result = await getChatAuthToken(ctx.session.a);
                 } else if (ctx.session.externalUser && ctx.session.externalUser.system === 'hivesigner') {

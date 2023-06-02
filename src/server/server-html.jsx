@@ -110,6 +110,7 @@ export default function ServerHTML({
                     />
                 ) : null}
                 <script
+                    // eslint-disable-next-line react/no-danger
                     dangerouslySetInnerHTML={{
                         __html: `
                         window.twttr = (function(d, s, id) {
@@ -137,7 +138,13 @@ export default function ServerHTML({
                 <title>{page_title}</title>
             </head>
             <body>
-                {<div id="content" dangerouslySetInnerHTML={{ __html: body }} />}
+                {
+                    <div
+                        id="content"
+                        // eslint-disable-next-line react/no-danger
+                        dangerouslySetInnerHTML={{ __html: body }}
+                    />
+                }
                 {assets.script.map((href) => (
                     <script key={href} src={href} />
                 ))}
