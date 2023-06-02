@@ -36,6 +36,7 @@ if (cluster.isMaster) console.log('application server starting, please wait.');
 // import uploadImage from 'server/upload-image' //medium-editor
 
 const app = new Koa();
+app.proxy = true; // allows to trust the headers that the load-balancer adds to each request
 app.name = 'Hive app';
 const env = process.env.NODE_ENV || 'development';
 // cache of a thousand days
@@ -80,11 +81,12 @@ app.use(requestTime(statsLoggerClient));
 
 app.keys = [config.get('session_key')];
 const crypto_key = config.get('server_session_secret');
-hiveCryptoSession(app, {
+const hiveCryptoSessionOptions = {
     maxAge: 1000 * 3600 * 24 * 60,
     crypto_key,
     key: config.get('session_cookie_key'),
-});
+};
+hiveCryptoSession(app, hiveCryptoSessionOptions);
 
 app.use(koaBody());
 
@@ -98,6 +100,8 @@ const csrfProtect = new csrf({
 const csrfIgnoreUrlList = ['/oauth/token', '/chat/sso'];
 app.use(async (ctx, next) => {
     if (csrfIgnoreUrlList.includes(ctx.req.url)) {
+        await next();
+    } else if (/\/api\/v1\/.+$/.test(ctx.req.url)) {
         await next();
     } else {
         await csrfProtect(ctx, next);
