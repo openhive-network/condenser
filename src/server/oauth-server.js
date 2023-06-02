@@ -489,8 +489,8 @@ export default function oauthServer(app) {
             const contentUnsupportedUser = `
                 <p>
                     We cannot continue Oauth Flow for application
-                    ${oauthServerConfig.clients[params.get('client_id')].name}, because
-                    you're logged in via unsupported method in Hive Blog.
+                    ${oauthServerConfig.clients[params.get('client_id')].name},
+                    because you're logged in via unsupported method in Hive Blog.
                 </p>
                 <p>
                     Please do logout in application
@@ -502,7 +502,8 @@ export default function oauthServer(app) {
                     ${oauthServerConfig.clients[params.get('client_id')].name}
                     in <span id="countdown">${countdownPeriodUnsupportedUser}</span>.
                     You can click this button
-                    <input type=button onclick="location.replace('${redirectTo}')" value="Go back">
+                    <input type=button onclick="location.replace('${redirectTo}')"
+                        value="Go back">
                     to speed up this redirect.
                 </p>
             `;
@@ -572,10 +573,10 @@ export default function oauthServer(app) {
                                 value="Yes, I consent">
                     </p>
                     <p>
-                        When you don't click the button above, we'll redirect you back to application
-                        ${oauthServerConfig.clients[params.get('client_id')].name}
-                        in <span id="countdown">${countdownPeriodConsent} seconds</span>. Your login to application will fail.
-                        You can click this button
+                        When you don't click the button above, we'll redirect you back to
+                        application ${oauthServerConfig.clients[params.get('client_id')].name}
+                        in <span id="countdown">${countdownPeriodConsent} seconds</span>.
+                        Your login to application will fail. You can click this button
                         <input type=button onclick="location.replace('${redirectToConsentNo}')"
                                 value="Go back">
                         to speed up this redirect.
