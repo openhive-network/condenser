@@ -509,8 +509,8 @@ export default function oauthServer(app) {
 
             ctx.body = renderServerPage(
                 'Oauth Flow Error',
-                scriptCountdownTimer(redirectTo),
-                contentUnsupportedUser
+                contentUnsupportedUser,
+                scriptCountdownTimer(redirectTo)
                 );
             return;
         }
@@ -584,8 +584,8 @@ export default function oauthServer(app) {
 
                 ctx.body = renderServerPage(
                     'Oauth Flow Consent',
-                    scriptCountdownTimer(redirectToConsentNo),
-                    contentConsent
+                    contentConsent,
+                    scriptCountdownTimer(redirectToConsentNo)
                     );
 
                 return;

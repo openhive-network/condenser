@@ -185,7 +185,7 @@ export default function useRocketChat(app) {
                 Please login to Hive Blog to see chat
             </p>
         `;
-        ctx.body = renderServerPage('Chat', '', content);
+        ctx.body = renderServerPage('Chat', content);
     });
 
 
@@ -229,7 +229,7 @@ export default function useRocketChat(app) {
             </p>
         `;
 
-        ctx.body = renderServerPage('Chat Login', script, content);
+        ctx.body = renderServerPage('Chat Login', content, script);
     });
 
 

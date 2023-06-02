@@ -1,16 +1,18 @@
 /**
- * Render html page using Oauth server template.
+ * Render html page using server template.
  *
  * @param {string} [title='Oauth Flow']
- * @param {string} [countdownRedirectTo='/']
  * @param {string} [content='']
+ * @param {string} [script='']
+ * @param {string} [style='']
  * @returns
  */
 export default function renderServerPage(
-    title = 'Oauth Flow',
-    script = '',
-    content = ''
-    ) {
+        title = 'Blog',
+        content = '',
+        script = '',
+        style = ''
+        ) {
 
     return `
     <!DOCTYPE html>
@@ -23,7 +25,6 @@ export default function renderServerPage(
             <title>${title} - hive.blog</title>
 
             <style>
-
                 body {
                     margin: 0 auto;
                     font-family: Tahoma, Verdana, Arial, sans-serif;
@@ -43,6 +44,7 @@ export default function renderServerPage(
                     font-weight: bold;
                     color: red;
                 }
+                ${style}
             </style>
 
             ${script ? '<script>' + script + '</script>' : ''}
