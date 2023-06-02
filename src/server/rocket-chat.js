@@ -2,6 +2,7 @@ import Router from 'koa-router';
 import axios from 'axios';
 import config from 'config';
 import secureRandom from 'secure-random';
+import renderServerPage from './server-page';
 
 /**
  * @typedef ResultToken
@@ -179,48 +180,12 @@ export default function useRocketChat(app) {
     // Set this endpoint as "Iframe URL" in Rocket Chat.
     //
     router.get('/chat/parking', async (ctx) => {
-        ctx.body = `
-<!DOCTYPE html>
-<html>
-
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" type="image/ico" href="/favicon.ico" />
-    <title>Chat - hive.blog</title>
-
-    <style>
-
-        body {
-            background-color: white;
-            margin: 0 auto;
-            font-family: Tahoma, Verdana, Arial, sans-serif;
-            padding: 20px;
-        }
-        .center-x {
-            margin-left: auto;
-            margin-right: auto;
-        }
-        .center-text {
-            text-align: center;
-        }
-
-    </style>
-
-</head>
-
-<body>
-
-    <div class="center-x" style="max-width: 35em;">
-        <h1>Chat</h1>
-        <p>
-            Please login to Hive Blog to see chat
-        </p>
-    </div>
-
-</body>
-</html>
-`;
+        const content = `
+            <p>
+                Please login to Hive Blog to see chat
+            </p>
+        `;
+        ctx.body = renderServerPage('Chat', '', content);
     });
 
 
@@ -228,91 +193,43 @@ export default function useRocketChat(app) {
     // Set this endpoint as "Iframe URL" in Rocket Chat.
     //
     router.get('/chat/login', async (ctx) => {
-        ctx.body = `
-<!DOCTYPE html>
-<html>
+        //
+        // See https://developer.rocket.chat/rocket.chat/iframe-integration/iframe-events
+        //
+        const script = `
+            const onMessageReceivedFromIframe = (event) => {
+                if (event.origin !== "${config.get('openhive_chat_uri')}") {
+                    return;
+                }
+            };
 
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" type="image/ico" href="/favicon.ico" />
-    <title>Chat Login - hive.blog</title>
+            const addIframeListener = () => {
+                window.addEventListener("message", onMessageReceivedFromIframe);
+            };
+            addIframeListener();
 
-    <style>
-
-        body {
-            background-color: white;
-            margin: 0 auto;
-            font-family: Tahoma, Verdana, Arial, sans-serif;
-            padding: 20px;
-        }
-        .content {
-            max-width: 35em;
-        }
-        .center-x {
-            margin-left: auto;
-            margin-right: auto;
-        }
-        .center-text {
-            text-align: center;
-        }
-
-    </style>
-
-    <script>
-
-        const onMessageReceivedFromIframe = (event) => {
-
-            //
-            // See https://developer.rocket.chat/rocket.chat/iframe-integration/iframe-events
-            //
-
-            if (event.origin !== "${config.get('openhive_chat_uri')}") {
-                return;
+            const callCustomOauthLogin = (service) => {
+                window.parent.postMessage(
+                    {
+                        externalCommand: 'call-custom-oauth-login',
+                        service: service,
+                        redirectUrl: "${config.get('openhive_chat_uri')}",
+                    },
+                    "${config.get('openhive_chat_uri')}"
+                    );
             }
+        `;
 
-            console.log("chat onMessageReceivedFromIframe event", event.origin,
-                    event.data, event);
-        };
+        const content = `
+            <p>
+                <input type=button onclick="callCustomOauthLogin('hiveblog')" value="Login with Hive.Blog">
+            </p>
+            <p>
+                <input type=button onclick="callCustomOauthLogin('hivesigner')" value="Login with Hivesigner">
+            </p>
+        `;
 
-        const addIframeListener = () => {
-            window.addEventListener("message", onMessageReceivedFromIframe);
-        };
-        addIframeListener();
-
-        const callCustomOauthLogin = (service) => {
-            window.parent.postMessage(
-                {
-                    externalCommand: 'call-custom-oauth-login',
-                    service: service,
-                    redirectUrl: "${config.get('openhive_chat_uri')}",
-                },
-                "${config.get('openhive_chat_uri')}"
-                );
-        }
-
-    </script>
-
-</head>
-
-<body>
-
-    <div class="content center-x">
-        <div class="center-x">
-            <img alt="logo" width="150" height="40" src="/images/hive-blog-logo.svg">
-        </div>
-        <h1>Chat Login</h1>
-        <p>
-            <input type=button onclick="callCustomOauthLogin('hiveblog')" value="Login with Hive.Blog">
-        </p>
-        <p>
-            <input type=button onclick="callCustomOauthLogin('hivesigner')" value="Login with Hivesigner">
-        </p>
-    </div>
-
-</body>
-</html>
-`;
+        ctx.body = renderServerPage('Chat Login', script, content);
     });
 
 
