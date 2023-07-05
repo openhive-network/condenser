@@ -629,12 +629,7 @@ function* usernamePasswordLogin2(options) {
             }
 
             console.log('Logging in as', username);
-            let loginData;
-            if ((Object.keys(signatures)).length > 0) {
-                loginData = yield serverApiLogin(username, signatures);
-            } else {
-                loginData = yield serverApiLogin(username, {}, externalUser);
-            }
+            const loginData = yield serverApiLogin(username, signatures, externalUser);
             if (loginData?.chatAuthToken) {
                 yield put(
                     userActions.setUser({

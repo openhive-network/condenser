@@ -92,6 +92,7 @@ export default function useGeneralApi(app) {
         let loginType = 'login';
         try {
             if (signatures && Object.keys(signatures).length > 0) {
+                console.log('bamboo checking signatures');
                 if (!ctx.session.login_challenge) {
                     console.error('/login_account missing this.session.login_challenge');
                 } else {
@@ -172,8 +173,12 @@ export default function useGeneralApi(app) {
                 let result = {};
                 if (ctx.session.a) {
                     result = await getChatAuthToken(ctx.session.a);
+                    console.log('bamboo user is ctx.session.a', ctx.session.a);
                 } else if (ctx.session.externalUser && ctx.session.externalUser.system === 'hivesigner') {
                     result = await getChatAuthToken(ctx.session.externalUser.user);
+                    console.log('bamboo user is externalUser', ctx.session.externalUser.user, ctx.session.externalUser.system);
+                } else {
+                    console.log('bamboo in else, user is externalUser and we cannot confirm his identity', ctx.session.externalUser.user, ctx.session.externalUser.system);
                 }
                 if (result.success) {
                     ctx.body.chatAuthToken = result.data.authToken;
