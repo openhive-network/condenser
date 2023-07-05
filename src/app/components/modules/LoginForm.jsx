@@ -576,7 +576,7 @@ class LoginForm extends Component {
                             ref="pw"
                             {...useHiveAuth.props}
                             onChange={this.useHiveAuthToggle}
-                            disabled={(!hasError && submitting) || oauthFlow}
+                            disabled={!hasError && submitting}
                         />
                         &nbsp;
                         <img src="/images/hiveauth.png" alt="HiveAuth" width="16" />
