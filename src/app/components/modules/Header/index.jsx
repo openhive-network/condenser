@@ -226,25 +226,30 @@ class Header extends React.Component {
 
         let loginProvider;
         let loginProviderLogo;
+        let loginProviderLogoWidth;
         switch(true) {
             case !!login_with_keychain:
                 loginProvider = 'Hive Keychain';
                 loginProviderLogo = '/images/hivekeychain.png';
+                loginProviderLogoWidth = '16';
                 break;
 
             case !!login_with_hiveauth:
                 loginProvider = 'HiveAuth';
                 loginProviderLogo = '/images/hiveauth.png';
+                loginProviderLogoWidth = '16';
                 break;
 
             case !!login_with_hivesigner:
                 loginProvider = 'Hive Signer';
                 loginProviderLogo = '/images/hivesigner.svg';
+                loginProviderLogoWidth = '80';
                 break;
 
             default:
                 loginProvider = 'Hive private key';
                 loginProviderLogo = '/images/hive-blog-logo.svg';
+                loginProviderLogoWidth = '64';
                 break;
         }
 
@@ -333,7 +338,7 @@ class Header extends React.Component {
                                             >
                                                 <img
                                                     alt={loginProvider}
-                                                    width="16"
+                                                    width={loginProviderLogoWidth}
                                                     src={loginProviderLogo}
                                                 />
                                             </Tooltip>
