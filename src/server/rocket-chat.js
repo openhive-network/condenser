@@ -267,11 +267,9 @@ export default function useRocketChat(app) {
         let user;
         if (ctx.session.a) {
             user = ctx.session.a;
-            console.log('bamboo user is ctx.session.a', user);
         } else if (ctx.session.externalUser
                 && ctx.session.externalUser.system === 'hivesigner') {
             user = ctx.session.externalUser.user;
-            console.log('bamboo user is externalUser', user, ctx.session.externalUser.system);
         }
 
         if (user) {
