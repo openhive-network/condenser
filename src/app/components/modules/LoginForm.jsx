@@ -559,7 +559,7 @@ class LoginForm extends Component {
                                 ref="pw"
                                 {...useKeychain.props}
                                 onChange={this.useKeychainToggle}
-                                disabled={submitting || oauthFlow}
+                                disabled={submitting}
                             />
                             &nbsp;
                             <img src="/images/hivekeychain.png" alt="Hive Keychain" width="16" />

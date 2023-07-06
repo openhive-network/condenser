@@ -276,7 +276,15 @@ function* usernamePasswordLogin2(options) {
         );
         const externalUser = {system: 'keychain'};
         try {
-            yield serverApiLogin(username, {}, externalUser);
+                const loginData = yield serverApiLogin(username, {}, externalUser);
+                if (loginData?.chatAuthToken) {
+                    yield put(
+                        userActions.setUser({
+                            loginType: loginData.loginType,
+                            chatAuthToken: loginData.chatAuthToken,
+                        })
+                    );
+                }
         } catch (error) {
             // Swallow error. Is this a good idea?
         }
