@@ -750,7 +750,7 @@ export default connect(
         const currentUser = state.user.get('current');
         const loginBroadcastOperation = state.user.get('loginBroadcastOperation');
         const initialValues = {
-            useKeychain: !!hasCompatibleKeychain(),
+            useKeychain: hasCompatibleKeychain(),
             useHiveAuth: false,
             saveLogin: saveLoginDefault,
         };
