@@ -263,6 +263,7 @@ function* usernamePasswordLogin2(options) {
             show_login_modal: useHiveAuth && document.location.pathname !== '/login.html',
         })
     );
+
     // return if already logged in using steem keychain
     if (login_with_keychain) {
         console.log('Logged in using Hive Keychain');
@@ -275,7 +276,15 @@ function* usernamePasswordLogin2(options) {
         );
         const externalUser = {system: 'keychain'};
         try {
-            yield serverApiLogin(username, {}, externalUser);
+                const loginData = yield serverApiLogin(username, {}, externalUser);
+                if (loginData?.chatAuthToken) {
+                    yield put(
+                        userActions.setUser({
+                            loginType: loginData.loginType,
+                            chatAuthToken: loginData.chatAuthToken,
+                        })
+                    );
+                }
         } catch (error) {
             // Swallow error. Is this a good idea?
         }
@@ -314,12 +323,22 @@ function* usernamePasswordLogin2(options) {
                     effective_vests: effectiveVests(account),
                 })
             );
+
             const externalUser = {system: 'hiveauth'};
             try {
-                yield serverApiLogin(username, {}, externalUser);
+                const loginData = yield serverApiLogin(username, {}, externalUser);
+                if (loginData?.chatAuthToken) {
+                    yield put(
+                        userActions.setUser({
+                            loginType: loginData.loginType,
+                            chatAuthToken: loginData.chatAuthToken,
+                        })
+                    );
+                }
             } catch (error) {
                 // Swallow error. Is this a good idea?
             }
+
             // Redirect, when we are in oauth flow.
             const oauthRedirectTo = oauthRedirect(username);
             if (oauthRedirectTo) {
@@ -353,6 +372,7 @@ function* usernamePasswordLogin2(options) {
                 })
             );
         }
+
         const externalUser = {system: 'hivesigner', hivesignerToken: access_token};
         try {
             const loginData = yield serverApiLogin(username, {}, externalUser);
@@ -617,12 +637,7 @@ function* usernamePasswordLogin2(options) {
             }
 
             console.log('Logging in as', username);
-            let loginData;
-            if ((Object.keys(signatures)).length > 0) {
-                loginData = yield serverApiLogin(username, signatures);
-            } else {
-                loginData = yield serverApiLogin(username, {}, externalUser);
-            }
+            const loginData = yield serverApiLogin(username, signatures, externalUser);
             if (loginData?.chatAuthToken) {
                 yield put(
                     userActions.setUser({
