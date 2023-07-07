@@ -11,6 +11,7 @@ export function hasCompatibleKeychain() {
         && window.hive_keychain.requestBroadcast
         && window.hive_keychain.requestSignedCall
     );
+    console.log('bamboo hasCompatibleKeychain', !!result);
     return !!result;
 }
 
