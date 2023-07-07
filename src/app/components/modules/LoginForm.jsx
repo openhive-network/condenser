@@ -54,6 +54,7 @@ class LoginForm extends Component {
             oauthFlow,
             oauthFlowLoading: true,
             oauthFlowError: false,
+            showKeychainLoginOption: false,
         };
         this.usernameOnChange = (e) => {
             const value = e.target.value.toLowerCase();
@@ -73,10 +74,12 @@ class LoginForm extends Component {
                 password.props.onChange(data);
             });
         };
+        this.checkKeychainSupport = this.checkKeychainSupport.bind(this);
         this.initForm(props);
     }
 
     async componentDidMount() {
+        window.addEventListener('load', this.checkKeychainSupport);
         this.loginWithHiveSigner();
         // eslint-disable-next-line react/no-string-refs
         if (this.refs.username && !this.refs.username.value) this.refs.username.focus();
@@ -97,9 +100,16 @@ class LoginForm extends Component {
 
     componentWillUnmount() {
         this.unRegisterOauthRequest();
+        window.removeEventListener('load', this.checkKeychainSupport);
     }
 
     // shouldComponentUpdate = shouldComponentUpdate(this, 'LoginForm');
+
+    checkKeychainSupport() {
+        this.setState(
+            { showKeychainLoginOption: hasCompatibleKeychain() }
+            );
+    }
 
     initForm(props) {
         reactForm({
@@ -329,6 +339,7 @@ class LoginForm extends Component {
             oauthFlow,
             oauthFlowLoading,
             oauthFlowError,
+            showKeychainLoginOption,
         } = this.state;
 
         const { valid, handleSubmit } = this.state.login;
@@ -550,7 +561,7 @@ class LoginForm extends Component {
                         </div>
                     </div>
                 )}
-                {hasCompatibleKeychain() && (
+                { (showKeychainLoginOption || hasCompatibleKeychain()) && (
                     <div>
                         <label className="LoginForm__save-login" htmlFor="useKeychain">
                             <input
@@ -559,7 +570,7 @@ class LoginForm extends Component {
                                 ref="pw"
                                 {...useKeychain.props}
                                 onChange={this.useKeychainToggle}
-                                disabled={submitting || oauthFlow}
+                                disabled={submitting}
                             />
                             &nbsp;
                             <img src="/images/hivekeychain.png" alt="Hive Keychain" width="16" />
@@ -576,7 +587,7 @@ class LoginForm extends Component {
                             ref="pw"
                             {...useHiveAuth.props}
                             onChange={this.useHiveAuthToggle}
-                            disabled={(!hasError && submitting) || oauthFlow}
+                            disabled={!hasError && submitting}
                         />
                         &nbsp;
                         <img src="/images/hiveauth.png" alt="HiveAuth" width="16" />
@@ -750,7 +761,7 @@ export default connect(
         const currentUser = state.user.get('current');
         const loginBroadcastOperation = state.user.get('loginBroadcastOperation');
         const initialValues = {
-            useKeychain: !!hasCompatibleKeychain(),
+            useKeychain: hasCompatibleKeychain(),
             useHiveAuth: false,
             saveLogin: saveLoginDefault,
         };

@@ -477,7 +477,7 @@ export default function oauthServer(app) {
         // from unsupported external system and retry login via
         // supported method.
         if (ctx.session.externalUser
-                && ctx.session.externalUser.system !== 'hivesigner') {
+                && !['hivesigner', 'hiveauth', 'keychain'].includes(ctx.session.externalUser.system)) {
             validationError = {
                 error: 'temporarily_unavailable',
                 error_description:
