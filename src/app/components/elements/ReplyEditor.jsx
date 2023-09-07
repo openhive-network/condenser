@@ -110,30 +110,20 @@ class ReplyEditor extends React.Component {
         }
     }
 
-    componentDidUpdate() {
+    componentDidUpdate(prevProps, prevState, snapshot) {
         const { formId } = this.props;
+        let raw = null;
 
-        // Only need to do it on first time to load drafts etc...
-        // This also prevents infinite rerender due to the use of setState below
-        if (this.state.initialized === true) {
-            return;
-        }
-
-        if (process.env.BROWSER) {
-            // Check for rte editor preference
-            let rte = this.props.isStory && JSON.parse(localStorage.getItem('replyEditorData-rte') || RTE_DEFAULT);
-            let raw = null;
-
+        const loadDraft = (draft) => {
             // Process initial body value (if this is an edit)
             const { body } = this.state;
             if (body.value) {
                 raw = body.value;
             }
+            // Check for rte editor preference
+            let rte = this.props.isStory && JSON.parse(localStorage.getItem('replyEditorData-rte') || RTE_DEFAULT);
 
-            // Check for draft data
-            let draft = localStorage.getItem('replyEditorData-' + formId);
             if (draft) {
-                draft = JSON.parse(draft);
                 const {
                     tags, title, summary, altAuthor,
                 } = this.state;
@@ -164,6 +154,27 @@ class ReplyEditor extends React.Component {
                 rte,
                 rte_value: rte ? stateFromHtml(raw) : null,
             });
+        };
+
+        if (snapshot && 'template' in snapshot) {
+            let draft;
+            if (snapshot.template) {
+                draft = snapshot.template;
+            }
+
+            loadDraft(draft);
+            this.props.setPostTemplateName(formId, null);
+        }
+
+        // Only need to do it on first time to load drafts etc...
+        // This also prevents infinite rerender due to the use of setState below
+        if (this.state.initialized === true) {
+            return;
+        }
+
+        if (process.env.BROWSER) {
+            const draft = localStorage.getItem('replyEditorData-' + formId);
+            loadDraft(JSON.parse(draft));
         }
 
         // Overwrite category (even if draft loaded) if authoritative category was provided
@@ -180,7 +191,7 @@ class ReplyEditor extends React.Component {
         if (
             this.props.defaultBeneficiaries
             && this.props.defaultBeneficiaries.toArray().length > 0
-            && this.props.referralSystem != 'disabled'
+            && this.props.referralSystem !== 'disabled'
         ) {
             this.props.defaultBeneficiaries.toArray().forEach((element) => {
                 const label = element.get('label');
@@ -246,9 +257,8 @@ class ReplyEditor extends React.Component {
             const np = this.props;
 
             if (typeof np.postTemplateName !== 'undefined' && np.postTemplateName !== null) {
-                const { formId } = tp;
-
                 if (np.postTemplateName.indexOf('create_') === 0) {
+                    console.log('Create template', np.postTemplateName);
                     const { username } = this.props;
                     const {
                         body, title, summary, altAuthor, tags
@@ -281,24 +291,29 @@ class ReplyEditor extends React.Component {
 
                     saveUserTemplates(username, userTemplates);
 
-                    this.props.setPostTemplateName(formId, null);
-                } else {
-                    const userTemplates = loadUserTemplates(np.username);
+                    return { template: null };
+                }
 
-                    for (let ti = 0; ti < userTemplates.length; ti += 1) {
-                        const template = userTemplates[ti];
-                        if (template.name === np.postTemplateName) {
-                            this.state.body.props.onChange(template.markdown);
-                            this.state.title.props.onChange(template.title);
-                            this.state.summary.props.onChange(template.summary);
-                            this.state.altAuthor.props.onChange(template.altAuthor);
-                            this.state.tags.props.onChange(template.tags);
-                            this.props.setPayoutType(formId, template.payoutType);
-                            this.props.setBeneficiaries(formId, template.beneficiaries);
+                const userTemplates = loadUserTemplates(np.username);
+                for (let ti = 0; ti < userTemplates.length; ti += 1) {
+                    const template = userTemplates[ti];
+                    if (template.name === np.postTemplateName) {
+                        console.log('Found template', template);
+                        // this.props.setPostTemplateName(formId, null);
 
-                            this.props.setPostTemplateName(formId, null);
-                            break;
-                        }
+                        return {
+                            template: {
+                                altAuthor: template.altAuthor,
+                                beneficiaries: template.beneficiaries,
+                                body: template.markdown,
+                                formId: 'submitStory',
+                                maxAcceptedPayout: null,
+                                payoutType: template.payoutType,
+                                summary: template.summary,
+                                tags: template.tags,
+                                title: template.title,
+                            }
+                        };
                     }
                 }
             }
