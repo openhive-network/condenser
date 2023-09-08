@@ -74,6 +74,7 @@ class ReplyEditor extends React.Component {
         postTemplateName: PropTypes.string,
         maxAcceptedPayout: PropTypes.number,
         isStory: PropTypes.bool,
+        community: PropTypes.string,
     };
 
     static defaultProps = {
@@ -83,6 +84,7 @@ class ReplyEditor extends React.Component {
         parent_permlink: '',
         type: 'submit_comment',
         maxAcceptedPayout: null,
+        community: 'blog',
     };
 
     constructor(props) {
@@ -123,22 +125,26 @@ class ReplyEditor extends React.Component {
             // Check for rte editor preference
             let rte = this.props.isStory && JSON.parse(localStorage.getItem('replyEditorData-rte') || RTE_DEFAULT);
 
+            let postCommunity;
             if (draft) {
                 const {
-                    tags, title, summary, altAuthor,
+                    tags, title, summary, altAuthor, community,
                 } = this.state;
+                postCommunity = community;
 
                 if (tags) {
                     this.checkTagsCommunity(draft.tags);
                     tags.props.onChange(draft.tags);
                 }
 
-                if (title) title.props.onChange(draft.title);
-                if (summary) summary.props.onChange(draft.summary);
-                if (altAuthor) altAuthor.props.onChange(draft.altAuthor);
+                if (draft.title) title.props.onChange(draft.title);
+                if (draft.summary) summary.props.onChange(draft.summary);
+                if (draft.altAuthor) altAuthor.props.onChange(draft.altAuthor);
                 if (draft.payoutType) this.props.setPayoutType(formId, draft.payoutType);
                 if (draft.maxAcceptedPayout) this.props.setMaxAcceptedPayout(formId, draft.maxAcceptedPayout);
                 if (draft.beneficiaries) this.props.setBeneficiaries(formId, draft.beneficiaries);
+                if (draft.community) postCommunity = draft.community;
+
                 raw = draft.body;
             }
 
@@ -147,12 +153,12 @@ class ReplyEditor extends React.Component {
                 rte = isHtmlTest(raw);
             }
 
-            // console.log("initial reply body:", raw || '(empty)')
             body.props.onChange(raw);
             // eslint-disable-next-line react/no-did-update-set-state
             this.setState({
                 rte,
                 rte_value: rte ? stateFromHtml(raw) : null,
+                ...(postCommunity && { community: postCommunity }),
             });
         };
 
@@ -258,10 +264,9 @@ class ReplyEditor extends React.Component {
 
             if (typeof np.postTemplateName !== 'undefined' && np.postTemplateName !== null) {
                 if (np.postTemplateName.indexOf('create_') === 0) {
-                    console.log('Create template', np.postTemplateName);
                     const { username } = this.props;
                     const {
-                        body, title, summary, altAuthor, tags
+                        body, title, summary, altAuthor, tags, community,
                     } = ns;
                     const { payoutType, beneficiaries } = np;
                     const userTemplates = loadUserTemplates(username);
@@ -275,6 +280,7 @@ class ReplyEditor extends React.Component {
                         summary: summary !== undefined ? summary.value : '',
                         altAuthor: altAuthor !== undefined ? altAuthor.value : '',
                         tags: tags !== undefined ? tags.value : '',
+                        community: community ? community : '',
                     };
 
                     let updated = false;
@@ -298,9 +304,6 @@ class ReplyEditor extends React.Component {
                 for (let ti = 0; ti < userTemplates.length; ti += 1) {
                     const template = userTemplates[ti];
                     if (template.name === np.postTemplateName) {
-                        console.log('Found template', template);
-                        // this.props.setPostTemplateName(formId, null);
-
                         return {
                             template: {
                                 altAuthor: template.altAuthor,
@@ -350,7 +353,6 @@ class ReplyEditor extends React.Component {
 
                 clearTimeout(saveEditorTimeout);
                 saveEditorTimeout = setTimeout(() => {
-                    // console.log('save formId', formId, body.value)
                     localStorage.setItem('replyEditorData-' + formId, JSON.stringify(data, null, 0));
                     this.showDraftSaved();
                 }, 500);
@@ -386,6 +388,7 @@ class ReplyEditor extends React.Component {
         }
 
         tags.props.onChange(currentTags.join(' '));
+        this.setState({ community: category });
     };
 
     initForm(props) {
