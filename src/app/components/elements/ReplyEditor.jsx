@@ -74,6 +74,7 @@ class ReplyEditor extends React.Component {
         postTemplateName: PropTypes.string,
         maxAcceptedPayout: PropTypes.number,
         isStory: PropTypes.bool,
+        community: PropTypes.string,
     };
 
     static defaultProps = {
@@ -83,6 +84,7 @@ class ReplyEditor extends React.Component {
         parent_permlink: '',
         type: 'submit_comment',
         maxAcceptedPayout: null,
+        community: 'blog',
     };
 
     constructor(props) {
@@ -110,45 +112,39 @@ class ReplyEditor extends React.Component {
         }
     }
 
-    componentDidUpdate() {
+    componentDidUpdate(prevProps, prevState, snapshot) {
         const { formId } = this.props;
+        let raw = null;
 
-        // Only need to do it on first time to load drafts etc...
-        // This also prevents infinite rerender due to the use of setState below
-        if (this.state.initialized === true) {
-            return;
-        }
-
-        if (process.env.BROWSER) {
-            // Check for rte editor preference
-            let rte = this.props.isStory && JSON.parse(localStorage.getItem('replyEditorData-rte') || RTE_DEFAULT);
-            let raw = null;
-
+        const loadDraft = (draft) => {
             // Process initial body value (if this is an edit)
             const { body } = this.state;
             if (body.value) {
                 raw = body.value;
             }
+            // Check for rte editor preference
+            let rte = this.props.isStory && JSON.parse(localStorage.getItem('replyEditorData-rte') || RTE_DEFAULT);
 
-            // Check for draft data
-            let draft = localStorage.getItem('replyEditorData-' + formId);
+            let postCommunity;
             if (draft) {
-                draft = JSON.parse(draft);
                 const {
-                    tags, title, summary, altAuthor,
+                    tags, title, summary, altAuthor, community,
                 } = this.state;
+                postCommunity = community;
 
                 if (tags) {
                     this.checkTagsCommunity(draft.tags);
                     tags.props.onChange(draft.tags);
                 }
 
-                if (title) title.props.onChange(draft.title);
-                if (summary) summary.props.onChange(draft.summary);
-                if (altAuthor) altAuthor.props.onChange(draft.altAuthor);
+                if (draft.title) title.props.onChange(draft.title);
+                if (draft.summary) summary.props.onChange(draft.summary);
+                if (draft.altAuthor) altAuthor.props.onChange(draft.altAuthor);
                 if (draft.payoutType) this.props.setPayoutType(formId, draft.payoutType);
                 if (draft.maxAcceptedPayout) this.props.setMaxAcceptedPayout(formId, draft.maxAcceptedPayout);
                 if (draft.beneficiaries) this.props.setBeneficiaries(formId, draft.beneficiaries);
+                if (draft.community) postCommunity = draft.community;
+
                 raw = draft.body;
             }
 
@@ -157,13 +153,34 @@ class ReplyEditor extends React.Component {
                 rte = isHtmlTest(raw);
             }
 
-            // console.log("initial reply body:", raw || '(empty)')
             body.props.onChange(raw);
             // eslint-disable-next-line react/no-did-update-set-state
             this.setState({
                 rte,
                 rte_value: rte ? stateFromHtml(raw) : null,
+                ...(postCommunity && { community: postCommunity }),
             });
+        };
+
+        if (snapshot && 'template' in snapshot) {
+            let draft;
+            if (snapshot.template) {
+                draft = snapshot.template;
+            }
+
+            loadDraft(draft);
+            this.props.setPostTemplateName(formId, null);
+        }
+
+        // Only need to do it on first time to load drafts etc...
+        // This also prevents infinite rerender due to the use of setState below
+        if (this.state.initialized === true) {
+            return;
+        }
+
+        if (process.env.BROWSER) {
+            const draft = localStorage.getItem('replyEditorData-' + formId);
+            loadDraft(JSON.parse(draft));
         }
 
         // Overwrite category (even if draft loaded) if authoritative category was provided
@@ -180,7 +197,7 @@ class ReplyEditor extends React.Component {
         if (
             this.props.defaultBeneficiaries
             && this.props.defaultBeneficiaries.toArray().length > 0
-            && this.props.referralSystem != 'disabled'
+            && this.props.referralSystem !== 'disabled'
         ) {
             this.props.defaultBeneficiaries.toArray().forEach((element) => {
                 const label = element.get('label');
@@ -246,12 +263,10 @@ class ReplyEditor extends React.Component {
             const np = this.props;
 
             if (typeof np.postTemplateName !== 'undefined' && np.postTemplateName !== null) {
-                const { formId } = tp;
-
                 if (np.postTemplateName.indexOf('create_') === 0) {
                     const { username } = this.props;
                     const {
-                        body, title, summary, altAuthor, tags
+                        body, title, summary, altAuthor, tags, community,
                     } = ns;
                     const { payoutType, beneficiaries } = np;
                     const userTemplates = loadUserTemplates(username);
@@ -265,6 +280,7 @@ class ReplyEditor extends React.Component {
                         summary: summary !== undefined ? summary.value : '',
                         altAuthor: altAuthor !== undefined ? altAuthor.value : '',
                         tags: tags !== undefined ? tags.value : '',
+                        community: community ? community : '',
                     };
 
                     let updated = false;
@@ -281,24 +297,26 @@ class ReplyEditor extends React.Component {
 
                     saveUserTemplates(username, userTemplates);
 
-                    this.props.setPostTemplateName(formId, null);
-                } else {
-                    const userTemplates = loadUserTemplates(np.username);
+                    return { template: null };
+                }
 
-                    for (let ti = 0; ti < userTemplates.length; ti += 1) {
-                        const template = userTemplates[ti];
-                        if (template.name === np.postTemplateName) {
-                            this.state.body.props.onChange(template.markdown);
-                            this.state.title.props.onChange(template.title);
-                            this.state.summary.props.onChange(template.summary);
-                            this.state.altAuthor.props.onChange(template.altAuthor);
-                            this.state.tags.props.onChange(template.tags);
-                            this.props.setPayoutType(formId, template.payoutType);
-                            this.props.setBeneficiaries(formId, template.beneficiaries);
-
-                            this.props.setPostTemplateName(formId, null);
-                            break;
-                        }
+                const userTemplates = loadUserTemplates(np.username);
+                for (let ti = 0; ti < userTemplates.length; ti += 1) {
+                    const template = userTemplates[ti];
+                    if (template.name === np.postTemplateName) {
+                        return {
+                            template: {
+                                altAuthor: template.altAuthor,
+                                beneficiaries: template.beneficiaries,
+                                body: template.markdown,
+                                formId: 'submitStory',
+                                maxAcceptedPayout: null,
+                                payoutType: template.payoutType,
+                                summary: template.summary,
+                                tags: template.tags,
+                                title: template.title,
+                            }
+                        };
                     }
                 }
             }
@@ -335,7 +353,6 @@ class ReplyEditor extends React.Component {
 
                 clearTimeout(saveEditorTimeout);
                 saveEditorTimeout = setTimeout(() => {
-                    // console.log('save formId', formId, body.value)
                     localStorage.setItem('replyEditorData-' + formId, JSON.stringify(data, null, 0));
                     this.showDraftSaved();
                 }, 500);
@@ -371,6 +388,7 @@ class ReplyEditor extends React.Component {
         }
 
         tags.props.onChange(currentTags.join(' '));
+        this.setState({ community: category });
     };
 
     initForm(props) {
