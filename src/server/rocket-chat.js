@@ -136,7 +136,7 @@ export async function getChatAuthToken(username = '') {
         };
     }
 
-    // If user doesn't exist, let's create a user, when the setiings
+    // If user doesn't exist, let's create a user, when the settings
     // allow to do this.
     if (responseData1.error === 'User not found.') {
         if (config.get('openhive_chat_iframe_create_users') === 'yes') {
