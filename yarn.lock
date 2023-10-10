@@ -2046,10 +2046,10 @@
   resolved "https://registry.yarnpkg.com/@popperjs/core/-/core-2.11.6.tgz#cee20bd55e68a1720bdab363ecf0c821ded4cd45"
   integrity sha512-50/17A98tWUfQ176raKiOGXuYpLyyVMkxxG6oylzL3BPOlA6ADGdK7EYunSa4I064xerltq9TGXs8HmOk5E+vw==
 
-"@quochuync/remarkable-spoiler@^1.3.0":
-  version "1.3.0"
-  resolved "https://registry.yarnpkg.com/@quochuync/remarkable-spoiler/-/remarkable-spoiler-1.3.0.tgz#2d15dfd8e4b1275d37c254bdf2f7af0d475e31aa"
-  integrity sha512-uyaMzYcAUqluL51tnNk0yg7aaruVCUgZbzyKebRR2lkqbN8VFY9yKSguRv1uHREFXEx794CCymKrAKCqMPiQeA==
+"@quochuync/remarkable-spoiler@^1.4.0":
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/@quochuync/remarkable-spoiler/-/remarkable-spoiler-1.4.0.tgz#153a795e592e589b5e82b96f09a1fc275f414a32"
+  integrity sha512-Ra6xaS93GjWrYNRWQYTT/m3pJ96MmayHcETeRrnYafNtFcculRFBr3g0UoFG40yV2aP9IFoboYz2CAbhD5aqDw==
 
 "@sideway/address@^4.1.3":
   version "4.1.4"
