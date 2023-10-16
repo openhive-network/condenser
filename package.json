@@ -31,6 +31,7 @@
     "@babel/runtime": "^7.12.5",
     "@emotion/react": "^11.10.6",
     "@emotion/styled": "^11.10.6",
+    "@hive-engine/sscjs": "^0.0.9",
     "@hiveio/hive-js": "^2.0.4",
     "@hiveio/hivescript": "^1.2.9",
     "@mui/icons-material": "^5.11.9",
