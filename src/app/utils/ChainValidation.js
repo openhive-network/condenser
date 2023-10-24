@@ -27,9 +27,6 @@ export function validate_account_name(value) {
         if (!/^[a-z0-9-]*$/.test(label)) {
             return tt('chainvalidation_js.each_account_segment_should_have_only_letters_digits_or_dashes');
         }
-        if (/--/.test(label)) {
-            return tt('chainvalidation_js.each_account_segment_should_have_only_one_dash_in_a_row');
-        }
         if (!/[a-z0-9]$/.test(label)) {
             return tt('chainvalidation_js.each_account_segment_should_end_with_a_letter_or_digit');
         }
