@@ -438,7 +438,7 @@ class ListManagement extends React.Component {
                 what = 'reset_follow_blacklist';
                 break;
             case 'muted':
-                what = 'reset_mute_list';
+                what = 'reset_muted_list';
                 break;
             case 'followed_muted_lists':
                 what = 'reset_follow_muted_list';
