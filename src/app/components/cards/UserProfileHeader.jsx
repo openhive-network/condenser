@@ -38,7 +38,7 @@ const UserProfileHeader = (props) => {
 
     useEffect(() => {
         if (profile_image.indexOf('https://punks.usehive.com/api/avatar') === 0) {
-            const ssc = new SSC('https://api.hive-engine.com/rpc');
+            const ssc = new SSC('https://herpc.dtools.dev/');
             const profileImageUrl = new URL(profile_image);
             const punkId = profileImageUrl.searchParams.get('punkid');
 
