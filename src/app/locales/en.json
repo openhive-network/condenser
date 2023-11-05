@@ -257,6 +257,7 @@
             "checkbox": "I understand"
         },
         "rcLevel": "Resource Credits (RC) level: %(rc_percent)s%%.",
+        "isPunkVerified": "This user owns associated 'Punk On Hive' NFT",
         "rcFullIn": "Full in %(duration)s"
     },
     "navigation": {
