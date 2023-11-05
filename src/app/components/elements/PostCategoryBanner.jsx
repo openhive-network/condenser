@@ -6,11 +6,6 @@ import { actions as fetchDataSagaActions } from 'app/redux/FetchDataSaga';
 class PostCategoryBanner extends React.Component {
     constructor(props) {
         super(props);
-        const { category } = props;
-
-        this.state = {
-            postDestination: category,
-        };
 
         const { username, subscriptions, getAccountSubscriptions } = props;
 
@@ -20,11 +15,9 @@ class PostCategoryBanner extends React.Component {
     }
 
     render() {
-        const { subscriptions, onChange } = this.props;
-        const { postDestination } = this.state;
+        const { subscriptions, onChange, category } = this.props;
         const onCommunitySelected = (e) => {
             const destination = e.target.value;
-            this.setState({ postDestination: destination });
             onChange(destination);
         };
 
@@ -36,7 +29,7 @@ class PostCategoryBanner extends React.Component {
                         {' '}
                         <select
                             className="PostCategoryBanner--community-selector"
-                            value={postDestination || ''}
+                            value={category || ''}
                             onChange={onCommunitySelected}
                         >
                             <option value="blog">My blog</option>

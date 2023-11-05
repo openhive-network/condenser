@@ -136,17 +136,18 @@ export async function getChatAuthToken(username = '') {
         };
     }
 
+    // If user doesn't exist, let's create a user, when the settings
+    // allow to do this.
     if (responseData1.error === 'User not found.') {
         if (config.get('openhive_chat_iframe_create_users') === 'yes') {
-            // User doesn't exist, let's create user.
             const url2 = `${rocketChatApiUri}/users.create`;
             const data2 = {
-                name: '',
+                name: username,
                 username,
                 email: '',
                 password: secureRandom.randomBuffer(16).toString('hex'),
                 active: true,
-                joinDefaultChannels: true, // TODO Is this a good idea?
+                joinDefaultChannels: true,
                 sendWelcomeEmail: false
             };
             try {
