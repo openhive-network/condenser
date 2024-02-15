@@ -1,93 +1,68 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
+import React, { useState, useCallback } from 'react';
 import { connect } from 'react-redux';
-import * as transactionActions from 'app/redux/TransactionReducer';
-import { findParent } from 'app/utils/DomUtils';
 import tt from 'counterpart';
 
-class ConfirmTransactionForm extends Component {
-    static propTypes = {
-        //Steemit
-        onCancel: PropTypes.func,
-        warning: PropTypes.string,
-        checkbox: PropTypes.string,
-        // redux-form
-        confirm: PropTypes.oneOfType([PropTypes.string, PropTypes.func]),
-        confirmBroadcastOperation: PropTypes.object,
-        confirmErrorCallback: PropTypes.func,
-        okClick: PropTypes.func,
-    };
+import { findParent } from 'app/utils/DomUtils';
+import * as transactionActions from 'app/redux/TransactionReducer';
+import useOutsideClick from 'hooks/useOutsideClick';
 
-    constructor() {
-        super();
-        this.state = { checkboxChecked: false };
-    }
+const ConfirmTransactionForm = (props) => {
+    const {
+        confirm, confirmBroadcastOperation, warning, checkbox,
+        okClick, onCancel, confirmErrorCallback,
+    } = props;
+    const [checkboxChecked, setCheckboxChecked] = useState(false);
+    const conf = typeof confirm === 'function' ? confirm() : confirm;
 
-    componentDidMount() {
-        document.body.addEventListener('click', this.closeOnOutsideClick);
-    }
-
-    componentWillUnmount() {
-        document.body.removeEventListener('click', this.closeOnOutsideClick);
-    }
-
-    closeOnOutsideClick = (e) => {
-        const inside_dialog = findParent(e.target, 'ConfirmTransactionForm');
-        if (!inside_dialog) this.onCancel();
-    };
-
-    onCancel = () => {
-        const { confirmErrorCallback, onCancel } = this.props;
+    const handleCancelClick = useCallback(() => {
         if (confirmErrorCallback) confirmErrorCallback();
         if (onCancel) onCancel();
-    };
+    }, [confirmErrorCallback, onCancel]);
 
-    okClick = () => {
-        const { okClick, confirmBroadcastOperation } = this.props;
+    const closeOnOutsideClick = useCallback((e) => {
+        const inside_dialog = findParent(e.target, 'ConfirmTransactionForm');
+        if (!inside_dialog) handleCancelClick();
+    }, [handleCancelClick]);
+
+    const formRef = useOutsideClick(closeOnOutsideClick);
+
+    const handleOkClick = useCallback(() => {
         okClick(confirmBroadcastOperation);
-    };
+    }, [okClick, confirmBroadcastOperation]);
 
-    onCheckbox = (e) => {
-        const checkboxChecked = e.target.checked;
-        this.setState({ checkboxChecked });
-    };
+    const handleCheckboxChange = useCallback((e) => {
+        setCheckboxChecked(e.target.checked);
+    }, []);
 
-    render() {
-        const { onCancel, okClick } = this;
-        const {
-            confirm, confirmBroadcastOperation, warning, checkbox
-        } = this.props;
-        const { checkboxChecked } = this.state;
-        const conf = typeof confirm === 'function' ? confirm() : confirm;
-        return (
-            <div className="ConfirmTransactionForm">
-                <h4>{typeName(confirmBroadcastOperation)}</h4>
-                <hr />
-                <div>{conf}</div>
-                {warning ? (
-                    <div style={{ paddingTop: 10, fontWeight: 'bold' }} className="error">
-                        {warning}
-                    </div>
-                ) : null}
-                {checkbox ? (
-                    <div>
-                        <label htmlFor="checkbox">
-                            <input id="checkbox" type="checkbox" checked={checkboxChecked} onChange={this.onCheckbox} />
-                            {checkbox}
-                        </label>
-                    </div>
-                ) : null}
-                <br />
-                <button type="button" className="button" onClick={okClick} disabled={!(checkbox === undefined || checkboxChecked)}>
-                    {tt('g.ok')}
-                </button>
-                <button type="button" className="button hollow" onClick={onCancel}>
-                    {tt('g.cancel')}
-                </button>
-            </div>
-        );
-    }
-}
+    return (
+        <div ref={formRef} className="ConfirmTransactionForm">
+            <h4>{typeName(confirmBroadcastOperation)}</h4>
+            <hr />
+            <div>{conf}</div>
+            {warning && (
+                <div style={{ paddingTop: 10, fontWeight: 'bold' }} className="error">
+                    {warning}
+                </div>
+            )}
+            {checkbox && (
+                <div>
+                    <label htmlFor="checkbox">
+                        <input id="checkbox" type="checkbox" checked={checkboxChecked} onChange={handleCheckboxChange} />
+                        {checkbox}
+                    </label>
+                </div>
+            )}
+            <br />
+            <button type="button" className="button" onClick={handleOkClick} disabled={!(checkbox === undefined || checkboxChecked)}>
+                {tt('g.ok')}
+            </button>
+            <button type="button" className="button hollow" onClick={handleCancelClick}>
+                {tt('g.cancel')}
+            </button>
+        </div>
+    );
+};
+
 const typeName = (confirmBroadcastOperation) => {
     const title = confirmBroadcastOperation.getIn(['operation', '__config', 'title']);
     if (title) return title;
