@@ -107,7 +107,8 @@ Not supported
 
 ## twitter
 
-https://twitter.com/missybahia/status/1281295770298318849
+https://twitter.com/gentlemansride/status/1759087872693473424
+https://x.com/gentlemansride/status/1759087872693473424
 
 ## vimeo direct html iframe markup
 
