@@ -350,5 +350,7 @@ function linkify(content, mutate, hashtags, usertags, images, links) {
 }
 
 function handleDir(state, child) {
-    child.setAttribute('dir', 'auto');
+    if (state.mutate) {
+        child.setAttribute('dir', 'auto');
+    }
 }
