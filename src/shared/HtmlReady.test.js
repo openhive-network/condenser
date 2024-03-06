@@ -155,56 +155,56 @@ describe('htmlready', () => {
     });
 
     it('should not omit text on same line as youtube link', () => {
-        const testString = '<html><p dir="auto">before text https://www.youtube.com/watch?v=NrS9vvNgx7I after text</p></html>';
+        const testString = '<html><p>before text https://www.youtube.com/watch?v=NrS9vvNgx7I after text</p></html>';
         const htmlified = '<html xmlns="http://www.w3.org/1999/xhtml"><p dir="auto">before text ~~~ embed:NrS9vvNgx7I youtube ~~~ after text</p></html>';
         const res = HtmlReady(testString).html;
         expect(res).toEqual(htmlified);
     });
 
     it('should not omit text on same line as vimeo link', () => {
-        const testString = '<html><p dir="auto">before text https://vimeo.com/193628816/ after text</p></html>';
+        const testString = '<html><p>before text https://vimeo.com/193628816/ after text</p></html>';
         const htmlified = '<html xmlns="http://www.w3.org/1999/xhtml"><p dir="auto">before text ~~~ embed:193628816 vimeo ~~~ after text</p></html>';
         const res = HtmlReady(testString).html;
         expect(res).toEqual(htmlified);
     });
 
     it('should handle short youtu.be link start time', () => {
-        const testString = '<html><p dir="auto">https://youtu.be/ToQfmnj7FR8?t=4572s</p></html>';
+        const testString = '<html><p>https://youtu.be/ToQfmnj7FR8?t=4572s</p></html>';
         const htmlified = '<html xmlns="http://www.w3.org/1999/xhtml"><p dir="auto">~~~ embed:ToQfmnj7FR8 youtube 4572 ~~~</p></html>';
         const res = HtmlReady(testString).html;
         expect(res).toEqual(htmlified);
     });
 
     it('should handle youtube link start time', () => {
-        const testString = '<html><p dir="auto">https://youtube.com/watch?v=ToQfmnj7FR8&t=4572</p></html>';
+        const testString = '<html><p>https://youtube.com/watch?v=ToQfmnj7FR8&t=4572</p></html>';
         const htmlified = '<html xmlns="http://www.w3.org/1999/xhtml"><p dir="auto">~~~ embed:ToQfmnj7FR8 youtube 4572 ~~~</p></html>';
         const res = HtmlReady(testString).html;
         expect(res).toEqual(htmlified);
     });
 
     it('should handle vimeo link', () => {
-        const testString = '<html><p dir="auto">https://vimeo.com/193628816/</p></html>';
+        const testString = '<html><p>https://vimeo.com/193628816/</p></html>';
         const htmlified = '<html xmlns="http://www.w3.org/1999/xhtml"><p dir="auto">~~~ embed:193628816 vimeo ~~~</p></html>';
         const res = HtmlReady(testString).html;
         expect(res).toEqual(htmlified);
     });
 
     it('should handle vimeo link start time', () => {
-        const testString = '<html><p dir="auto">https://vimeo.com/193628816/#t=4572s</p></html>';
+        const testString = '<html><p>https://vimeo.com/193628816/#t=4572s</p></html>';
         const htmlified = '<html xmlns="http://www.w3.org/1999/xhtml"><p dir="auto">~~~ embed:193628816 vimeo 4572 ~~~</p></html>';
         const res = HtmlReady(testString).html;
         expect(res).toEqual(htmlified);
     });
 
     it('should handle twitch link', () => {
-        const testString = '<html><p dir="auto">https://www.twitch.tv/videos/1234567890</p></html>';
+        const testString = '<html><p>https://www.twitch.tv/videos/1234567890</p></html>';
         const htmlified = '<html xmlns="http://www.w3.org/1999/xhtml"><p dir="auto">~~~ embed:?video=1234567890 twitch ~~~</p></html>';
         const res = HtmlReady(testString).html;
         expect(res).toEqual(htmlified);
     });
 
     it('should not omit text on same line as dtube link', () => {
-        const testString = '<html><p dir="auto">before text https://d.tube/#!/v/tibfox/mvh7g26e after text</p></html>';
+        const testString = '<html><p>before text https://d.tube/#!/v/tibfox/mvh7g26e after text</p></html>';
         const htmlified = '<html xmlns="http://www.w3.org/1999/xhtml"><p dir="auto">before text ~~~ embed:tibfox/mvh7g26e dtube ~~~ after text</p></html>';
         const res = HtmlReady(testString).html;
         expect(res).toEqual(htmlified);
