@@ -126,6 +126,7 @@ function traverse(node, state, depth = 0) {
         else if (tag === 'iframe') iframe(state, child);
         else if (tag === 'a') link(state, child);
         else if (child.nodeName === '#text') linkifyNode(child, state);
+        else if (tag === 'p') handleDir(state, child);
 
         traverse(child, state, depth + 1);
     });
@@ -346,4 +347,8 @@ function linkify(content, mutate, hashtags, usertags, images, links) {
         return `<a href="${ln}">${ln}</a>`;
     });
     return content;
+}
+
+function handleDir(state, child) {
+    child.setAttribute('dir', 'auto');
 }
