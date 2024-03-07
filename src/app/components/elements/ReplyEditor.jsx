@@ -897,6 +897,7 @@ class ReplyEditor extends React.Component {
                                                         placeholder={isStory ? tt('g.write_your_story') : tt('g.reply')}
                                                         autoComplete="off"
                                                         tabIndex={0}
+                                                        dir="auto"
                                                     />
                                                     <input {...inputProps} />
                                                 </div>

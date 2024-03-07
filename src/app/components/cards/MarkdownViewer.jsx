@@ -11,6 +11,7 @@ import { generateMd as EmbeddedPlayerGenerateMd } from 'app/components/elements/
 import RemarkableSpoiler from '@quochuync/remarkable-spoiler';
 import '@quochuync/remarkable-spoiler/styles.css';
 import RemarkableTable from "app/utils/RemarkableTable";
+import RemarkableParagraph from "../../utils/RemarkableParagraph";
 
 class MarkdownViewer extends Component {
     static propTypes = {
@@ -82,6 +83,7 @@ class MarkdownViewer extends Component {
 
         renderer.use(RemarkableSpoiler);
         renderer.use(RemarkableTable);
+        renderer.use(RemarkableParagraph);
 
         let renderedText = html ? text : renderer.render(text);
 
