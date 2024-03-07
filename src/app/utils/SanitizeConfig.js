@@ -48,6 +48,7 @@ export default ({
         // title is only set in the case of an external link warning
         a: ['href', 'rel', 'title', 'class', 'target', 'id'],
         span: ['data-bg', 'style'],
+        p: ['dir']
     },
     allowedSchemes: ['http', 'https', 'steem', 'esteem'],
     transformTags: {
