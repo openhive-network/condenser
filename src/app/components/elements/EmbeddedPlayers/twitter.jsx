@@ -7,9 +7,9 @@ import _ from 'lodash';
  */
 //<blockquote class="twitter-tweet"><p lang="en" dir="ltr">Calling parents struggling with juggling act of kids &lt; 3yrs + additional needs, + shielding risk parent + demanding jobs? How are you coping? What changes have you made? Advice appreciated! Hubs &amp; I are beyond exhausted!</p>&mdash; Kuldeep Bahia (@missybahia) <a href="https://twitter.com/missybahia/status/1281295770298318849?ref_src=twsrc%5Etfw">July 9, 2020</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
 const regex = {
-    main: /(?:https?:\/\/(?:(?:twitter\.com\/(.*?)\/status\/(.*))))/i,
-    sanitize: /(?:https?:\/\/(?:(?:twitter\.com\/(.*?)\/status\/(.*))))/i,
-    htmlReplacement: /<blockquote[^>]*?><p[^>]*?>(.*?)<\/p>.*?mdash; (.*)<a href="(https:\/\/twitter\.com\/.*?(.*?\/status\/(.*?))\?.*?)">(.*?)<\/a><\/blockquote>/i,
+    main: /(?:https?:\/\/(?:(?:(?:twitter|x)\.com\/(.*?)\/status\/(.*))))/i,
+    sanitize: /(?:https?:\/\/(?:(?:(?:twitter|x)\.com\/(.*?)\/status\/(.*))))/i,
+    htmlReplacement: /<blockquote[^>]*?><p[^>]*?>(.*?)<\/p>.*?mdash; (.*)<a href="(https:\/\/(?:twitter|x)\.com\/.*?(.*?\/status\/(.*?))\?.*?)">(.*?)<\/a><\/blockquote>/i,
 };
 export default regex;
 
@@ -71,7 +71,7 @@ export function extractMetadata(data) {
         return {
             id,
             fullId: id,
-            url,
+            url: normalizeEmbedUrl(url),
             canonical: null,
             thumbnail: null,
             date: '',
@@ -115,8 +115,7 @@ export function normalizeEmbedUrl(url) {
 }
 
 function generateTwitterCode(metadata) {
-    let twitterCode =
-        '<blockquote className="twitter-tweet"><p lang="en" dir="ltr"></p>&mdash; <a href=""></a></blockquote>';
+    let twitterCode = '<blockquote className="twitter-tweet"><p lang="en" dir="ltr"></p>&mdash; <a href=""></a></blockquote>';
     if (metadata) {
         let [author, date, url, description] = Buffer.from(metadata, 'base64').toString().split('|');
 
@@ -129,11 +128,10 @@ function generateTwitterCode(metadata) {
             description = url;
         }
 
-        twitterCode =
-            '<blockquote class="twitter-tweet">' +
-            `<p lang="en" dir="ltr">${description}</p>` +
-            `&mdash; ${author} <a href="${url}">${date}</a>` +
-            '</blockquote>';
+        twitterCode = '<blockquote class="twitter-tweet">'
+            + `<p lang="en" dir="ltr">${description}</p>`
+            + `&mdash; ${author} <a href="${url}">${date}</a>`
+            + '</blockquote>';
 
         const twttr = _.get(window, 'twttr');
         if (twttr && twttr.widgets) {
