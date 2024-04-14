@@ -35,6 +35,7 @@ import { Role } from 'app/utils/Community';
 import UserNames from 'app/components/elements/UserNames';
 import ContentEditedWrapper from '../elements/ContentEditedWrapper';
 import { isUrlWhitelisted } from "../../utils/Phishing";
+import PostCountDown from "../elements/PostCountDown";
 
 function TimeAuthorCategory({ post }) {
     return (
@@ -508,7 +509,11 @@ class PostFull extends React.Component {
                                 {post_header}
                                 <TimeAuthorCategoryLarge post={post} />
                             </div>
-                            <div className="PostFull__body entry-content">{contentBody}</div>
+                            <PostCountDown post={post} />
+                            <div className="PostFull__body entry-content">
+                                {contentBody}
+                            </div>
+                            {content_body.length >= 1500 && <PostCountDown post={post} />}
                         </span>
                     )}
 

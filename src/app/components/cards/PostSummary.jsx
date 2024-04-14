@@ -20,6 +20,7 @@ import { proxifyImageUrl } from 'app/utils/ProxifyUrl';
 import Userpic, { SIZE_SMALL } from 'app/components/elements/Userpic';
 import { SIGNUP_URL } from 'shared/constants';
 import { hasNsfwTag } from 'app/utils/StateFunctions';
+import PostCountDown from "../elements/PostCountDown";
 
 const CURATOR_VESTS_THRESHOLD = 1.0 * 1000.0 * 1000.0;
 
@@ -347,6 +348,7 @@ class PostSummary extends React.Component {
                         {content_body}
                         {this.props.blogmode ? null : <div className="articles__footer">{summary_footer}</div>}
                     </div>
+                    <PostCountDown post={post} />
                     {this.props.blogmode ? summary_footer : null}
                 </div>
             </div>

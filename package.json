@@ -99,6 +99,7 @@
     "libsodium-wrappers": "0.4.8",
     "lodash": "^4.17.21",
     "lodash.debounce": "4.0.8",
+    "luxon": "^3.4.4",
     "mem-stat": "1.0.5",
     "mini-css-extract-plugin": "^1.2.1",
     "mixpanel": "0.5.0",
