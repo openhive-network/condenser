@@ -346,9 +346,9 @@ class PostSummary extends React.Component {
                     <div className="articles__content-block articles__content-block--text">
                         {content_title}
                         {content_body}
+                        <PostCountDown post={post} />
                         {this.props.blogmode ? null : <div className="articles__footer">{summary_footer}</div>}
                     </div>
-                    <PostCountDown post={post} />
                     {this.props.blogmode ? summary_footer : null}
                 </div>
             </div>
