@@ -1070,6 +1070,13 @@ class ReplyEditor extends React.Component {
                                                 </span>
                                             )}
                                         </div>
+                                        {countdownToDate && (
+                                            <div>
+                                                Will countdown to
+                                                {' '}
+                                                {countdownToDate.toLocaleString(DateTime.DATETIME_SHORT)}
+                                            </div>
+                                        )}
                                         <Tooltip
                                             content={<FormattedHTMLMessage id="reply_editor.advanced_tooltip" />}
                                             arrow={false}
