@@ -1,4 +1,5 @@
 import React from "react";
+import tt from 'counterpart';
 
 import DateTimePicker from "../elements/DateTimePicker";
 
@@ -9,8 +10,8 @@ const CountdownSelector = (props) => {
         <>
             <div className="row">
                 <div className="column">
-                    <h4>Countdown Timer</h4>
-                    <p>Display a count down timer inside your post</p>
+                    <h4>{tt('post_advanced_settings_jsx.countdown')}</h4>
+                    <p>{tt('post_advanced_settings_jsx.countdown_description')}</p>
                 </div>
             </div>
             <div className="row">

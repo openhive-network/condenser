@@ -1,6 +1,7 @@
 import React, { useEffect, useCallback, useState } from 'react';
 import SimplePicker from 'simplepicker';
 import { DateTime } from 'luxon';
+import tt from 'counterpart';
 
 import 'simplepicker/dist/simplepicker.css';
 
@@ -14,7 +15,7 @@ const DateTimePicker = (props) => {
         const delta = coundDownDate.diffNow().as('seconds');
 
         if (delta < 3600) {
-            setError('Countdown target date should be at least one hour from now');
+            setError(tt('post_advanced_settings_jsx.countdown_date_error'));
         } else if (onChange) {
             setError('');
             onChange(coundDownDate);
@@ -43,7 +44,7 @@ const DateTimePicker = (props) => {
                     className="datetimepicker_value"
                     type="text"
                     name="countdown"
-                    placeholder="Click to choose a date and time"
+                    placeholder={tt('post_advanced_settings_jsx.countdown_placeholder')}
                     value={value ? value.toLocaleString(DateTime.DATETIME_SHORT) : ''}
                     onClick={openPicker}
                     readOnly
