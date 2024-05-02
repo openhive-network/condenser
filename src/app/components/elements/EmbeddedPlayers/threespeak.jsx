@@ -126,7 +126,7 @@ export function extractMetadata(data) {
         fullId,
         url,
         canonical: url,
-        thumbnail: data.match(regex.thumbnail) || null,
+        thumbnail: data.match(regex.thumbnail)[0] || null,
     };
 }
 
