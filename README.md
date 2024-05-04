@@ -155,7 +155,7 @@ node
 
 #### Js & Jsx
 
-We use [prettier](https://github.com/prettier/prettier) to autofromat the
+We use [prettier](https://github.com/prettier/prettier) to autoformat the
 code, with [this configuration](.prettierrc). Run `yarn run fmt` to format
 everything in `src/`, or `yarn exec -- prettier --config .prettierrc
 --write src/whatever/file.js` for a specific file.
@@ -365,6 +365,6 @@ all
 ```
 
 When user is logged in and he is listed in `SDC_LOGGER_ADMINS` (should
-be string with Hive usernames delimited with space), the aplication
+be string with Hive usernames delimited with space), the application
 allows him to see all Logger messages on all log levels, regardless of
 anything else, so also on production.
