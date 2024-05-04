@@ -277,7 +277,7 @@ export default function useGeneralApi(app) {
             ctx.status = 200;
         } catch (error) {
             console.error('Error in /search api call', ctx.session.uid, error);
-            ctx.body = JSON.stringify({ error: error.message });
+            ctx.body = JSON.stringify({ error: "An unexpected error occurred. Please try again later." });
             ctx.status = 500;
         }
     });
