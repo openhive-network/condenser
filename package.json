@@ -41,6 +41,7 @@
     "@testing-library/jest-dom": "^5.16.4",
     "@testing-library/react": "^13.2.0",
     "@testing-library/user-event": "^14.1.1",
+    "@xmldom/xmldom": "^0.7.0",
     "assert": "1.4.1",
     "autoprefixer": "^9.6.1",
     "axios": "^0.27.2",
@@ -161,8 +162,7 @@
     "vm-browserify": "^1.1.2",
     "webpack-cli": "^4.9.2",
     "webpack-isomorphic-tools": "^4.0.0",
-    "whatwg-fetch": "^3.6.2",
-    "@xmldom/xmldom": "^0.7.0"
+    "whatwg-fetch": "^3.6.2"
   },
   "devDependencies": {
     "@babel/cli": "^7.0.0",
