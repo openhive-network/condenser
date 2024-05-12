@@ -20,6 +20,8 @@ import { fromJS, Map, OrderedSet } from 'immutable';
 import { Remarkable } from 'remarkable';
 import Dropzone from 'react-dropzone';
 import tt from 'counterpart';
+import { DateTime } from 'luxon';
+
 import { loadUserTemplates, saveUserTemplates } from 'app/utils/UserTemplates';
 import BadActorList from 'app/utils/BadActorList';
 import { FormattedHTMLMessage } from 'app/Translator';
@@ -75,6 +77,7 @@ class ReplyEditor extends React.Component {
         maxAcceptedPayout: PropTypes.number,
         isStory: PropTypes.bool,
         community: PropTypes.string,
+        countdownToDate: PropTypes.any,
     };
 
     static defaultProps = {
@@ -85,6 +88,7 @@ class ReplyEditor extends React.Component {
         type: 'submit_comment',
         maxAcceptedPayout: null,
         community: 'blog',
+        countdownToDate: null,
     };
 
     constructor(props) {
@@ -142,6 +146,7 @@ class ReplyEditor extends React.Component {
                 if (draft.altAuthor) altAuthor.props.onChange(draft.altAuthor);
                 if (draft.payoutType) this.props.setPayoutType(formId, draft.payoutType);
                 if (draft.maxAcceptedPayout) this.props.setMaxAcceptedPayout(formId, draft.maxAcceptedPayout);
+                if (draft.countdownToDate) this.props.setCountdownToDate(formId, draft.countdownToDate);
                 if (draft.beneficiaries) this.props.setBeneficiaries(formId, draft.beneficiaries);
                 if (draft.community) postCommunity = draft.community;
 
@@ -331,10 +336,11 @@ class ReplyEditor extends React.Component {
                 || np.payoutType !== tp.payoutType
                 || np.beneficiaries !== tp.beneficiaries
                 || np.maxAcceptedPayout !== tp.maxAcceptedPayout
+                || np.countdownToDate !== tp.countdownToDate
             ) {
                 // also prevents saving after parent deletes this information
                 const {
-                    formId, payoutType, beneficiaries, maxAcceptedPayout
+                    formId, payoutType, beneficiaries, maxAcceptedPayout, countdownToDate,
                 } = np;
                 const {
                     tags, title, summary, altAuthor, body
@@ -349,6 +355,7 @@ class ReplyEditor extends React.Component {
                     payoutType,
                     beneficiaries,
                     maxAcceptedPayout,
+                    countdownToDate
                 };
 
                 clearTimeout(saveEditorTimeout);
@@ -456,6 +463,7 @@ class ReplyEditor extends React.Component {
             this.props.setPayoutType(formId, defaultPayoutType);
             this.props.setBeneficiaries(formId, []);
             this.props.setMaxAcceptedPayout(formId, null);
+            this.props.setCountdownToDate(formId, null);
             if (onCancel) onCancel(e);
         }
     };
@@ -656,7 +664,9 @@ class ReplyEditor extends React.Component {
             payoutType,
             beneficiaries,
             maxAcceptedPayout,
+            countdownToDate,
         } = this.props;
+
         const {
             submitting, valid, handleSubmit, resetForm,
         } = this.state.replyForm;
@@ -719,6 +729,7 @@ class ReplyEditor extends React.Component {
             payoutType,
             beneficiaries,
             maxAcceptedPayout,
+            countdownToDate,
             successCallback: successCallbackWrapper,
             errorCallback,
         };
@@ -1060,6 +1071,13 @@ class ReplyEditor extends React.Component {
                                                 </span>
                                             )}
                                         </div>
+                                        {countdownToDate && (
+                                            <div>
+                                                Will countdown to
+                                                {' '}
+                                                {countdownToDate.toLocaleString(DateTime.DATETIME_SHORT)}
+                                            </div>
+                                        )}
                                         <Tooltip
                                             content={<FormattedHTMLMessage id="reply_editor.advanced_tooltip" />}
                                             arrow={false}
@@ -1284,6 +1302,8 @@ export default (formId) => connect(
         } else {
             maxAcceptedPayout = state.user.getIn(['current', 'post', formId, 'maxAcceptedPayout']);
         }
+        const countdownToDate = state.user.getIn(['current', 'post', formId, 'countdownToDate']);
+
         if (!payoutType) {
             payoutType = defaultPayoutType;
         }
@@ -1325,6 +1345,7 @@ export default (formId) => connect(
             beneficiaries,
             postTemplateName,
             maxAcceptedPayout,
+            countdownToDate,
             initialValues: {
                 title, summary, altAuthor, body, tags
             },
@@ -1360,6 +1381,12 @@ export default (formId) => connect(
                 value: postTemplateName,
             })
         ),
+        setCountdownToDate: (_formId, countdownToDate) => dispatch(
+            userActions.set({
+                key: ['current', 'post', _formId, 'countdownToDate'],
+                value: countdownToDate,
+            })
+        ),
         reply: ({
                     tags,
                     title,
@@ -1383,6 +1410,7 @@ export default (formId) => connect(
                     errorCallback,
                     startLoadingIndicator,
                     selectedCoverImage,
+                    countdownToDate,
                 }) => {
             const isEdit = type === 'edit';
             const isNew = /^submit_/.test(type);
@@ -1456,13 +1484,20 @@ export default (formId) => connect(
             } else {
                 delete meta.image;
             }
+
             if (rtags.links.size) {
                 meta.links = Array.from(rtags.links).slice(0, 1);
             } else {
                 delete meta.links;
             }
 
+            if (countdownToDate) {
+                const countDown = DateTime.fromISO(countdownToDate);
+                meta.countdown = countDown.setZone('UTC').toISO();
+            }
+
             meta.app = 'hiveblog/0.1';
+
             if (isStory) {
                 meta.format = isHtml ? 'html' : 'markdown';
                 if (summary) {

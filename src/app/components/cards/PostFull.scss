@@ -288,3 +288,19 @@ input.share-box {
 .table-responsive {
   overflow-x: auto;
 }
+
+.PostFull__countdown {
+  width: 100%;
+  background-color: darkred;
+  color: white;
+  text-align: center;
+
+  &.terminated {
+      background-color: lightgray;
+      color: black;
+  }
+}
+
+.PostFull__countdown {
+    font-size: 0.85rem;
+}
