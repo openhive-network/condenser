@@ -27,6 +27,7 @@ nikapelex
 itsben
 bazik33
 feizhousexcult
+hazesociety
 `
     .trim()
     .split('\n');

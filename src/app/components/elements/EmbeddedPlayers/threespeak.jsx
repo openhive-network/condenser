@@ -2,7 +2,7 @@ import React from 'react';
 
 /**
  * Regular expressions for detecting and validating provider URLs
- * @type {{htmlReplacement: RegExp, main: RegExp, sanitize: RegExp}}
+ * @type {{htmlReplacement: RegExp, main: RegExp, sanitize: RegExp, embedShorthand: RegExp, thumbnail: RegExp, thumbnail2: RegExp}}
  */
 const regex = {
     // eslint-disable-next-line no-useless-escape
@@ -12,6 +12,8 @@ const regex = {
     // eslint-disable-next-line no-useless-escape
     htmlReplacement: /<a href="(https?:\/\/3speak\.(?:online|co|tv)\/watch\?v=([A-Za-z0-9_\-\/.]+))".*<img.*?><\/a>/i,
     embedShorthand: /~~~ embed:(.*?)\/(.*?) threespeak ~~~/,
+    thumbnail: /~~~ embedthumbnail:(.*?) ~~~/,
+    thumbnail2: /https:\/\/ipfs-3speak.b-cdn.net\/ipfs\/.[\w\d/]+/,
 };
 export default regex;
 
@@ -109,7 +111,7 @@ export function normalizeEmbedUrl(url) {
 /**
  * Extract the content ID and other metadata from the URL
  * @param data
- * @returns {null|{id: *, canonical: string, url: *}}
+ * @returns {null|{id: *, canonical: string, url: *, thumbnail: string}}
  */
 export function extractMetadata(data) {
     if (!data) return null;
@@ -125,7 +127,7 @@ export function extractMetadata(data) {
         fullId,
         url,
         canonical: url,
-        thumbnail: `https://img.3speakcontent.co/${id}/post.png`,
+        thumbnail: data.match(regex.thumbnail2) ? data.match(regex.thumbnail2)[0] : null,
     };
 }
 
@@ -154,10 +156,11 @@ export function embedNode(child, links, images) {
             // Because we are processing 3speak embed player with the preprocessHtml() method below
             // extractMetadata won't be able to extract the thumbnail from the shorthand.
             // So we are handling thumbnail URL extraction differently.
-            const match = data.match(regex.embedShorthand);
+            const match = data.match(regex.thumbnail);
             if (match && images) {
-                const imageUrl = `https://img.3speakcontent.co/${match[2]}/post.png`;
+                const imageUrl = `${match[1]}`;
                 images.add(imageUrl);
+                child.data = data.replace(regex.thumbnail, '');
             }
         }
     } catch (error) {
@@ -179,7 +182,8 @@ export function preprocessHtml(child) {
             // to replace the image/anchor tag created by 3Speak dApp
             const threespeak = extractMetadata(child);
             if (threespeak) {
-                child = child.replace(regex.htmlReplacement, `~~~ embed:${threespeak.fullId} threespeak ~~~`);
+                // We save image url in thumbnail to access it later because the replaced embed removes the image from the html
+                child = child.replace(regex.htmlReplacement, `~~~ embed:${threespeak.fullId} threespeak ~~~ ~~~ embedthumbnail:${threespeak.thumbnail} ~~~`);
             }
         }
     } catch (error) {

@@ -144,7 +144,6 @@ app.use(async (ctx, next) => {
     // redirect to home page/feed if known account
     if (ctx.method === 'GET' && ctx.url === '/' && ctx.session.a) {
         ctx.status = 302;
-        //this.redirect(`/@${this.session.a}/feed`);
         ctx.redirect(`/trending/my`);
         return;
     }
@@ -185,35 +184,7 @@ app.use(async (ctx, next) => {
         }
     }
 
-    // this.url is a relative URL, it does not include the scheme
-    const [pathString, queryString] = ctx.url.split('?');
-    const urlParams = new URLSearchParams(queryString);
-
-    let paramFound = false;
-    if (ctx.url.indexOf('?') !== -1) {
-        const paramsToProcess = ['ch', 'cn', 'r'];
-
-        paramsToProcess.forEach((paramToProcess) => {
-            if (urlParams.has(paramToProcess)) {
-                const paramValue = urlParams.get(paramToProcess);
-                if (paramValue) {
-                    paramFound = true;
-                    ctx.session[paramToProcess] = paramValue;
-                    urlParams.delete(paramToProcess);
-                }
-            }
-        });
-    }
-
-    if (paramFound) {
-        const newQueryString = urlParams.toString();
-        const redir = `${pathString.replace(/\/\//g, '/')}${newQueryString ? `?${newQueryString}` : ''}`;
-
-        ctx.status = 302;
-        ctx.redirect(redir);
-    } else {
-        await next();
-    }
+    await next(); // Proceed with the next middleware if no conditions were met
 });
 
 // load production middleware
