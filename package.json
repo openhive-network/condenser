@@ -162,7 +162,7 @@
     "webpack-cli": "^4.9.2",
     "webpack-isomorphic-tools": "^4.0.0",
     "whatwg-fetch": "^3.6.2",
-    "xmldom": "~0.5.0"
+    "@xmldom/xmldom": "^0.7.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.0.0",
@@ -276,7 +276,8 @@
     "lodash": "4.17.21",
     "minimist": "1.2.6",
     "request": "2.88.2",
-    "node-fetch": "2.6.7"
+    "node-fetch": "2.6.7",
+    "crypto-js": "^4.2.0"
   },
   "volta": {
     "node": "18.14.0",
