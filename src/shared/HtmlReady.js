@@ -1,4 +1,4 @@
-import xmldom from 'xmldom';
+import xmldom from '@xmldom/xmldom';
 import tt from 'counterpart';
 import hljs from 'highlight.js/lib/common';
 import linksRe, { any as linksAny } from 'app/utils/Links';
@@ -97,7 +97,10 @@ export default function (html, { mutate = true, hideImages = false, lightbox = f
                     const pre = doc.createElement('pre');
                     pre.setAttribute('class', 'image-url-only');
                     pre.appendChild(doc.createTextNode(image.getAttribute('src')));
-                    image.parentNode.replaceChild(pre, image);
+
+                    const imageParent = image.parentNode;
+                    imageParent.appendChild(pre);
+                    imageParent.removeChild(image);
                 }
             } else {
                 proxifyImages(doc, state);
@@ -139,7 +142,9 @@ function traverseForCodeHighlight(node, depth = 0) {
         if (tag === 'code' && child.textContent.match(/\n/)) {
             const highlightedContent = hljs.highlightAuto(child.textContent).value;
 
-            child.parentNode.replaceChild(DOMParser.parseFromString(`<code>${highlightedContent}</code>`), child);
+            const parentNode = child.parentNode;
+            parentNode.appendChild(DOMParser.parseFromString(`<code>${highlightedContent}</code>`));
+            parentNode.removeChild(child);
         }
 
         traverseForCodeHighlight(child, depth + 1);
@@ -181,7 +186,9 @@ function link(state, child) {
                 phishyDiv.textContent = `${child.textContent} / ${url}`;
                 phishyDiv.setAttribute('title', getPhishingWarningMessage());
                 phishyDiv.setAttribute('class', 'phishy');
-                child.parentNode.replaceChild(phishyDiv, child);
+                const parentNode = child.parentNode;
+                parentNode.appendChild(phishyDiv);
+                parentNode.removeChild(child);
             }
         }
     }
@@ -261,15 +268,14 @@ function proxifyImages(doc, state) {
             const proxifiedImageUrl = proxifyImageUrl(url, true);
 
             if (state.lightbox && process.env.BROWSER) {
-                node.parentNode.replaceChild(
-                    DOMParser.parseFromString(`<a href="${getDoubleSize(proxifyImageUrl(url, true))}">
-                        <img
-                            src="${proxifiedImageUrl}"
-                            alt="${alt}"
-                        />
-                    </a>`),
-                    node
-                );
+                const parentNode = node.parentNode;
+                parentNode.appendChild(DOMParser.parseFromString(`<a href="${getDoubleSize(proxifyImageUrl(url, true))}">
+                    <img
+                        src="${proxifiedImageUrl}"
+                        alt="${alt}"
+                    />
+                </a>`));
+                parentNode.removeChild(node);
             } else {
                 node.setAttribute('src', proxifiedImageUrl);
             }
@@ -292,7 +298,9 @@ function linkifyNode(child, state) {
         const content = linkify(data, state.mutate, state.hashtags, state.usertags, state.images, state.links);
         if (mutate && content !== data) {
             const newChild = DOMParser.parseFromString(`<span>${content}</span>`);
-            child.parentNode.replaceChild(newChild, child);
+            const parentNode = child.parentNode;
+            parentNode.appendChild(newChild);
+            parentNode.removeChild(child);
             // eslint-disable-next-line consistent-return
             return newChild;
         }
