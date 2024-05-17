@@ -8,8 +8,10 @@ import { fromJS } from 'immutable';
 import BeneficiarySelector, { validateBeneficiaries } from 'app/components/cards/BeneficiarySelector';
 import PostTemplateSelector from 'app/components/cards/PostTemplateSelector';
 import { loadUserTemplates, saveUserTemplates } from 'app/utils/UserTemplates';
+import { DateTime } from 'luxon';
 
 import * as userActions from 'app/redux/UserReducer';
+import CountdownSelector from "../cards/CountdownSelector";
 
 class PostAdvancedSettings extends Component {
     static propTypes = {
@@ -23,6 +25,7 @@ class PostAdvancedSettings extends Component {
             postTemplateName: null,
             maxAcceptedPayoutType: 'no_max',
             maxAcceptedPayout: props.initialMaxAcceptedPayout,
+            countdownToDate: props.initialCountdownToDate,
         };
         this.initForm(props);
     }
@@ -44,6 +47,10 @@ class PostAdvancedSettings extends Component {
 
     handlePayoutChange = (event) => {
         this.setState({ payoutType: event.target.value });
+    };
+
+    handleCountdownToDateChange = (event) => {
+        this.setState({ countdownToDate: event });
     };
 
     handleTemplateSelected = (postTemplateName) => {
@@ -137,7 +144,8 @@ class PostAdvancedSettings extends Component {
             formId, username, defaultPayoutType, initialPayoutType, initialMaxAcceptedPayout
         } = this.props;
         const {
-            beneficiaries, payoutType, postTemplateName, maxAcceptedPayout, maxAcceptedPayoutType
+            beneficiaries, payoutType, postTemplateName, maxAcceptedPayout, maxAcceptedPayoutType,
+            countdownToDate,
         } = this.state;
         const loadingTemplate = postTemplateName && postTemplateName.indexOf('create_') === -1;
         const { submitting, valid, handleSubmit } = this.state.advancedSettings;
@@ -148,6 +156,7 @@ class PostAdvancedSettings extends Component {
                 || payoutType !== initialPayoutType
                 || postTemplateName !== null
                 || maxAcceptedPayout !== initialMaxAcceptedPayout
+                || countdownToDate !== null
             );
         let defaultMaxAcceptedPayoutType;
 
@@ -170,6 +179,7 @@ class PostAdvancedSettings extends Component {
                         this.props.setBeneficiaries(formId, data.beneficiaries);
                         this.props.setPostTemplateName(formId, postTemplateName);
                         this.props.setMaxAcceptedPayout(formId, maxAcceptedPayout);
+                        this.props.setCountdownToDate(formId, countdownToDate);
                         this.props.hideAdvancedSettings();
                     }
                 })}
@@ -247,6 +257,12 @@ class PostAdvancedSettings extends Component {
                     <h4 className="column">{tt('beneficiary_selector_jsx.header')}</h4>
                 </div>
                 <BeneficiarySelector {...beneficiaries.props} tabIndex={0} />
+                <br />
+                <CountdownSelector
+                    onChange={this.handleCountdownToDateChange}
+                    value={countdownToDate}
+                />
+                <br />
                 <PostTemplateSelector
                     username={username}
                     onChange={this.handleTemplateSelected}
@@ -306,6 +322,10 @@ export default connect(
         );
         const initialPayoutType = state.user.getIn(['current', 'post', formId, 'payoutType']);
         const initialMaxAcceptedPayout = state.user.getIn(['current', 'post', formId, 'maxAcceptedPayout']);
+        let initialCountdownToDate = state.user.getIn(['current', 'post', formId, 'countdownToDate']) || null;
+        if (initialCountdownToDate) {
+            initialCountdownToDate = DateTime.fromISO(initialCountdownToDate);
+        }
         let beneficiaries = state.user.getIn(['current', 'post', formId, 'beneficiaries']);
         beneficiaries = beneficiaries ? beneficiaries.toJS() : [];
         return {
@@ -314,6 +334,7 @@ export default connect(
             defaultPayoutType,
             initialPayoutType,
             initialMaxAcceptedPayout,
+            initialCountdownToDate,
             username,
             initialValues: { beneficiaries },
         };
@@ -345,6 +366,14 @@ export default connect(
                 userActions.set({
                     key: ['current', 'post', formId, 'maxAcceptedPayout'],
                     value: maxAcceptedPayout,
+                })
+            );
+        },
+        setCountdownToDate: (formId, countdownToDate) => {
+            dispatch(
+                userActions.set({
+                    key: ['current', 'post', formId, 'countdownToDate'],
+                    value: countdownToDate,
                 })
             );
         },

@@ -5,3 +5,18 @@
         }
     }
 }
+
+.post_advanced_settings .simpilepicker-date-picker {
+    width: 341px;
+}
+
+.post_advanced_settings  .datetimepicker_value {
+    cursor: pointer;
+}
+
+.post_advanced_settings .simplepicker-wrapper.active {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    z-index: 1000;
+}
