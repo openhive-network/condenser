@@ -724,10 +724,10 @@ function* saveLogin_localStorage() {
     const postingPubkey = posting_private ? posting_private.toPublicKey().toString() : 'none';
     try {
         account.getIn(['active', 'key_auths']).forEach((_auth) => {
-            if (_auth.get(0) === postingPubkey) throw 'Login will not be saved, posting key is the same as active key';
+            if (_auth.get(0) === postingPubkey && !$STM_Config.dangerously_allow_login_with_ober_key) throw 'Login will not be saved, posting key is the same as active key';
         });
         account.getIn(['owner', 'key_auths']).forEach((_auth) => {
-            if (_auth.get(0) === postingPubkey) throw 'Login will not be saved, posting key is the same as owner key';
+            if (_auth.get(0) === postingPubkey && !$STM_Config.dangerously_allow_login_with_ober_key) throw 'Login will not be saved, posting key is the same as owner key';
         });
     } catch (e) {
         console.error('login_auth_err', e);
