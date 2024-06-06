@@ -88,5 +88,6 @@
   "openhive_chat_admin_user_token": "VZhTOE20q3Xe9xTgA9QqjbQAYxYEhAfkUZpAm7xrQgd",
   "logger_output": "noop",
   "logger_log_level": "all",
-  "logger_admins": ""
+  "logger_admins": "",
+  "dangerously_allow_login_with_ober_key": false
 }

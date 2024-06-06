@@ -46,6 +46,7 @@ global.$STM_Config = {
     logger_output: config.get('logger_output'),
     logger_log_level: config.get('logger_log_level'),
     logger_admins: config.get('logger_admins'),
+    dangerously_allow_login_with_ober_key: config.get('dangerously_allow_login_with_ober_key')
 };
 
 const WebpackIsomorphicTools = require('webpack-isomorphic-tools');

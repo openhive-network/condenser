@@ -432,14 +432,14 @@ function* usernamePasswordLogin2(options) {
         let authority = yield select((state) => state.user.getIn(['authority', username]));
 
         const hasActiveAuth = authority.get('active') === 'full';
-        if (hasActiveAuth) {
+        if (!$STM_Config.dangerously_allow_login_with_ober_key && hasActiveAuth) {
             console.log('Rejecting due to detected active auth');
             yield put(userActions.loginError({ error: 'active_login_blocked' }));
             return;
         }
 
         const hasOwnerAuth = authority.get('owner') === 'full';
-        if (hasOwnerAuth) {
+        if (!$STM_Config.dangerously_allow_login_with_ober_key && hasOwnerAuth) {
             console.log('Rejecting due to detected owner auth');
             yield put(userActions.loginError({ error: 'owner_login_blocked' }));
             return;
@@ -449,7 +449,7 @@ function* usernamePasswordLogin2(options) {
         authority = authority.set('active', 'none');
         yield put(userActions.setAuthority({ accountName, auth: authority }));
         const fullAuths = authority.reduce((r, _auth, type) => (_auth === 'full' ? r.add(type) : r), Set());
-        if (!fullAuths.size) {
+        if (!$STM_Config.dangerously_allow_login_with_ober_key && !fullAuths.size) {
             console.log('No full auths');
             yield put(userActions.hideLoginWarning());
             localStorage.removeItem('autopost2');
