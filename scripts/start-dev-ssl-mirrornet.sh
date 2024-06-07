@@ -7,7 +7,7 @@
 
 export SDC_CLIENT_STEEMD_URL=https://hive-5.pl.syncad.com
 export SDC_SERVER_STEEMD_URL=https://hive-5.pl.syncad.com
-export SDC_CHAIN_ID=42
+export SDC_CHAIN_ID="4200000000000000000000000000000000000000000000000000000000000000"
 export SDC_DANGEROUSLY_ALLOW_LOGIN_WITH_OBER_KEY=true
 
 ROCKET_CHAT_URI="${1:-https://rocket-chat.local.wet.ovh}"
