@@ -153,7 +153,7 @@ function traverseForCodeHighlight(node, depth = 0) {
 
 export function highlightCodes(html) {
     if (html.match(/<code>.*?<\/code>/s)) {
-        const doc = DOMParser.parseFromString(html, 'text/html');
+        const doc = DOMParser.parseFromString(html.startsWith('<html>') ? html : `<html>${html}</html>`, 'text/html');
         traverseForCodeHighlight(doc);
         return {
             html: doc ? XMLSerializer.serializeToString(doc) : '',
