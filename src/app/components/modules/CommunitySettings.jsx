@@ -8,7 +8,6 @@ import tt from 'counterpart';
 
 const languageOptions = [
     { abbr: 'en', name: 'English' },
-    { abbr: 'kr', name: 'Korean' },
     { abbr: 'zh', name: 'Chinese' },
     { abbr: 'ms', name: 'Malay' },
     { abbr: 'pl', name: 'Polish' },
