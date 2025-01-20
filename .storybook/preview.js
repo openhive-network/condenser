@@ -9,14 +9,13 @@ const es = require('react-intl/locale-data/es');
 const ru = require('react-intl/locale-data/ru');
 const fr = require('react-intl/locale-data/fr');
 const it = require('react-intl/locale-data/it');
-const ko = require('react-intl/locale-data/ko');
 const zh = require('react-intl/locale-data/zh');
 const pl = require('react-intl/locale-data/pl');
 const { addons, mockChannel } = require('@storybook/addons');
 
 addons.setChannel(mockChannel());
 
-addLocaleData([...en, ...es, ...ru, ...fr, ...it, ...ko, ...zh, ...pl]);
+addLocaleData([...en, ...es, ...ru, ...fr, ...it, ...zh, ...pl]);
 
 tt.registerTranslations('en', require('counterpart/locales/en'));
 tt.registerTranslations('en', require('../src/app/locales/en.json'));
@@ -33,9 +32,6 @@ tt.registerTranslations('fr', require('../src/app/locales/fr.json'));
 tt.registerTranslations('it', require('../src/app/locales/counterpart/it'));
 tt.registerTranslations('it', require('../src/app/locales/it.json'));
 
-tt.registerTranslations('ko', require('../src/app/locales/counterpart/ko'));
-tt.registerTranslations('ko', require('../src/app/locales/ko.json'));
-
 tt.registerTranslations('zh', require('../src/app/locales/counterpart/zh'));
 tt.registerTranslations('zh', require('../src/app/locales/zh.json'));
 
@@ -48,7 +44,7 @@ const getMessages = (locale) => {
 }
 
 setIntlConfig({
-    locales: ['en', 'es', 'ru', 'fr', 'it', 'ko', 'zh', 'pl'],
+    locales: ['en', 'es', 'ru', 'fr', 'it', 'zh', 'pl'],
     defaultLocale: 'en',
     getMessages
 });
