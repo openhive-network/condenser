@@ -3,28 +3,39 @@ import { DateTime } from 'luxon';
 import tt from "counterpart";
 import HumanizeDuration from "humanize-duration";
 import classnames from 'classnames';
+import {Map} from "immutable";
 
 const PostCountDown = (props) => {
     const { post } = props;
-    const jsonMetadata = post.get('json_metadata');
-    const countDownEndDate = jsonMetadata.get('countdown');
+
+    let jsonMetadata;
+    let countDownEndDate;
+
+    if (post) {
+        jsonMetadata = post.get('json_metadata');
+    }
+
+    if (jsonMetadata instanceof Map) {
+        countDownEndDate = jsonMetadata.get('countdown');
+    }
+
     const [remainingTime, setRemainingTime] = useState();
     const [intervalHandler, setIntervalHandler] = useState();
 
     useEffect(() => {
-        const endDate = DateTime.fromISO(countDownEndDate);
-        let interval = 1000;
-
-        if (endDate.diff(DateTime.now()).as('days') >= 1) {
-            interval = 24 * 3600;
-        }
-
-        const updateRemainingTime = () => {
-            const remainingSeconds = Math.round(endDate.diff(DateTime.now()).as('seconds'));
-            setRemainingTime(remainingSeconds);
-        };
-
         if (countDownEndDate) {
+            const endDate = DateTime.fromISO(countDownEndDate);
+            let interval = 1000;
+
+            if (endDate.diff(DateTime.now()).as('days') >= 1) {
+                interval = 24 * 3600;
+            }
+
+            const updateRemainingTime = () => {
+                const remainingSeconds = Math.round(endDate.diff(DateTime.now()).as('seconds'));
+                setRemainingTime(remainingSeconds);
+            };
+
             updateRemainingTime();
             setIntervalHandler(setInterval(updateRemainingTime, interval));
         }
