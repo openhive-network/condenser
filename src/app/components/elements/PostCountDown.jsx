@@ -7,6 +7,9 @@ import classnames from 'classnames';
 const PostCountDown = (props) => {
     const { post } = props;
     const jsonMetadata = post.get('json_metadata');
+    if (!jsonMetadata || !jsonMetadata.get) {
+        return null
+    }
     const countDownEndDate = jsonMetadata.get('countdown');
     const [remainingTime, setRemainingTime] = useState();
     const [intervalHandler, setIntervalHandler] = useState();
