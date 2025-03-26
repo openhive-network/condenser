@@ -224,7 +224,7 @@
     "mock-local-storage": "1.0.5",
     "node-watch": "^0.7.3",
     "picturefill": "3.0.2",
-    "prettier": "2.2.1",
+    "prettier": "3.5.3",
     "process": "^0.11.10",
     "raw-loader": "4.0.2",
     "react-test-renderer": "^18.1.0",
