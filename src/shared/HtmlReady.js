@@ -65,7 +65,6 @@ const XMLSerializer = new xmldom.XMLSerializer();
  *    - gracefully handle protocols like ftp, mailto
  */
 
-
 /** Split the HTML on top-level elements. This allows react to compare separately, preventing excessive re-rendering.
  * Used in MarkdownViewer.jsx
  */
@@ -179,7 +178,7 @@ function link(state, child) {
             if (
                 (url.indexOf('#') !== 0 // Allow in-page links
                     && child.textContent.match(/(www\.)?hive\.blog/i)
-                    && !url.match(/https?:\/\/(.*@)?(www\.)?hive\.blog/i))
+                    && !url.match(/(hive|https)?:\/\/(.*@)?(www\.)?hive\.blog/i))
                 || Phishing.looksPhishy(url)
             ) {
                 const phishyDiv = child.ownerDocument.createElement('div');
@@ -229,13 +228,11 @@ function iframe(state, child) {
 
     let aspectRatioPercent = 100;
     if (width && height) {
-      aspectRatioPercent = (height.value / width.value) * 100;
+        aspectRatioPercent = (height.value / width.value) * 100;
     }
 
-    child.parentNode.replaceChild(DOMParser.parseFromString(
-    `<div class="iframeWrapper">${html}</div>`
-    ), child);
-    const styleAttr = document.createAttribute("style");
+    child.parentNode.replaceChild(DOMParser.parseFromString(`<div class="iframeWrapper">${html}</div>`), child);
+    const styleAttr = document.createAttribute('style');
     styleAttr.value = `position: relative; width: 100%; height: 0; padding-bottom: ${aspectRatioPercent}%;`;
     child.attributes.setNamedItem(styleAttr);
 }
@@ -269,12 +266,14 @@ function proxifyImages(doc, state) {
 
             if (state.lightbox && process.env.BROWSER) {
                 const parentNode = node.parentNode;
-                parentNode.appendChild(DOMParser.parseFromString(`<a href="${getDoubleSize(proxifyImageUrl(url, true))}">
+                parentNode.appendChild(
+                    DOMParser.parseFromString(`<a href="${getDoubleSize(proxifyImageUrl(url, true))}">
                     <img
                         src="${proxifiedImageUrl}"
                         alt="${alt}"
                     />
-                </a>`));
+                </a>`)
+                );
                 parentNode.removeChild(node);
             } else {
                 node.setAttribute('src', proxifiedImageUrl);
