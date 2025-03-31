@@ -67,7 +67,7 @@ export function extractBodySummary(body, stripQuotes = false) {
     desc = htmlDecode(desc);
 
     // Strip any raw URLs from preview text
-    desc = desc.replace(/https?:\/\/[^\s]+/g, '');
+    desc = desc.replace(/(hive|https)?:\/\/[^\s]+/g, '');
 
     // Grab only the first line (not working as expected. does rendering/sanitizing strip newlines?)
     // eslint-disable-next-line prefer-destructuring

@@ -48,9 +48,9 @@ export default ({
         // title is only set in the case of an external link warning
         a: ['href', 'rel', 'title', 'class', 'target', 'id'],
         span: ['data-bg', 'style'],
-        p: ['dir']
+        p: ['dir'],
     },
-    allowedSchemes: ['http', 'https', 'steem', 'esteem'],
+    allowedSchemes: ['http', 'https', 'hive', 'esteem'],
     transformTags: {
         iframe: (tagName, attribs) => {
             const srcAtty = attribs.src;
@@ -168,12 +168,13 @@ export default ({
             href = href.trim();
             const attys = {
                 ...attribs,
-                href
+                href,
             };
             // If it's not a (relative or absolute) hive URL...
             if (
                 !href.match(`^(/(?!/)|${$STM_Config.img_proxy_prefix})`)
                 && !href.match(`^(/(?!/)|https://${$STM_Config.site_domain})`)
+                && !href.match(`^(/(?!/)|hive://)`)
             ) {
                 attys.target = '_blank';
                 attys.rel = highQualityPost ? 'noreferrer noopener' : 'nofollow noreferrer noopener';
@@ -189,12 +190,14 @@ export default ({
             const data = {
                 tagName,
                 attribs: {
-                    ...(('data-bg' in attribs) ? {
-                        style: `background-image: url(${attribs['data-bg']})`,
-                    } : {}),
+                    ...('data-bg' in attribs
+                        ? {
+                              style: `background-image: url(${attribs['data-bg']})`,
+                          }
+                        : {}),
                 },
             };
             return data;
-        }
+        },
     },
 });
