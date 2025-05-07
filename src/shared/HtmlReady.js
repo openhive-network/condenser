@@ -285,23 +285,30 @@ function proxifyImages(doc, state) {
 function linkifyNode(child, state) {
     try {
         const tag = child.parentNode.tagName ? child.parentNode.tagName.toLowerCase() : child.parentNode.tagName;
-        if (tag === 'code') return;
-        if (tag === 'a') return;
+        if (tag === 'code' || tag === 'a') return undefined;
 
         const { mutate } = state;
-        if (!child.data) return;
+        if (!child.data) return undefined;
 
         child = EmbeddedPlayerEmbedNode(child, state.links, state.images);
 
         const data = XMLSerializer.serializeToString(child);
-        const content = linkify(data, state.mutate, state.hashtags, state.usertags, state.images, state.links);
+        const content = linkify(data, mutate, state.hashtags, state.usertags, state.images, state.links);
+
         if (mutate && content !== data) {
-            const newChild = DOMParser.parseFromString(`<span>${content}</span>`);
+            const doc = DOMParser.parseFromString(`<span>${content}</span>`, 'text/html');
+            const wrapper = doc.documentElement; // This is the <span>
+
+            const fragment = child.ownerDocument.createDocumentFragment();
+            for (let i = 0; i < wrapper.childNodes.length; i += 1) {
+                fragment.appendChild(wrapper.childNodes[i].cloneNode(true));
+            }
+
             const parentNode = child.parentNode;
-            parentNode.appendChild(newChild);
+            parentNode.insertBefore(fragment, child);
             parentNode.removeChild(child);
-            // eslint-disable-next-line consistent-return
-            return newChild;
+
+            return fragment;
         }
     } catch (error) {
         console.error('linkify_error', error);
@@ -332,7 +339,7 @@ function linkify(content, mutate, hashtags, usertags, images, links) {
 
             const preceedings = (preceeding1 || '') + (preceeding2 || ''); // include the preceeding matches if they exist
 
-            if (!mutate) return `${preceedings}${user}`;
+            if (!mutate) return match;
 
             return valid ? `${preceedings}<a href="/@${userLower}">@${user}</a>` : `${preceedings}@${user}`;
         }
