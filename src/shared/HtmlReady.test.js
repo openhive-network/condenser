@@ -73,14 +73,14 @@ describe('htmlready', () => {
 
     it('should allow more than one link per post', () => {
         const somanylinks = '<xml xmlns="http://www.w3.org/1999/xhtml">https://foo.com and https://blah.com</xml>';
-        const htmlified = '<xml xmlns="http://www.w3.org/1999/xhtml"><span><a href="https://foo.com">https://foo.com</a> and <a href="https://blah.com">https://blah.com</a></span></xml>';
+        const htmlified = '<xml xmlns="http://www.w3.org/1999/xhtml"><a href="https://foo.com">https://foo.com</a> and <a href="https://blah.com">https://blah.com</a></xml>';
         const res = HtmlReady(somanylinks).html;
         expect(res).toEqual(htmlified);
     });
 
     it('should link usernames', () => {
         const textwithmentions = '<xml xmlns="http://www.w3.org/1999/xhtml">@username (@a1b2, whatever</xml>';
-        const htmlified = '<xml xmlns="http://www.w3.org/1999/xhtml"><span><a href="/@username">@username</a> (<a href="/@a1b2">@a1b2</a>, whatever</span></xml>';
+        const htmlified = '<xml xmlns="http://www.w3.org/1999/xhtml"><a href="/@username">@username</a> (<a href="/@a1b2">@a1b2</a>, whatever</xml>';
         const res = HtmlReady(textwithmentions).html;
         expect(res).toEqual(htmlified);
     });
@@ -133,7 +133,7 @@ describe('htmlready', () => {
         const prefix = '<xml xmlns="http://www.w3.org/1999/xhtml">';
         const suffix = '</xml>';
         const input = prefix + url + suffix;
-        const expected = prefix + '<span><a href="' + url + '">' + url + '</a></span>' + suffix;
+        const expected = prefix + '<a href="' + url + '">' + url + '</a>' + suffix;
         const result = HtmlReady(input).html;
         expect(result).toEqual(expected);
     });
