@@ -100,6 +100,22 @@ export default function ServerHTML({
                 {assets.style.map((href) => (
                     <link href={href} key={href} rel="stylesheet" type="text/css" />
                 ))}
+                <script
+                    defer
+                    data-domain="hive.blog"
+                    src="https://pl.ecency.com/js/script.hash.outbound-links.js"
+                />
+                <script
+                    // eslint-disable-next-line react/no-danger
+                    dangerouslySetInnerHTML={{
+                        __html: `
+                            window.plausible = window.plausible || function() {
+                                (window.plausible.q = window.plausible.q || []).push(arguments)
+                            }
+                        `,
+                    }}
+                />
+
                 {shouldSeeCookieConsent ? (
                     <script
                         id="Cookiebot"
