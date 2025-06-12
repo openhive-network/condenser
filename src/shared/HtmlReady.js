@@ -231,7 +231,10 @@ function iframe(state, child) {
         aspectRatioPercent = (height.value / width.value) * 100;
     }
 
-    child.parentNode.replaceChild(DOMParser.parseFromString(`<div class="iframeWrapper">${html}</div>`), child);
+    child.parentNode.replaceChild(
+        DOMParser.parseFromString(`<div class="iframeWrapper">${html}</div>`, 'text/xml').documentElement,
+        child
+    );
     const styleAttr = document.createAttribute('style');
     styleAttr.value = `position: relative; width: 100%; height: 0; padding-bottom: ${aspectRatioPercent}%;`;
     child.attributes.setNamedItem(styleAttr);
