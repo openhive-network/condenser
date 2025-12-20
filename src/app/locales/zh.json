@@ -101,7 +101,8 @@
         "to": "至",
         "topics": "主题",
         "toggle_nightmode": "切换夜间模式",
-
+        "dark_mode": "深色模式",
+        "light_mode": "浅色模式",
         "all_tags": "所有标签",
         "transfer": "转账",
         "trending_topics": "热门话题",

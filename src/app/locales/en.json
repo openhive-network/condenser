@@ -143,6 +143,8 @@
         "to": " to ",
         "topics": "Topics",
         "toggle_nightmode": "Night Mode",
+        "dark_mode": "Dark Mode",
+        "light_mode": "Light Mode",
         "all_tags": "All posts",
         "all_tags_mobile": "All posts",
         "transfer": "Transfer ",
