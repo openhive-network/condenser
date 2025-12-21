@@ -8,7 +8,6 @@
     }
   }
 
-  // Theme-aware styles for the react-rte root container
   > div {
     @include themify($themes) {
       background-color: themed('moduleBackgroundColor') !important;
@@ -17,7 +16,6 @@
     }
   }
 
-  // Theme-aware styles for the Draft.js editor
   :global(.public-DraftEditor-content) {
     @include themify($themes) {
       color: themed('textColorPrimary') !important;
@@ -31,7 +29,6 @@
     }
   }
 
-  // Fix blockquote colors in dark mode
   :global(.public-DraftStyleDefault-block) {
     @include themify($themes) {
       color: themed('textColorPrimary');
