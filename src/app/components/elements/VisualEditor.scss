@@ -7,4 +7,34 @@
       min-height: 200px;
     }
   }
+
+  // Theme-aware styles for the react-rte root container
+  > div {
+    @include themify($themes) {
+      background-color: themed('moduleBackgroundColor') !important;
+      border-color: themed('border') !important;
+      color: themed('textColorPrimary') !important;
+    }
+  }
+
+  // Theme-aware styles for the Draft.js editor
+  :global(.public-DraftEditor-content) {
+    @include themify($themes) {
+      color: themed('textColorPrimary') !important;
+      background-color: themed('moduleBackgroundColor') !important;
+    }
+  }
+
+  :global(.public-DraftEditorPlaceholder-root) {
+    @include themify($themes) {
+      color: themed('textColorSecondary') !important;
+    }
+  }
+
+  // Fix blockquote colors in dark mode
+  :global(.public-DraftStyleDefault-block) {
+    @include themify($themes) {
+      color: themed('textColorPrimary');
+    }
+  }
 }
