@@ -213,7 +213,7 @@ class Header extends React.Component {
                 link: '#',
                 icon: 'eye',
                 onClick: toggleNightmode,
-                value: tt('g.toggle_nightmode'),
+                value: nightmodeEnabled ? tt('g.light_mode') : tt('g.dark_mode'),
             },
             { link: wallet_link, icon: 'wallet', value: tt('g.wallet') },
             {

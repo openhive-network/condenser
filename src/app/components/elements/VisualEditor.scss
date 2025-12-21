@@ -7,4 +7,31 @@
       min-height: 200px;
     }
   }
+
+  > div {
+    @include themify($themes) {
+      background-color: themed('moduleBackgroundColor') !important;
+      border-color: themed('border') !important;
+      color: themed('textColorPrimary') !important;
+    }
+  }
+
+  :global(.public-DraftEditor-content) {
+    @include themify($themes) {
+      color: themed('textColorPrimary') !important;
+      background-color: themed('moduleBackgroundColor') !important;
+    }
+  }
+
+  :global(.public-DraftEditorPlaceholder-root) {
+    @include themify($themes) {
+      color: themed('textColorSecondary') !important;
+    }
+  }
+
+  :global(.public-DraftStyleDefault-block) {
+    @include themify($themes) {
+      color: themed('textColorPrimary');
+    }
+  }
 }

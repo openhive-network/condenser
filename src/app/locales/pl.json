@@ -136,6 +136,8 @@
         "to": "do",
         "topics": "Tematy",
         "toggle_nightmode": "Tryb nocny",
+        "dark_mode": "Tryb ciemny",
+        "light_mode": "Tryb jasny",
         "all_tags": "Wszystkie wpisy",
         "all_tags_mobile": "Wszystkie wpisy",
         "transfer": "Prześlij",

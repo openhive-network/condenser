@@ -9,7 +9,7 @@ import Icon from 'app/components/elements/Icon';
 import { Link } from 'react-router';
 
 const SidePanel = ({
- alignment, visible, hideSidePanel, username, walletUrl, toggleNightmode
+ alignment, visible, hideSidePanel, username, walletUrl, toggleNightmode, nightmodeEnabled
 }) => {
     if (process.env.BROWSER) {
         if (visible) {
@@ -71,7 +71,7 @@ const SidePanel = ({
             },
             */
             {
-                label: tt('g.toggle_nightmode'),
+                label: nightmodeEnabled ? tt('g.light_mode') : tt('g.dark_mode'),
                 link: '/',
                 onClick: toggleNightmode,
             },
@@ -168,6 +168,7 @@ SidePanel.propTypes = {
     hideSidePanel: PropTypes.func.isRequired,
     username: PropTypes.string,
     toggleNightmode: PropTypes.func.isRequired,
+    nightmodeEnabled: PropTypes.bool,
 };
 
 SidePanel.defaultProps = {
