@@ -102,6 +102,8 @@
         "to": " 宛先:",
         "topics": "トピック",
         "toggle_nightmode": "ナイトモード切替",
+        "dark_mode": "ダークモード",
+        "light_mode": "ライトモード",
         "all_tags": "すべてのタグ",
         "transfer": "送信 ",
         "trending_topics": "トレンドトピック",
