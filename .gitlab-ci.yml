@@ -18,11 +18,11 @@ variables:
 ################################# COMMON TEMPLATES #################################
 
 .docker-job: &docker-job
-    image: docker:stable
+    image: docker:27
     tags:
         - public-runner-docker
     services:
-        - docker:dind
+        - docker:27-dind
 
 .docker-remote-host-review: &docker-remote-host-review
     before_script:
