@@ -227,6 +227,21 @@ describe('Performance', () => {
             '<a href="https://3speak.tv/watch?v=artemislives/tvxkobat" rel="noopener" title="This link will take you away from this site" class="steem-keychain-checked"><img src="https://images.hive.blog/768x0/https://img.3speakcontent.online/tvxkobat/post.png"></a>'
         );
     });
+    it('threespeakSanitize', () => {
+        // New Snapie Player URLs - should match
+        match(threespeakRegex.sanitize, 'https://play.3speak.tv/watch?v=threespeak/iaarkpvf&mode=iframe');
+        match(threespeakRegex.sanitize, 'https://play.3speak.tv/watch?v=artemislives/tvxkobat&mode=iframe');
+        match(threespeakRegex.sanitize, 'https://play.3speak.tv/embed?v=threespeak/iaarkpvf');
+        // Legacy URLs - should match
+        match(threespeakRegex.sanitize, 'https://3speak.tv/embed?v=threespeak/iaarkpvf');
+        match(threespeakRegex.sanitize, 'https://3speak.tv/watch?v=artemislives/tvxkobat');
+        match(threespeakRegex.sanitize, 'https://3speak.co/embed?v=artemislives/tvxkobat');
+        match(threespeakRegex.sanitize, 'https://3speak.online/watch?v=artemislives/tvxkobat&jwsource=cl');
+        // Invalid URLs - should NOT match
+        matchNot(threespeakRegex.sanitize, 'https://fake3speak.com/watch?v=test/video');
+        matchNot(threespeakRegex.sanitize, 'http://3speak.tv/watch?v=test/video'); // http instead of https
+        matchNot(threespeakRegex.sanitize, 'https://3speak.tv/random?v=test/video'); // invalid path
+    });
     it('twitter', () => {
         match(twitterRegex.main, 'https://twitter.com/quochuync/status/1274676558641299459');
         match(twitterRegex.sanitize, 'https://twitter.com/quochuync/status/1274676558641299459?ref_src=something');
