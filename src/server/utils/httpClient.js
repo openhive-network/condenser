@@ -11,18 +11,18 @@
  * @see https://nodejs.org/api/http.html#class-httpagent
  */
 
-const https = require('https');
-const http = require('http');
-const axios = require('axios').default;
+import https from 'https';
+import http from 'http';
+import axios from 'axios';
 
-const httpAgent = new http.Agent({
+export const httpAgent = new http.Agent({
     keepAlive: true,
     keepAliveMsecs: 1000,
     maxSockets: 50,
     maxFreeSockets: 10,
 });
 
-const httpsAgent = new https.Agent({
+export const httpsAgent = new https.Agent({
     keepAlive: true,
     keepAliveMsecs: 1000,
     maxSockets: 50,
@@ -67,8 +67,4 @@ if (!originalFetch) {
     });
 }
 
-module.exports = {
-    axios,
-    httpAgent,
-    httpsAgent,
-};
+export { axios };

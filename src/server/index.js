@@ -1,11 +1,13 @@
+// Initialize HTTP agents with keep-alive early, before other modules make requests.
+// This sets axios defaults globally and patches fetch, reducing TCP connection churn.
+// IMPORTANT: This must be the first import to ensure agents are configured before
+// any other module (like hive-js) makes HTTP connections during their initialization.
+import './utils/httpClient';
+
 import config from 'config';
 import * as hivejs from '@hiveio/hive-js';
 
 const path = require('path');
-
-// Initialize HTTP agents with keep-alive early, before other modules make requests.
-// This sets axios defaults globally and patches fetch, reducing TCP connection churn.
-require('./utils/httpClient');
 
 const ROOT = path.join(__dirname, '../..');
 
