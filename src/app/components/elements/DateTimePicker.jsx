@@ -1,13 +1,9 @@
-import React, { useEffect, useCallback, useState } from 'react';
-import SimplePicker from 'simplepicker';
+import React, { useCallback, useMemo, useState } from 'react';
 import { DateTime } from 'luxon';
 import tt from 'counterpart';
 
-import 'simplepicker/dist/simplepicker.css';
-
 const DateTimePicker = (props) => {
     const { onChange, value } = props;
-    const [picker, setPicker] = useState(undefined);
     const [error, setError] = useState('');
 
     const handleChange = useCallback((event) => {
@@ -22,35 +18,19 @@ const DateTimePicker = (props) => {
         }
     }, []);
 
-    const openPicker = useCallback(() => {
-        if (value) {
-            picker.reset(value.toJSDate());
-        }
-        picker.open();
-    }, [picker, value]);
-
-    useEffect(() => {
-        const _picker = new SimplePicker('.datetimepicker');
-        _picker.on('submit', (date) => {
-            handleChange(date.toISOString());
-        });
-        setPicker(_picker);
-    }, [onChange]);
+    const now = useMemo(() => DateTime.now().toFormat("yyyy-MM-dd'T'HH:mm"), []);
+    const inputValue = value ? value.toFormat("yyyy-MM-dd'T'HH:mm") : '';
 
     return (
         <div>
-            {picker && (
-                <input
-                    className="datetimepicker_value"
-                    type="text"
-                    name="countdown"
-                    placeholder={tt('post_advanced_settings_jsx.countdown_placeholder')}
-                    value={value ? value.toLocaleString(DateTime.DATETIME_SHORT) : ''}
-                    onClick={openPicker}
-                    readOnly
-                />
-            )}
-            <div className="datetimepicker" />
+            <input
+                className="datetimepicker_value"
+                type="datetime-local"
+                name="countdown"
+                min={now}
+                value={inputValue}
+                onChange={(e) => handleChange(e.target.value)}
+            />
             <div className="error">{error}</div>
         </div>
     );
