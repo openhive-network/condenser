@@ -7,6 +7,7 @@ const mapStateToProps = (state, ownProps) => {
         visible: state.user.get('show_side_panel'),
         current: state.user.get('current'),
         username: state.user.getIn(['current', 'username']),
+        nightmodeEnabled: state.app.getIn(['user_preferences', 'nightmode']),
         ...ownProps,
     };
 };

@@ -1,14 +1,13 @@
 .SlateEditor > div[contenteditable="true"] {
   min-height: 12rem;
 
-  //@include themify($themes) {
-  //  background-color: themed('moduleBackgroundColor');
-  //}
+  @include themify($themes) {
+    color: themed('textColorPrimary');
+    background-color: themed('moduleBackgroundColor');
+    border: themed('border');
+  }
 
-  color: #000;
-  background-color: #ffffff;
   border-radius: 3px;
-  border: 1px solid #cacaca;
   padding: 0.5rem;
 }
 

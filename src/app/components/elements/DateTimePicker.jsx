@@ -1,56 +1,41 @@
-import React, { useEffect, useCallback, useState } from 'react';
-import SimplePicker from 'simplepicker';
+import React, { useState } from 'react';
 import { DateTime } from 'luxon';
 import tt from 'counterpart';
 
-import 'simplepicker/dist/simplepicker.css';
-
 const DateTimePicker = (props) => {
     const { onChange, value } = props;
-    const [picker, setPicker] = useState(undefined);
     const [error, setError] = useState('');
 
-    const handleChange = useCallback((event) => {
-        const coundDownDate = DateTime.fromISO(event);
-        const delta = coundDownDate.diffNow().as('seconds');
+    const handleChange = (e) => {
+        const input = e.target.value;
+        if (!input) {
+            setError('');
+            return;
+        }
+
+        const countdownDate = DateTime.fromISO(input);
+        const delta = countdownDate.diffNow().as('seconds');
 
         if (delta < 3600) {
             setError(tt('post_advanced_settings_jsx.countdown_date_error'));
         } else if (onChange) {
             setError('');
-            onChange(coundDownDate);
+            onChange(countdownDate);
         }
-    }, []);
+    };
 
-    const openPicker = useCallback(() => {
-        if (value) {
-            picker.reset(value.toJSDate());
-        }
-        picker.open();
-    }, [picker, value]);
-
-    useEffect(() => {
-        const _picker = new SimplePicker('.datetimepicker');
-        _picker.on('submit', (date) => {
-            handleChange(date.toISOString());
-        });
-        setPicker(_picker);
-    }, [onChange]);
+    const inputValue = value ? value.toFormat("yyyy-MM-dd'T'HH:mm") : '';
 
     return (
         <div>
-            {picker && (
-                <input
-                    className="datetimepicker_value"
-                    type="text"
-                    name="countdown"
-                    placeholder={tt('post_advanced_settings_jsx.countdown_placeholder')}
-                    value={value ? value.toLocaleString(DateTime.DATETIME_SHORT) : ''}
-                    onClick={openPicker}
-                    readOnly
-                />
-            )}
-            <div className="datetimepicker" />
+            <input
+                className="datetimepicker_value"
+                type="datetime-local"
+                name="countdown"
+                placeholder={tt('post_advanced_settings_jsx.countdown_placeholder')}
+                value={inputValue}
+                onChange={handleChange}
+            />
             <div className="error">{error}</div>
         </div>
     );

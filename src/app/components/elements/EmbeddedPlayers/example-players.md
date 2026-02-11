@@ -85,12 +85,17 @@ https://open.spotify.com/track/6V4oUHrin3AlMarW8MsnIK?si=03e929f5a0ad4893
 Artist
 https://open.spotify.com/artist/70eAfg5WeShjPxtD9Yi6P9?si=VDDO-Ju9TOqTw_pS5piraA
 
-## threespeak direct html iframe markup
+## threespeak direct html iframe markup (Snapie Player)
+
+<iframe src="https://play.3speak.tv/watch?v=threespeak/iaarkpvf&mode=iframe"></iframe>
+
+## threespeak iframe embedded from link (Snapie Player)
+
+https://play.3speak.tv/watch?v=threespeak/iaarkpvf
+
+## threespeak legacy format (still supported)
 
 <iframe src="https://3speak.tv/embed?v=threespeak/iaarkpvf"></iframe>
-
-## threespeak iframe embedded from link
-
 https://3speak.tv/watch?v=threespeak/iaarkpvf
 
 ## truvvl direct html iframe markup
