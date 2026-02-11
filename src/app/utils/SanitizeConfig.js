@@ -187,17 +187,14 @@ export default ({
             };
         },
         span: (tagName, attribs) => {
-            const data = {
-                tagName,
-                attribs: {
-                    ...('data-bg' in attribs
-                        ? {
-                              style: `background-image: url(${attribs['data-bg']})`,
-                          }
-                        : {}),
-                },
-            };
-            return data;
+            const attys = {};
+            if ('data-bg' in attribs) {
+                const bg = attribs['data-bg'];
+                if (/^(https?:)?\/\//i.test(bg) && !/[)"';\s]/.test(bg)) {
+                    attys.style = `background-image: url('${bg}')`;
+                }
+            }
+            return { tagName, attribs: attys };
         },
     },
 });
