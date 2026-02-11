@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import { DateTime } from 'luxon';
 import tt from 'counterpart';
 
@@ -6,19 +6,24 @@ const DateTimePicker = (props) => {
     const { onChange, value } = props;
     const [error, setError] = useState('');
 
-    const handleChange = useCallback((event) => {
-        const coundDownDate = DateTime.fromISO(event);
-        const delta = coundDownDate.diffNow().as('seconds');
+    const handleChange = (e) => {
+        const input = e.target.value;
+        if (!input) {
+            setError('');
+            return;
+        }
+
+        const countdownDate = DateTime.fromISO(input);
+        const delta = countdownDate.diffNow().as('seconds');
 
         if (delta < 3600) {
             setError(tt('post_advanced_settings_jsx.countdown_date_error'));
         } else if (onChange) {
             setError('');
-            onChange(coundDownDate);
+            onChange(countdownDate);
         }
-    }, []);
+    };
 
-    const now = useMemo(() => DateTime.now().toFormat("yyyy-MM-dd'T'HH:mm"), []);
     const inputValue = value ? value.toFormat("yyyy-MM-dd'T'HH:mm") : '';
 
     return (
@@ -27,9 +32,9 @@ const DateTimePicker = (props) => {
                 className="datetimepicker_value"
                 type="datetime-local"
                 name="countdown"
-                min={now}
+                placeholder={tt('post_advanced_settings_jsx.countdown_placeholder')}
                 value={inputValue}
-                onChange={(e) => handleChange(e.target.value)}
+                onChange={handleChange}
             />
             <div className="error">{error}</div>
         </div>
