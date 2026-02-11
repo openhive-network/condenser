@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { DateTime } from 'luxon';
 import tt from 'counterpart';
 
@@ -18,7 +18,7 @@ const DateTimePicker = (props) => {
         }
     }, []);
 
-    const now = DateTime.now().toFormat("yyyy-MM-dd'T'HH:mm");
+    const now = useMemo(() => DateTime.now().toFormat("yyyy-MM-dd'T'HH:mm"), []);
     const inputValue = value ? value.toFormat("yyyy-MM-dd'T'HH:mm") : '';
 
     return (
