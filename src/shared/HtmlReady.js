@@ -78,8 +78,10 @@ const XMLSerializer = new xmldom.XMLSerializer();
     If hideImages and mutate is set to true all images will be replaced
     by <pre> elements containing just the image url.
 */
-export default function (html, { mutate = true, hideImages = false, lightbox = false } = {}) {
-    const state = { mutate };
+export default function (html, {
+    mutate = true, hideImages = false, lightbox = false, proxyAuthToken,
+} = {}) {
+    const state = { mutate, proxyAuthToken };
     state.hashtags = new Set();
     state.usertags = new Set();
     state.htmltags = new Set();
@@ -259,18 +261,19 @@ function img(state, child) {
 
 function proxifyImages(doc, state) {
     if (!doc) return;
+    const token = state.proxyAuthToken;
 
     Array.from(doc.getElementsByTagName('img')).forEach((node) => {
         const url = node.getAttribute('src');
         const alt = node.getAttribute('alt');
 
         if (!linksRe.local.test(url)) {
-            const proxifiedImageUrl = proxifyImageUrl(url, true);
+            const proxifiedImageUrl = proxifyImageUrl(url, true, token);
 
             if (state.lightbox && process.env.BROWSER) {
                 const parentNode = node.parentNode;
                 parentNode.appendChild(
-                    DOMParser.parseFromString(`<a href="${getDoubleSize(proxifyImageUrl(url, true))}">
+                    DOMParser.parseFromString(`<a href="${getDoubleSize(proxifyImageUrl(url, true, token))}">
                     <img
                         src="${proxifiedImageUrl}"
                         alt="${alt}"

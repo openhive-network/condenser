@@ -37,7 +37,7 @@ export const defaultWidth = () => {
  * @param {boolean} allowNaturalSize
  * @returns string
  */
-export const proxifyImageUrl = (url, dimensions) => {
+export const proxifyImageUrl = (url, dimensions, token) => {
     const proxyList = url.match(rProxyDomainsDimensions);
     let respUrl = url;
     if (proxyList) {
@@ -57,7 +57,11 @@ export const proxifyImageUrl = (url, dimensions) => {
         }
 
         if ((NATURAL_SIZE !== dims && CAPPED_SIZE !== dims) || !rProxyDomain.test(respUrl)) {
-            return $STM_Config.img_proxy_prefix + dims + respUrl;
+            let result = $STM_Config.img_proxy_prefix + dims + respUrl;
+            if (token) {
+                result += (result.includes('?') ? '&' : '?') + 'token=' + encodeURIComponent(token);
+            }
+            return result;
         }
     }
     return respUrl;

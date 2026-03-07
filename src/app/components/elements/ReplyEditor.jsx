@@ -21,6 +21,10 @@ import { Remarkable } from 'remarkable';
 import Dropzone from 'react-dropzone';
 import tt from 'counterpart';
 import { DateTime } from 'luxon';
+import { PrivateKey, Signature, hash } from '@hiveio/hive-js/lib/auth/ecc';
+import { isLoggedInWithKeychain } from 'app/utils/HiveKeychain';
+import { isLoggedInWithHiveSigner } from 'app/utils/HiveSigner';
+import HiveAuthUtils from 'app/utils/HiveAuthUtils';
 
 import { loadUserTemplates, saveUserTemplates } from 'app/utils/UserTemplates';
 import BadActorList from 'app/utils/BadActorList';
@@ -31,6 +35,28 @@ import VisualEditor from './VisualEditor';
 import { calculateRcStats } from "../../utils/UserUtil";
 
 const remarkable = new Remarkable({ html: true, breaks: true });
+
+/** Check if markdown content contains external image URLs that would need proxying. */
+function contentHasExternalImage(content, proxyBase) {
+    if (!content || !proxyBase) return false;
+    // Markdown images: ![alt](url)
+    const mdImageRegex = /!\[[^\]]*\]\((https?:\/\/[^)\s]+)\)/g;
+    let match;
+    while ((match = mdImageRegex.exec(content)) !== null) {
+        if (!match[1].startsWith(proxyBase)) return true;
+    }
+    // Bare image URLs on their own line
+    const bareImageRegex = /(?:^|\n)\s*(https?:\/\/[^\s]+\.(?:jpe?g|png|gif|webp|svg|bmp)(?:\?[^\s]*)?)\s*(?:\n|$)/gi;
+    while ((match = bareImageRegex.exec(content)) !== null) {
+        if (!match[1].startsWith(proxyBase)) return true;
+    }
+    // HTML img tags
+    const htmlImgRegex = /<img\s[^>]*src=["'](https?:\/\/[^"']+)["']/gi;
+    while ((match = htmlImgRegex.exec(content)) !== null) {
+        if (!match[1].startsWith(proxyBase)) return true;
+    }
+    return false;
+}
 
 const RTE_DEFAULT = false;
 const MAX_TAGS = 8;
@@ -99,12 +125,15 @@ class ReplyEditor extends React.Component {
             imagesUploadCount: 0,
             enableSideBySide: true,
             userRc: undefined,
+            proxyAuthToken: undefined,
         };
         this.initForm(props);
         this.textareaRef = React.createRef();
         this.titleRef = React.createRef();
         this.draftRef = React.createRef();
         this.dropzoneRef = React.createRef();
+        this._proxyAuthInterval = null;
+        this._proxyAuthTokenRequested = false;
     }
 
     async getUserRc(username) {
@@ -254,6 +283,81 @@ class ReplyEditor extends React.Component {
         }, 300);
     }
 
+    componentWillUnmount() {
+        if (this._proxyAuthInterval) {
+            clearInterval(this._proxyAuthInterval);
+        }
+    }
+
+    checkAndFetchProxyAuthToken(bodyValue) {
+        if (this._proxyAuthTokenRequested || !bodyValue) return;
+        if (contentHasExternalImage(bodyValue, $STM_Config.upload_image)) {
+            this._proxyAuthTokenRequested = true;
+            this.fetchProxyAuthToken();
+        }
+    }
+
+    async fetchProxyAuthToken() {
+        const { username, postingKey } = this.props;
+        if (!username) return;
+
+        const keychainLogin = isLoggedInWithKeychain();
+        const hiveSignerLogin = isLoggedInWithHiveSigner();
+        const hiveAuthLogin = HiveAuthUtils.isLoggedInWithHiveAuth();
+
+        // HiveSigner uses OAuth tokens, not crypto signatures — skip proxy auth
+        if (hiveSignerLogin) return;
+        if (!(keychainLogin || hiveAuthLogin || postingKey)) return;
+
+        try {
+            const timestamp = Date.now();
+            const challenge = 'ProxySigningChallenge' + String(timestamp);
+            let sig;
+
+            if (keychainLogin) {
+                const response = await new Promise((resolve) => {
+                    window.hive_keychain.requestSignBuffer(username, challenge, 'Posting', (res) => {
+                        resolve(res);
+                    });
+                });
+                if (!response.success) return;
+                sig = response.result;
+            } else if (hiveAuthLogin) {
+                const response = await new Promise((resolve) => {
+                    HiveAuthUtils.signChallenge(challenge, 'posting', (res) => {
+                        resolve(res);
+                    });
+                });
+                if (!response.success) return;
+                sig = response.result;
+            } else {
+                // Direct posting key
+                const challengeBuf = Buffer.from(challenge);
+                const challengeHash = hash.sha256(challengeBuf);
+                sig = Signature.signBufferSha256(challengeHash, postingKey).toHex();
+            }
+
+            const resp = await fetch(
+                `${$STM_Config.upload_image}/proxy-auth/${username}/${sig}`,
+                {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ timestamp }),
+                }
+            );
+            if (resp.ok) {
+                const data = await resp.json();
+                this.setState({ proxyAuthToken: data.token });
+                // Start refresh timer after first successful acquisition
+                if (!this._proxyAuthInterval) {
+                    this._proxyAuthInterval = setInterval(() => this.fetchProxyAuthToken(), 25 * 60 * 1000);
+                }
+            }
+        } catch (error) {
+            console.error('Error obtaining proxy auth token:', error);
+        }
+    }
+
     // shouldComponentUpdate = shouldComponentUpdate(this, 'ReplyEditor');
 
     // getSnapshotBeforeUpdate() is invoked right before the most recently rendered output is committed to e.g. the DOM.
@@ -324,6 +428,11 @@ class ReplyEditor extends React.Component {
                         };
                     }
                 }
+            }
+
+            // Lazily acquire proxy auth token when external images are first detected
+            if (ts.body.value !== ns.body.value) {
+                this.checkAndFetchProxyAuthToken(ns.body.value);
             }
 
             // Save current draft to localStorage
@@ -1211,7 +1320,7 @@ class ReplyEditor extends React.Component {
                                 vframe_section_shrink_class: true,
                             })}
                         >
-                            <MarkdownViewer text={body.value} large={isStory} />
+                            <MarkdownViewer text={body.value} large={isStory} proxyAuthToken={this.state.proxyAuthToken} />
                         </div>
                     )}
                 </div>
@@ -1330,6 +1439,8 @@ export default (formId) => connect(
         //  parent_author, parent_permlink,
         //  type, successCallback,
         //  successCallBack, onCancel
+        const postingKey = state.user.getIn(['current', 'private_keys', 'posting_private']);
+
         return {
             ...ownProps,
             type, //XX
@@ -1346,6 +1457,7 @@ export default (formId) => connect(
             postTemplateName,
             maxAcceptedPayout,
             countdownToDate,
+            postingKey,
             initialValues: {
                 title, summary, altAuthor, body, tags
             },
