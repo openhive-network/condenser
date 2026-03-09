@@ -21,7 +21,7 @@ import { Remarkable } from 'remarkable';
 import Dropzone from 'react-dropzone';
 import tt from 'counterpart';
 import { DateTime } from 'luxon';
-import { PrivateKey, Signature, hash } from '@hiveio/hive-js/lib/auth/ecc';
+import { Signature, hash } from '@hiveio/hive-js/lib/auth/ecc';
 import { isLoggedInWithKeychain } from 'app/utils/HiveKeychain';
 import { isLoggedInWithHiveSigner } from 'app/utils/HiveSigner';
 import HiveAuthUtils from 'app/utils/HiveAuthUtils';
@@ -299,7 +299,10 @@ class ReplyEditor extends React.Component {
 
     async fetchProxyAuthToken() {
         const { username, postingKey } = this.props;
-        if (!username) return;
+        if (!username) {
+            this._proxyAuthTokenRequested = false; // retry after login
+            return;
+        }
 
         const keychainLogin = isLoggedInWithKeychain();
         const hiveSignerLogin = isLoggedInWithHiveSigner();
@@ -307,11 +310,14 @@ class ReplyEditor extends React.Component {
 
         // HiveSigner uses OAuth tokens, not crypto signatures — skip proxy auth
         if (hiveSignerLogin) return;
-        if (!(keychainLogin || hiveAuthLogin || postingKey)) return;
+        if (!(keychainLogin || hiveAuthLogin || postingKey)) {
+            this._proxyAuthTokenRequested = false; // retry once keys are available
+            return;
+        }
 
         try {
             const timestamp = Date.now();
-            const challenge = 'ProxySigningChallenge' + String(timestamp);
+            const challenge = `Authorize image proxy preview for ${username} at ${new Date(timestamp).toISOString()}`;
             let sig;
 
             if (keychainLogin) {

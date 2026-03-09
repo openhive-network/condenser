@@ -233,6 +233,16 @@ if (env === 'production') {
         reportOnly: config.get('helmet.reportOnly'),
         setAllHeaders: config.get('helmet.setAllHeaders'),
     };
+    // Ensure the image proxy host is in connect-src for proxy-auth token fetch
+    const uploadImage = config.get('upload_image') || config.get('img_proxy_prefix');
+    if (uploadImage) {
+        try {
+            const imgHost = new URL(uploadImage).origin;
+            if (!helmetConfig.directives.connectSrc.includes(imgHost)) {
+                helmetConfig.directives.connectSrc.push(imgHost);
+            }
+        } catch (e) { /* invalid URL, skip */ }
+    }
     // eslint-disable-next-line prefer-destructuring
     helmetConfig.directives.reportUri = helmetConfig.directives.reportUri[0];
     if (helmetConfig.directives.reportUri === '-') {
