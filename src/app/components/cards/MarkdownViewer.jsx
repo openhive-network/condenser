@@ -25,6 +25,7 @@ class MarkdownViewer extends Component {
         breaks: PropTypes.bool, // true to use bastardized markdown that cares about newlines
         // used for the ImageUserBlockList
         lightbox: PropTypes.bool,
+        proxyAuthToken: PropTypes.string,
     };
 
     static defaultProps = {
@@ -44,6 +45,7 @@ class MarkdownViewer extends Component {
     shouldComponentUpdate(np, ns) {
         return (
             np.text !== this.props.text || np.large !== this.props.large || ns.allowNoImage !== this.state.allowNoImage
+            || np.proxyAuthToken !== this.props.proxyAuthToken
         );
     }
 
@@ -91,7 +93,7 @@ class MarkdownViewer extends Component {
         }
 
         // Embed videos, link mentions and hashtags, etc...
-        if (renderedText) renderedText = HtmlReady(renderedText, { hideImages, lightbox }).html;
+        if (renderedText) renderedText = HtmlReady(renderedText, { hideImages, lightbox, proxyAuthToken: this.props.proxyAuthToken }).html;
 
         // Complete removal of javascript and other dangerous tags..
         // The must remain as close as possible to dangerouslySetInnerHTML
