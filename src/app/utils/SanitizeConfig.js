@@ -47,7 +47,7 @@ export default ({
 
         // title is only set in the case of an external link warning
         a: ['href', 'rel', 'title', 'class', 'target', 'id'],
-        span: ['data-bg', 'style'],
+        span: [],
         p: ['dir'],
     },
     allowedSchemes: ['http', 'https', 'hive', 'esteem'],
@@ -186,15 +186,8 @@ export default ({
                 attribs: attys,
             };
         },
-        span: (tagName, attribs) => {
-            const attys = {};
-            if ('data-bg' in attribs) {
-                const bg = attribs['data-bg'];
-                if (/^(https?:)?\/\//i.test(bg) && !/[)"';\s]/.test(bg)) {
-                    attys.style = `background-image: url('${bg}')`;
-                }
-            }
-            return { tagName, attribs: attys };
+        span: (tagName) => {
+            return { tagName, attribs: {} };
         },
     },
 });
