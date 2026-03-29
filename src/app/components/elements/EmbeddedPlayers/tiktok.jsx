@@ -75,6 +75,11 @@ export function extractMetadata(data) {
     return null;
 }
 
+function escapeHtml(s) {
+    if (!s) return '';
+    return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#x27;');
+}
+
 function generateTikTokCode(metadata) {
     let tiktokCode = '';
     if (metadata) {
@@ -85,6 +90,7 @@ function generateTikTokCode(metadata) {
             author = '';
         }
         id = id.replace(/[^0-9]/gi, '');
+        author = escapeHtml(author);
 
         tiktokCode = `<blockquote class="tiktok-embed" cite="https://www.tiktok.com/@${author}/video/${id}" `
             + 'data-video-id="7009483703462202625" style="max-width: 605px;min-width: 325px;" > '
