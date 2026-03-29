@@ -30,9 +30,10 @@ const UserProfileHeader = (props) => {
     const isMyAccount = current_user === accountname;
 
     let cover_image_style = {};
-    if (cover_image) {
+    if (cover_image && /^https?:\/\//i.test(cover_image)) {
+        const proxified = proxifyImageUrl(cover_image, '2048x512');
         cover_image_style = {
-            backgroundImage: 'url(' + proxifyImageUrl(cover_image, '2048x512') + ')',
+            backgroundImage: `url(${proxified.replace(/[()'"]/g, (c) => '%' + c.charCodeAt(0).toString(16))})`,
         };
     }
 
