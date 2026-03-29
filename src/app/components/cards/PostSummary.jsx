@@ -312,10 +312,11 @@ class PostSummary extends React.Component {
                 );
             } else {
                 const listImg = proxify(image_link, '256x512');
+                const defaultImg = proxify(image_link, '640x480');
                 thumb = (
                     <picture className="articles__feature-img">
                         <source srcSet={listImg} media="(min-width: 1000px)" />
-                        <img srcSet={image_link} alt="featured" />
+                        <img srcSet={defaultImg} alt="featured" />
                     </picture>
                 );
             }

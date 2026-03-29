@@ -28,6 +28,7 @@ import HiveAuthUtils from 'app/utils/HiveAuthUtils';
 
 import { loadUserTemplates, saveUserTemplates } from 'app/utils/UserTemplates';
 import BadActorList from 'app/utils/BadActorList';
+import { proxifyImageUrl } from 'app/utils/ProxifyUrl';
 import { FormattedHTMLMessage } from 'app/Translator';
 import { api } from "@hiveio/hive-js";
 import HumanizeDuration from "humanize-duration";
@@ -1137,7 +1138,7 @@ class ReplyEditor extends React.Component {
                                                             }
                                                         )}
                                                         style={{
-                                                            backgroundImage: `url(${image})`,
+                                                            backgroundImage: `url(${proxifyImageUrl(image, '256x512')})`,
                                                         }}
                                                         onClick={onSelectCoverImage}
                                                     />
