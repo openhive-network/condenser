@@ -43,7 +43,9 @@ class EmbeddedGist extends React.Component {
                 loading: false,
                 src: gistData.div,
             });
-            this.addStylesheet(gistData.stylesheet);
+            if (/^https:\/\/github\.githubassets\.com\//i.test(gistData.stylesheet)) {
+                this.addStylesheet(gistData.stylesheet);
+            }
         }.bind(this);
 
         let url = 'https://gist.github.com/' + gist + '.json?callback=' + gistCallback;
