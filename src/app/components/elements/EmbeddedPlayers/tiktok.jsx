@@ -80,8 +80,10 @@ function generateTikTokCode(metadata) {
     if (metadata) {
         let [author, id] = Buffer.from(metadata, 'base64').toString().split('|');
 
-        // Sanitizing input
-        author = author.replace(/(<([^>]+)>)/gi, '');
+        // Validate: TikTok usernames are alphanumeric + underscores + dots
+        if (!/^[a-zA-Z0-9_.]{1,24}$/.test(author)) {
+            author = '';
+        }
         id = id.replace(/[^0-9]/gi, '');
 
         tiktokCode = `<blockquote class="tiktok-embed" cite="https://www.tiktok.com/@${author}/video/${id}" `
