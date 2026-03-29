@@ -5,6 +5,8 @@ import classnames from 'classnames';
 // import shouldComponentUpdate  from 'app/utils/shouldComponentUpdate';
 import { looksPhishy } from 'app/utils/Phishing';
 
+const SAFE_URL_PATTERN = /^https?:\/\//i;
+
 export default class SanitizedLink extends PureComponent {
     static propTypes = {
         url: PropTypes.string,
@@ -37,7 +39,7 @@ export default class SanitizedLink extends PureComponent {
             'SanitizedLink--phishyLink': isPhishy,
         });
 
-        if (!isPhishy) {
+        if (!isPhishy && SAFE_URL_PATTERN.test(url)) {
             return (
                 <a className={classes} href={url} target="_blank" rel="noopener noreferrer">
                     {text}

@@ -8,7 +8,7 @@
  * <proxy>/{int}x{int}/[<proxy>/{int}x{int}/]<proxy>/<file url>
  * @type {RegExp}
  */
-const rProxyDomain = /^http(s)?:\/\/images.hive.blog\//g;
+const rProxyDomain = /^http(s)?:\/\/images.hive.blog\//;
 const rProxyDomainsDimensions = /http(s)?:\/\/images.hive.blog\/([0-9]+x[0-9]+)\//g;
 const NATURAL_SIZE = '0x0/';
 const CAPPED_SIZE = '768x0/';
