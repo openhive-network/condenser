@@ -114,19 +114,25 @@ export function normalizeEmbedUrl(url) {
     return false;
 }
 
+function escapeHtml(s) {
+    if (!s) return '';
+    return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#x27;');
+}
+
 function generateTwitterCode(metadata) {
-    let twitterCode = '<blockquote className="twitter-tweet"><p lang="en" dir="ltr"></p>&mdash; <a href=""></a></blockquote>';
+    let twitterCode = '<blockquote class="twitter-tweet"><p lang="en" dir="ltr"></p>&mdash; <a href=""></a></blockquote>';
     if (metadata) {
         let [author, date, url, description] = Buffer.from(metadata, 'base64').toString().split('|');
 
-        // Sanitizing input
-        author = author.replace(/(<([^>]+)>)/gi, '');
-        date = date.replace(/(<([^>]+)>)/gi, '');
-        url = url.replace(/(<([^>]+)>)/gi, '');
-        description = description.replace(/(<([^>]+)>)/gi, '');
-        if (description === '') {
-            description = url;
+        // Validate URL: must be a real Twitter/X status URL
+        if (!/^https:\/\/(twitter|x)\.com\/[a-zA-Z0-9_]+\/status\/[0-9]+\/?(\?[^\s"'<>]*)?$/i.test(url)) {
+            url = '#';
         }
+
+        // HTML-escape text fields to prevent attribute breakout and injection
+        author = escapeHtml(author);
+        date = escapeHtml(date);
+        description = escapeHtml(description || url);
 
         twitterCode = '<blockquote class="twitter-tweet">'
             + `<p lang="en" dir="ltr">${description}</p>`
