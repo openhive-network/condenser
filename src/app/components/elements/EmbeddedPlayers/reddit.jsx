@@ -116,6 +116,11 @@ export function normalizeEmbedUrl(url) {
     return false;
 }
 
+function escapeHtml(s) {
+    if (!s) return '';
+    return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#x27;');
+}
+
 function generateRedditCode(metadata) {
     let redditCode = '';
     if (metadata) {
@@ -123,18 +128,21 @@ function generateRedditCode(metadata) {
             .toString()
             .split('|');
 
-        // Sanitizing input
+        // Validate fields
         date = date.replace(/[^0-9]/gi, '');
-        group = group.replace(/(<([^>]+)>)/gi, '');
-        url = url.replace(/(<([^>]+)>)/gi, '');
-        description = description.replace(/(<([^>]+)>)/gi, '');
-        if (description === '') {
-            description = url;
+        if (!/^[a-zA-Z0-9_]+$/.test(group)) {
+            group = '';
         }
+        if (!/^https?:\/\/(www\.)?reddit\.com\/r\/[a-zA-Z0-9_]+(\/[^\s"'<>]*)?$/i.test(url)) {
+            url = '#';
+        }
+
+        // HTML-escape text fields to prevent injection
+        description = escapeHtml(description || url);
 
         redditCode = `<blockquote class="reddit-card" data-created="${date}">`
             + `<a href="${url}">${description}</a>`
-            + `from <a href="http://www.reddit.com/r/${group}">r/${group}</a></blockquote>`;
+            + `from <a href="https://www.reddit.com/r/${group}">r/${group}</a></blockquote>`;
     }
 
     return {
