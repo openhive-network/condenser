@@ -91,6 +91,13 @@ export function genIframeMd(idx, gistId, w, h, metadata) {
     if (typeof window !== 'undefined') {
         const fullId = Buffer.from(metadata, 'base64').toString();
 
+        // Validate gist ID: must be "username/hexid" optionally with "/filename"
+        // Block URL-control characters (?, #, &) that could hijack the JSONP callback
+        if (!/^[a-zA-Z0-9_-]+\/[a-f0-9]+(\/[a-zA-Z0-9_./-]+)?$/.test(fullId)) {
+            console.error('Blocked invalid gist ID:', fullId);
+            return null;
+        }
+
         return <EmbeddedGist key={fullId} gist={fullId} />;
     }
 

@@ -35,6 +35,15 @@ class EmbeddedGist extends React.Component {
     componentDidMount() {
         const { gist, file } = this.props;
 
+        // Validate gist prop to prevent JSONP callback injection.
+        // Must be "username/hexid" optionally with "/filename".
+        // Characters like ?, #, & could hijack the JSONP URL.
+        if (!/^[a-zA-Z0-9_-]+\/[a-f0-9]+(\/[a-zA-Z0-9_./-]+)?$/.test(gist)) {
+            console.error('EmbeddedGist: blocked invalid gist ID:', gist);
+            this.setState({ loading: false, src: '' });
+            return;
+        }
+
         // Create a JSONP callback that will set our state
         // with the data that comes back from the Gist site
         const gistCallback = EmbeddedGist.nextGistCallback();
@@ -48,9 +57,10 @@ class EmbeddedGist extends React.Component {
             }
         }.bind(this);
 
-        let url = 'https://gist.github.com/' + gist + '.json?callback=' + gistCallback;
+        // gist is already validated by the regex above to contain only [a-zA-Z0-9_\-/.]
+        let url = `https://gist.github.com/${gist}.json?callback=${gistCallback}`;
         if (file) {
-            url += '&file=' + file;
+            url += '&file=' + encodeURIComponent(file);
         }
 
         // Add the JSONP script tag to the document.
