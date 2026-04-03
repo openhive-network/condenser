@@ -1,5 +1,4 @@
 import React from 'react';
-import EmbeddedGist from './EmbeddedGist';
 
 /**
  * Regular expressions for detecting and validating provider URLs
@@ -98,11 +97,41 @@ export function genIframeMd(idx, gistId, w, h, metadata) {
             return null;
         }
 
-        return <EmbeddedGist key={fullId} gist={fullId} />;
+        // Load gist JSONP directly instead of relying on componentDidMount,
+        // which never fires because renderToString only calls render().
+        const containerId = `gist-container-${idx}`;
+        const gistCallback = `gist_embed_cb_${gistCbId}`;
+        gistCbId += 1;
+
+        window[gistCallback] = function (gistData) {
+            const container = document.getElementById(containerId);
+            if (container) {
+                container.innerHTML = gistData.div;
+            }
+            if (/^https:\/\/github\.githubassets\.com\//i.test(gistData.stylesheet)) {
+                if (!document.querySelector(`link[href="${gistData.stylesheet}"]`)) {
+                    const link = document.createElement('link');
+                    link.type = 'text/css';
+                    link.rel = 'stylesheet';
+                    link.href = gistData.stylesheet;
+                    document.head.appendChild(link);
+                }
+            }
+        };
+
+        const url = `https://gist.github.com/${fullId}.json?callback=${gistCallback}`;
+        const script = document.createElement('script');
+        script.type = 'text/javascript';
+        script.src = url;
+        document.head.appendChild(script);
+
+        return <div key={fullId} id={containerId}>loading gist...</div>;
     }
 
     return null;
 }
+
+let gistCbId = 0;
 
 /**
  * Replaces the URL with a custom Markdown for embedded players
