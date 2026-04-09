@@ -9,7 +9,6 @@ import mixcloudRegex from 'app/components/elements/EmbeddedPlayers/mixcloud';
 import archiveorg from 'app/components/elements/EmbeddedPlayers/archiveorg';
 import bandcamp from 'app/components/elements/EmbeddedPlayers/bandcamp';
 import redditRegex from 'app/components/elements/EmbeddedPlayers/reddit';
-import gist from 'app/components/elements/EmbeddedPlayers/gist';
 import truvvl from 'app/components/elements/EmbeddedPlayers/truvvl';
 import tiktokRegex from 'app/components/elements/EmbeddedPlayers/tiktok';
 import instagramRegex from 'app/components/elements/EmbeddedPlayers/instagram';
@@ -328,15 +327,7 @@ describe('Performance', () => {
             'https://bandcamp.com/EmbeddedPlayer/album=313320652/size=large/bgcol=ffffff/linkcol=0687f5/tracklist=false/transparent=true/'
         );
     });
-    it('gist', () => {
-        match(gist.main, 'https://gist.github.com/huysbs/647a50197b95c4027550a2cc558af6aa');
-        match(gist.sanitize, 'https://gist.github.com/huysbs/647a50197b95c4027550a2cc558af6aa.js');
-        match(
-            gist.htmlReplacement,
-            '<script src="https://gist.github.com/huysbs/647a50197b95c4027550a2cc558af6aa.js"></script>'
-        );
-    });
-    it('truvvl', () => {
+it('truvvl', () => {
         match(
             truvvl.main,
             'https://travelfeed.io/@tvt3st/prague-to-sarajevo-cool-places-in-europe-europe-prague-zagreb-bosnia-20210420t103208397z'
