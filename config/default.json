@@ -86,6 +86,7 @@
   "openhive_chat_iframe_create_users": "no",
   "openhive_chat_admin_user_id": "DaMHvraiQbNBxi7W5",
   "openhive_chat_admin_user_token": "VZhTOE20q3Xe9xTgA9QqjbQAYxYEhAfkUZpAm7xrQgd",
+  "openhive_chat_create_token_secret": "",
   "logger_output": "noop",
   "logger_log_level": "all",
   "logger_admins": ""

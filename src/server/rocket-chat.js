@@ -32,10 +32,11 @@ export const rocketChatAdminUserAuthHeaders = {
  * Chat was started with env variable `CREATE_TOKENS_FOR_USERS=true`.
  *
  * @export
+ * @param {string} userId - RC user ID (required for RC 8.0+)
  * @param {string} [username='']
  * @returns {Promise<ResultToken>}
  */
-export async function getRCAuthToken(username = '') {
+export async function getRCAuthToken(userId, username = '') {
 
     //
     // TODO We request a new login token on each call to this function,
@@ -56,8 +57,13 @@ export async function getRCAuthToken(username = '') {
             timeout: 1000 * 30
         };
         const url = `${rocketChatApiUri}/users.createToken`;
+        const secret = config.has('openhive_chat_create_token_secret')
+                ? config.get('openhive_chat_create_token_secret')
+                : '';
+        // RC 8.0+ requires userId + secret; RC 7.x accepts username
+        const body = secret ? { userId, secret } : { username };
         const responseData = (
-                await axios.post(url, {username}, requestConfig)
+                await axios.post(url, body, requestConfig)
                 ).data;
         // Succesful response looks like this:
         //
@@ -128,7 +134,7 @@ export async function getChatAuthToken(username = '') {
         // User exists.
         if (responseData1.user.active) {
             // User is active, so we'll output token.
-            return getRCAuthToken(username);
+            return getRCAuthToken(responseData1.user._id, username);
         }
         return {
             success: false,
@@ -155,7 +161,7 @@ export async function getChatAuthToken(username = '') {
                     await axios.post(url2, data2, requestConfig)
                     ).data;
                 if (responseData2.success) {
-                    return getRCAuthToken(username);
+                    return getRCAuthToken(responseData2.user._id, username);
                 }
                 return {
                     success: false,
