@@ -149,7 +149,7 @@ function RocketChatWidget({
             setBadgeContent(event.data.data || 0);
         }
 
-        if (event.data.eventName === 'ready') {
+        if (event.data.eventName === 'ready' || event.data.eventName === 'startup') {
             logger.log('Chat application is ready');
             setIsIframeLoaded(true);
         }
