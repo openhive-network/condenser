@@ -206,6 +206,7 @@ function RocketChatWidget({
 
     const onIframeLoad = () => {
         logger.log('Chat iframe has been loaded');
+        setIsIframeLoaded(true);
         return () => {
             removeIframeListener();
         };
