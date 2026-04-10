@@ -34,9 +34,8 @@ export function chatLogin(data, iframeRef) {
         try {
             if (data && data.chatAuthToken) {
                 const message = {
-                    event: 'login-with-token',
-                    loginToken: data.chatAuthToken,
-                    loginType: data.loginType || 'login',
+                    externalCommand: 'login-with-token',
+                    token: data.chatAuthToken,
                 };
                 logger.log('chatLogin posting message', message, data);
                 iframeRef.current.contentWindow.postMessage(
