@@ -111,6 +111,16 @@ export default ({
             sanitizeErrors.push('Invalid iframe URL: ' + srcAtty);
             return { tagName: 'div', text: `(Unsupported ${srcAtty})` };
         },
+        video: (tagName, attribs) => {
+            // Block direct <video> tags in user HTML. Valid video elements
+            // are only produced by the iframe transform above (e.g. IPFS),
+            // which bypasses this handler since sanitize-html looks up
+            // transforms by the original tag name.
+            const src = attribs.src || '';
+            console.log('Blocked direct video tag:', src);
+            sanitizeErrors.push('Direct video embeds are not allowed');
+            return { tagName: 'div', text: '' };
+        },
         img: (tagName, attribs) => {
             if (noImage) return { tagName: 'div', text: noImageText };
             //See https://github.com/punkave/sanitize-html/issues/117
