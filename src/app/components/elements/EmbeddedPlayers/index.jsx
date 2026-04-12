@@ -3,6 +3,7 @@ import * as archiveorg from 'app/components/elements/EmbeddedPlayers/archiveorg'
 import * as bandcamp from 'app/components/elements/EmbeddedPlayers/bandcamp';
 import * as dapplr from 'app/components/elements/EmbeddedPlayers/dapplr';
 import * as dtube from 'app/components/elements/EmbeddedPlayers/dtube';
+import * as ipfs from 'app/components/elements/EmbeddedPlayers/ipfs';
 import * as mixcloud from 'app/components/elements/EmbeddedPlayers/mixcloud';
 import * as soundcloud from 'app/components/elements/EmbeddedPlayers/soundcloud';
 import * as spotify from 'app/components/elements/EmbeddedPlayers/spotify';
@@ -21,6 +22,7 @@ const supportedProviders = {
     bandcamp,
     dapplr,
     dtube,
+    ipfs,
     mixcloud,
     reddit,
     soundcloud,
@@ -98,6 +100,7 @@ export function validateIframeUrl(url, large = true, width = null, height = null
                 providerId,
                 sandboxAttributes: sandboxConfig.sandboxAttributes || [],
                 useSandbox: sandboxConfig.useSandbox,
+                useVideoTag: sandboxConfig.useVideoTag || false,
                 width: iframeDimensions.width.toString(),
                 height: iframeDimensions.height.toString(),
                 validUrl,

@@ -9,7 +9,7 @@ export const allowedTags = `
     div, iframe, del,
     a, p, b, i, q, br, ul, li, ol, img, h1, h2, h3, h4, h5, h6, hr,
     blockquote, pre, code, em, strong, center, table, thead, tbody, tr, th, td,
-    strike, sup, sub, span, details, summary
+    strike, sup, sub, span, details, summary, video
 `
     .trim()
     .split(/,\s*/);
@@ -36,6 +36,8 @@ export default ({
             'class',
         ],
 
+        video: ['src', 'controls', 'width', 'height', 'preload', 'class'],
+
         // class attribute is strictly whitelisted (below)
         // and title is only set in the case of a phishing warning
         div: ['class', 'title'],
@@ -60,12 +62,27 @@ export default ({
                 validUrl,
                 useSandbox,
                 sandboxAttributes,
+                useVideoTag,
                 width,
                 height,
                 providerId,
             } = validateEmbbeddedPlayerIframeUrl(srcAtty, large, widthAtty, heightAtty);
 
             if (validUrl !== false) {
+                if (useVideoTag) {
+                    return {
+                        tagName: 'video',
+                        attribs: {
+                            src: validUrl,
+                            controls: 'controls',
+                            width,
+                            height,
+                            preload: 'metadata',
+                            class: `${providerId}-video`,
+                        },
+                    };
+                }
+
                 const iframe = {
                     tagName: 'iframe',
                     attribs: {
