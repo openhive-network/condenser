@@ -1,5 +1,4 @@
 import React from 'react';
-import _ from 'lodash';
 
 /**
  * Regular expressions for detecting and validating provider URLs
@@ -138,11 +137,6 @@ function generateTwitterCode(metadata) {
             + `<p lang="en" dir="ltr">${description}</p>`
             + `&mdash; ${author} <a href="${url}">${date}</a>`
             + '</blockquote>';
-
-        const twttr = _.get(window, 'twttr');
-        if (twttr && twttr.widgets) {
-            twttr.widgets.load();
-        }
     }
 
     return {

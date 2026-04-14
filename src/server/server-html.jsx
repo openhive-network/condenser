@@ -109,32 +109,6 @@ export default function ServerHTML({
                         async
                     />
                 ) : null}
-                <script
-                    // eslint-disable-next-line react/no-danger
-                    dangerouslySetInnerHTML={{
-                        __html: `
-                        window.twttr = (function(d, s, id) {
-                            var js, fjs = d.getElementsByTagName(s)[0],
-                            t = window.twttr || {};
-                            if (d.getElementById(id)) return t;
-                            js = d.createElement(s);
-                            js.id = id;
-                            js.src = "https://platform.twitter.com/widgets.js";
-                            fjs.parentNode.insertBefore(js, fjs);
-
-                            t._e = [];
-                            t.ready = function(f) {
-                            t._e.push(f);
-                        };
-
-                            return t;
-                        }(document, "script", "twitter-wjs"));
-                        `,
-                    }}
-                />
-                <script async src="https://www.tiktok.com/embed.js" charSet="UTF-8" />
-                <script async src="https://www.instagram.com/embed.js" charSet="UTF-8" />
-                <script async src="https://embed.redditmedia.com/widgets/platform.js" charSet="UTF-8" />
                 <title>{page_title}</title>
             </head>
             <body>
