@@ -3,16 +3,16 @@
   "google_analytics_id": false,
   "helmet": {
     "directives": {
-      "childSrc": "'self' 3speak.tv play.3speak.tv emb.d.tube player.twitch.tv www.youtube.com staticxx.facebook.com w.soundcloud.com player.vimeo.com",
-      "connectSrc": "https://images.hive.blog 'self' hive.blog https://api.hive.blog api.blocktrades.us https://anyx.io https://hivesigner.com https://hivebuzz.me https://peakd.com https://api.deathwing.me https://www.reddit.com https://rpc.ausbit.dev https://api.ha.deathwing.me wss://hive-auth.arcange.eu https://hiveposh.com/api/ https://herpc.dtools.dev",
-      "defaultSrc": "'self' img.3speakcontent.online emb.d.tube www.youtube.com staticxx.facebook.com player.vimeo.com *.streamrail.com",
-      "fontSrc": "data: fonts.gstatic.com cdn.embedly.com",
+      "childSrc": "'self' 3speak.tv play.3speak.tv emb.d.tube player.twitch.tv www.youtube.com w.soundcloud.com player.vimeo.com",
+      "connectSrc": "https://images.hive.blog 'self' hive.blog https://api.hive.blog https://hivesigner.com https://hivebuzz.me https://peakd.com https://api.deathwing.me https://api.ha.deathwing.me wss://hive-auth.arcange.eu https://hiveposh.com/api/ https://herpc.dtools.dev",
+      "defaultSrc": "'self' img.3speakcontent.online www.youtube.com player.vimeo.com",
+      "fontSrc": "data: fonts.gstatic.com",
       "frameAncestors": "'none'",
       "frameSrc": "'self' https:",
-      "imgSrc": "* data:",
+      "imgSrc": "'self' https://images.hive.blog data:",
       "objectSrc": "'none'",
       "scriptSrc": "'unsafe-inline' 'unsafe-eval' data: https: 'self' www.google-analytics.com connect.facebook.net",
-      "styleSrc": "'self' 'unsafe-inline' fonts.googleapis.com cdn.embedly.com",
+      "styleSrc": "'self' 'unsafe-inline' fonts.googleapis.com",
       "reportUri": "/api/v1/csp_violation"
     },
     "reportOnly": false,
