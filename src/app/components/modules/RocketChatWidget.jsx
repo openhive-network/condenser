@@ -192,6 +192,7 @@ function RocketChatWidget({
                 setLoggedIn(true);
                 if (isIframeLoaded) {
                     chatLogin({chatAuthToken, loginType}, iframeRef);
+                    setDisabled(false);
                 }
             } else if (!chatAuthToken) {
                 if (isIframeLoaded) {
