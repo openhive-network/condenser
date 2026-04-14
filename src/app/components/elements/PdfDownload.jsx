@@ -52,9 +52,7 @@ export default class PdfDownload extends Component {
             const s = document.createElement('script');
             s.type = 'text/javascript';
 
-            // There is something going on with Babel and plugin-transform-runtime
-            // For now we have to load from this CDN
-            s.src = 'https://unpkg.com/jspdf@1.5.3/dist/jspdf.min.js';
+            s.src = '/static/jspdf.min.js';
 
             document.body.appendChild(s);
             s.addEventListener('load', res);
