@@ -15,6 +15,7 @@ import tt from 'counterpart';
 import { VIEW_MODE_WHISTLE } from 'shared/constants';
 import SimpleReactLightbox from 'simple-react-lightbox';
 import RocketChatWidget from 'app/components/modules/RocketChatWidget';
+import TopBanner from 'app/components/elements/TopBanner';
 import { logger, isBrowser } from 'app/utils/Logger';
 
 
@@ -162,6 +163,8 @@ class App extends React.Component {
                     ref="App_root"
                 >
                     <ConnectedSidePanel alignment="right" />
+
+                    <TopBanner />
 
                     {headerHidden ? null : <Header pathname={pathname} category={category} order={order} />}
 
