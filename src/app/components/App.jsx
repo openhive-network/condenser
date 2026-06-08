@@ -98,7 +98,7 @@ class App extends React.Component {
 
     render() {
         const {
-            params, children, new_visitor, nightmodeEnabled, viewMode, pathname, category, order
+            params, children, new_visitor, nightmodeEnabled, viewMode, pathname, category, order, loggedIn
         } = this.props;
 
         const whistleView = viewMode === VIEW_MODE_WHISTLE;
@@ -164,7 +164,7 @@ class App extends React.Component {
                 >
                     <ConnectedSidePanel alignment="right" />
 
-                    <TopBanner />
+                    {loggedIn && <TopBanner />}
 
                     {headerHidden ? null : <Header pathname={pathname} category={category} order={order} />}
 
@@ -213,6 +213,7 @@ export default connect(
             order: ownProps.params.order,
             category: ownProps.params.category,
             showAnnouncement: state.user.get('showAnnouncement'),
+            loggedIn: !!state.user.getIn(['current', 'username']),
         };
     },
     (dispatch) => ({
