@@ -9,7 +9,7 @@ const TopBanner = () => {
             </span>
             <a
                 className="TopBanner__link"
-                href="https://blog.openhive.network"
+                href="https://new.hive.blog"
                 target="_blank"
                 rel="noopener noreferrer"
             >
