@@ -304,25 +304,22 @@ export async function serverRender(location, initialState, ErrorPage, userPrefer
         });
         server_store.dispatch(appActions.setUserPreferences(userPreferences));
     } catch (e) {
-        // Ensure 404 page when username not found
-        if (location.match(routeRegex.UserProfile)) {
-            console.error('User/not found: ', location);
-            return {
-                title: 'Page Not Found - Hive',
-                statusCode: 404,
-                body: renderToString(<NotFound />),
-            };
-            // Ensure error page on state exception
-        }
-            const msg = (e.toString && e.toString()) || e.message || e;
-            const stack_trace = e.stack || '[no stack]';
-            console.error('State/store error: ', msg, stack_trace);
-            return {
-                title: 'Server error - Hive',
-                statusCode: 500,
-                body: renderToString(<ErrorPage />),
-            };
-
+        // Any error reaching this catch is a transport/infrastructure failure
+        // (timeout, HTTP 429/5xx, network), NOT "content not found". hivemind returns
+        // "does not exist" as a JSON-RPC -32602 error which @hiveio/hive-js swallows into
+        // an empty result instead of throwing, so genuinely-missing accounts/posts are
+        // handled earlier in this try (empty-profile 404 for UserProfile routes;
+        // get_post_header for un-aliased posts) and never reach here. Returning 404 for
+        // UserProfile routes therefore mislabeled transient API failures as "user not
+        // found": a real, cacheable HTTP 404 on a valid page (issue #225). Return 5xx.
+        const msg = (e.toString && e.toString()) || e.message || e;
+        const stack_trace = e.stack || '[no stack]';
+        console.error('State/store error: ', msg, stack_trace);
+        return {
+            title: 'Service temporarily unavailable - Hive',
+            statusCode: 503,
+            body: renderToString(<ErrorPage />),
+        };
     }
 
     let app, status, meta;
