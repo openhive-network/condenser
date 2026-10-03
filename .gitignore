@@ -13,3 +13,6 @@ lib
 docs
 jest
 ._*
+
+# AIDEV suite reports (.aidev/run-checks.sh)
+test-results/

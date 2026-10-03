@@ -10,7 +10,8 @@ module.exports = {
             'process.env': {
                 BROWSER: JSON.stringify(true),
                 NODE_ENV: JSON.stringify('production'),
-                VERSION: JSON.stringify(git.long())
+                // SOURCE_COMMIT when the tree has no usable .git (e.g. an AIDEV suite container)
+                VERSION: JSON.stringify(process.env.SOURCE_COMMIT || git.long())
             }
         }),
         ...baseConfig.plugins,
