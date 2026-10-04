@@ -56,7 +56,7 @@ variables:
 
 run-unit-tests:
     stage: test
-    image: node:18.14.0
+    image: node:24.21.0
     tags:
         - public-runner-docker
     only:
@@ -77,7 +77,7 @@ run-unit-tests:
 
 run-eslint:
     stage: test
-    image: node:18.14.0
+    image: node:24.21.0
     tags:
         - public-runner-docker
     only:

@@ -4258,13 +4258,12 @@ concat-stream@^1.4.6, concat-stream@^1.4.7:
     readable-stream "^2.2.2"
     typedarray "^0.0.6"
 
-config@1.26.2:
-  version "1.26.2"
-  resolved "https://registry.yarnpkg.com/config/-/config-1.26.2.tgz#2466291168d8afae0aae8ab99ea4d4272f520cae"
-  integrity sha512-sXSFQ9aD//+P0JKhWpYeviwClUDREVnVQ0r2imiC1AJvYPK8/jmlrzciGKqhSOUNxpsPYKt27LCD5J6yKZg5VA==
+config@3.3.12:
+  version "3.3.12"
+  resolved "https://registry.yarnpkg.com/config/-/config-3.3.12.tgz#a10ae66efcc3e48c1879fbb657c86c4ef6c7b25e"
+  integrity sha512-Vmx389R/QVM3foxqBzXO8t2tUikYZP64Q6vQxGrsMpREeJc/aWRnPRERXWsYzOHAumx/AOoILWe6nU3ZJL+6Sw==
   dependencies:
-    json5 "0.4.0"
-    os-homedir "1.0.2"
+    json5 "^2.2.3"
 
 confusing-browser-globals@^1.0.10:
   version "1.0.11"
@@ -8284,11 +8283,6 @@ json-stringify-safe@~5.0.1:
   resolved "https://registry.yarnpkg.com/json-stringify-safe/-/json-stringify-safe-5.0.1.tgz#1296a2d58fd45f19a0f6ce01d65701e2c735b6eb"
   integrity sha512-ZClg6AaYvamvYEE82d3Iyd3vSSIjQ+odgjaTzRuO3s7toCdFKczob2i0zCh7JE8kWn17yvAWhUVxvqGwUalsRA==
 
-json5@0.4.0:
-  version "0.4.0"
-  resolved "https://registry.yarnpkg.com/json5/-/json5-0.4.0.tgz#054352e4c4c80c86c0923877d449de176a732c8d"
-  integrity sha512-5EEuuI7oad0d6c2PcrTRLoLH2JNuI/aJxHsVT2hVFK6fKHu+MXONdhzzzNAlb3JXMeuN1o+kDU78fV1YH6VmKQ==
-
 json5@^1.0.1, json5@^1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/json5/-/json5-1.0.2.tgz#63d98d60f21b313b77c4d6da18bfa69d80e1d593"
@@ -9485,11 +9479,6 @@ optionator@^0.9.3:
     prelude-ls "^1.2.1"
     type-check "^0.4.0"
     word-wrap "^1.2.5"
-
-os-homedir@1.0.2:
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/os-homedir/-/os-homedir-1.0.2.tgz#ffbc4988336e0e833de0c168c7ef152121aa7fb3"
-  integrity sha512-B5JU3cabzk8c67mRRd3ECmROafjYMXbuzlwtqdM8IbS8ktlTix8aFGb2bAGKrSRIlnfKwovGUUr72JUPyOb6kQ==
 
 os@0.1.1:
   version "0.1.1"

@@ -32,8 +32,8 @@ locale), and there is no e2e or server test suite.
 
 ## The test runtime image (`runtime/`)
 
-The suites run in a container with `--network none` and your uid. It carries Node 18.14.0
-and its bundled yarn 1.22.19 (the `node:18.14.0` image CI and the Dockerfile use) and a
+The suites run in a container with `--network none` and your uid. It carries Node 24.21.0
+and its bundled yarn 1.22.22 (the `node:24.21.0` image CI and the Dockerfile use) and a
 yarn cache filled from `yarn.lock`, git dependencies included. `yarn-deps.sh` installs
 `node_modules` offline from it.
 

@@ -45,7 +45,7 @@ When AIDEV runs you on an issue, no one is there to answer questions. GitLab CI 
 
 - **Check your change:** run `aidev test run --slot quick` once, after your last edit. It runs ESLint over `src/` and the Jest suite. `--slot full` adds the production build (`yarn build`: webpack + babel); run it too when you touch webpack config, styles, assets or dependencies.
 - **Iterate:** `.aidev/run-checks.sh dev lint` (or `unit` / `build`) runs one step; reports land in `test-results/aidev-dev/`.
-- **Toolchain:** Node 18.14.0 and yarn 1 (`yarn.lock`, `--frozen-lockfile`). Don't switch package managers or Node versions as a side effect of another change.
+- **Toolchain:** Node 24.21.0 and yarn 1 (1.22.22) (`yarn.lock`, `--frozen-lockfile`). Don't switch package managers or Node versions as a side effect of another change.
 - **Dependencies:** a change to `yarn.lock` or `package.json` needs a new test image. Run `.aidev/runtime/build.sh --push` and put the printed reference in `.aidev/project.yaml` `environment.image` in the same commit (see `.aidev/README.md`).
 
 ## Development Commands
