@@ -3,12 +3,12 @@
 // IMPORTANT: This must be the first import to ensure agents are configured before
 // any other module (like hive-js) makes HTTP connections during their initialization.
 import './utils/httpClient';
+import './nodeCompat';
 
 import config from 'config';
 import * as hivejs from '@hiveio/hive-js';
 
 const path = require('path');
-const util = require('util');
 
 const ROOT = path.join(__dirname, '../..');
 
@@ -53,12 +53,6 @@ global.$STM_Config = {
     logger_log_level: config.get('logger_log_level'),
     logger_admins: config.get('logger_admins'),
 };
-
-// require-hacker@3.0.1 (webpack-isomorphic-tools' asset loader, no newer release) calls util.isRegExp,
-// which Node 23 removed.
-if (!util.isRegExp) {
-    util.isRegExp = util.types.isRegExp;
-}
 
 const WebpackIsomorphicTools = require('webpack-isomorphic-tools');
 const WebpackIsomorphicToolsConfig = require('../../webpack/webpack-isotools-config');
