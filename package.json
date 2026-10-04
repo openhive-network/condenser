@@ -54,7 +54,7 @@
     "classnames": "2.2.5",
     "cluster": "0.7.7",
     "co-body": "^5.1.1",
-    "config": "1.26.2",
+    "config": "3.3.12",
     "core-js": "^3.6.5",
     "counterpart": "0.17.9",
     "cpu-stat": "2.0.1",
@@ -234,8 +234,7 @@
     "webpack-livereload-plugin": "^3.0.2"
   },
   "engines": {
-    "node": ">=10.13.0",
-    "npm": ">=5.4.2"
+    "node": ">=24"
   },
   "lint-staged": {
     "src/**/*.+(js|jsx)": [
@@ -269,8 +268,8 @@
     "crypto-js": "^4.2.0"
   },
   "volta": {
-    "node": "18.14.0",
-    "npm": "9.3.1",
-    "yarn": "1.22.5"
+    "node": "24.21.0",
+    "npm": "11.19.0",
+    "yarn": "1.22.22"
   }
 }

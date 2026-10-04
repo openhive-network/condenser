@@ -1,10 +1,10 @@
 # The image AIDEV runs this project's suites in (`environment.image` in
 # .aidev/project.yaml). Suites run with `--network none`, so everything an
-# install needs is in the image: Node 18.14.0 and the yarn 1 it bundles (the
+# install needs is in the image: Node 24.21.0 and the yarn 1 it bundles (the
 # image CI's run-unit-tests/run-eslint jobs and the Dockerfile use), and a yarn
 # cache filled from yarn.lock (git dependencies included). Build and pin it with
 # .aidev/runtime/build.sh; see .aidev/README.md.
-FROM node:18.14.0@sha256:5ab5e06df2c58dabb18b963636c2fab16b10b7150d13434a12024f599aa645bc
+FROM node:24.21.0@sha256:64af3819f9275802414d7cdc38c27e9d82bd564dec4d4da87d008255d36c63b4
 
 ENV HOME=/tmp \
     YARN_CACHE_FOLDER=/opt/yarn-cache \
