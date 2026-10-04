@@ -2,8 +2,6 @@ import cpuStat from 'cpu-stat';
 import memStat from 'mem-stat';
 import diskStat from 'disk-stat';
 
-module.exports = hardwareStats;
-
 const stats = {};
 
 function handleError(err) {

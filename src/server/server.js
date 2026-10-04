@@ -311,4 +311,4 @@ if (process.send) process.send('online');
 // logging hardware stats to the console
 if (process.env.PERFORMANCE_TRACING) setInterval(hardwareStats, 1000 * process.env.PERFORMANCE_TRACING);
 
-module.exports = app;
+export default app;

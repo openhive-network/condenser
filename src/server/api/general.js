@@ -97,8 +97,7 @@ export default function useGeneralApi(app) {
                 } else {
                     const [chainAccount] = await api.getAccountsAsync([account]);
                     if (!chainAccount) {
-                        console.error('/login_account missing blockchain account',
-                                account);
+                        console.error('/login_account missing blockchain account', account);
                     } else {
                         const auth = { posting: false };
                         const bufSha = hash.sha256(
@@ -131,8 +130,7 @@ export default function useGeneralApi(app) {
                                 weight_threshold,
                             },
                         } = chainAccount;
-                        verify('posting', signatures.posting,
-                                posting_pubkey, weight, weight_threshold);
+                        verify('posting', signatures.posting, posting_pubkey, weight, weight_threshold);
                         if (ctx.session.a === account) loginType = 'resume';
                         if (auth.posting) ctx.session.a = account;
                     }
@@ -225,11 +223,9 @@ export default function useGeneralApi(app) {
         if (params && params['csp-report']) {
             const csp_report = params['csp-report'];
             const value = `${csp_report['document-uri']} : ${csp_report['blocked-uri']}`;
-            console.log('-- /csp_violation -->', value, '--',
-                    ctx.request.headers['user-agent']);
+            console.log('-- /csp_violation -->', value, '--', ctx.request.headers['user-agent']);
         } else {
-            console.log('-- /csp_violation [no csp-report] -->', params,
-                    '--', ctx.request.headers['user-agent']);
+            console.log('-- /csp_violation [no csp-report] -->', params, '--', ctx.request.headers['user-agent']);
         }
         ctx.body = '';
     });
@@ -237,8 +233,7 @@ export default function useGeneralApi(app) {
     router.post('/setUserPreferences', async (ctx) => {
         const params = ctx.request.body;
         const { payload } = _parse(params);
-        console.log('-- /setUserPreferences -->', ctx.session.user,
-                ctx.session.uid, payload);
+        console.log('-- /setUserPreferences -->', ctx.session.user, ctx.session.uid, payload);
         if (!ctx.session.a) {
             ctx.body = 'missing logged in account';
             ctx.status = 500;
@@ -250,8 +245,7 @@ export default function useGeneralApi(app) {
             ctx.session.user_prefs = json;
             ctx.body = JSON.stringify({ status: 'ok' });
         } catch (error) {
-            console.error('Error in /setUserPreferences api call',
-                    ctx.session.uid, error);
+            console.error('Error in /setUserPreferences api call', ctx.session.uid, error);
             ctx.body = JSON.stringify({ error: error.message });
             ctx.status = 500;
         }

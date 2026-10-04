@@ -16,7 +16,7 @@ const defaultState = fromJS({
     twitterUsername: '',
 });
 
-export default function reducer(state = defaultState, action) {
+export default function reducer(state = defaultState, action = {}) {
     const { payload } = action;
 
     switch (action.type) {
