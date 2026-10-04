@@ -7,7 +7,7 @@ import {
 // import links  from 'app/utils/Links'
 // import assert from 'assert'
 
-module.exports = {
+const consoleExports = {
     PrivateKey,
     PublicKey,
     Aes,
@@ -54,9 +54,9 @@ module.exports = {
     init: (context) => {
         if (!context) return;
         // eslint-disable-next-line no-restricted-syntax
-        for (const obj in module.exports) {
+        for (const obj in consoleExports) {
             if (obj !== 'init') {
-                context[obj] = module.exports[obj];
+                context[obj] = consoleExports[obj];
             }
         }
     },
@@ -74,3 +74,5 @@ module.exports = {
 
 // eslint-disable-next-line no-unused-vars
 const perfStarted = false;
+
+export default consoleExports;

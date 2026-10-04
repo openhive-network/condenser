@@ -28,7 +28,7 @@ branches:
 # How this project's suites execute (#13892): one kind, stated once.
 environment:
   kind: "container"
-  image: "registry.gitlab.syncad.com/hive/condenser/aidev-tests@sha256:6f3dcd7f3a59f7a402d3cc7e751812afd265f4c2eb77abe9ad04ca320f3824d1"
+  image: "registry.gitlab.syncad.com/hive/condenser/aidev-tests@sha256:c01adbfb037487785f0daf667e9ac62130ea56a2ce85cb71e5aa76a7211fbeec"
   inputs: ["yarn.lock"]
   # Rebuild and re-pin with .aidev/runtime/build.sh --push (see .aidev/README.md).
 

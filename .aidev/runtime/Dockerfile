@@ -8,7 +8,7 @@ FROM node:18.14.0@sha256:5ab5e06df2c58dabb18b963636c2fab16b10b7150d13434a12024f5
 
 ENV HOME=/tmp \
     YARN_CACHE_FOLDER=/opt/yarn-cache \
-    HUSKY_SKIP_INSTALL=1 \
+    HUSKY=0 \
     DISABLE_OPENCOLLECTIVE=1 \
     ADBLOCK=1 \
     CI=true

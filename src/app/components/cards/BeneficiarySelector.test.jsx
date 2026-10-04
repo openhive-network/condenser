@@ -25,7 +25,14 @@ class FormWrapper extends React.Component {
 
     render() {
         const { beneficiaries } = this.state;
-        return <BeneficiarySelector {...beneficiaries.props} username="testuser" following={['testfollowing']} />;
+        return (
+            <BeneficiarySelector
+                value={beneficiaries.props.value}
+                onChange={beneficiaries.props.onChange}
+                username="testuser"
+                following={['testfollowing']}
+            />
+        );
     }
 }
 

@@ -640,19 +640,14 @@ export default function oauthServer(app) {
     publicRouter.get('/oauth/login', async (ctx) => {
         const params = new URLSearchParams(ctx.URL.search);
         const oauthLoginAttempt = ctx.session?.oauthLoginAttempt;
-        const validationResult = validateChallenge(
-                params, oauthLoginAttempt, 'login'
-                );
+        const validationResult = validateChallenge(params, oauthLoginAttempt, 'login');
 
         if (validationResult?.error_description
                 === 'login_challenge has expired') {
             // Destroy login attempt in session, it's expired.
             ctx.session.oauthLoginAttempt = null;
         }
-        assert(validationResult === null, 400,
-                validationResult
-                    ? validationResult.error_description
-                    : 'ok');
+        assert(validationResult === null, 400, validationResult ? validationResult.error_description : 'ok');
 
         const oauthLoginAttemptParams = new URLSearchParams(
                 oauthLoginAttempt.params
@@ -714,8 +709,7 @@ export default function oauthServer(app) {
         // Verify code parameter sent by client.
         let verifiedCode;
         try {
-            verifiedCode = verify(ctx.request.body.code, jwtSecret,
-                    { complete: true });
+            verifiedCode = verify(ctx.request.body.code, jwtSecret, { complete: true });
         } catch (error) {
             const error_description = `Invalid jwt token (code). ${error.toString()}`;
             ctx.status = 400;
@@ -775,8 +769,7 @@ export default function oauthServer(app) {
             username: verifiedCode.payload.username,
             scope: verifiedCode.payload.scope,
         };
-        const access_token = sign(access_token_payload, jwtSecret,
-                access_token_jwtOptions);
+        const access_token = sign(access_token_payload, jwtSecret, access_token_jwtOptions);
 
         const id_token_jwtOptions = {
             issuer,
