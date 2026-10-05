@@ -10,7 +10,7 @@ module.exports = {
             'process.env': {
                 BROWSER: JSON.stringify(true),
                 NODE_ENV: JSON.stringify('production'),
-                // SOURCE_COMMIT when the tree has no usable .git (e.g. an AIDEV suite container)
+                // SOURCE_COMMIT is passed by CI's docker build
                 VERSION: JSON.stringify(process.env.SOURCE_COMMIT || git.long())
             }
         }),
