@@ -130,7 +130,7 @@ const broadcast = (operations, type, callbackFn) => {
     client.broadcast(auth, type, operations);
 };
 
-const signChallenge = (data, keyType = 'posting', callbackFn) => {
+const signChallenge = (data, keyType, callbackFn) => {
     const handleChallengePending = () => {
         updateModalMessage(tt('hiveauthservices.broadcastInstructions'));
     };

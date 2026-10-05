@@ -1,4 +1,3 @@
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const path = require('path');
 
 const css_loaders = [
@@ -67,10 +66,7 @@ module.exports = {
                 },
                 {
                     test: /\.scss$/,
-                    use: ExtractTextPlugin.extract({
-                        fallback: 'style-loader',
-                        use: scss_loaders
-                    })
+                    use: [{ loader: 'style-loader' }, ...scss_loaders]
                 },
             ]
         };

@@ -1,0 +1,80 @@
+# Profile for hive/condenser, written by `aidev project scaffold` (#13561).
+#
+# Schema reference: docs/architecture/project-profile.md
+# Onboarding procedure: the `onboard-external-project` skill.
+# Guide: docs/operations/onboarding-an-external-project.md
+#
+# The generator writes a starting point, not a governed answer: every
+# binding below is the command a maintainer said this project runs, and it
+# is reviewed and edited like any other declaration.
+version: 2
+project: condenser
+
+gitlab:
+  host: "gitlab.syncad.com"
+  path: "hive/condenser"
+  id: 208
+
+# A single-branch topology: this is both what work integrates into and what
+# ships. `stable` is omitted rather than declared equal to it — declaring
+# them equal is a typo, omitting one is a topology. Add `stable:` when this
+# project genuinely promotes to a second branch.
+# AIDEV integrates into its own branch; people merge it into develop through
+# merge requests (as in hive/denser and hive/block_explorer_ui), so `stable` is
+# omitted and `aidev release` never moves develop or master.
+branches:
+  integration: "aidev/integration"
+
+# How this project's suites execute (#13892): one kind, stated once.
+environment:
+  kind: "container"
+  image: "registry.gitlab.syncad.com/hive/condenser/aidev-tests@sha256:49cd3fdcf205168b91bc17b5e1e94bfc2b1894761d6da8ac53c0e13f3b2485ba"
+  inputs: ["yarn.lock"]
+  # Rebuild and re-pin with .aidev/runtime/build.sh --push (see .aidev/README.md).
+
+issues:
+  intake_label: todo
+  taxonomy: ".aidev/labels.yaml"
+  decompose:
+    # `never` is where an external project starts: nothing marks work
+    # approved on this project's behalf until there is a track record.
+    auto_todo: never
+  # Reports about this project's work are filed against this project.
+  watcher_reports: self
+
+# Verification slots. Each binding is what this project genuinely runs for
+# that slot — never one selection repeated under seven names, which makes
+# seven gates report on the same evidence while claiming to check seven
+# different things.
+verification:
+  quick:
+    adapter: command
+    args: [".aidev/run-checks.sh", "quick", "lint", "unit"]
+    artifacts: ["test-results/aidev-quick/"]
+  full:
+    adapter: command
+    args: [".aidev/run-checks.sh", "full", "lint", "unit", "build"]
+    artifacts: ["test-results/aidev-full/"]
+  baseline:
+    adapter: command
+    args: [".aidev/run-checks.sh", "baseline", "unit"]
+    artifacts: ["test-results/aidev-baseline/"]
+  canary:
+    adapter: command
+    args: [".aidev/run-checks.sh", "canary", "lint", "unit", "build"]
+    artifacts: ["test-results/aidev-canary/"]
+  static:
+    adapter: command
+    args: [".aidev/run-checks.sh", "static", "lint"]
+    artifacts: ["test-results/aidev-static/"]
+  coverage:
+    adapter: command
+    args: [".aidev/run-checks.sh", "coverage", "coverage"]
+    artifacts: ["test-results/aidev-coverage/"]
+  system:
+    adapter: command
+    args: [".aidev/run-checks.sh", "system", "build"]
+    artifacts: ["test-results/aidev-system/"]
+
+# Capability grants for target-side code. Empty until this project needs one.
+capabilities: []

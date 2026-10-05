@@ -13,5 +13,3 @@ export default function requestTime(statsLoggerClient) {
         ctx.state.requestTimer.finish();
     };
 }
-
-module.exports = requestTime;
