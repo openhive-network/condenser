@@ -9,9 +9,7 @@
 #              $out/unit-junit.xml through the project's jest-junit reporter
 #   coverage   the same Jest run with --coverage (package.json `ci:test`, CI's
 #              run-unit-tests job); the report lands in $out/coverage
-#   build      `yarn build`: webpack production bundle + babel to lib/. The
-#              bundle's VERSION comes from SOURCE_COMMIT (AIDEV_COMMIT_SHA, or git)
-#              because a workflow's container has no usable .git. tmp/ is
+#   build      `yarn build`: webpack production bundle + babel to lib/. tmp/ is
 #              created first, as the Dockerfile does.
 set -uo pipefail
 cd "$(dirname "$0")/.."
@@ -51,7 +49,7 @@ jest_run() {
 
 build() {
     mkdir -p tmp  # webpack/utils/write-stats.js writes tmp/webpack-stats-prod.json (the Dockerfile does the same)
-    SOURCE_COMMIT="${AIDEV_COMMIT_SHA:-$(git rev-parse HEAD 2>/dev/null || echo unknown)}" yarn -s build
+    yarn -s build
 }
 
 for s in "$@"; do

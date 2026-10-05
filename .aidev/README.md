@@ -16,7 +16,7 @@ test, from the project's own jest-junit reporter).
 | `lint` | `eslint src/` (`ci:eslint`, CI's run-eslint job). Warnings don't fail it |
 | `unit` | Jest (`yarn test`) |
 | `coverage` | Jest with `--coverage` (`ci:test`, CI's run-unit-tests job); report in `test-results/aidev-coverage/coverage` |
-| `build` | `yarn build` (webpack production bundle, babel to `lib/`). The bundle's VERSION comes from `SOURCE_COMMIT` (`AIDEV_COMMIT_SHA` or git) |
+| `build` | `yarn build` (webpack production bundle, babel to `lib/`) |
 
 | Slot | Steps |
 |---|---|
