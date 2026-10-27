@@ -14,9 +14,9 @@ test, from the project's own jest-junit reporter).
 | Step | What |
 |---|---|
 | `lint` | `eslint src/` (`ci:eslint`, CI's run-eslint job). Warnings don't fail it |
-| `unit` | Jest (`yarn test`) |
+| `unit` | Jest (`pnpm test`) |
 | `coverage` | Jest with `--coverage` (`ci:test`, CI's run-unit-tests job); report in `test-results/aidev-coverage/coverage` |
-| `build` | `yarn build` (webpack production bundle, babel to `lib/`) |
+| `build` | `pnpm run build` (webpack production bundle, babel to `lib/`) |
 
 | Slot | Steps |
 |---|---|
@@ -27,17 +27,23 @@ test, from the project's own jest-junit reporter).
 | coverage | coverage |
 | system | build |
 
-Not bound: `yarn checktranslations` (it fails on `develop` today: unused keys in every
+Not bound: `pnpm checktranslations` (it fails on `develop` today: unused keys in every
 locale), and there is no e2e or server test suite.
 
 ## The test runtime image (`runtime/`)
 
 The suites run in a container with `--network none` and your uid. It is built on
 common-ci-configuration's `node-test-tools:develop` image (the one CI's test jobs use), so
-Node comes from there; it adds yarn 1.22.22 and a yarn cache filled from `yarn.lock`, git
-dependencies included. `yarn-deps.sh` installs `node_modules` offline from it.
+Node and pnpm come from there; it adds a pnpm store filled from `pnpm-lock.yaml`, git
+mirrors of the git dependencies not on GitHub, and the `node_modules` installed from the
+lockfile in `/opt/aidev-deps`. `pnpm-deps.sh` seeds a worktree's `node_modules` from that
+copy (pnpm cannot install the GitHub dependency, a tarball without an integrity hash, from
+the store alone) and reconciles it with `pnpm install --prefer-offline`. `build.sh` passes
+`NPM_CONFIG_REGISTRY` from its environment as a build arg, so the image is filled through
+`http://npm-cache.syncad.com:8080/` when that is set and from the public registry when it
+isn't.
 
-When `yarn.lock`, `package.json` or `runtime/Dockerfile` change, rebuild and re-pin **in
+When `pnpm-lock.yaml`, `pnpm-workspace.yaml`, `package.json` or `runtime/Dockerfile` change, rebuild and re-pin **in
 the same commit**:
 
 ```bash

@@ -21,6 +21,12 @@ include:
       ref: develop
       file: '/templates/base.gitlab-ci.yml'
 
+variables:
+    # The on-site npm cache (Verdaccio), the value common-ci-configuration's
+    # docker_image_jobs template defines. pnpm-lock.yaml names no registry for
+    # registry packages, so an install without it uses the public registry.
+    NPM_CONFIG_REGISTRY: "http://npm-cache.syncad.com:8080/"
+
 ################################# COMMON TEMPLATES #################################
 
 .node-job: &node-job
@@ -32,9 +38,15 @@ include:
     only:
         - branches
         - merge_requests
+    cache:
+        key:
+            files:
+                - pnpm-lock.yaml
+        paths:
+            - .pnpm-store/
     before_script:
-        - npm install -g yarn@1.22.22
-        - yarn install --frozen-lockfile --ignore-optional
+        - pnpm config set store-dir .pnpm-store
+        - pnpm install --frozen-lockfile
 
 ################################# MERGE REQUESTS #################################
 
@@ -42,7 +54,7 @@ run-unit-tests:
     stage: test
     <<: *node-job
     script:
-        - yarn run ci:test
+        - pnpm run ci:test
     coverage: /All files[^|]*\|[^|]*\s+([\d\.]+)/
     artifacts:
         when: always
@@ -56,4 +68,4 @@ run-eslint:
     stage: test
     <<: *node-job
     script:
-        - yarn ci:eslint
+        - pnpm run ci:eslint
