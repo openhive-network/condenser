@@ -88,14 +88,10 @@ yarn test                   # Run Jest tests
 
 ## CI/CD Notes
 
-**Stages**: test → build → deploy
+**Stages**: test
 
 **Jobs**:
 - `run-unit-tests`: Jest with coverage
 - `run-eslint`: Lint all src/
-- `build-review-app`: Deploy MR preview
-- `deploy-staging`: Deploy develop branch
 
 **Protected Branch**: `develop` - requires MR with passing pipeline
-
-**Review Apps**: Deployed to `review.*.condenser.engrave.dev` on MRs
