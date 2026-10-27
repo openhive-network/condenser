@@ -1,4 +1,8 @@
-FROM node:24.21.0 as development
+# CI passes --build-arg NODE_VERSION=$NODE_IMAGE_VERSION, the Node version
+# common-ci-configuration defines; the major-only default is for local builds.
+ARG NODE_VERSION=24
+
+FROM node:${NODE_VERSION} as development
 
 WORKDIR /var/app
 
@@ -18,7 +22,7 @@ FROM development as dependencies
 RUN yarn install --non-interactive --frozen-lockfile --ignore-optional --production
 
 ### BUILD MINIFIED PRODUCTION ##
-FROM node:24.21.0-alpine as production
+FROM node:${NODE_VERSION}-alpine as production
 
 WORKDIR /var/app
 

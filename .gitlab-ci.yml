@@ -18,6 +18,15 @@ workflow:
         when: never
       - if: '$CI_COMMIT_BRANCH'
 
+include:
+    - project: 'hive/common-ci-configuration'
+      ref: develop
+      file: '/templates/base.gitlab-ci.yml'
+
+# base.gitlab-ci.yml makes every job interruptible; a cancelled deploy must not be.
+default:
+    interruptible: false
+
 variables:
     APP_REVIEW_SUBDOMAIN: .condenser.engrave.dev
     STAGING_DOMAIN: staging.condenser.engrave.dev
@@ -52,18 +61,24 @@ variables:
     after_script:
         - rm -fR $CERTS
 
-################################# MERGE REQUESTS #################################
-
-run-unit-tests:
-    stage: test
-    image: node:24.21.0
+.node-job: &node-job
+    image:
+        name: $NODE_TEST_TOOLS_IMAGE
+        entrypoint: ['']
     tags:
         - public-runner-docker
     only:
         - branches
         - merge_requests
     before_script:
+        - npm install -g yarn@1.22.22
         - yarn install --frozen-lockfile --ignore-optional
+
+################################# MERGE REQUESTS #################################
+
+run-unit-tests:
+    stage: test
+    <<: *node-job
     script:
         - yarn run ci:test
     coverage: /All files[^|]*\|[^|]*\s+([\d\.]+)/
@@ -77,14 +92,7 @@ run-unit-tests:
 
 run-eslint:
     stage: test
-    image: node:24.21.0
-    tags:
-        - public-runner-docker
-    only:
-        - branches
-        - merge_requests
-    before_script:
-        - yarn install --frozen-lockfile --ignore-optional
+    <<: *node-job
     script:
         - yarn ci:eslint
 
@@ -99,7 +107,7 @@ build-review-app:
     before_script:
         - echo $CI_JOB_TOKEN | docker login -u $CI_REGISTRY_USER $CI_REGISTRY --password-stdin
     script:
-        - docker build -t $DOCKER_TAG --build-arg SOURCE_COMMIT --build-arg DOCKER_TAG .
+        - docker build -t $DOCKER_TAG --build-arg SOURCE_COMMIT --build-arg DOCKER_TAG --build-arg NODE_VERSION=$NODE_IMAGE_VERSION .
         - docker push $DOCKER_TAG
 
 deploy-review-app:
@@ -168,7 +176,7 @@ build-staging:
     before_script:
         - echo $CI_JOB_TOKEN | docker login -u $CI_REGISTRY_USER $CI_REGISTRY --password-stdin
     script:
-        - docker build -t $DOCKER_TAG -t $DOCKER_TAG_MAIN --build-arg SOURCE_COMMIT --build-arg DOCKER_TAG .
+        - docker build -t $DOCKER_TAG -t $DOCKER_TAG_MAIN --build-arg SOURCE_COMMIT --build-arg DOCKER_TAG --build-arg NODE_VERSION=$NODE_IMAGE_VERSION .
         - docker push $DOCKER_TAG
         - docker push $DOCKER_TAG_MAIN
 
