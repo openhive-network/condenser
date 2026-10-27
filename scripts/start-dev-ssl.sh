@@ -17,4 +17,4 @@ export SDC_OPENHIVE_CHAT_IFRAME_INTEGRATION_ENABLE="yes" ;
 export SDC_OPENHIVE_CHAT_IFRAME_VISIBLE="yes" ;
 export SDC_OPENHIVE_CHAT_IFRAME_CREATE_USERS="no" ;
 
-exec yarn start
+exec pnpm start

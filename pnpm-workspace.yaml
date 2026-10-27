@@ -1,0 +1,30 @@
+# A flat node_modules (several loaders and presets require packages they don't
+# declare), with packages placed where their peer dependencies resolve.
+nodeLinker: hoisted
+# Missing peers stay missing and mismatched ones (React <=17 peers of older
+# packages) only warn; installing them would add packages nothing uses.
+autoInstallPeers: false
+
+overrides:
+  lodash-es: 4.17.21
+  lodash: 4.17.21
+  minimist: 1.2.6
+  request: 2.88.2
+  node-fetch: 2.6.7
+  crypto-js: ^4.2.0
+  # Optional dependencies are not installed; framer-motion's would change the
+  # bundle. Removed here rather than with --no-optional, which the hoisted
+  # linker of pnpm 10.33 fails on (ERR_PNPM_LOCKFILE_MISSING_DEPENDENCY).
+  '@babel/cli>@nicolo-ribaudo/chokidar-2': '-'
+  blueimp-file-upload>blueimp-canvas-to-blob: '-'
+  blueimp-file-upload>blueimp-load-image: '-'
+  blueimp-file-upload>blueimp-tmpl: '-'
+  chokidar>fsevents: '-'
+  framer-motion>@emotion/is-prop-valid: '-'
+  jest-haste-map>fsevents: '-'
+  uglify-js>uglify-to-browserify: '-'
+
+# Their install scripts only print messages.
+ignoredBuiltDependencies:
+  - core-js
+  - es5-ext
