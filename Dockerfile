@@ -6,20 +6,28 @@ FROM node:${NODE_VERSION} as development
 
 WORKDIR /var/app
 
-COPY package.json yarn.lock ./
+# Empty (the default) installs from the public registry; CI passes the on-site
+# cache, as common-ci-configuration's docker_image_jobs template defines it.
+ARG NPM_CONFIG_REGISTRY
+ENV NPM_CONFIG_REGISTRY=${NPM_CONFIG_REGISTRY}
 
-RUN yarn install --non-interactive --frozen-lockfile --ignore-optional
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+
+# The pnpm version package.json `packageManager` pins, installed with npm so
+# that it too comes through NPM_CONFIG_REGISTRY.
+RUN npm install -g "$(node -p 'require("./package.json").packageManager')" \
+    && pnpm install --frozen-lockfile
 
 COPY . .
 
-RUN mkdir tmp && yarn build
+RUN mkdir tmp && pnpm run build
 
-CMD [ "yarn", "run", "start" ]
+CMD [ "pnpm", "run", "start" ]
 
 ### REMOVE DEV DEPENDENCIES ##
 FROM development as dependencies
 
-RUN yarn install --non-interactive --frozen-lockfile --ignore-optional --production
+RUN CI=true pnpm install --frozen-lockfile --prod
 
 ### BUILD MINIFIED PRODUCTION ##
 FROM node:${NODE_VERSION}-alpine as production
@@ -45,4 +53,5 @@ COPY --from=dependencies /var/app/healthcheck.js /var/app/healthcheck.js
 
 HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=5 CMD node /var/app/healthcheck.js
 
-CMD [ "yarn", "run", "production" ]
+# This stage has no pnpm; npm runs the package.json script the same way.
+CMD [ "npm", "run", "production" ]

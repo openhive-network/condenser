@@ -9,7 +9,7 @@
 #              $out/unit-junit.xml through the project's jest-junit reporter
 #   coverage   the same Jest run with --coverage (package.json `ci:test`, CI's
 #              run-unit-tests job); the report lands in $out/coverage
-#   build      `yarn build`: webpack production bundle + babel to lib/. tmp/ is
+#   build      `pnpm run build`: webpack production bundle + babel to lib/. tmp/ is
 #              created first, as the Dockerfile does.
 set -uo pipefail
 cd "$(dirname "$0")/.."
@@ -19,9 +19,9 @@ out="test-results/aidev-$suite"
 rm -rf "$out"; mkdir -p "$out"
 cases="$out/cases.tsv"; : > "$cases"
 
-# shellcheck source=yarn-deps.sh
-if ! source .aidev/yarn-deps.sh; then
-    printf 'case\tinstall\tfail\t0\tyarn install --offline failed\n' >> "$cases"
+# shellcheck source=pnpm-deps.sh
+if ! source .aidev/pnpm-deps.sh; then
+    printf 'case\tinstall\tfail\t0\tpnpm install failed\n' >> "$cases"
     source .aidev/junit-helpers.sh; junit_write_cases "$out/junit.xml" "$suite" "$cases"
     exit 1
 fi
@@ -49,7 +49,7 @@ jest_run() {
 
 build() {
     mkdir -p tmp  # webpack/utils/write-stats.js writes tmp/webpack-stats-prod.json (the Dockerfile does the same)
-    yarn -s build
+    pnpm -s run build
 }
 
 for s in "$@"; do
