@@ -55,29 +55,24 @@ mkdir tmp
 
 #### Install dependencies
 
-Install at least Node.js v12 if you don't already have it.
+Install Node.js 24 (`engines` in `package.json`) if you don't already have it,
+and pnpm, the version `packageManager` in `package.json` pins (`corepack enable`
+or `npm install -g pnpm@<version>`).
 
-Condenser is known to successfully build using node 12.6, npm 6.13.4, and
-yarn 1.22.4.
-
-We use the yarn package manager instead of the default `npm`. There are
-multiple reasons for this, one being that we have `hive-js` built from
-source pulling the gitlab repo as part of the build process and yarn
-supports this. This way the library that handles keys can be loaded by
-commit hash instead of a version name and cryptographically verified to be
-exactly what we expect it to be. Yarn can be installed with `npm`, but
-afterwards you will not need to use `npm` further.
+Dependencies are installed with pnpm from the committed `pnpm-lock.yaml`; git
+dependencies are pinned by commit hash. Its settings (a flat, hoisted
+`node_modules`, overrides, optional dependencies left out) are in
+`pnpm-workspace.yaml`. Packages come from the public registry; to install
+through a mirror instead (CI uses the on-site cache), set `NPM_CONFIG_REGISTRY`.
 
 ```bash
-npm install -g yarn
-yarn add babel-cli
-yarn install --frozen-lockfile --ignore-optional
-yarn run build
+pnpm install --frozen-lockfile
+pnpm run build
 ```
 To run condenser in production mode, run:
 
 ```bash
-yarn run production
+pnpm run production
 ```
 
 When launching condenser in production mode it will automatically use 1
@@ -87,7 +82,7 @@ http://localhost:8080 by default.
 To run condenser in development mode, run:
 
 ```bash
-yarn run start
+pnpm run start
 ```
 
 It will take quite a bit longer to start in this mode (~60s) as it needs to
@@ -103,7 +98,7 @@ copy of `hive (steemd)` locally instead
 
 #### Debugging SSR code
 
-`yarn debug` will build a development version of the codebase and then start the
+`pnpm run debug` will build a development version of the codebase and then start the
 local server with `--inspect-brk` so that you can connect a debugging client.
 You can use Chromium to connect by finding the remote client at
 `chrome://inspect/#devices`.
@@ -156,8 +151,8 @@ node
 #### Js & Jsx
 
 We use [prettier](https://github.com/prettier/prettier) to autoformat the
-code, with [this configuration](.prettierrc). Run `yarn run fmt` to format
-everything in `src/`, or `yarn exec -- prettier --config .prettierrc
+code, with [this configuration](.prettierrc). Run `pnpm run fmt` to format
+everything in `src/`, or `pnpm exec prettier --config .prettierrc
 --write src/whatever/file.js` for a specific file.
 
 #### CSS & SCSS
@@ -180,13 +175,13 @@ the Header component:
 
 ## Storybook
 
-`yarn run storybook`
+`pnpm run storybook`
 
 ## Testing
 
 ### Run test suite
 
-`yarn test`
+`pnpm test`
 
 will run `jest`
 
@@ -195,7 +190,7 @@ will run `jest`
 If you want to test a server-side rendered page without using the network, do this:
 
 ```
-yarn build
+pnpm run build
 OFFLINE_SSR_TEST=true NODE_ENV=production node --prof lib/server/index.js
 ```
 
@@ -280,7 +275,7 @@ export SDC_OAUTH_SERVER_CLIENTS="`cat config/oauth-server-clients-development.js
 ```
 Start Condenser in the same terminal:
 ```bash
-yarn start
+pnpm start
 ```
 
 #### Login to Rocket Chat via Condenser's Oauth Server on production host
