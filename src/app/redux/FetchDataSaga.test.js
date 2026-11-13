@@ -5,9 +5,31 @@ import * as appActions from './AppReducer';
 import * as globalActions from './GlobalReducer';
 import constants from './constants';
 
-import { fetchData } from './FetchDataSaga';
+import { loadFollows } from './FollowSaga';
+import { fetchData, fetchState } from './FetchDataSaga';
 
 describe('FetchDataSaga', () => {
+    describe('fetchState does not load the viewed account follow lists', () => {
+        const effectsOf = (pathname) => {
+            const gen = fetchState({ payload: { pathname } });
+            const effects = [];
+            let step = gen.next();
+            while (!step.done && effects.length < 50) {
+                effects.push(step.value);
+                step = gen.next(pathname);
+            }
+            return effects;
+        };
+        const forksLoadFollows = (effects) => effects.some((effect) => effect.FORK && effect.FORK.fn === loadFollows);
+
+        ['/@gtg/some-post', '/@gtg', '/@gtg/posts', '/@gtg/comments', '/@gtg/followers', '/@gtg/notifications'].forEach(
+            (pathname) => {
+                it(`on ${pathname}`, () => {
+                    expect(forksLoadFollows(effectsOf(pathname))).toBe(false);
+                });
+            }
+        );
+    });
     describe('should fetch multiple and filter', () => {
         const payload = {
             order: 'blog',
