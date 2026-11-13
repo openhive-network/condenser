@@ -1,32 +1,19 @@
 /* eslint react/prop-types: 0 */
 import React from 'react';
 import UserListRow from 'app/components/cards/UserListRow';
+import LoadingIndicator from 'app/components/elements/LoadingIndicator';
 import tt from 'counterpart';
 
-const PER_PAGE = 50;
-
 class UserList extends React.Component {
-    constructor() {
-        super();
-        this.state = { historyIndex: 0 };
-    }
-
-    _setHistoryPagePrevious = () => {
-        const newIndex = this.state.historyIndex - PER_PAGE;
-        this.setState({ historyIndex: Math.max(0, newIndex) });
-    };
-
-    _setHistoryPageNext = () => {
-        const newIndex = this.state.historyIndex + PER_PAGE;
-        this.setState({ historyIndex: Math.max(0, newIndex) });
+    _onClickLoadMore = (e) => {
+        e.preventDefault();
+        this.props.onLoadMore();
     };
 
     render() {
         const {
-            state: { historyIndex },
-        } = this;
-        const users = this.props.users;
-        const title = this.props.title;
+            users, title, loading, hasMore, onLoadMore,
+        } = this.props;
 
         if (!users) {
             return (
@@ -41,68 +28,28 @@ class UserList extends React.Component {
             );
         }
 
-        let idx = 0;
-        // eslint-disable-next-line no-plusplus
-        let user_list = users.map((user) => <UserListRow user={user} key={idx++} />);
-        user_list = user_list.toArray();
-
-        let currentIndex = -1;
-        const usersLength = users.size;
-        const limitedIndex = Math.min(historyIndex, usersLength - PER_PAGE);
-        user_list = user_list.reverse().filter(() => {
-            currentIndex += 1;
-            return currentIndex >= limitedIndex && currentIndex < limitedIndex + PER_PAGE;
-        });
-
-        const navButtons = (
-            <nav>
-                <ul className="pager">
-                    <li>
-                        <div
-                            role="link"
-                            tabIndex={0}
-                            className={'button tiny hollow float-left ' + (historyIndex === 0 ? ' disabled' : '')}
-                            onClick={this._setHistoryPagePrevious}
-                            aria-label={tt('g.previous')}
-                        >
-                            <span aria-hidden="true">
-                                &larr;
-                                {tt('g.previous')}
-                            </span>
-                        </div>
-                    </li>
-                    <li>
-                        <div
-                            role="link"
-                            tabIndex={0}
-                            className={
-                                'button tiny hollow float-right '
-                                + (historyIndex >= usersLength - PER_PAGE ? ' disabled' : '')
-                            }
-                            onClick={historyIndex >= usersLength - PER_PAGE ? null : this._setHistoryPageNext}
-                            aria-label={tt('g.next')}
-                        >
-                            <span aria-hidden="true">
-                                {tt('g.next')}
-                                {' '}
-                                &rarr;
-                            </span>
-                        </div>
-                    </li>
-                </ul>
-            </nav>
-        );
-
         return (
             <div className="UserList">
                 <div className="row">
                     <div className="column small-12">
                         <h3>{title}</h3>
-                        {navButtons}
                         <table>
-                            <tbody>{user_list}</tbody>
+                            <tbody>
+                                {users.map((user) => <UserListRow user={user} key={user} />).toArray()}
+                            </tbody>
                         </table>
-                        {navButtons}
+                        {loading && (
+                            <center>
+                                <LoadingIndicator type="circle" />
+                            </center>
+                        )}
+                        {!loading && hasMore && onLoadMore && (
+                            <center>
+                                <a href="#" onClick={this._onClickLoadMore}>
+                                    <strong>{tt('notificationslist_jsx.load_more')}</strong>
+                                </a>
+                            </center>
+                        )}
                     </div>
                 </div>
             </div>

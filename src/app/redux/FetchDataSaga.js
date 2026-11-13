@@ -1,7 +1,6 @@
 import {
- call, put, select, fork, takeLatest, takeEvery
+ call, put, select, takeLatest, takeEvery
 } from 'redux-saga/effects';
-import { loadFollows } from 'app/redux/FollowSaga';
 import { getStateAsync, callBridge } from 'app/utils/steemApi';
 import { fetchCrossPosts, augmentContentWithCrossPost } from 'app/utils/CrossPosts';
 import * as globalActions from './GlobalReducer';
@@ -45,13 +44,6 @@ export function* getPostHeader(action) {
 let is_initial_state = true;
 export function* fetchState(location_change_action) {
     const { pathname } = location_change_action.payload;
-    const m = pathname.match(/^\/@([a-z0-9.-]+)(\/notifications)?/);
-    if (m && m.length >= 2) {
-        const username = m[1];
-        yield fork(loadFollows, 'getFollowersAsync', username, 'blog');
-        yield fork(loadFollows, 'getFollowingAsync', username, 'blog');
-    }
-
     // `ignore_fetch` case should only trigger on initial page load. No need to call
     // fetchState immediately after loading fresh state from the server. Details: #593
     const server_location = yield select((state) => state.offchain.get('server_location'));
