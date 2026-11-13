@@ -19,6 +19,6 @@ const options = {
 storiesOf('Elements', module)
     .addDecorator((getStory) => <Provider store={store}>{getStory()}</Provider>)
     .add('UserList', () => {
-        const mockUsers = List(Array(number('number of users', 10, options)).fill('test'));
+        const mockUsers = List(Array(number('number of users', 10, options)).fill('test').map((name, i) => `${name}${i}`));
         return <UserList users={mockUsers} title="User List" />;
     });

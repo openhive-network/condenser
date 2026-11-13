@@ -15,8 +15,14 @@ import tt from 'counterpart';
 import Callout from 'app/components/elements/Callout';
 import userIllegalContent from 'app/utils/userIllegalContent';
 import {actions as UserProfilesSagaActions} from 'app/redux/UserProfilesSaga';
+import { actions as followSagaActions } from 'app/redux/FollowSaga';
 import UserProfileHeader from 'app/components/cards/UserProfileHeader';
 import SubscriptionsList from '../cards/SubscriptionsList';
+
+const followMethodBySection = {
+    followers: 'getFollowersAsync',
+    followed: 'getFollowingAsync',
+};
 
 const emptyPostsText = (section, account, isMyAccount) => {
     const name = '@' + account;
@@ -66,6 +72,7 @@ export default class UserProfile extends React.Component {
     constructor(props) {
         super(props);
         this.loadMore = this.loadMore.bind(this);
+        this.loadMoreFollows = this.loadMoreFollows.bind(this);
 
         const {
             profile,
@@ -93,6 +100,10 @@ export default class UserProfile extends React.Component {
         }
     }
 
+    componentDidMount() {
+        this.loadFollowsForSection();
+    }
+
     componentDidUpdate(prevProps) {
         const {
             profile,
@@ -112,14 +123,16 @@ export default class UserProfile extends React.Component {
             if (!peakdBadges) fetchPeakdBadges(accountname);
             if (!twitterUsername) fetchTwitterUsername(accountname);
         }
+        if (prevProps.accountname != accountname || prevProps.section != this.props.section) {
+            this.loadFollowsForSection();
+        }
     }
 
     shouldComponentUpdate(np) {
         return (
             np.username !== this.props.username
             || np.status !== this.props.status
-            || np.followers !== this.props.followers
-            || np.following !== this.props.following
+            || np.followPage !== this.props.followPage
             || np.loading !== this.props.loading
             || np.location.pathname !== this.props.location.pathname
             || np.blogmode !== this.props.blogmode
@@ -127,6 +140,16 @@ export default class UserProfile extends React.Component {
             || np.profile !== this.props.profile
             || np.notifications !== this.props.notifications
         );
+    }
+
+    loadFollowsForSection(more = false) {
+        const { accountname, section, loadFollowPage } = this.props;
+        const method = followMethodBySection[section];
+        if (method) loadFollowPage(method, accountname, more);
+    }
+
+    loadMoreFollows() {
+        this.loadFollowsForSection(true);
     }
 
     loadMore() {
@@ -154,8 +177,7 @@ export default class UserProfile extends React.Component {
             props: {
                 username,
                 status,
-                following,
-                followers,
+                followPage,
                 accountname,
                 category,
                 section,
@@ -195,12 +217,17 @@ export default class UserProfile extends React.Component {
         if (userIllegalContent.includes(accountname)) {
             // invalid users
             tab_content = <div>Unavailable For Legal Reasons.</div>;
-        } else if (section === 'followers') {
-            // users following this user
-            tab_content = <UserList title="Followers" users={followers} />;
-        } else if (section === 'followed') {
-            // users followed by this user
-            tab_content = <UserList title="Followed" users={following} />;
+        } else if (followMethodBySection[section]) {
+            // users following this user, or followed by this user
+            tab_content = (
+                <UserList
+                    title={section === 'followers' ? 'Followers' : 'Followed'}
+                    users={followPage && followPage.get('users')}
+                    loading={followPage && followPage.get('loading')}
+                    hasMore={followPage && followPage.get('hasMore')}
+                    onLoadMore={this.loadMoreFollows}
+                />
+            );
         } else if (section === 'notifications') {
             // notifications
             tab_content = (
@@ -294,8 +321,9 @@ module.exports = {
                 loading: state.app.get('loading'),
                 status: state.global.get('status'),
                 accountname,
-                followers: state.global.getIn(['follow', 'getFollowersAsync', accountname, 'blog_result']),
-                following: state.global.getIn(['follow', 'getFollowingAsync', accountname, 'blog_result']),
+                followPage: followMethodBySection[section]
+                    ? state.global.getIn(['follow_pages', followMethodBySection[section], accountname])
+                    : null,
                 notifications: state.global.getIn(['notifications', accountname, 'notifications'], null),
                 blogmode: state.app.getIn(['user_preferences', 'blogmode']),
                 profile: state.userProfiles.getIn(['profiles', accountname]),
@@ -329,7 +357,10 @@ module.exports = {
             },
             fetchTwitterUsername: (account) => {
                 dispatch(UserProfilesSagaActions.fetchPoshTwitterUsername({ account }));
-            }
+            },
+            loadFollowPage: (method, account, more) => {
+                dispatch(followSagaActions.loadFollowPage({ method, account, more }));
+            },
         })
     )(UserProfile),
 };
