@@ -31,10 +31,10 @@ export function* getAccount(username, force = false) {
         console.log('getAccount: loading', username, 'force?', force, 'lite?', isLite);
 
         [account] = yield call([api, api.getAccountsAsync], [username]);
-        const accountWitness = yield call([api, api.callAsync], 'condenser_api.get_witness_by_account', [username]);
+        const { witnesses } = yield call([api, api.callAsync], 'database_api.find_witnesses', { owners: [username] });
 
         if (account) {
-            if (accountWitness) {
+            if (witnesses.length > 0) {
                 account.account_is_witness = true;
             }
 
