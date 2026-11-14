@@ -79,7 +79,12 @@ const statsLoggerClient = new StatsLoggerClient(process.env.STATSD_IP);
 
 app.use(requestTime(statsLoggerClient));
 
-app.keys = [config.get('session_key')];
+// session_key may list several comma-separated keys: the first signs cookies, all of them are
+// accepted, and a cookie signed with a later one is re-signed with the first.
+app.keys = String(config.get('session_key'))
+    .split(',')
+    .map((key) => key.trim())
+    .filter(Boolean);
 const crypto_key = config.get('server_session_secret');
 const hiveCryptoSessionOptions = {
     maxAge: 1000 * 3600 * 24 * 60,
