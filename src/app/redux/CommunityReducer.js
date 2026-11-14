@@ -16,7 +16,7 @@ const APPLY_USER_ROLE = 'community/APPLY_USER_ROLE';
 
 const defaultCommunityState = Map();
 
-export default function reducer(state = defaultCommunityState, action) {
+export default function reducer(state = defaultCommunityState, action = {}) {
     const { payload } = action;
     switch (action.type) {
         // Has Saga watcher.

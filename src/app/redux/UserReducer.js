@@ -50,7 +50,7 @@ const defaultState = fromJS({
     show_hive_auth_modal: false,
 });
 
-export default function reducer(state = defaultState, action) {
+export default function reducer(state = defaultState, action = {}) {
     const { payload } = action;
     let show_login_modal;
 

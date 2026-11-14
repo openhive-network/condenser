@@ -1,0 +1,13 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<Follow /> renders without crashing 1`] = `
+<div>
+  <span>
+    <label
+      class="button slim hollow secondary"
+    >
+      missing translation: en.g.follow
+    </label>
+  </span>
+</div>
+`;

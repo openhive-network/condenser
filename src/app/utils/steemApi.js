@@ -80,8 +80,7 @@ export function getHivePowerForUser(account) {
 
                     const hive_power = new Big(post_voting_power.amount)
                         .times(new Big(hiveDividedByVests))
-                        // eslint-disable-next-line no-restricted-properties
-                        .times(1 / Math.pow(10, post_voting_power.precision))
+                        .times(1 / 10 ** post_voting_power.precision)
                         .toFixed(0);
                     resolve(hive_power);
                 } catch (err) {

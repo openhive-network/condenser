@@ -61,7 +61,7 @@ export function extractImageLink(json_metadata, body = null) {
 export function extractBodySummary(body, stripQuotes = false) {
     let desc = body;
 
-    if (stripQuotes) desc = desc.replace(/(^(\n|\r|\s)*)>([\s\S]*?).*\s*/g, '');
+    if (stripQuotes) desc = desc.replace(/^\s*>[\s\S]*?.*\s*/g, '');
     desc = remarkableStripper.render(desc); // render markdown to html
     desc = sanitize(desc, { allowedTags: [] }); // remove all html, leaving text
     desc = htmlDecode(desc);

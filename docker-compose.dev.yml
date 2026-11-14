@@ -23,7 +23,8 @@ services:
             SDC_HELMET_STYLESRC: "'self' 'unsafe-inline' fonts.googleapis.com platform.twitter.com www.reddit.com cdn.embedly.com *.tiktokcdn.com"
             SDC_HELMET_FONTSRC: "data: fonts.gstatic.com cdn.embedly.com"
         volumes:
-            - ./yarn.lock:/var/app/yarn.lock
+            - ./pnpm-lock.yaml:/var/app/pnpm-lock.yaml
+            - ./pnpm-workspace.yaml:/var/app/pnpm-workspace.yaml
             - ./package.json:/var/app/package.json
             - ./src:/var/app/src:delegated
             - ./webpack:/var/app/webpack:delegated

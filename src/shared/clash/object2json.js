@@ -21,7 +21,7 @@ const expo = {
         return item;
     },
 };
-export { expo as default };
+export default expo;
 
 exports.test = {
     run: () => {

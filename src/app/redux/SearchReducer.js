@@ -12,7 +12,7 @@ const defaultSearchState = Map({
     result: List([]),
 });
 
-export default function reducer(state = defaultSearchState, action) {
+export default function reducer(state = defaultSearchState, action = {}) {
     const { payload } = action;
 
     switch (action.type) {

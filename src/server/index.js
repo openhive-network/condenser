@@ -3,6 +3,7 @@
 // IMPORTANT: This must be the first import to ensure agents are configured before
 // any other module (like hive-js) makes HTTP connections during their initialization.
 import './utils/httpClient';
+import './nodeCompat';
 
 import config from 'config';
 import * as hivejs from '@hiveio/hive-js';

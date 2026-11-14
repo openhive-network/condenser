@@ -1,0 +1,43 @@
+.TopBanner {
+    position: relative;
+    background: #1a1a1a;
+    color: #fff;
+    font-size: 13.5px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 0 16px;
+    border-bottom: 1px solid #000;
+
+    &__spark {
+        color: #e31337;
+        font-weight: 700;
+    }
+
+    &__text {
+        white-space: nowrap;
+    }
+
+    &__link {
+        color: #fff;
+        font-weight: 600;
+        text-decoration: underline;
+        text-underline-offset: 3px;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        white-space: nowrap;
+
+        &:hover,
+        &:focus {
+            color: #e31337;
+        }
+
+        &:visited {
+            color: #fff;
+        }
+    }
+
+}

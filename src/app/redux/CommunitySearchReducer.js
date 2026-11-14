@@ -11,7 +11,7 @@ const defaultCommunitySearchState = Map({
     result: List([]),
 });
 
-export default function reducer(state = defaultCommunitySearchState, action) {
+export default function reducer(state = defaultCommunitySearchState, action = {}) {
     const { payload } = action;
 
     switch (action.type) {

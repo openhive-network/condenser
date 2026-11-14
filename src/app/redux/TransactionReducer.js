@@ -23,7 +23,7 @@ function last_part(value, sep) {
     return parts[parts.length - 1];
 }
 
-export default function reducer(state = defaultState, action) {
+export default function reducer(state = defaultState, action = {}) {
     const { payload } = action;
 
     switch (action.type) {

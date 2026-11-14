@@ -1,0 +1,51 @@
+# condenser under AIDEV
+
+AIDEV verifies changes through the slots in `project.yaml`, integrates them into
+`aidev/integration`, and people merge that into `develop` through merge requests (as in
+hive/denser and hive/block_explorer_ui). GitLab CI doesn't run for AIDEV branches;
+see `.gitlab-ci.yml` `workflow:`.
+
+## Suites
+
+`.aidev/run-checks.sh <suite> <step>...` writes `test-results/aidev-<suite>/junit.xml`
+(one case per step) and, for `unit`/`coverage`, `<step>-junit.xml` (one case per Jest
+test, from the project's own jest-junit reporter).
+
+| Step | What |
+|---|---|
+| `lint` | `eslint src/` (`ci:eslint`, CI's run-eslint job). Warnings don't fail it |
+| `unit` | Jest (`pnpm test`) |
+| `coverage` | Jest with `--coverage` (`ci:test`, CI's run-unit-tests job); report in `test-results/aidev-coverage/coverage` |
+| `build` | `pnpm run build` (webpack production bundle, babel to `lib/`) |
+
+| Slot | Steps |
+|---|---|
+| quick | lint, unit |
+| full, canary | lint, unit, build |
+| static | lint |
+| baseline | unit |
+| coverage | coverage |
+| system | build |
+
+Not bound: `pnpm checktranslations` (it fails on `develop` today: unused keys in every
+locale), and there is no e2e or server test suite.
+
+## The test runtime image (`runtime/`)
+
+The suites run in a container with `--network none` and your uid. It is built on
+common-ci-configuration's `node-test-tools:develop` image (the one CI's test jobs use), so
+Node and pnpm come from there; it adds a pnpm store filled from `pnpm-lock.yaml`, git
+mirrors of the git dependencies not on GitHub, and the `node_modules` installed from the
+lockfile in `/opt/aidev-deps`. `pnpm-deps.sh` seeds a worktree's `node_modules` from that
+copy (pnpm cannot install the GitHub dependency, a tarball without an integrity hash, from
+the store alone) and reconciles it with `pnpm install --prefer-offline`. `build.sh` passes
+`NPM_CONFIG_REGISTRY` from its environment as a build arg, so the image is filled through
+`http://npm-cache.syncad.com:8080/` when that is set and from the public registry when it
+isn't.
+
+When `pnpm-lock.yaml`, `pnpm-workspace.yaml`, `package.json` or `runtime/Dockerfile` change, rebuild and re-pin **in
+the same commit**:
+
+```bash
+.aidev/runtime/build.sh --push   # put the printed repo@sha256:<digest> in project.yaml environment.image
+```

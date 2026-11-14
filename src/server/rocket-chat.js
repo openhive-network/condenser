@@ -115,8 +115,7 @@ export async function getChatAuthToken(username = '') {
 
     try {
         const url1 = `${rocketChatApiUri}/users.info`;
-        responseData1 = (await axios.get(url1,
-                {...requestConfig, ...{params: {username}}})).data;
+        responseData1 = (await axios.get(url1, {...requestConfig, ...{params: {username}}})).data;
     } catch (error) {
         if (error.response && error.response.data
                 && error.response.data.error === 'User not found.') {
